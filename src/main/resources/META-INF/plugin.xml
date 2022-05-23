@@ -9,6 +9,13 @@
     <extensions defaultExtensionNs="com.intellij">
         <applicationService serviceImplementation="com.github.cunla.githubactionstab.services.MyApplicationService"/>
         <projectService serviceImplementation="com.github.cunla.githubactionstab.services.MyProjectService"/>
+
+        <toolWindow
+                id="My Sample Tool Window"
+                icon="/icon2.png"
+                anchor="bottom"
+                factoryClass="com.github.cunla.githubactionstab.GithubActionsToolWindowFactory">
+        </toolWindow>
     </extensions>
 
     <applicationListeners>
