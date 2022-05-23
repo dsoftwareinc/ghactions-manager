@@ -1,6 +1,6 @@
-package org.jetbrains.plugins.template.services
+package com.github.cunla.githubactionstab.services
 
-import org.jetbrains.plugins.template.MyBundle
+import com.github.cunla.githubactionstab.MyBundle
 
 class MyApplicationService {
 
