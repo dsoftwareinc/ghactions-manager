@@ -11,10 +11,10 @@
         <projectService serviceImplementation="com.github.cunla.githubactionstab.services.MyProjectService"/>
 
         <toolWindow
-                id="My Sample Tool Window"
-                icon="/icon2.png"
+                id="GitHub Actions"
+                icon="/icons/icon.svg"
                 anchor="bottom"
-                factoryClass="com.github.cunla.githubactionstab.GithubActionsToolWindowFactory">
+                factoryClass="com.github.cunla.githubactionstab.actions.GithubActionsToolWindowFactory">
         </toolWindow>
     </extensions>
 

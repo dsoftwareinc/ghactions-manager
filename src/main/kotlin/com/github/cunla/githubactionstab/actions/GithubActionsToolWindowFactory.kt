@@ -1,4 +1,4 @@
-package com.github.cunla.githubactionstab
+package com.github.cunla.githubactionstab.actions
 
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.wm.ToolWindow
