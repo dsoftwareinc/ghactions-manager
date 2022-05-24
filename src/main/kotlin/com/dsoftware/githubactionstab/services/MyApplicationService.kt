@@ -1,6 +1,6 @@
-package com.github.cunla.githubactionstab.services
+package com.dsoftware.githubactionstab.services
 
-import com.github.cunla.githubactionstab.MyBundle
+import com.dsoftware.githubactionstab.MyBundle
 
 class MyApplicationService {
 

@@ -1,4 +1,4 @@
-package com.github.cunla.githubactionstab
+package com.dsoftware.githubactionstab
 
 import com.intellij.DynamicBundle
 import org.jetbrains.annotations.NonNls
