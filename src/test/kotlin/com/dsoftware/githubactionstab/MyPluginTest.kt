@@ -1,4 +1,4 @@
-package com.github.cunla.githubactionstab
+package com.dsoftware.githubactionstab
 
 import com.intellij.ide.highlighter.XmlFileType
 import com.intellij.psi.xml.XmlFile

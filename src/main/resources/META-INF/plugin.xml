@@ -1,25 +1,25 @@
 <!-- Plugin Configuration File. Read more: https://plugins.jetbrains.com/docs/intellij/plugin-configuration-file.html -->
 <idea-plugin>
-    <id>com.github.cunla.githubactionstab</id>
-    <name>github-actions-tab</name>
-    <vendor>cunla</vendor>
+    <id>com.dsoftware.githubactionstab</id>
+    <name>GitHub Actions Tab</name>
+    <vendor>D Software</vendor>
 
     <depends>com.intellij.modules.platform</depends>
 
     <extensions defaultExtensionNs="com.intellij">
-        <applicationService serviceImplementation="com.github.cunla.githubactionstab.services.MyApplicationService"/>
-        <projectService serviceImplementation="com.github.cunla.githubactionstab.services.MyProjectService"/>
+        <applicationService serviceImplementation="com.dsoftware.githubactionstab.services.MyApplicationService"/>
+        <projectService serviceImplementation="com.dsoftware.githubactionstab.services.MyProjectService"/>
 
         <toolWindow
                 id="GitHub Actions"
                 icon="/icons/icon.svg"
                 anchor="bottom"
-                factoryClass="com.github.cunla.githubactionstab.actions.GithubActionsToolWindowFactory">
+                factoryClass="com.dsoftware.githubactionstab.actions.GithubActionsToolWindowFactory">
         </toolWindow>
     </extensions>
 
     <applicationListeners>
-        <listener class="com.github.cunla.githubactionstab.listeners.MyProjectManagerListener"
+        <listener class="com.dsoftware.githubactionstab.listeners.MyProjectManagerListener"
                   topic="com.intellij.openapi.project.ProjectManagerListener"/>
     </applicationListeners>
 </idea-plugin>
