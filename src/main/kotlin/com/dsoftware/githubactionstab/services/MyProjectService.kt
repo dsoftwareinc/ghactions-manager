@@ -1,7 +1,7 @@
 package com.dsoftware.githubactionstab.services
 
-import com.intellij.openapi.project.Project
 import com.dsoftware.githubactionstab.MyBundle
+import com.intellij.openapi.project.Project
 
 class MyProjectService(project: Project) {
 
