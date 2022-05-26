@@ -1,14 +1,14 @@
 package com.dsoftware.githubactionstab.workflow
 
 import com.dsoftware.githubactionstab.ui.GitHubWorkflowToolWindowTabController
+import com.dsoftware.githubactionstab.workflow.action.GHWorkflowToolWindowFactory
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.components.Service
-import com.intellij.openapi.diagnostic.Logger
+import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.wm.ToolWindow
 import com.intellij.openapi.wm.ToolWindowManager
 import com.intellij.util.concurrency.annotations.RequiresEdt
-import com.dsoftware.githubactionstab.workflow.action.GHWorkflowToolWindowFactory
 
 @Service
 internal class GitHubWorkflowToolWindowController(private val project: Project) : Disposable {
@@ -36,6 +36,6 @@ internal class GitHubWorkflowToolWindowController(private val project: Project) 
     }
 
     companion object {
-        private val LOG = Logger.getInstance("com.dsoftware.githubactionstab.workflow")
+        private val LOG = logger<GitHubWorkflowToolWindowController>()
     }
 }

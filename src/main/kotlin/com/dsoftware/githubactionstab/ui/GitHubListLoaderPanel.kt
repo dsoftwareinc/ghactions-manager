@@ -1,7 +1,9 @@
 package com.dsoftware.githubactionstab.ui
 
+import com.dsoftware.githubactionstab.workflow.GitHubLoadingErrorHandler
+import com.dsoftware.githubactionstab.workflow.data.GitHubWorkflowRunListLoader
 import com.intellij.openapi.Disposable
-import com.intellij.openapi.diagnostic.Logger
+import com.intellij.openapi.diagnostic.logger
 import com.intellij.ui.ScrollPaneFactory
 import com.intellij.ui.SimpleTextAttributes
 import com.intellij.util.ui.ComponentWithEmptyText
@@ -9,9 +11,6 @@ import com.intellij.util.ui.JBUI
 import com.intellij.util.ui.JBUI.Panels.simplePanel
 import com.intellij.util.ui.StatusText
 import com.intellij.util.ui.components.BorderLayoutPanel
-import com.dsoftware.githubactionstab.workflow.GitHubLoadingErrorHandler
-import com.dsoftware.githubactionstab.workflow.data.GitHubWorkflowRunListLoader
-import com.intellij.openapi.diagnostic.logger
 import org.jetbrains.plugins.github.exceptions.GithubStatusCodeException
 import org.jetbrains.plugins.github.ui.HtmlInfoPanel
 import java.awt.event.ActionEvent

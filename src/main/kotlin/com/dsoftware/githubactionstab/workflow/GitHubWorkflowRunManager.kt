@@ -5,7 +5,7 @@ import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.runInEdt
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.components.service
-import com.intellij.openapi.diagnostic.Logger
+import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.ProjectManager
 import com.intellij.util.concurrency.annotations.RequiresEdt
@@ -83,7 +83,7 @@ internal class GitHubWorkflowRunManager(private val project: Project) {
     }
 
     companion object {
-        private val LOG = Logger.getInstance("com.dsoftware.githubactionstab")
+        private val LOG = logger<GitHubWorkflowRunManager>()
 
         private inline fun runInEdt(project: Project, crossinline runnable: () -> Unit) {
             val application = ApplicationManager.getApplication()

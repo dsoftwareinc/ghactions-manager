@@ -1,14 +1,14 @@
 package com.dsoftware.githubactionstab.workflow.data
 
+import com.dsoftware.githubactionstab.api.GitHubWorkflowRun
+import com.dsoftware.githubactionstab.api.Workflows
+import com.dsoftware.githubactionstab.workflow.GitHubRepositoryCoordinates
 import com.intellij.openapi.Disposable
-import com.intellij.openapi.diagnostic.Logger
+import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.util.Disposer
 import com.intellij.ui.CollectionListModel
-import com.dsoftware.githubactionstab.api.GitHubWorkflowRun
-import com.dsoftware.githubactionstab.api.Workflows
-import com.dsoftware.githubactionstab.workflow.GitHubRepositoryCoordinates
 import org.jetbrains.plugins.github.api.GithubApiRequestExecutor
 import org.jetbrains.plugins.github.pullrequest.data.GHListLoaderBase
 
@@ -62,6 +62,6 @@ class GitHubWorkflowRunListLoader(
     }
 
     companion object {
-        private val LOG = Logger.getInstance("com.dsoftware.githubactionstab")
+        private val LOG = logger<GitHubWorkflowRunListLoader>()
     }
 }

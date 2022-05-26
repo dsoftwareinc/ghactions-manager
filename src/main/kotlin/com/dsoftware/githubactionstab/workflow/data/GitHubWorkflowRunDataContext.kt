@@ -1,8 +1,8 @@
 package com.dsoftware.githubactionstab.workflow.data
 
-import com.intellij.openapi.Disposable
 import com.dsoftware.githubactionstab.api.GitHubWorkflowRun
 import com.dsoftware.githubactionstab.workflow.GitHubRepositoryCoordinates
+import com.intellij.openapi.Disposable
 import org.jetbrains.plugins.github.authentication.accounts.GithubAccount
 import javax.swing.ListModel
 

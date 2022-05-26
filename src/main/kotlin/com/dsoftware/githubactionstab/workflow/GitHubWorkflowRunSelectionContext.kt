@@ -1,6 +1,5 @@
 package com.dsoftware.githubactionstab.workflow
 
-import com.intellij.openapi.diagnostic.Logger
 import com.dsoftware.githubactionstab.api.GitHubWorkflowRun
 import com.dsoftware.githubactionstab.workflow.data.GitHubWorkflowRunDataContext
 import com.dsoftware.githubactionstab.workflow.data.GitHubWorkflowRunDataProvider

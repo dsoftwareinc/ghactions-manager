@@ -1,11 +1,11 @@
 package com.dsoftware.githubactionstab.workflow.action
 
+import com.dsoftware.githubactionstab.workflow.GitHubWorkflowToolWindowController
 import com.intellij.icons.AllIcons
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.components.service
-import com.intellij.openapi.diagnostic.Logger
+import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.project.DumbAwareAction
-import com.dsoftware.githubactionstab.workflow.GitHubWorkflowToolWindowController
 import java.util.function.Supplier
 
 class GitHubViewPullRequestsAction : DumbAwareAction(
@@ -30,6 +30,6 @@ class GitHubViewPullRequestsAction : DumbAwareAction(
     }
 
     companion object {
-        private val LOG = Logger.getInstance("com.dsoftware.githubactionstab.workflow.action")
+        private val LOG = logger<GitHubViewPullRequestsAction>()
     }
 }

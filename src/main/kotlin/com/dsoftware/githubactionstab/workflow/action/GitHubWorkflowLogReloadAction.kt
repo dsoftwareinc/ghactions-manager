@@ -3,7 +3,7 @@ package com.dsoftware.githubactionstab.workflow.action
 import com.intellij.icons.AllIcons
 import com.intellij.ide.actions.RefreshAction
 import com.intellij.openapi.actionSystem.AnActionEvent
-import com.intellij.openapi.diagnostic.Logger
+import com.intellij.openapi.diagnostic.logger
 
 class GitHubWorkflowLogReloadAction : RefreshAction("Refresh Workflow Log", null, AllIcons.Actions.Refresh) {
     override fun update(e: AnActionEvent) {
@@ -17,6 +17,6 @@ class GitHubWorkflowLogReloadAction : RefreshAction("Refresh Workflow Log", null
     }
 
     companion object {
-        private val LOG = Logger.getInstance("com.dsoftware.githubactionstab")
+        private val LOG = logger<GitHubWorkflowLogReloadAction>()
     }
 }

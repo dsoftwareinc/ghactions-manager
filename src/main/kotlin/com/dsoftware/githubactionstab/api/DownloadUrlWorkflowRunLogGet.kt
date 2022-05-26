@@ -11,6 +11,7 @@ class DownloadUrlWorkflowRunLogGet(url: String) : GithubApiRequest.Get<String>(u
             LogExtractor().extractFromStream(it) ?: "Logs are unavailable"
         }
     }
+
     companion object {
         private val LOG = logger<LogExtractor>()
     }

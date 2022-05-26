@@ -1,5 +1,6 @@
 package com.dsoftware.githubactionstab.ui
 
+import com.dsoftware.githubactionstab.workflow.data.GitHubWorkflowDataContextRepository
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project
@@ -7,7 +8,6 @@ import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.wm.ToolWindow
 import com.intellij.openapi.wm.ToolWindowFactory
 import com.intellij.openapi.wm.ex.ToolWindowEx
-import com.dsoftware.githubactionstab.workflow.data.GitHubWorkflowDataContextRepository
 import org.jetbrains.plugins.github.authentication.GithubAuthenticationManager
 import org.jetbrains.plugins.github.util.GHGitRepositoryMapping
 import org.jetbrains.plugins.github.util.GHProjectRepositoriesManager

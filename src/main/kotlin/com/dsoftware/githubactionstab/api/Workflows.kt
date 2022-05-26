@@ -1,7 +1,6 @@
 package com.dsoftware.githubactionstab.api
 
 import com.dsoftware.githubactionstab.workflow.GitHubRepositoryCoordinates
-import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.diagnostic.logger
 import org.jetbrains.plugins.github.api.GithubApiRequest
 import org.jetbrains.plugins.github.api.GithubApiRequest.Get

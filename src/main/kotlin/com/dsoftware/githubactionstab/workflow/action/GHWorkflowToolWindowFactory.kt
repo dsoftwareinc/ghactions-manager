@@ -2,6 +2,7 @@ package com.dsoftware.githubactionstab.workflow.action
 
 import com.dsoftware.githubactionstab.ui.GitHubWorkflowToolWindowTabController
 import com.dsoftware.githubactionstab.ui.GitHubWorkflowToolWindowTabControllerImpl
+import com.dsoftware.githubactionstab.workflow.data.GitHubWorkflowDataContextRepository
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.components.service
 import com.intellij.openapi.project.DumbAware
@@ -11,7 +12,6 @@ import com.intellij.openapi.wm.ToolWindow
 import com.intellij.openapi.wm.ToolWindowFactory
 import com.intellij.openapi.wm.ex.ToolWindowEx
 import com.intellij.openapi.wm.impl.content.ToolWindowContentUi
-import com.dsoftware.githubactionstab.workflow.data.GitHubWorkflowDataContextRepository
 import org.jetbrains.plugins.github.authentication.GithubAuthenticationManager
 import org.jetbrains.plugins.github.util.GHGitRepositoryMapping
 import org.jetbrains.plugins.github.util.GHProjectRepositoriesManager

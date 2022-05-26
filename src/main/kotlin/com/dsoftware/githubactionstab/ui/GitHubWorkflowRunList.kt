@@ -1,11 +1,13 @@
 package com.dsoftware.githubactionstab.ui
 
+import com.dsoftware.githubactionstab.api.GitHubWorkflowRun
+import com.dsoftware.githubactionstab.workflow.action.GitHubWorkflowRunActionKeys
 import com.intellij.icons.AllIcons
 import com.intellij.ide.CopyProvider
 import com.intellij.openapi.actionSystem.DataContext
 import com.intellij.openapi.actionSystem.DataProvider
 import com.intellij.openapi.actionSystem.PlatformDataKeys
-import com.intellij.openapi.diagnostic.Logger
+import com.intellij.openapi.diagnostic.logger
 import com.intellij.ui.ColorUtil
 import com.intellij.ui.JBColor
 import com.intellij.ui.ListUtil
@@ -20,8 +22,6 @@ import com.intellij.util.ui.UIUtil
 import net.miginfocom.layout.CC
 import net.miginfocom.layout.LC
 import net.miginfocom.swing.MigLayout
-import com.dsoftware.githubactionstab.api.GitHubWorkflowRun
-import com.dsoftware.githubactionstab.workflow.action.GitHubWorkflowRunActionKeys
 import java.awt.Component
 import java.awt.event.MouseEvent
 import java.time.LocalDateTime
@@ -171,7 +171,7 @@ class GitHubWorkflowRunList(model: ListModel<GitHubWorkflowRun>) : JBList<GitHub
     }
 
     companion object {
-        private val LOG = Logger.getInstance("com.dsoftware.githubactionstab")
+        private val LOG = logger<GitHubWorkflowRunList>()
     }
 
     override fun performCopy(dataContext: DataContext) {
