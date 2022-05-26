@@ -1,6 +1,6 @@
 package com.dsoftware.githubactionstab.ui
 
-import com.dsoftware.githubactionstab.workflow.data.GitHubWorkflowRunListLoader
+import com.dsoftware.githubactionstab.workflow.data.WorkflowRunListLoader
 import com.intellij.ide.actions.RefreshAction
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.diagnostic.logger
@@ -11,11 +11,11 @@ import com.intellij.vcs.log.ui.frame.ProgressStripe
 import javax.swing.JComponent
 import javax.swing.JPanel
 
-internal class GitHubWorkflowRunListLoaderPanel(
-    runListLoader: GitHubWorkflowRunListLoader,
+internal class WorkflowRunListLoaderPanel(
+    runListLoader: WorkflowRunListLoader,
     private val listReloadAction: RefreshAction,
     contentComponent: JComponent
-) : GitHubListLoaderPanel(runListLoader, contentComponent), Disposable {
+) : ListLoaderPanel(runListLoader, contentComponent), Disposable {
 
     private lateinit var progressStripe: ProgressStripe
 
@@ -59,6 +59,6 @@ internal class GitHubWorkflowRunListLoaderPanel(
     }
 
     companion object {
-        private val LOG = logger<GitHubWorkflowRunListLoaderPanel>()
+        private val LOG = logger<WorkflowRunListLoaderPanel>()
     }
 }

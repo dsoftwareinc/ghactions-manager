@@ -1,7 +1,7 @@
 package com.dsoftware.githubactionstab.ui
 
-import com.dsoftware.githubactionstab.workflow.GitHubLoadingErrorHandler
-import com.dsoftware.githubactionstab.workflow.data.GitHubWorkflowRunListLoader
+import com.dsoftware.githubactionstab.workflow.LoadingErrorHandler
+import com.dsoftware.githubactionstab.workflow.data.WorkflowRunListLoader
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.diagnostic.logger
 import com.intellij.ui.ScrollPaneFactory
@@ -18,8 +18,8 @@ import javax.swing.JComponent
 import javax.swing.JPanel
 import javax.swing.ScrollPaneConstants
 
-internal abstract class GitHubListLoaderPanel(
-    protected val listLoader: GitHubWorkflowRunListLoader,
+internal abstract class ListLoaderPanel(
+    protected val listLoader: WorkflowRunListLoader,
     private val contentComponent: JComponent,
     private val loadAllAfterFirstScroll: Boolean = false
 ) : BorderLayoutPanel(), Disposable {
@@ -44,10 +44,10 @@ internal abstract class GitHubListLoaderPanel(
     protected open val loadingText
         get() = "Loading..."
 
-    var errorHandler: GitHubLoadingErrorHandler? = null
+    var errorHandler: LoadingErrorHandler? = null
 
     init {
-        LOG.debug("Initialize GitHubListLoaderPanel")
+        LOG.debug("Initialize ListLoaderPanel")
         addToCenter(createCenterPanel(simplePanel(scrollPane).addToTop(infoPanel).apply {
             isOpaque = false
         }))
@@ -159,7 +159,7 @@ internal abstract class GitHubListLoaderPanel(
     override fun dispose() {}
 
     companion object {
-        private val LOG = logger<GitHubListLoaderPanel>()
+        private val LOG = logger<ListLoaderPanel>()
 
         private fun getLoadingErrorText(error: Throwable, newLineSeparator: String = "\n"): String {
             if (error is GithubStatusCodeException && error.error != null) {

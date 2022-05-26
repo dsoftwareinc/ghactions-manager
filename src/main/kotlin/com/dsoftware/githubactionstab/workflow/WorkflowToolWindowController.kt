@@ -1,7 +1,7 @@
 package com.dsoftware.githubactionstab.workflow
 
-import com.dsoftware.githubactionstab.ui.GitHubWorkflowToolWindowTabController
-import com.dsoftware.githubactionstab.workflow.action.GHWorkflowToolWindowFactory
+import com.dsoftware.githubactionstab.ui.WorkflowToolWindowTabController
+import com.dsoftware.githubactionstab.workflow.action.WorkflowToolWindowFactory
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.diagnostic.logger
@@ -11,31 +11,31 @@ import com.intellij.openapi.wm.ToolWindowManager
 import com.intellij.util.concurrency.annotations.RequiresEdt
 
 @Service
-internal class GitHubWorkflowToolWindowController(private val project: Project) : Disposable {
+internal class WorkflowToolWindowController(private val project: Project) : Disposable {
     @RequiresEdt
     fun isAvailable(): Boolean {
         val toolWindow = ToolWindowManager.getInstance(project)
-            .getToolWindow(GHWorkflowToolWindowFactory.ID) ?: return false
+            .getToolWindow(WorkflowToolWindowFactory.ID) ?: return false
         return toolWindow.isAvailable
     }
 
     @RequiresEdt
     fun activate() {
-        LOG.debug("GitHubWorkflowToolWindowController::Activate")
+        LOG.debug("WorkflowToolWindowController::Activate")
         val toolWindow = ToolWindowManager.getInstance(project)
-            .getToolWindow(GHWorkflowToolWindowFactory.ID) ?: return
+            .getToolWindow(WorkflowToolWindowFactory.ID) ?: return
         toolWindow.activate {
             getTabController(toolWindow)
         }
     }
 
-    private fun getTabController(toolWindow: ToolWindow): GitHubWorkflowToolWindowTabController? =
-        toolWindow.contentManagerIfCreated?.selectedContent?.getUserData(GitHubWorkflowToolWindowTabController.KEY)
+    private fun getTabController(toolWindow: ToolWindow): WorkflowToolWindowTabController? =
+        toolWindow.contentManagerIfCreated?.selectedContent?.getUserData(WorkflowToolWindowTabController.KEY)
 
     override fun dispose() {
     }
 
     companion object {
-        private val LOG = logger<GitHubWorkflowToolWindowController>()
+        private val LOG = logger<WorkflowToolWindowController>()
     }
 }

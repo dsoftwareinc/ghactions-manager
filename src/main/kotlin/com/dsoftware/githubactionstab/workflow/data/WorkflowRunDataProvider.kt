@@ -14,9 +14,9 @@ import java.util.*
 import java.util.concurrent.CompletableFuture
 import kotlin.properties.ReadOnlyProperty
 
-private val LOG = logger<GitHubWorkflowRunDataProvider>()
+private val LOG = logger<WorkflowRunDataProvider>()
 
-class GitHubWorkflowRunDataProvider(
+class WorkflowRunDataProvider(
     private val progressManager: ProgressManager,
     private val requestExecutor: GithubApiRequestExecutor,
     val url: String,

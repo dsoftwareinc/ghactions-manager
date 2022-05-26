@@ -1,13 +1,13 @@
 package com.dsoftware.githubactionstab.workflow
 
 import com.dsoftware.githubactionstab.api.GitHubWorkflowRun
-import com.dsoftware.githubactionstab.workflow.data.GitHubWorkflowRunDataContext
-import com.dsoftware.githubactionstab.workflow.data.GitHubWorkflowRunDataProvider
+import com.dsoftware.githubactionstab.workflow.data.WorkflowRunDataContext
+import com.dsoftware.githubactionstab.workflow.data.WorkflowRunDataProvider
 import com.intellij.openapi.diagnostic.logger
 
-class GitHubWorkflowRunSelectionContext internal constructor(
-    private val dataContext: GitHubWorkflowRunDataContext,
-    private val selectionHolder: GitHubWorkflowRunListSelectionHolder
+class WorkflowRunSelectionContext internal constructor(
+    private val dataContext: WorkflowRunDataContext,
+    private val selectionHolder: WorkflowRunListSelectionHolder
 ) {
 
     fun resetAllData() {
@@ -19,10 +19,10 @@ class GitHubWorkflowRunSelectionContext internal constructor(
     val workflowRun: GitHubWorkflowRun?
         get() = selectionHolder.selection
 
-    val workflowRunDataProvider: GitHubWorkflowRunDataProvider?
+    val workflowRunDataProvider: WorkflowRunDataProvider?
         get() = workflowRun?.let { dataContext.dataLoader.getDataProvider(it.logs_url) }
 
     companion object {
-        private val LOG = logger<GitHubWorkflowRunSelectionContext>()
+        private val LOG = logger<WorkflowRunSelectionContext>()
     }
 }

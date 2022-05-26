@@ -11,7 +11,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.util.Key
 
-class GitHubWorkflowRunLogConsole(
+class WorkflowRunLogConsole(
     project: Project,
     logModel: SingleValueModel<String?>,
     disposable: Disposable,
@@ -37,6 +37,6 @@ class GitHubWorkflowRunLogConsole(
     }
 
     companion object {
-        private val LOG = logger<GitHubWorkflowRunLogConsole>()
+        private val LOG = logger<WorkflowRunLogConsole>()
     }
 }

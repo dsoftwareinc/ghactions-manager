@@ -1,7 +1,7 @@
 package com.dsoftware.githubactionstab.ui
 
 import com.dsoftware.githubactionstab.api.GitHubWorkflowRun
-import com.dsoftware.githubactionstab.workflow.action.GitHubWorkflowRunActionKeys
+import com.dsoftware.githubactionstab.workflow.action.WorkflowRunActionKeys
 import com.intellij.icons.AllIcons
 import com.intellij.ide.CopyProvider
 import com.intellij.openapi.actionSystem.DataContext
@@ -31,7 +31,7 @@ import java.util.*
 import javax.swing.*
 
 
-class GitHubWorkflowRunList(model: ListModel<GitHubWorkflowRun>) : JBList<GitHubWorkflowRun>(model), DataProvider,
+class WorkflowRunList(model: ListModel<GitHubWorkflowRun>) : JBList<GitHubWorkflowRun>(model), DataProvider,
     CopyProvider {
 
     init {
@@ -52,7 +52,7 @@ class GitHubWorkflowRunList(model: ListModel<GitHubWorkflowRun>) : JBList<GitHub
 
     override fun getData(dataId: String): Any? = when {
         PlatformDataKeys.COPY_PROVIDER.`is`(dataId) -> this
-        GitHubWorkflowRunActionKeys.SELECTED_WORKFLOW_RUN.`is`(dataId) -> selectedValue
+        WorkflowRunActionKeys.SELECTED_WORKFLOW_RUN.`is`(dataId) -> selectedValue
         else -> null
     }
 
@@ -118,21 +118,21 @@ class GitHubWorkflowRunList(model: ListModel<GitHubWorkflowRun>) : JBList<GitHub
                     "completed" -> {
                         when (value.conclusion) {
                             "success" -> AllIcons.Actions.Commit
-                            "failure" -> GitHubIcons.X
-                            else -> GitHubIcons.PrimitiveDot
+                            "failure" -> Icons.X
+                            else -> Icons.PrimitiveDot
                         }
                     }
-                    "queued" -> GitHubIcons.PrimitiveDot
-                    "in progress" -> GitHubIcons.PrimitiveDot
-                    "neutral" -> GitHubIcons.PrimitiveDot
+                    "queued" -> Icons.PrimitiveDot
+                    "in progress" -> Icons.PrimitiveDot
+                    "neutral" -> Icons.PrimitiveDot
                     "success" -> AllIcons.Actions.Commit
-                    "failure" -> GitHubIcons.X
-                    "cancelled" -> GitHubIcons.X
-                    "action required" -> GitHubIcons.Watch
-                    "timed out" -> GitHubIcons.Watch
-                    "skipped" -> GitHubIcons.X
-                    "stale" -> GitHubIcons.Watch
-                    else -> GitHubIcons.PrimitiveDot
+                    "failure" -> Icons.X
+                    "cancelled" -> Icons.X
+                    "action required" -> Icons.Watch
+                    "timed out" -> Icons.Watch
+                    "skipped" -> Icons.X
+                    "stale" -> Icons.Watch
+                    else -> Icons.PrimitiveDot
                 }
             }
             title.apply {
@@ -171,7 +171,7 @@ class GitHubWorkflowRunList(model: ListModel<GitHubWorkflowRun>) : JBList<GitHub
     }
 
     companion object {
-        private val LOG = logger<GitHubWorkflowRunList>()
+        private val LOG = logger<WorkflowRunList>()
     }
 
     override fun performCopy(dataContext: DataContext) {

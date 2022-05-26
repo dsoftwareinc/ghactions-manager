@@ -2,7 +2,7 @@ package com.dsoftware.githubactionstab.workflow.data
 
 import com.dsoftware.githubactionstab.api.GitHubWorkflowRun
 import com.dsoftware.githubactionstab.api.Workflows
-import com.dsoftware.githubactionstab.workflow.GitHubRepositoryCoordinates
+import com.dsoftware.githubactionstab.workflow.RepositoryCoordinates
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.progress.ProgressIndicator
@@ -12,10 +12,10 @@ import com.intellij.ui.CollectionListModel
 import org.jetbrains.plugins.github.api.GithubApiRequestExecutor
 import org.jetbrains.plugins.github.pullrequest.data.GHListLoaderBase
 
-class GitHubWorkflowRunListLoader(
+class WorkflowRunListLoader(
     progressManager: ProgressManager,
     private val requestExecutor: GithubApiRequestExecutor,
-    private val gitHubRepositoryCoordinates: GitHubRepositoryCoordinates,
+    private val repositoryCoordinates: RepositoryCoordinates,
     private val listModel: CollectionListModel<GitHubWorkflowRun>,
 ) : GHListLoaderBase<GitHubWorkflowRun>(progressManager) {
 
@@ -49,7 +49,7 @@ class GitHubWorkflowRunListLoader(
         LOG.debug("Do load more update: $update, indicator: $indicator")
 
         LOG.debug("Get workflow runs")
-        val request = Workflows.getWorkflowRuns(gitHubRepositoryCoordinates)
+        val request = Workflows.getWorkflowRuns(repositoryCoordinates)
         val result = requestExecutor.execute(indicator, request).workflow_runs
 
         //This is quite slow - N+1 requests, but there are no simpler way to get it, at least now.
@@ -62,6 +62,6 @@ class GitHubWorkflowRunListLoader(
     }
 
     companion object {
-        private val LOG = logger<GitHubWorkflowRunListLoader>()
+        private val LOG = logger<WorkflowRunListLoader>()
     }
 }

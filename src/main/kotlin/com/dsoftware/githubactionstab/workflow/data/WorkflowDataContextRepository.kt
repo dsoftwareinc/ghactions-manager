@@ -1,7 +1,7 @@
 package com.dsoftware.githubactionstab.workflow.data
 
 import com.dsoftware.githubactionstab.api.GitHubWorkflowRun
-import com.dsoftware.githubactionstab.workflow.GitHubRepositoryCoordinates
+import com.dsoftware.githubactionstab.workflow.RepositoryCoordinates
 import com.intellij.collaboration.async.CompletableFutureUtil.submitIOTask
 import com.intellij.collaboration.async.CompletableFutureUtil.successOnEdt
 import com.intellij.openapi.Disposable
@@ -26,10 +26,10 @@ import java.io.IOException
 import java.util.concurrent.CompletableFuture
 
 @Service
-internal class GitHubWorkflowDataContextRepository {
+internal class WorkflowDataContextRepository {
 
     private val repositories =
-        mutableMapOf<GHRepositoryCoordinates, LazyCancellableBackgroundProcessValue<GitHubWorkflowRunDataContext>>()
+        mutableMapOf<GHRepositoryCoordinates, LazyCancellableBackgroundProcessValue<WorkflowRunDataContext>>()
 
     @RequiresBackgroundThread
     @Throws(IOException::class)
@@ -38,19 +38,19 @@ internal class GitHubWorkflowDataContextRepository {
         account: GithubAccount,
         requestExecutor: GithubApiRequestExecutor,
         gitRemoteCoordinates: GitRemoteUrlCoordinates,
-    ): GitHubWorkflowRunDataContext {
-        LOG.debug("Get GitHubWorkflowRunDataContext")
+    ): WorkflowRunDataContext {
+        LOG.debug("Get WorkflowRunDataContext")
         LOG.debug("Get User and  repository")
         val fullPath = GithubUrlUtil.getUserAndRepositoryFromRemoteUrl(gitRemoteCoordinates.url)
             ?: throw IllegalArgumentException(
                 "Invalid GitHub Repository URL - ${gitRemoteCoordinates.url} is not a GitHub repository"
             )
 
-        val repositoryCoordinates = GitHubRepositoryCoordinates(account.server, fullPath)
+        val repositoryCoordinates = RepositoryCoordinates(account.server, fullPath)
 
-        LOG.debug("Create GitHubWorkflowDataLoader")
-        val githubWorkflowDataLoader = GitHubWorkflowDataLoader {
-            GitHubWorkflowRunDataProvider(ProgressManager.getInstance(), requestExecutor, it)
+        LOG.debug("Create WorkflowDataLoader")
+        val githubWorkflowDataLoader = WorkflowDataLoader {
+            WorkflowRunDataProvider(ProgressManager.getInstance(), requestExecutor, it)
         }
 
         requestExecutor.addListener(githubWorkflowDataLoader) {
@@ -60,7 +60,7 @@ internal class GitHubWorkflowDataContextRepository {
         LOG.debug("Create CollectionListModel<GitHubWorkflowRun>() and loader")
         val listModel = CollectionListModel<GitHubWorkflowRun>()
 
-        val listLoader = GitHubWorkflowRunListLoader(
+        val listLoader = WorkflowRunListLoader(
             ProgressManager.getInstance(), requestExecutor,
             repositoryCoordinates,
             listModel
@@ -73,7 +73,7 @@ internal class GitHubWorkflowDataContextRepository {
             }
         })
 
-        return GitHubWorkflowRunDataContext(
+        return WorkflowRunDataContext(
             repositoryCoordinates,
             listModel,
             githubWorkflowDataLoader,
@@ -86,7 +86,7 @@ internal class GitHubWorkflowDataContextRepository {
     fun acquireContext(
         repository: GHRepositoryCoordinates, remote: GitRemoteUrlCoordinates,
         account: GithubAccount, requestExecutor: GithubApiRequestExecutor,
-    ): CompletableFuture<GitHubWorkflowRunDataContext> {
+    ): CompletableFuture<WorkflowRunDataContext> {
         return repositories.getOrPut(repository) {
             val contextDisposable = Disposer.newDisposable()
             LazyCancellableBackgroundProcessValue.create { indicator ->
@@ -119,8 +119,8 @@ internal class GitHubWorkflowDataContextRepository {
     }
 
     companion object {
-        private val LOG = logger<GitHubWorkflowDataContextRepository>()
+        private val LOG = logger<WorkflowDataContextRepository>()
 
-        fun getInstance(project: Project) = project.service<GitHubWorkflowDataContextRepository>()
+        fun getInstance(project: Project) = project.service<WorkflowDataContextRepository>()
     }
 }

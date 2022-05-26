@@ -8,20 +8,20 @@ import com.intellij.util.EventDispatcher
 import com.intellij.util.concurrency.annotations.RequiresEdt
 import java.util.*
 
-class GitHubWorkflowDataLoader(private val dataProviderFactory: (String) -> GitHubWorkflowRunDataProvider) :
+class WorkflowDataLoader(private val dataProviderFactory: (String) -> WorkflowRunDataProvider) :
     Disposable {
 
     private var isDisposed = false
     private val cache = CacheBuilder.newBuilder()
-        .removalListener<String, GitHubWorkflowRunDataProvider> {
+        .removalListener<String, WorkflowRunDataProvider> {
             runInEdt { invalidationEventDispatcher.multicaster.providerChanged(it.key!!) }
         }
         .maximumSize(200)
-        .build<String, GitHubWorkflowRunDataProvider>()
+        .build<String, WorkflowRunDataProvider>()
 
     private val invalidationEventDispatcher = EventDispatcher.create(DataInvalidatedListener::class.java)
 
-    fun getDataProvider(url: String): GitHubWorkflowRunDataProvider {
+    fun getDataProvider(url: String): WorkflowRunDataProvider {
         if (isDisposed) throw IllegalStateException("Already disposed")
 
         return cache.get(url) {
@@ -53,6 +53,6 @@ class GitHubWorkflowDataLoader(private val dataProviderFactory: (String) -> GitH
     }
 
     companion object {
-        private val LOG = logger<GitHubWorkflowDataLoader>()
+        private val LOG = logger<WorkflowDataLoader>()
     }
 }

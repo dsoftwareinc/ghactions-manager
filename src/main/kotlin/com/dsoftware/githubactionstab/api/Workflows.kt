@@ -1,6 +1,6 @@
 package com.dsoftware.githubactionstab.api
 
-import com.dsoftware.githubactionstab.workflow.GitHubRepositoryCoordinates
+import com.dsoftware.githubactionstab.workflow.RepositoryCoordinates
 import com.intellij.openapi.diagnostic.logger
 import org.jetbrains.plugins.github.api.GithubApiRequest
 import org.jetbrains.plugins.github.api.GithubApiRequest.Get
@@ -75,7 +75,7 @@ object Workflows : GithubApiRequests.Entity("/repos") {
         .withOperationName("Download Workflow log")
 
     fun getWorkflowRuns(
-        coordinates: GitHubRepositoryCoordinates,
+        coordinates: RepositoryCoordinates,
         event: String? = null,
         status: String? = null,
         branch: String? = null,

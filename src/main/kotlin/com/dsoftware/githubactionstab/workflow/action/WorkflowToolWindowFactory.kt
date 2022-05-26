@@ -1,8 +1,8 @@
 package com.dsoftware.githubactionstab.workflow.action
 
-import com.dsoftware.githubactionstab.ui.GitHubWorkflowToolWindowTabController
-import com.dsoftware.githubactionstab.ui.GitHubWorkflowToolWindowTabControllerImpl
-import com.dsoftware.githubactionstab.workflow.data.GitHubWorkflowDataContextRepository
+import com.dsoftware.githubactionstab.ui.WorkflowToolWindowTabController
+import com.dsoftware.githubactionstab.ui.WorkflowToolWindowTabControllerImpl
+import com.dsoftware.githubactionstab.workflow.data.WorkflowDataContextRepository
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.components.service
 import com.intellij.openapi.project.DumbAware
@@ -17,7 +17,7 @@ import org.jetbrains.plugins.github.util.GHGitRepositoryMapping
 import org.jetbrains.plugins.github.util.GHProjectRepositoriesManager
 import javax.swing.JPanel
 
-class GHWorkflowToolWindowFactory : ToolWindowFactory, DumbAware {
+class WorkflowToolWindowFactory : ToolWindowFactory, DumbAware {
 
     override fun init(toolWindow: ToolWindow) {
         ApplicationManager.getApplication().messageBus.connect(toolWindow.disposable)
@@ -38,10 +38,10 @@ class GHWorkflowToolWindowFactory : ToolWindowFactory, DumbAware {
             }.also {
                 val authManager = GithubAuthenticationManager.getInstance()
                 val repositoryManager = project.service<GHProjectRepositoriesManager>()
-                val dataContextRepository = GitHubWorkflowDataContextRepository.getInstance(project)
+                val dataContextRepository = WorkflowDataContextRepository.getInstance(project)
                 it.putUserData(
-                    GitHubWorkflowToolWindowTabController.KEY,
-                    GitHubWorkflowToolWindowTabControllerImpl(
+                    WorkflowToolWindowTabController.KEY,
+                    WorkflowToolWindowTabControllerImpl(
                         project,
                         authManager,
                         repositoryManager,

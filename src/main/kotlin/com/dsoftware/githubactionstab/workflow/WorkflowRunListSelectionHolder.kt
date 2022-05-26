@@ -7,7 +7,7 @@ import com.intellij.util.EventDispatcher
 import com.intellij.util.concurrency.annotations.RequiresEdt
 import kotlin.properties.Delegates
 
-class GitHubWorkflowRunListSelectionHolder {
+class WorkflowRunListSelectionHolder {
 
     @get:RequiresEdt
     @set:RequiresEdt

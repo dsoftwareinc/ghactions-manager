@@ -5,7 +5,7 @@ import java.awt.event.ActionEvent
 import javax.swing.AbstractAction
 import javax.swing.Action
 
-class GitHubLoadingErrorHandler(private val resetRunnable: () -> Unit) {
+class LoadingErrorHandler(private val resetRunnable: () -> Unit) {
 
     fun getActionForError(): Action {
         return RetryAction()
@@ -19,6 +19,6 @@ class GitHubLoadingErrorHandler(private val resetRunnable: () -> Unit) {
     }
 
     companion object {
-        private val LOG = logger<GitHubLoadingErrorHandler>()
+        private val LOG = logger<LoadingErrorHandler>()
     }
 }

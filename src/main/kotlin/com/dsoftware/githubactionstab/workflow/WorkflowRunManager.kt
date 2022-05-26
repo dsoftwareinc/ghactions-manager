@@ -20,7 +20,7 @@ import org.jetbrains.plugins.github.util.GitRemoteUrlCoordinates
 import kotlin.properties.Delegates.observable
 
 @Service
-internal class GitHubWorkflowRunManager(private val project: Project) {
+internal class WorkflowRunManager(private val project: Project) {
     private val settings = GithubPullRequestsProjectUISettings.getInstance(project)
 
 //    private val contentManager by lazy(LazyThreadSafetyMode.NONE) {
@@ -83,7 +83,7 @@ internal class GitHubWorkflowRunManager(private val project: Project) {
     }
 
     companion object {
-        private val LOG = logger<GitHubWorkflowRunManager>()
+        private val LOG = logger<WorkflowRunManager>()
 
         private inline fun runInEdt(project: Project, crossinline runnable: () -> Unit) {
             val application = ApplicationManager.getApplication()
@@ -91,6 +91,6 @@ internal class GitHubWorkflowRunManager(private val project: Project) {
             else application.invokeLater({ runnable() }) { project.isDisposed }
         }
 
-        private fun updateRemotes(project: Project) = project.service<GitHubWorkflowRunManager>().updateRemoteUrls()
+        private fun updateRemotes(project: Project) = project.service<WorkflowRunManager>().updateRemoteUrls()
     }
 }
