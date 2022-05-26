@@ -6,7 +6,7 @@ import com.intellij.execution.process.AnsiEscapeDecoder
 import com.intellij.execution.process.ProcessOutputTypes
 import com.intellij.execution.ui.ConsoleViewContentType
 import com.intellij.openapi.Disposable
-import com.intellij.openapi.diagnostic.Logger
+import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.util.Key
@@ -37,6 +37,6 @@ class GitHubWorkflowRunLogConsole(
     }
 
     companion object {
-        private val LOG = Logger.getInstance("com.dsoftware.githubactionstab")
+        private val LOG = logger<GitHubWorkflowRunLogConsole>()
     }
 }

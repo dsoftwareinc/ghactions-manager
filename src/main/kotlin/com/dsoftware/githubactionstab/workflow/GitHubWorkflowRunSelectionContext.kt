@@ -4,6 +4,7 @@ import com.intellij.openapi.diagnostic.Logger
 import com.dsoftware.githubactionstab.api.GitHubWorkflowRun
 import com.dsoftware.githubactionstab.workflow.data.GitHubWorkflowRunDataContext
 import com.dsoftware.githubactionstab.workflow.data.GitHubWorkflowRunDataProvider
+import com.intellij.openapi.diagnostic.logger
 
 class GitHubWorkflowRunSelectionContext internal constructor(
     private val dataContext: GitHubWorkflowRunDataContext,
@@ -23,6 +24,6 @@ class GitHubWorkflowRunSelectionContext internal constructor(
         get() = workflowRun?.let { dataContext.dataLoader.getDataProvider(it.logs_url) }
 
     companion object {
-        private val LOG = Logger.getInstance("com.dsoftware.githubactionstab")
+        private val LOG = logger<GitHubWorkflowRunSelectionContext>()
     }
 }

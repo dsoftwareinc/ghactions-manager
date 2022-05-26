@@ -1,5 +1,13 @@
 package com.dsoftware.githubactionstab.ui
 
+import com.dsoftware.githubactionstab.api.GitHubWorkflowRun
+import com.dsoftware.githubactionstab.workflow.GitHubLoadingErrorHandler
+import com.dsoftware.githubactionstab.workflow.GitHubWorkflowRunListSelectionHolder
+import com.dsoftware.githubactionstab.workflow.GitHubWorkflowRunSelectionContext
+import com.dsoftware.githubactionstab.workflow.action.GitHubWorkflowRunActionKeys
+import com.dsoftware.githubactionstab.workflow.data.GitHubWorkflowDataContextRepository
+import com.dsoftware.githubactionstab.workflow.data.GitHubWorkflowRunDataContext
+import com.dsoftware.githubactionstab.workflow.data.GitHubWorkflowRunDataProvider
 import com.intellij.collaboration.auth.AccountsListener
 import com.intellij.collaboration.ui.SingleValueModel
 import com.intellij.execution.impl.ConsoleViewImpl
@@ -23,14 +31,6 @@ import com.intellij.ui.ScrollingUtil
 import com.intellij.ui.components.JBPanelWithEmptyText
 import com.intellij.ui.content.Content
 import com.intellij.util.ui.UIUtil
-import com.dsoftware.githubactionstab.api.GitHubWorkflowRun
-import com.dsoftware.githubactionstab.workflow.GitHubLoadingErrorHandler
-import com.dsoftware.githubactionstab.workflow.GitHubWorkflowRunListSelectionHolder
-import com.dsoftware.githubactionstab.workflow.GitHubWorkflowRunSelectionContext
-import com.dsoftware.githubactionstab.workflow.action.GitHubWorkflowRunActionKeys
-import com.dsoftware.githubactionstab.workflow.data.GitHubWorkflowDataContextRepository
-import com.dsoftware.githubactionstab.workflow.data.GitHubWorkflowRunDataContext
-import com.dsoftware.githubactionstab.workflow.data.GitHubWorkflowRunDataProvider
 import org.jetbrains.plugins.github.api.GithubApiRequestExecutor
 import org.jetbrains.plugins.github.api.GithubApiRequestExecutorManager
 import org.jetbrains.plugins.github.authentication.GithubAuthenticationManager
@@ -69,11 +69,18 @@ internal class GitHubWorkflowToolWindowTabControllerImpl(
         if (newValue != null) Disposer.register(tab.disposer!!, newValue)
     }
 
+    var isDisposed: Boolean = false
+    open fun dispose() {
+        isDisposed = true
+    }
+
     init {
         authManager.addListener(tab.disposer!!, object : AccountsListener<GithubAccount> {
             override fun onAccountCredentialsChanged(account: GithubAccount) {
-                ApplicationManager.getApplication().invokeLater({ Updater().update() }) {
-                    Disposer.isDisposed(tab.disposer!!)
+                ApplicationManager.getApplication().invokeLater({
+                    Updater().update()
+                }) {
+                    isDisposed
                 }
             }
         })
@@ -113,7 +120,7 @@ internal class GitHubWorkflowToolWindowTabControllerImpl(
                 }
             }
             val account = currentAccount
-            LOG.debug("Updater.guessAndSetRepoAndAccount() => ${repo}, ${account}")
+            LOG.debug("Updater.guessAndSetRepoAndAccount() => ${repo},${account}")
             return if (repo != null && account != null) repo to account else null
         }
     }
@@ -152,7 +159,7 @@ internal class GitHubWorkflowToolWindowTabControllerImpl(
             null,
             GithubBundle.message("cannot.load.data.from.github"),
             errorHandler,
-        ).create { parent, result ->
+        ).create { _, result ->
             LOG.debug("create content")
             val content = createContent(result, account, disposable)
             LOG.debug("done creating content")
@@ -188,7 +195,7 @@ internal class GitHubWorkflowToolWindowTabControllerImpl(
             "Can't load data from GitHub",
             GithubBundle.message("cannot.load.data.from.github"),
             errorHandler
-        ).create { parent, result ->
+        ).create { _, _ ->
             createLogPanel(logModel, disposable)
         }
 
@@ -372,9 +379,9 @@ internal class GitHubWorkflowToolWindowTabControllerImpl(
             }
             model.value = provider
         }
-        Disposer.register(parentDisposable, Disposable {
+        Disposer.register(parentDisposable) {
             model.value = null
-        })
+        }
 
         listSelectionHolder.addSelectionChangeListener(parentDisposable) {
             LOG.debug("selection change listener")

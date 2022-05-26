@@ -11,6 +11,7 @@ import com.intellij.util.ui.StatusText
 import com.intellij.util.ui.components.BorderLayoutPanel
 import com.dsoftware.githubactionstab.workflow.GitHubLoadingErrorHandler
 import com.dsoftware.githubactionstab.workflow.data.GitHubWorkflowRunListLoader
+import com.intellij.openapi.diagnostic.logger
 import org.jetbrains.plugins.github.exceptions.GithubStatusCodeException
 import org.jetbrains.plugins.github.ui.HtmlInfoPanel
 import java.awt.event.ActionEvent
@@ -159,7 +160,7 @@ internal abstract class GitHubListLoaderPanel(
     override fun dispose() {}
 
     companion object {
-        private val LOG = Logger.getInstance("com.dsoftware.githubactionstab")
+        private val LOG = logger<GitHubListLoaderPanel>()
 
         private fun getLoadingErrorText(error: Throwable, newLineSeparator: String = "\n"): String {
             if (error is GithubStatusCodeException && error.error != null) {

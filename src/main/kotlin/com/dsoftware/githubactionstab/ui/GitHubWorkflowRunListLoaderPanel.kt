@@ -2,12 +2,12 @@ package com.dsoftware.githubactionstab.ui
 
 import com.intellij.ide.actions.RefreshAction
 import com.intellij.openapi.Disposable
-import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.progress.util.ProgressWindow
 import com.intellij.ui.SimpleTextAttributes
 import com.intellij.util.ui.StatusText
 import com.intellij.vcs.log.ui.frame.ProgressStripe
 import com.dsoftware.githubactionstab.workflow.data.GitHubWorkflowRunListLoader
+import com.intellij.openapi.diagnostic.logger
 import javax.swing.JComponent
 import javax.swing.JPanel
 
@@ -59,6 +59,6 @@ internal class GitHubWorkflowRunListLoaderPanel(
     }
 
     companion object {
-        private val LOG = Logger.getInstance("com.dsoftware.githubactionstab")
+        private val LOG = logger<GitHubWorkflowRunListLoaderPanel>()
     }
 }
