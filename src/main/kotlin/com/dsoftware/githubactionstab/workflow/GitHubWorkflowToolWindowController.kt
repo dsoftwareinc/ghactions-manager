@@ -14,15 +14,16 @@ import com.dsoftware.githubactionstab.workflow.action.GHWorkflowToolWindowFactor
 internal class GitHubWorkflowToolWindowController(private val project: Project) : Disposable {
     @RequiresEdt
     fun isAvailable(): Boolean {
-        val toolWindow =
-            ToolWindowManager.getInstance(project).getToolWindow(GHWorkflowToolWindowFactory.ID) ?: return false
+        val toolWindow = ToolWindowManager.getInstance(project)
+            .getToolWindow(GHWorkflowToolWindowFactory.ID) ?: return false
         return toolWindow.isAvailable
     }
 
     @RequiresEdt
     fun activate() {
         LOG.debug("GitHubWorkflowToolWindowController::Activate")
-        val toolWindow = ToolWindowManager.getInstance(project).getToolWindow(GHWorkflowToolWindowFactory.ID) ?: return
+        val toolWindow = ToolWindowManager.getInstance(project)
+            .getToolWindow(GHWorkflowToolWindowFactory.ID) ?: return
         toolWindow.activate {
             getTabController(toolWindow)
         }

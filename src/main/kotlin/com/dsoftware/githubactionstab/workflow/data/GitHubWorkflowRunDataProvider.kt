@@ -7,12 +7,15 @@ import com.intellij.openapi.progress.ProgressManager
 import com.intellij.util.EventDispatcher
 import com.intellij.util.concurrency.annotations.RequiresEdt
 import com.dsoftware.githubactionstab.api.Workflows
+import com.intellij.openapi.diagnostic.logger
 import org.jetbrains.plugins.github.api.GithubApiRequestExecutor
 import org.jetbrains.plugins.github.util.LazyCancellableBackgroundProcessValue
 import java.io.IOException
 import java.util.*
 import java.util.concurrent.CompletableFuture
 import kotlin.properties.ReadOnlyProperty
+
+private val LOG = logger<GitHubWorkflowRunDataProvider>()
 
 class GitHubWorkflowRunDataProvider(
     private val progressManager: ProgressManager,
@@ -60,7 +63,4 @@ class GitHubWorkflowRunDataProvider(
         fun logChanged() {}
     }
 
-    companion object {
-        private val LOG = Logger.getInstance("com.dsoftware.githubactionstab")
-    }
 }

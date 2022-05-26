@@ -282,12 +282,11 @@ internal class GitHubWorkflowToolWindowTabControllerImpl(
 
             val logActionsGroup = DefaultActionGroup()
             logActionsGroup.add(listReloadAction)
-            val toolbar = ActionManager.getInstance().createActionToolbar(
-                "WorkflowRuns", logActionsGroup,
-                false
-            )
+            val actionToolbar = ActionManager.getInstance()
+                .createActionToolbar(ActionPlaces.CONTEXT_TOOLBAR, logActionsGroup, false)
+            actionToolbar.targetComponent = it
 
-            it.add(toolbar.component, BorderLayout.WEST)
+            it.add(actionToolbar.component, BorderLayout.WEST)
 
             Disposer.register(disposable) {
                 Disposer.dispose(it)

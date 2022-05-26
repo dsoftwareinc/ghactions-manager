@@ -1,6 +1,8 @@
 package com.dsoftware.githubactionstab.api
 
 import com.dsoftware.githubactionstab.workflow.GitHubRepositoryCoordinates
+import com.intellij.openapi.diagnostic.Logger
+import com.intellij.openapi.diagnostic.logger
 import org.jetbrains.plugins.github.api.GithubApiRequest
 import org.jetbrains.plugins.github.api.GithubApiRequest.Get
 import org.jetbrains.plugins.github.api.GithubApiRequest.Get.Companion.json
@@ -63,6 +65,7 @@ data class GitHubAuthor(
     val email: String
 )
 
+val LOG = logger<Workflows>()
 
 object Workflows : GithubApiRequests.Entity("/repos") {
 
@@ -94,6 +97,7 @@ object Workflows : GithubApiRequests.Entity("/repos") {
                 })
                 param(pagination)
             })
+        LOG.info("Workflows.getWorkflowRuns() url=${url}")
         return get(url)
     }
 

@@ -39,7 +39,7 @@ class GitHubWorkflowRunList(model: ListModel<GitHubWorkflowRun>) : JBList<GitHub
 
         val renderer = WorkflowRunsListCellRenderer()
         cellRenderer = renderer
-        UIUtil.putClientProperty(this, UIUtil.NOT_IN_HIERARCHY_COMPONENTS, listOf(renderer))
+        putClientProperty(UIUtil.NOT_IN_HIERARCHY_COMPONENTS, listOf(renderer))
 
         ScrollingUtil.installActions(this)
     }
