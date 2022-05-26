@@ -5,6 +5,9 @@
     <vendor>D Software</vendor>
 
     <depends>com.intellij.modules.platform</depends>
+    <depends>org.jetbrains.plugins.github</depends>
+
+    <idea-version since-build="221.5080.210" />
 
     <extensions defaultExtensionNs="com.intellij">
         <applicationService serviceImplementation="com.dsoftware.githubactionstab.services.MyApplicationService"/>
@@ -12,11 +15,38 @@
 
         <toolWindow
                 id="GitHub Actions"
-                icon="/icons/icon.svg"
+                icon="com.dsoftware.githubactionstab.ui.GitHubIcons.WorkflowAllToolbar"
                 anchor="bottom"
-                factoryClass="com.dsoftware.githubactionstab.actions.GithubActionsToolWindowFactory">
+                factoryClass="com.dsoftware.githubactionstab.ui.GithubActionsToolWindowFactory">
         </toolWindow>
     </extensions>
+    <actions>
+        <group id="GHWorkflows.ActionGroup" popup="false">
+            <action id="Github.Workflow.List.Reload"
+                    class="com.dsoftware.githubactionstab.workflow.action.GitHubWorkflowRunReloadListAction"
+                    use-shortcut-of="Refresh"/>
+        </group>
+
+        <group id="Github.Workflow.ToolWindow.List.Popup">
+            <reference id="Github.Workflow.List.Reload"/>
+        </group>
+
+        <group id="Github.Workflow.ToolWindow.List.Popup.Selected">
+            <action id="Github.Workflow.Open.In.Browser"
+                    class="com.dsoftware.githubactionstab.workflow.action.GithubOpenInBrowserAction"/>
+            <reference id="Github.Workflow.List.Reload"/>
+        </group>
+
+        <group id="Github.Workflow.Log.ToolWindow.List.Popup">
+            <action id="Github.Workflow.Log.List.Reload"
+                    class="com.dsoftware.githubactionstab.workflow.action.GitHubWorkflowLogReloadAction"/>
+        </group>
+
+        <action id="Github.Workflow.ToolWindow.Show"
+                class="com.dsoftware.githubactionstab.workflow.action.GitHubViewPullRequestsAction">
+            <add-to-group group-id="Git.Menu"/>
+        </action>
+    </actions>
 
     <applicationListeners>
         <listener class="com.dsoftware.githubactionstab.listeners.MyProjectManagerListener"
