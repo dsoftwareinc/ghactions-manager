@@ -3,7 +3,7 @@ package com.dsoftware.githubactionstab.workflow
 import org.jetbrains.plugins.github.api.GHRepositoryPath
 import org.jetbrains.plugins.github.api.GithubServerPath
 
-data class GitHubRepositoryCoordinates(val serverPath: GithubServerPath, val repositoryPath: GHRepositoryPath) {
+data class RepositoryCoordinates(val serverPath: GithubServerPath, val repositoryPath: GHRepositoryPath) {
     fun toUrl(): String {
         return serverPath.toUrl() + "/" + repositoryPath
     }

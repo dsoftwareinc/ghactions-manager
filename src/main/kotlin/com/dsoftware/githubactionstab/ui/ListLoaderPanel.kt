@@ -1,7 +1,9 @@
 package com.dsoftware.githubactionstab.ui
 
+import com.dsoftware.githubactionstab.workflow.LoadingErrorHandler
+import com.dsoftware.githubactionstab.workflow.data.WorkflowRunListLoader
 import com.intellij.openapi.Disposable
-import com.intellij.openapi.diagnostic.Logger
+import com.intellij.openapi.diagnostic.logger
 import com.intellij.ui.ScrollPaneFactory
 import com.intellij.ui.SimpleTextAttributes
 import com.intellij.util.ui.ComponentWithEmptyText
@@ -9,8 +11,6 @@ import com.intellij.util.ui.JBUI
 import com.intellij.util.ui.JBUI.Panels.simplePanel
 import com.intellij.util.ui.StatusText
 import com.intellij.util.ui.components.BorderLayoutPanel
-import com.dsoftware.githubactionstab.workflow.GitHubLoadingErrorHandler
-import com.dsoftware.githubactionstab.workflow.data.GitHubWorkflowRunListLoader
 import org.jetbrains.plugins.github.exceptions.GithubStatusCodeException
 import org.jetbrains.plugins.github.ui.HtmlInfoPanel
 import java.awt.event.ActionEvent
@@ -18,8 +18,8 @@ import javax.swing.JComponent
 import javax.swing.JPanel
 import javax.swing.ScrollPaneConstants
 
-internal abstract class GitHubListLoaderPanel(
-    protected val listLoader: GitHubWorkflowRunListLoader,
+internal abstract class ListLoaderPanel(
+    protected val listLoader: WorkflowRunListLoader,
     private val contentComponent: JComponent,
     private val loadAllAfterFirstScroll: Boolean = false
 ) : BorderLayoutPanel(), Disposable {
@@ -44,10 +44,10 @@ internal abstract class GitHubListLoaderPanel(
     protected open val loadingText
         get() = "Loading..."
 
-    var errorHandler: GitHubLoadingErrorHandler? = null
+    var errorHandler: LoadingErrorHandler? = null
 
     init {
-        LOG.debug("Initialize GitHubListLoaderPanel")
+        LOG.debug("Initialize ListLoaderPanel")
         addToCenter(createCenterPanel(simplePanel(scrollPane).addToTop(infoPanel).apply {
             isOpaque = false
         }))
@@ -159,7 +159,7 @@ internal abstract class GitHubListLoaderPanel(
     override fun dispose() {}
 
     companion object {
-        private val LOG = Logger.getInstance("com.dsoftware.githubactionstab")
+        private val LOG = logger<ListLoaderPanel>()
 
         private fun getLoadingErrorText(error: Throwable, newLineSeparator: String = "\n"): String {
             if (error is GithubStatusCodeException && error.error != null) {

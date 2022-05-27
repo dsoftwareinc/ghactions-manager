@@ -23,7 +23,7 @@ class GithubOpenInBrowserAction : DumbAwareAction("Open GitHub link in browser")
     }
 
     private fun getDataFromWorkflow(dataContext: DataContext): String? {
-        val workflow = dataContext.getData(GitHubWorkflowRunActionKeys.SELECTED_WORKFLOW_RUN) ?: return null
+        val workflow = dataContext.getData(WorkflowRunActionKeys.SELECTED_WORKFLOW_RUN) ?: return null
         return workflow.html_url
     }
 }

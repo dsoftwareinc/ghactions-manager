@@ -3,9 +3,9 @@ package com.dsoftware.githubactionstab.ui
 import com.intellij.openapi.util.IconLoader
 import javax.swing.Icon
 
-object GitHubIcons {
+object Icons {
     private fun load(path: String): Icon {
-        return IconLoader.getIcon(path, GitHubIcons::class.java)
+        return IconLoader.getIcon(path, Icons::class.java)
     }
 
     @JvmField

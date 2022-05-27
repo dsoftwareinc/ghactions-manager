@@ -1,15 +1,15 @@
 package com.dsoftware.githubactionstab.workflow.action
 
+import com.dsoftware.githubactionstab.workflow.WorkflowToolWindowController
 import com.intellij.icons.AllIcons
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.components.service
-import com.intellij.openapi.diagnostic.Logger
+import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.project.DumbAwareAction
-import com.dsoftware.githubactionstab.workflow.GitHubWorkflowToolWindowController
 import java.util.function.Supplier
 
-class GitHubViewPullRequestsAction : DumbAwareAction(
-    { GHWorkflowToolWindowFactory.ID },
+class ViewPullRequestsAction : DumbAwareAction(
+    { WorkflowToolWindowFactory.ID },
     Supplier { null },
     AllIcons.Vcs.Vendors.Github
 ) {
@@ -22,14 +22,14 @@ class GitHubViewPullRequestsAction : DumbAwareAction(
     private fun isEnabledAndVisible(e: AnActionEvent): Boolean {
         val project = e.project ?: return false
 
-        return project.service<GitHubWorkflowToolWindowController>().isAvailable()
+        return project.service<WorkflowToolWindowController>().isAvailable()
     }
 
     override fun actionPerformed(e: AnActionEvent) {
-        e.project!!.service<GitHubWorkflowToolWindowController>().activate()
+        e.project!!.service<WorkflowToolWindowController>().activate()
     }
 
     companion object {
-        private val LOG = Logger.getInstance("com.dsoftware.githubactionstab.workflow.action")
+        private val LOG = logger<ViewPullRequestsAction>()
     }
 }

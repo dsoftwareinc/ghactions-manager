@@ -6,24 +6,30 @@ import com.intellij.execution.process.AnsiEscapeDecoder
 import com.intellij.execution.process.ProcessOutputTypes
 import com.intellij.execution.ui.ConsoleViewContentType
 import com.intellij.openapi.Disposable
-import com.intellij.openapi.diagnostic.Logger
+import com.intellij.openapi.diagnostic.logger
+import com.intellij.openapi.editor.impl.EditorImpl
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.util.Key
+import com.intellij.util.ui.UIUtil
+import javax.swing.plaf.PanelUI
 
-class GitHubWorkflowRunLogConsole(
+class WorkflowRunLogConsole(
     project: Project,
     logModel: SingleValueModel<String?>,
     disposable: Disposable,
 ) : ConsoleViewImpl(project, true), AnsiEscapeDecoder.ColoredTextAcceptor {
+    private val ansiEscapeDecoder = AnsiEscapeDecoder()
+
+    // when it's true its save to call editor, otherwise call 'editor' will throw an NPE
+    private val objectInitialized = true;
 
     init {
         LOG.debug("Create console")
-        val myTextAnsiEscapeDecoder = AnsiEscapeDecoder()
         logModel.addListener {
-            this.clear()
             if (!logModel.value.isNullOrBlank()) {
-                myTextAnsiEscapeDecoder.escapeText(logModel.value!!, ProcessOutputTypes.STDOUT, this)
+                this.clear()
+                this.addData(logModel.value!!, ProcessOutputTypes.STDOUT)
             }
         }
 
@@ -32,11 +38,22 @@ class GitHubWorkflowRunLogConsole(
         }
     }
 
+    private fun addData(message: String, outputType: Key<*>) {
+        ansiEscapeDecoder.escapeText(message, outputType, this)
+    }
+
     override fun coloredTextAvailable(text: String, attributes: Key<*>) {
         this.print(text, ConsoleViewContentType.getConsoleViewType(attributes))
     }
 
+    override fun setUI(ui: PanelUI?) {
+        super.setUI(ui)
+        if (objectInitialized && editor != null) {
+            (editor as EditorImpl).backgroundColor = UIUtil.getPanelBackground()
+        }
+    }
+
     companion object {
-        private val LOG = Logger.getInstance("com.dsoftware.githubactionstab")
+        private val LOG = logger<WorkflowRunLogConsole>()
     }
 }

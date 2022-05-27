@@ -1,13 +1,12 @@
 package com.dsoftware.githubactionstab.workflow.data
 
+import com.dsoftware.githubactionstab.api.Workflows
 import com.intellij.openapi.Disposable
-import com.intellij.openapi.diagnostic.Logger
+import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.progress.ProgressManager
 import com.intellij.util.EventDispatcher
 import com.intellij.util.concurrency.annotations.RequiresEdt
-import com.dsoftware.githubactionstab.api.Workflows
-import com.intellij.openapi.diagnostic.logger
 import org.jetbrains.plugins.github.api.GithubApiRequestExecutor
 import org.jetbrains.plugins.github.util.LazyCancellableBackgroundProcessValue
 import java.io.IOException
@@ -15,9 +14,9 @@ import java.util.*
 import java.util.concurrent.CompletableFuture
 import kotlin.properties.ReadOnlyProperty
 
-private val LOG = logger<GitHubWorkflowRunDataProvider>()
+private val LOG = logger<WorkflowRunDataProvider>()
 
-class GitHubWorkflowRunDataProvider(
+class WorkflowRunDataProvider(
     private val progressManager: ProgressManager,
     private val requestExecutor: GithubApiRequestExecutor,
     val url: String,

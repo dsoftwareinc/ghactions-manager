@@ -15,15 +15,15 @@
 
         <toolWindow
                 id="GitHub Actions"
-                icon="com.dsoftware.githubactionstab.ui.GitHubIcons.WorkflowAllToolbar"
+                icon="com.dsoftware.githubactionstab.ui.Icons.WorkflowAllToolbar"
                 anchor="bottom"
-                factoryClass="com.dsoftware.githubactionstab.ui.GithubActionsToolWindowFactory">
+                factoryClass="com.dsoftware.githubactionstab.ui.ActionsToolWindowFactory">
         </toolWindow>
     </extensions>
     <actions>
         <group id="GHWorkflows.ActionGroup" popup="false">
             <action id="Github.Workflow.List.Reload"
-                    class="com.dsoftware.githubactionstab.workflow.action.GitHubWorkflowRunReloadListAction"
+                    class="com.dsoftware.githubactionstab.workflow.action.WorkflowRunReloadListAction"
                     use-shortcut-of="Refresh"/>
         </group>
 
@@ -39,11 +39,11 @@
 
         <group id="Github.Workflow.Log.ToolWindow.List.Popup">
             <action id="Github.Workflow.Log.List.Reload"
-                    class="com.dsoftware.githubactionstab.workflow.action.GitHubWorkflowLogReloadAction"/>
+                    class="com.dsoftware.githubactionstab.workflow.action.WorkflowLogReloadAction"/>
         </group>
 
         <action id="Github.Workflow.ToolWindow.Show"
-                class="com.dsoftware.githubactionstab.workflow.action.GitHubViewPullRequestsAction">
+                class="com.dsoftware.githubactionstab.workflow.action.ViewPullRequestsAction">
             <add-to-group group-id="Git.Menu"/>
         </action>
     </actions>

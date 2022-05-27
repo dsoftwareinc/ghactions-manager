@@ -1,8 +1,17 @@
 package com.dsoftware.githubactionstab.ui
 
+import com.dsoftware.githubactionstab.api.GitHubWorkflowRun
+import com.dsoftware.githubactionstab.workflow.LoadingErrorHandler
+import com.dsoftware.githubactionstab.workflow.WorkflowRunListSelectionHolder
+import com.dsoftware.githubactionstab.workflow.WorkflowRunSelectionContext
+import com.dsoftware.githubactionstab.workflow.action.WorkflowRunActionKeys
+import com.dsoftware.githubactionstab.workflow.data.WorkflowDataContextRepository
+import com.dsoftware.githubactionstab.workflow.data.WorkflowRunDataContext
+import com.dsoftware.githubactionstab.workflow.data.WorkflowRunDataProvider
 import com.intellij.collaboration.auth.AccountsListener
 import com.intellij.collaboration.ui.SingleValueModel
 import com.intellij.execution.impl.ConsoleViewImpl
+import com.intellij.execution.ui.ConsoleViewContentType
 import com.intellij.ide.DataManager
 import com.intellij.ide.actions.RefreshAction
 import com.intellij.openapi.Disposable
@@ -23,14 +32,6 @@ import com.intellij.ui.ScrollingUtil
 import com.intellij.ui.components.JBPanelWithEmptyText
 import com.intellij.ui.content.Content
 import com.intellij.util.ui.UIUtil
-import com.dsoftware.githubactionstab.api.GitHubWorkflowRun
-import com.dsoftware.githubactionstab.workflow.GitHubLoadingErrorHandler
-import com.dsoftware.githubactionstab.workflow.GitHubWorkflowRunListSelectionHolder
-import com.dsoftware.githubactionstab.workflow.GitHubWorkflowRunSelectionContext
-import com.dsoftware.githubactionstab.workflow.action.GitHubWorkflowRunActionKeys
-import com.dsoftware.githubactionstab.workflow.data.GitHubWorkflowDataContextRepository
-import com.dsoftware.githubactionstab.workflow.data.GitHubWorkflowRunDataContext
-import com.dsoftware.githubactionstab.workflow.data.GitHubWorkflowRunDataProvider
 import org.jetbrains.plugins.github.api.GithubApiRequestExecutor
 import org.jetbrains.plugins.github.api.GithubApiRequestExecutorManager
 import org.jetbrains.plugins.github.authentication.GithubAuthenticationManager
@@ -42,6 +43,7 @@ import org.jetbrains.plugins.github.pullrequest.ui.GHLoadingModel
 import org.jetbrains.plugins.github.pullrequest.ui.GHLoadingPanelFactory
 import org.jetbrains.plugins.github.util.GHGitRepositoryMapping
 import org.jetbrains.plugins.github.util.GHProjectRepositoriesManager
+import org.jetbrains.plugins.notebooks.visualization.r.inlays.components.ColoredTextConsole
 import java.awt.BorderLayout
 import java.awt.event.FocusEvent
 import java.awt.event.FocusListener
@@ -51,15 +53,15 @@ import javax.swing.event.ListDataListener
 import javax.swing.event.ListSelectionEvent
 import kotlin.properties.Delegates
 
-private val LOG = logger<GitHubWorkflowToolWindowTabController>()
+private val LOG = logger<WorkflowToolWindowTabController>()
 
-internal class GitHubWorkflowToolWindowTabControllerImpl(
+internal class WorkflowToolWindowTabControllerImpl(
     private val project: Project,
     private val authManager: GithubAuthenticationManager,
     private val repositoryManager: GHProjectRepositoriesManager,
-    private val dataContextRepository: GitHubWorkflowDataContextRepository,
+    private val dataContextRepository: WorkflowDataContextRepository,
     private val tab: Content,
-) : GitHubWorkflowToolWindowTabController {
+) : WorkflowToolWindowTabController {
     private var currentRepository: GHGitRepositoryMapping? = null
     private var currentAccount: GithubAccount? = null
     private val actionManager = ActionManager.getInstance()
@@ -69,11 +71,18 @@ internal class GitHubWorkflowToolWindowTabControllerImpl(
         if (newValue != null) Disposer.register(tab.disposer!!, newValue)
     }
 
+    var isDisposed: Boolean = false
+    open fun dispose() {
+        isDisposed = true
+    }
+
     init {
         authManager.addListener(tab.disposer!!, object : AccountsListener<GithubAccount> {
             override fun onAccountCredentialsChanged(account: GithubAccount) {
-                ApplicationManager.getApplication().invokeLater({ Updater().update() }) {
-                    Disposer.isDisposed(tab.disposer!!)
+                ApplicationManager.getApplication().invokeLater({
+                    Updater().update()
+                }) {
+                    isDisposed
                 }
             }
         })
@@ -113,7 +122,7 @@ internal class GitHubWorkflowToolWindowTabControllerImpl(
                 }
             }
             val account = currentAccount
-            LOG.debug("Updater.guessAndSetRepoAndAccount() => ${repo}, ${account}")
+            LOG.debug("Updater.guessAndSetRepoAndAccount() => ${repo},${account}")
             return if (repo != null && account != null) repo to account else null
         }
     }
@@ -138,7 +147,7 @@ internal class GitHubWorkflowToolWindowTabControllerImpl(
             dataContextRepository.clearContext(repository)
         }
 
-        val loadingModel = GHCompletableFutureLoadingModel<GitHubWorkflowRunDataContext>(disposable).apply {
+        val loadingModel = GHCompletableFutureLoadingModel<WorkflowRunDataContext>(disposable).apply {
             future = dataContextRepository.acquireContext(repository, remote, account, requestExecutor)
         }
 
@@ -152,7 +161,7 @@ internal class GitHubWorkflowToolWindowTabControllerImpl(
             null,
             GithubBundle.message("cannot.load.data.from.github"),
             errorHandler,
-        ).create { parent, result ->
+        ).create { _, result ->
             LOG.debug("create content")
             val content = createContent(result, account, disposable)
             LOG.debug("done creating content")
@@ -169,11 +178,11 @@ internal class GitHubWorkflowToolWindowTabControllerImpl(
     }
 
     private fun createContent(
-        context: GitHubWorkflowRunDataContext,
+        context: WorkflowRunDataContext,
         account: GithubAccount,
         disposable: Disposable,
     ): JComponent {
-        val listSelectionHolder = GitHubWorkflowRunListSelectionHolder()
+        val listSelectionHolder = WorkflowRunListSelectionHolder()
         val workflowRunsList = createWorkflowRunsListComponent(context, listSelectionHolder, disposable)
 
         val dataProviderModel = createDataProviderModel(context, listSelectionHolder, disposable)
@@ -188,11 +197,11 @@ internal class GitHubWorkflowToolWindowTabControllerImpl(
             "Can't load data from GitHub",
             GithubBundle.message("cannot.load.data.from.github"),
             errorHandler
-        ).create { parent, result ->
+        ).create { _, _ ->
             createLogPanel(logModel, disposable)
         }
 
-        val selectionDataContext = GitHubWorkflowRunSelectionContext(context, listSelectionHolder)
+        val selectionDataContext = WorkflowRunSelectionContext(context, listSelectionHolder)
 
         return OnePixelSplitter("GitHub.Workflows.Component", 0.5f).apply {
             background = UIUtil.getListBackground()
@@ -210,7 +219,7 @@ internal class GitHubWorkflowToolWindowTabControllerImpl(
             DataManager.registerDataProvider(it) { dataId ->
                 if (Disposer.isDisposed(disposable)) null
                 else when {
-                    GitHubWorkflowRunActionKeys.ACTION_DATA_CONTEXT.`is`(dataId) -> selectionDataContext
+                    WorkflowRunActionKeys.ACTION_DATA_CONTEXT.`is`(dataId) -> selectionDataContext
                     else -> null
                 }
 
@@ -220,12 +229,11 @@ internal class GitHubWorkflowToolWindowTabControllerImpl(
 
     private fun createLogPanel(logModel: SingleValueModel<String?>, disposable: Disposable): JBPanelWithEmptyText {
         LOG.debug("Create log panel")
-        val console = GitHubWorkflowRunLogConsole(project, logModel, disposable)
+        val console = WorkflowRunLogConsole(project, logModel, disposable)
 
         val panel = JBPanelWithEmptyText(BorderLayout()).apply {
             isOpaque = false
             add(console.component, BorderLayout.CENTER)
-
         }
         installLogPopup(console)
 
@@ -233,13 +241,14 @@ internal class GitHubWorkflowToolWindowTabControllerImpl(
 
         val consoleActionsGroup = DefaultActionGroup()
 
-        val reloadAction = actionManager.getAction("Github.Workflow.Log.List.Reload")
-        consoleActionsGroup.add(reloadAction)
-        consoleActionsGroup.add(object : ToggleUseSoftWrapsToolbarAction(SoftWrapAppliancePlaces.CONSOLE) {
-            override fun getEditor(e: AnActionEvent): Editor? {
-                return editor
+        consoleActionsGroup.add(actionManager.getAction("Github.Workflow.Log.List.Reload"))
+        consoleActionsGroup.add(
+            object : ToggleUseSoftWrapsToolbarAction(SoftWrapAppliancePlaces.CONSOLE) {
+                override fun getEditor(e: AnActionEvent): Editor? {
+                    return editor
+                }
             }
-        })
+        )
 
         logModel.addListener {
             LOG.debug("Log model changed - call panel.validate()")
@@ -249,12 +258,12 @@ internal class GitHubWorkflowToolWindowTabControllerImpl(
     }
 
     private fun createWorkflowRunsListComponent(
-        context: GitHubWorkflowRunDataContext,
-        listSelectionHolder: GitHubWorkflowRunListSelectionHolder,
+        context: WorkflowRunDataContext,
+        listSelectionHolder: WorkflowRunListSelectionHolder,
         disposable: Disposable,
     ): JComponent {
 
-        val list = GitHubWorkflowRunList(context.listModel).apply {
+        val list = WorkflowRunList(context.listModel).apply {
             emptyText.clear()
         }.also {
             it.addFocusListener(object : FocusListener {
@@ -272,8 +281,8 @@ internal class GitHubWorkflowToolWindowTabControllerImpl(
         //Cannot seem to have context menu, when right click, why?
         val listReloadAction = actionManager.getAction("Github.Workflow.List.Reload") as RefreshAction
 
-        return GitHubWorkflowRunListLoaderPanel(context.listLoader, listReloadAction, list).apply {
-            errorHandler = GitHubLoadingErrorHandler {
+        return WorkflowRunListLoaderPanel(context.listLoader, listReloadAction, list).apply {
+            errorHandler = LoadingErrorHandler {
                 LOG.debug("Error on GitHub Workflow Run list loading, resetting the loader")
                 context.listLoader.reset()
             }
@@ -295,8 +304,8 @@ internal class GitHubWorkflowToolWindowTabControllerImpl(
     }
 
     private fun installWorkflowRunSelectionSaver(
-        list: GitHubWorkflowRunList,
-        listSelectionHolder: GitHubWorkflowRunListSelectionHolder,
+        list: WorkflowRunList,
+        listSelectionHolder: WorkflowRunListSelectionHolder,
     ) {
         var savedSelection: GitHubWorkflowRun? = null
 
@@ -326,7 +335,7 @@ internal class GitHubWorkflowToolWindowTabControllerImpl(
         })
     }
 
-    private fun installPopup(list: GitHubWorkflowRunList) {
+    private fun installPopup(list: WorkflowRunList) {
         val popupHandler = object : PopupHandler() {
             override fun invokePopup(comp: java.awt.Component, x: Int, y: Int) {
 
@@ -358,13 +367,13 @@ internal class GitHubWorkflowToolWindowTabControllerImpl(
     }
 
     private fun createDataProviderModel(
-        context: GitHubWorkflowRunDataContext,
-        listSelectionHolder: GitHubWorkflowRunListSelectionHolder,
+        context: WorkflowRunDataContext,
+        listSelectionHolder: WorkflowRunListSelectionHolder,
         parentDisposable: Disposable,
-    ): SingleValueModel<GitHubWorkflowRunDataProvider?> {
-        val model: SingleValueModel<GitHubWorkflowRunDataProvider?> = SingleValueModel(null)
+    ): SingleValueModel<WorkflowRunDataProvider?> {
+        val model: SingleValueModel<WorkflowRunDataProvider?> = SingleValueModel(null)
 
-        fun setNewProvider(provider: GitHubWorkflowRunDataProvider?) {
+        fun setNewProvider(provider: WorkflowRunDataProvider?) {
             LOG.debug("setNewProvider")
             val oldValue = model.value
             if (oldValue != null && provider != null && oldValue.url != provider.url) {
@@ -372,9 +381,9 @@ internal class GitHubWorkflowToolWindowTabControllerImpl(
             }
             model.value = provider
         }
-        Disposer.register(parentDisposable, Disposable {
+        Disposer.register(parentDisposable) {
             model.value = null
-        })
+        }
 
         listSelectionHolder.addSelectionChangeListener(parentDisposable) {
             LOG.debug("selection change listener")
@@ -394,7 +403,7 @@ internal class GitHubWorkflowToolWindowTabControllerImpl(
     }
 
     private fun createLogLoadingModel(
-        dataProviderModel: SingleValueModel<GitHubWorkflowRunDataProvider?>,
+        dataProviderModel: SingleValueModel<WorkflowRunDataProvider?>,
         parentDisposable: Disposable,
     ): GHCompletableFutureLoadingModel<String> {
         LOG.debug("Create log loading model")
@@ -417,7 +426,7 @@ internal class GitHubWorkflowToolWindowTabControllerImpl(
                     Disposer.register(parentDisposable, this)
                 }
                 provider.addRunChangesListener(disposable,
-                    object : GitHubWorkflowRunDataProvider.WorkflowRunChangedListener {
+                    object : WorkflowRunDataProvider.WorkflowRunChangedListener {
                         override fun logChanged() {
                             LOG.debug("Log changed")
                             model.future = provider.logRequest

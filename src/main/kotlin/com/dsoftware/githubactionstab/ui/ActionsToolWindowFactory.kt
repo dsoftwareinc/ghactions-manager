@@ -1,5 +1,6 @@
 package com.dsoftware.githubactionstab.ui
 
+import com.dsoftware.githubactionstab.workflow.data.WorkflowDataContextRepository
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project
@@ -7,14 +8,13 @@ import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.wm.ToolWindow
 import com.intellij.openapi.wm.ToolWindowFactory
 import com.intellij.openapi.wm.ex.ToolWindowEx
-import com.dsoftware.githubactionstab.workflow.data.GitHubWorkflowDataContextRepository
 import org.jetbrains.plugins.github.authentication.GithubAuthenticationManager
 import org.jetbrains.plugins.github.util.GHGitRepositoryMapping
 import org.jetbrains.plugins.github.util.GHProjectRepositoriesManager
 import javax.swing.JPanel
 
 
-class GithubActionsToolWindowFactory : ToolWindowFactory {
+class ActionsToolWindowFactory : ToolWindowFactory {
 
     private val basePanel: JPanel? = null
 
@@ -31,24 +31,25 @@ class GithubActionsToolWindowFactory : ToolWindowFactory {
 
     override fun createToolWindowContent(project: Project, toolWindow: ToolWindow) = with(toolWindow as ToolWindowEx) {
         with(contentManager) {
-            addContent(factory.createContent(JPanel(null), null, false).apply {
-                isCloseable = false
-                setDisposer(Disposer.newDisposable("GitHubWorkflow tab disposable"))
-            }.also {
-                val authManager = GithubAuthenticationManager.getInstance()
-                val repositoryManager = project.service<GHProjectRepositoriesManager>()
-                val dataContextRepository = GitHubWorkflowDataContextRepository.getInstance(project)
-                it.putUserData(
-                    GitHubWorkflowToolWindowTabController.KEY,
-                    GitHubWorkflowToolWindowTabControllerImpl(
-                        project,
-                        authManager,
-                        repositoryManager,
-                        dataContextRepository,
-                        it
+            addContent(factory.createContent(JPanel(null), null, false)
+                .apply {
+                    isCloseable = false
+                    setDisposer(Disposer.newDisposable("GitHubWorkflow tab disposable"))
+                }.also {
+                    val authManager = GithubAuthenticationManager.getInstance()
+                    val repositoryManager = project.service<GHProjectRepositoriesManager>()
+                    val dataContextRepository = WorkflowDataContextRepository.getInstance(project)
+                    it.putUserData(
+                        WorkflowToolWindowTabController.KEY,
+                        WorkflowToolWindowTabControllerImpl(
+                            project,
+                            authManager,
+                            repositoryManager,
+                            dataContextRepository,
+                            it
+                        )
                     )
-                )
-            })
+                })
         }
     }
 }
