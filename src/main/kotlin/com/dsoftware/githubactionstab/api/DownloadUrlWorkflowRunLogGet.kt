@@ -13,6 +13,6 @@ class DownloadUrlWorkflowRunLogGet(url: String) : GithubApiRequest.Get<String>(u
     }
 
     companion object {
-        private val LOG = logger<LogExtractor>()
+        private val LOG = logger<DownloadUrlWorkflowRunLogGet>()
     }
 }

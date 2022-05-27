@@ -11,6 +11,7 @@ import com.dsoftware.githubactionstab.workflow.data.WorkflowRunDataProvider
 import com.intellij.collaboration.auth.AccountsListener
 import com.intellij.collaboration.ui.SingleValueModel
 import com.intellij.execution.impl.ConsoleViewImpl
+import com.intellij.execution.ui.ConsoleViewContentType
 import com.intellij.ide.DataManager
 import com.intellij.ide.actions.RefreshAction
 import com.intellij.openapi.Disposable
@@ -42,6 +43,7 @@ import org.jetbrains.plugins.github.pullrequest.ui.GHLoadingModel
 import org.jetbrains.plugins.github.pullrequest.ui.GHLoadingPanelFactory
 import org.jetbrains.plugins.github.util.GHGitRepositoryMapping
 import org.jetbrains.plugins.github.util.GHProjectRepositoriesManager
+import org.jetbrains.plugins.notebooks.visualization.r.inlays.components.ColoredTextConsole
 import java.awt.BorderLayout
 import java.awt.event.FocusEvent
 import java.awt.event.FocusListener
@@ -232,7 +234,6 @@ internal class WorkflowToolWindowTabControllerImpl(
         val panel = JBPanelWithEmptyText(BorderLayout()).apply {
             isOpaque = false
             add(console.component, BorderLayout.CENTER)
-
         }
         installLogPopup(console)
 
@@ -240,13 +241,14 @@ internal class WorkflowToolWindowTabControllerImpl(
 
         val consoleActionsGroup = DefaultActionGroup()
 
-        val reloadAction = actionManager.getAction("Github.Workflow.Log.List.Reload")
-        consoleActionsGroup.add(reloadAction)
-        consoleActionsGroup.add(object : ToggleUseSoftWrapsToolbarAction(SoftWrapAppliancePlaces.CONSOLE) {
-            override fun getEditor(e: AnActionEvent): Editor? {
-                return editor
+        consoleActionsGroup.add(actionManager.getAction("Github.Workflow.Log.List.Reload"))
+        consoleActionsGroup.add(
+            object : ToggleUseSoftWrapsToolbarAction(SoftWrapAppliancePlaces.CONSOLE) {
+                override fun getEditor(e: AnActionEvent): Editor? {
+                    return editor
+                }
             }
-        })
+        )
 
         logModel.addListener {
             LOG.debug("Log model changed - call panel.validate()")
