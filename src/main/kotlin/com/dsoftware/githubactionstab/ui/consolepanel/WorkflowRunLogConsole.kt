@@ -1,4 +1,4 @@
-package com.dsoftware.githubactionstab.ui
+package com.dsoftware.githubactionstab.ui.consolepanel
 
 import com.intellij.collaboration.ui.SingleValueModel
 import com.intellij.execution.impl.ConsoleViewImpl

@@ -1,6 +1,7 @@
-package com.dsoftware.githubactionstab.ui
+package com.dsoftware.githubactionstab.ui.wfpanel
 
 import com.dsoftware.githubactionstab.api.GitHubWorkflowRun
+import com.dsoftware.githubactionstab.ui.Icons
 import com.dsoftware.githubactionstab.workflow.action.WorkflowRunActionKeys
 import com.intellij.icons.AllIcons
 import com.intellij.ide.CopyProvider

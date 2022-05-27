@@ -14,7 +14,7 @@ import org.jetbrains.plugins.github.util.GHProjectRepositoriesManager
 import javax.swing.JPanel
 
 
-class ActionsToolWindowFactory : ToolWindowFactory {
+class ToolWindowFactory : ToolWindowFactory {
 
     private val basePanel: JPanel? = null
 

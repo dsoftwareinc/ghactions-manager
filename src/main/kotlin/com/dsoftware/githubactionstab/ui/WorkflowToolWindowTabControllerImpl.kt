@@ -1,7 +1,7 @@
 package com.dsoftware.githubactionstab.ui
 
-import com.dsoftware.githubactionstab.api.GitHubWorkflowRun
-import com.dsoftware.githubactionstab.workflow.LoadingErrorHandler
+import com.dsoftware.githubactionstab.ui.consolepanel.WorkflowRunLogConsole
+import com.dsoftware.githubactionstab.ui.wfpanel.WorkflowRunListLoaderPanel
 import com.dsoftware.githubactionstab.workflow.WorkflowRunListSelectionHolder
 import com.dsoftware.githubactionstab.workflow.WorkflowRunSelectionContext
 import com.dsoftware.githubactionstab.workflow.action.WorkflowRunActionKeys
@@ -11,11 +11,13 @@ import com.dsoftware.githubactionstab.workflow.data.WorkflowRunDataProvider
 import com.intellij.collaboration.auth.AccountsListener
 import com.intellij.collaboration.ui.SingleValueModel
 import com.intellij.execution.impl.ConsoleViewImpl
-import com.intellij.execution.ui.ConsoleViewContentType
 import com.intellij.ide.DataManager
 import com.intellij.ide.actions.RefreshAction
 import com.intellij.openapi.Disposable
-import com.intellij.openapi.actionSystem.*
+import com.intellij.openapi.actionSystem.ActionGroup
+import com.intellij.openapi.actionSystem.ActionManager
+import com.intellij.openapi.actionSystem.AnActionEvent
+import com.intellij.openapi.actionSystem.DefaultActionGroup
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.editor.Editor
@@ -25,10 +27,7 @@ import com.intellij.openapi.editor.impl.ContextMenuPopupHandler
 import com.intellij.openapi.editor.impl.softwrap.SoftWrapAppliancePlaces
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Disposer
-import com.intellij.ui.ListUtil
 import com.intellij.ui.OnePixelSplitter
-import com.intellij.ui.PopupHandler
-import com.intellij.ui.ScrollingUtil
 import com.intellij.ui.components.JBPanelWithEmptyText
 import com.intellij.ui.content.Content
 import com.intellij.util.ui.UIUtil
@@ -43,17 +42,9 @@ import org.jetbrains.plugins.github.pullrequest.ui.GHLoadingModel
 import org.jetbrains.plugins.github.pullrequest.ui.GHLoadingPanelFactory
 import org.jetbrains.plugins.github.util.GHGitRepositoryMapping
 import org.jetbrains.plugins.github.util.GHProjectRepositoriesManager
-import org.jetbrains.plugins.notebooks.visualization.r.inlays.components.ColoredTextConsole
 import java.awt.BorderLayout
-import java.awt.event.FocusEvent
-import java.awt.event.FocusListener
 import javax.swing.JComponent
-import javax.swing.event.ListDataEvent
-import javax.swing.event.ListDataListener
-import javax.swing.event.ListSelectionEvent
 import kotlin.properties.Delegates
-
-private val LOG = logger<WorkflowToolWindowTabController>()
 
 internal class WorkflowToolWindowTabControllerImpl(
     private val project: Project,
@@ -183,7 +174,8 @@ internal class WorkflowToolWindowTabControllerImpl(
         disposable: Disposable,
     ): JComponent {
         val listSelectionHolder = WorkflowRunListSelectionHolder()
-        val workflowRunsList = createWorkflowRunsListComponent(context, listSelectionHolder, disposable)
+        val workflowRunsList =
+            WorkflowRunListLoaderPanel.createWorkflowRunsListComponent(context, listSelectionHolder, disposable)
 
         val dataProviderModel = createDataProviderModel(context, listSelectionHolder, disposable)
 
@@ -227,7 +219,7 @@ internal class WorkflowToolWindowTabControllerImpl(
         }
     }
 
-    private fun createLogPanel(logModel: SingleValueModel<String?>, disposable: Disposable): JBPanelWithEmptyText {
+    private fun createLogPanel(logModel: SingleValueModel<String?>, disposable: Disposable): JComponent {
         LOG.debug("Create log panel")
         val console = WorkflowRunLogConsole(project, logModel, disposable)
 
@@ -250,114 +242,13 @@ internal class WorkflowToolWindowTabControllerImpl(
             }
         )
 
-        logModel.addListener {
-            LOG.debug("Log model changed - call panel.validate()")
-            panel.validate()
-        }
+//        logModel.addListener {
+//            LOG.debug("Log model changed - call panel.validate()")
+//            panel.validate()
+//        }
         return panel
     }
 
-    private fun createWorkflowRunsListComponent(
-        context: WorkflowRunDataContext,
-        listSelectionHolder: WorkflowRunListSelectionHolder,
-        disposable: Disposable,
-    ): JComponent {
-
-        val list = WorkflowRunList(context.listModel).apply {
-            emptyText.clear()
-        }.also {
-            it.addFocusListener(object : FocusListener {
-                override fun focusGained(e: FocusEvent?) {
-                    if (it.selectedIndex < 0 && !it.isEmpty) it.selectedIndex = 0
-                }
-
-                override fun focusLost(e: FocusEvent?) {}
-            })
-
-            installPopup(it)
-            installWorkflowRunSelectionSaver(it, listSelectionHolder)
-        }
-
-        //Cannot seem to have context menu, when right click, why?
-        val listReloadAction = actionManager.getAction("Github.Workflow.List.Reload") as RefreshAction
-
-        return WorkflowRunListLoaderPanel(context.listLoader, listReloadAction, list).apply {
-            errorHandler = LoadingErrorHandler {
-                LOG.debug("Error on GitHub Workflow Run list loading, resetting the loader")
-                context.listLoader.reset()
-            }
-        }.also {
-            listReloadAction.registerCustomShortcutSet(it, disposable)
-
-            val logActionsGroup = DefaultActionGroup()
-            logActionsGroup.add(listReloadAction)
-            val actionToolbar = ActionManager.getInstance()
-                .createActionToolbar(ActionPlaces.CONTEXT_TOOLBAR, logActionsGroup, false)
-            actionToolbar.targetComponent = it
-
-            it.add(actionToolbar.component, BorderLayout.WEST)
-
-            Disposer.register(disposable) {
-                Disposer.dispose(it)
-            }
-        }
-    }
-
-    private fun installWorkflowRunSelectionSaver(
-        list: WorkflowRunList,
-        listSelectionHolder: WorkflowRunListSelectionHolder,
-    ) {
-        var savedSelection: GitHubWorkflowRun? = null
-
-        list.selectionModel.addListSelectionListener { e: ListSelectionEvent ->
-            if (!e.valueIsAdjusting) {
-                val selectedIndex = list.selectedIndex
-                if (selectedIndex >= 0 && selectedIndex < list.model.size) {
-                    listSelectionHolder.selection = list.model.getElementAt(selectedIndex)
-                    savedSelection = null
-                }
-            }
-        }
-
-        list.model.addListDataListener(object : ListDataListener {
-            override fun intervalAdded(e: ListDataEvent) {
-                if (e.type == ListDataEvent.INTERVAL_ADDED)
-                    (e.index0..e.index1).find { list.model.getElementAt(it) == savedSelection }
-                        ?.run {
-                            ApplicationManager.getApplication().invokeLater { ScrollingUtil.selectItem(list, this) }
-                        }
-            }
-
-            override fun contentsChanged(e: ListDataEvent) {}
-            override fun intervalRemoved(e: ListDataEvent) {
-                if (e.type == ListDataEvent.INTERVAL_REMOVED) savedSelection = listSelectionHolder.selection
-            }
-        })
-    }
-
-    private fun installPopup(list: WorkflowRunList) {
-        val popupHandler = object : PopupHandler() {
-            override fun invokePopup(comp: java.awt.Component, x: Int, y: Int) {
-
-                val popupMenu: ActionPopupMenu = if (ListUtil.isPointOnSelection(list, x, y)) {
-                    actionManager
-                        .createActionPopupMenu(
-                            "GithubWorkflowListPopupSelected",
-                            actionManager.getAction("Github.Workflow.ToolWindow.List.Popup.Selected") as ActionGroup
-                        )
-                } else {
-                    actionManager
-                        .createActionPopupMenu(
-                            "GithubWorkflowListPopup",
-                            actionManager.getAction("Github.Workflow.ToolWindow.List.Popup") as ActionGroup
-                        )
-                }
-                popupMenu.setTargetComponent(list)
-                popupMenu.component.show(comp, x, y)
-            }
-        }
-        list.addMouseListener(popupHandler)
-    }
 
     private fun installLogPopup(console: ConsoleViewImpl) {
         val actionGroup = actionManager.getAction("Github.Workflow.Log.ToolWindow.List.Popup") as ActionGroup
@@ -453,6 +344,10 @@ internal class WorkflowToolWindowTabControllerImpl(
             }
         })
         return model
+    }
+
+    companion object{
+        private val LOG = logger<WorkflowToolWindowTabControllerImpl>()
     }
 
 }
