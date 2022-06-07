@@ -5,7 +5,7 @@ import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.runInEdt
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.components.service
-import com.intellij.openapi.diagnostic.logger
+import com.intellij.openapi.diagnostic.thisLogger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.ProjectManager
 import com.intellij.util.concurrency.annotations.RequiresEdt
@@ -28,7 +28,7 @@ internal class WorkflowRunManager(private val project: Project) {
 //    }
 
     private var remoteUrls by observable(setOf<GitRemoteUrlCoordinates>()) { _, oldValue, newValue ->
-        LOG.debug("Remote URLs changed")
+        LOG.info("Remote URLs changed")
         val delta = CollectionDelta(oldValue, newValue)
 //        for (item in delta.removedItems) {
 //            contentManager.removeTab(item)
@@ -42,14 +42,14 @@ internal class WorkflowRunManager(private val project: Project) {
 
     @RequiresEdt
     fun showTab(remoteUrl: GitRemoteUrlCoordinates) {
-        LOG.debug("Show Tab")
+        LOG.info("Show Tab")
         updateRemoteUrls()
 
 //        contentManager.focusTab(remoteUrl)
     }
 
     private fun updateRemoteUrls() {
-        LOG.debug("Update remote urls")
+        LOG.info("Update remote urls")
         remoteUrls = emptySet()
 //        remoteUrls = project.service<GHProjectRepositoriesManager>().knownRepositories
 //            .filter { !settings.getHiddenUrls().contains(it.gitRemote.url) }
@@ -60,12 +60,12 @@ internal class WorkflowRunManager(private val project: Project) {
     class RemoteUrlsListener(private val project: Project) : VcsRepositoryMappingListener, GitRepositoryChangeListener {
 
         override fun mappingChanged() = runInEdt(project) {
-            LOG.debug("mappingChanged")
+            LOG.info("mappingChanged")
             updateRemotes(project)
         }
 
         override fun repositoryChanged(repository: GitRepository) = runInEdt(project) {
-            LOG.debug("repositoryChanged")
+            LOG.info("repositoryChanged")
             updateRemotes(project)
         }
     }
@@ -75,7 +75,7 @@ internal class WorkflowRunManager(private val project: Project) {
         override fun tokenChanged(account: GithubAccount) = updateRemotes()
 
         private fun updateRemotes() = runInEdt {
-            LOG.debug("updateRemotes")
+            LOG.info("updateRemotes")
             for (project in ProjectManager.getInstance().openProjects) {
                 updateRemotes(project)
             }
@@ -83,7 +83,7 @@ internal class WorkflowRunManager(private val project: Project) {
     }
 
     companion object {
-        private val LOG = logger<WorkflowRunManager>()
+        private val LOG = thisLogger()
 
         private inline fun runInEdt(project: Project, crossinline runnable: () -> Unit) {
             val application = ApplicationManager.getApplication()

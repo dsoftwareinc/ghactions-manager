@@ -23,13 +23,13 @@
 //
 //    @RequiresEdt
 //    internal fun addTab(remoteUrl: GitRemoteUrlCoordinates, onDispose: Disposable) {
-//        LOG.debug("addTab")
+//        LOG.info("addTab")
 //        viewContentManager.addContent(createContent(remoteUrl, onDispose))
 //    }
 //
 //    @RequiresEdt
 //    fun focusTab(remoteUrl: GitRemoteUrlCoordinates) {
-//        LOG.debug("focusTab")
+//        LOG.info("focusTab")
 //        val content = viewContentManager.findContents { it.remoteUrl == remoteUrl }.firstOrNull() ?: run {
 //            addTab(remoteUrl, Disposer.newDisposable())
 //            viewContentManager.findContents { it.remoteUrl == remoteUrl }.firstOrNull()
@@ -41,13 +41,13 @@
 //
 //    @RequiresEdt
 //    internal fun removeTab(remoteUrl: GitRemoteUrlCoordinates) {
-//        LOG.debug("removeTab")
+//        LOG.info("removeTab")
 //        val content = viewContentManager.findContents { it.remoteUrl == remoteUrl }.firstOrNull() ?: return
 //        viewContentManager.removeContent(content)
 //    }
 //
 //    private fun createContent(remoteUrl: GitRemoteUrlCoordinates, onDispose: Disposable): Content {
-//        LOG.debug("createContent")
+//        LOG.info("createContent")
 //        val disposable = Disposer.newDisposable()
 //        Disposer.register(disposable, onDispose)
 //
@@ -60,7 +60,7 @@
 //        content.putUserData(Key.create<() -> ChangesViewContentProvider>("CONTENT_PROVIDER_SUPPLIER")) {
 //            object : ChangesViewContentProvider {
 //                override fun initContent(): GitHubWorkflowRunAccountsComponent {
-//                    LOG.debug("initContent")
+//                    LOG.info("initContent")
 //                    return GitHubWorkflowRunAccountsComponent(GithubAuthenticationManager.getInstance(), project, remoteUrl, disposable)
 //                }
 //

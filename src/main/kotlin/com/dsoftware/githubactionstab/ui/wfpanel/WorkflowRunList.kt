@@ -8,7 +8,7 @@ import com.intellij.ide.CopyProvider
 import com.intellij.openapi.actionSystem.DataContext
 import com.intellij.openapi.actionSystem.DataProvider
 import com.intellij.openapi.actionSystem.PlatformDataKeys
-import com.intellij.openapi.diagnostic.logger
+import com.intellij.openapi.diagnostic.thisLogger
 import com.intellij.ui.ColorUtil
 import com.intellij.ui.JBColor
 import com.intellij.ui.ListUtil
@@ -172,7 +172,7 @@ class WorkflowRunList(model: ListModel<GitHubWorkflowRun>) : JBList<GitHubWorkfl
     }
 
     companion object {
-        private val LOG = logger<WorkflowRunList>()
+        private val LOG = thisLogger()
     }
 
     override fun performCopy(dataContext: DataContext) {

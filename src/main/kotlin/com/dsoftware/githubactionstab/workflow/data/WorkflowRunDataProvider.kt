@@ -2,7 +2,7 @@ package com.dsoftware.githubactionstab.workflow.data
 
 import com.dsoftware.githubactionstab.api.Workflows
 import com.intellij.openapi.Disposable
-import com.intellij.openapi.diagnostic.logger
+import com.intellij.openapi.diagnostic.thisLogger
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.progress.ProgressManager
 import com.intellij.util.EventDispatcher
@@ -14,7 +14,6 @@ import java.util.*
 import java.util.concurrent.CompletableFuture
 import kotlin.properties.ReadOnlyProperty
 
-private val LOG = logger<WorkflowRunDataProvider>()
 
 class WorkflowRunDataProvider(
     private val progressManager: ProgressManager,
@@ -26,10 +25,10 @@ class WorkflowRunDataProvider(
 
     private val logValue: LazyCancellableBackgroundProcessValue<String> = backingValue {
         try {
-            LOG.debug("Get workflow log for $url")
+            LOG.info("Get workflow log for $url")
             val request = Workflows.getDownloadUrlForWorkflowLog(url)
             val log = requestExecutor.execute(it, request)
-            LOG.debug("Downloaded log of size ${log.length}")
+            LOG.info("Downloaded log of size ${log.length}")
             log
         } catch (ioe: IOException) {
             LOG.error(ioe)
@@ -62,4 +61,7 @@ class WorkflowRunDataProvider(
         fun logChanged() {}
     }
 
+    companion object {
+        private val LOG = thisLogger()
+    }
 }

@@ -3,7 +3,7 @@ package com.dsoftware.githubactionstab.ui
 import com.dsoftware.githubactionstab.workflow.LoadingErrorHandler
 import com.dsoftware.githubactionstab.workflow.data.WorkflowRunListLoader
 import com.intellij.openapi.Disposable
-import com.intellij.openapi.diagnostic.logger
+import com.intellij.openapi.diagnostic.thisLogger
 import com.intellij.ui.ScrollPaneFactory
 import com.intellij.ui.SimpleTextAttributes
 import com.intellij.util.ui.ComponentWithEmptyText
@@ -47,7 +47,7 @@ internal abstract class ListLoaderPanel(
     var errorHandler: LoadingErrorHandler? = null
 
     init {
-        LOG.debug("Initialize ListLoaderPanel")
+        LOG.info("Initialize ListLoaderPanel")
         addToCenter(createCenterPanel(simplePanel(scrollPane).addToTop(infoPanel).apply {
             isOpaque = false
         }))
@@ -87,7 +87,7 @@ internal abstract class ListLoaderPanel(
     }
 
     private fun displayErrorStatus(emptyText: StatusText, error: Throwable) {
-        LOG.debug("Display error status")
+        LOG.info("Display error status")
         emptyText.appendText(getErrorPrefix(listLoader.loadedData.isEmpty()), SimpleTextAttributes.ERROR_ATTRIBUTES)
             .appendSecondaryText(getLoadingErrorText(error), SimpleTextAttributes.ERROR_ATTRIBUTES, null)
 
@@ -97,7 +97,7 @@ internal abstract class ListLoaderPanel(
     }
 
     protected open fun displayEmptyStatus(emptyText: StatusText) {
-        LOG.debug("Display empty status")
+        LOG.info("Display empty status")
         emptyText.text = "List is empty "
         emptyText.appendSecondaryText("Refresh", SimpleTextAttributes.LINK_PLAIN_ATTRIBUTES) {
             listLoader.reset()
@@ -138,9 +138,9 @@ internal abstract class ListLoaderPanel(
     protected open fun getErrorPrefix(listEmpty: Boolean) = if (listEmpty) "Can't load list" else "Can't load full list"
 
     private fun potentiallyLoadMore() {
-        LOG.debug("Potentially loading more")
+        LOG.info("Potentially loading more")
         if (listLoader.canLoadMore() && ((userScrolled && loadAllAfterFirstScroll) || isScrollAtThreshold())) {
-            LOG.debug("Load more")
+            LOG.info("Load more")
             listLoader.loadMore()
         }
     }
@@ -159,7 +159,7 @@ internal abstract class ListLoaderPanel(
     override fun dispose() {}
 
     companion object {
-        private val LOG = logger<ListLoaderPanel>()
+        private val LOG = thisLogger()
 
         private fun getLoadingErrorText(error: Throwable, newLineSeparator: String = "\n"): String {
             if (error is GithubStatusCodeException && error.error != null) {

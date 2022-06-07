@@ -3,7 +3,7 @@ package com.dsoftware.githubactionstab.workflow.data
 import com.google.common.cache.CacheBuilder
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.application.runInEdt
-import com.intellij.openapi.diagnostic.logger
+import com.intellij.openapi.diagnostic.thisLogger
 import com.intellij.util.EventDispatcher
 import com.intellij.util.concurrency.annotations.RequiresEdt
 import java.util.*
@@ -31,7 +31,7 @@ class WorkflowDataLoader(private val dataProviderFactory: (String) -> WorkflowRu
 
     @RequiresEdt
     fun invalidateAllData() {
-        LOG.debug("All cache invalidated")
+        LOG.info("All cache invalidated")
         cache.invalidateAll()
     }
 
@@ -47,12 +47,12 @@ class WorkflowDataLoader(private val dataProviderFactory: (String) -> WorkflowRu
         }, disposable)
 
     override fun dispose() {
-        LOG.debug("Disposing...")
+        LOG.info("Disposing...")
         invalidateAllData()
         isDisposed = true
     }
 
     companion object {
-        private val LOG = logger<WorkflowDataLoader>()
+        private val LOG = thisLogger()
     }
 }

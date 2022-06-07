@@ -18,8 +18,7 @@ import com.intellij.openapi.actionSystem.ActionGroup
 import com.intellij.openapi.actionSystem.ActionManager
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.DefaultActionGroup
-import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.diagnostic.logger
+import com.intellij.openapi.diagnostic.thisLogger
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.actions.ToggleUseSoftWrapsToolbarAction
 import com.intellij.openapi.editor.ex.EditorEx
@@ -48,14 +47,13 @@ import kotlin.properties.Delegates
 
 internal class WorkflowToolWindowTabControllerImpl(
     private val project: Project,
-    private val authManager: GithubAuthenticationManager,
-    private val repositoryManager: GHProjectRepositoriesManager,
+    private val ghAuthManager: GithubAuthenticationManager,
+    private val ghRepositoryManager: GHProjectRepositoriesManager,
     private val dataContextRepository: WorkflowDataContextRepository,
     private val tab: Content,
 ) : WorkflowToolWindowTabController {
-    private var currentRepository: GHGitRepositoryMapping? = null
-    private var currentAccount: GithubAccount? = null
     private val actionManager = ActionManager.getInstance()
+    private val mainPanel: JComponent
 
     private var contentDisposable by Delegates.observable<Disposable?>(null) { _, oldValue, newValue ->
         if (oldValue != null) Disposer.dispose(oldValue)
@@ -68,67 +66,51 @@ internal class WorkflowToolWindowTabControllerImpl(
     }
 
     init {
-        authManager.addListener(tab.disposer!!, object : AccountsListener<GithubAccount> {
-            override fun onAccountCredentialsChanged(account: GithubAccount) {
-                ApplicationManager.getApplication().invokeLater({
-                    Updater().update()
-                }) {
-                    isDisposed
-                }
-            }
-        })
-        repositoryManager.addRepositoryListChangedListener(tab.disposer!!) {
-            Updater().update()
-        }
-        Updater().update()
-    }
-
-    private inner class Updater {
-        private val repos = repositoryManager.knownRepositories
-        private val accounts = authManager.getAccounts()
-
-        fun update() {
-            LOG.debug("Updater.update()")
-            guessAndSetRepoAndAccount()?.let { (repo, account) ->
-                try {
-                    val requestExecutor = GithubApiRequestExecutorManager.getInstance().getExecutor(account)
-                    showWorkflowsComponent(repo, account, requestExecutor)
-                } catch (e: Exception) {
-                    null
-                }
-            }
-        }
-
-        private fun guessAndSetRepoAndAccount(): Pair<GHGitRepositoryMapping, GithubAccount>? {
-            if (currentRepository == null && repos.size == 1) {
-                currentRepository = repos.single()
-            }
-
-            val repo = currentRepository
-            if (repo != null && currentAccount == null) {
-                val matchingAccounts =
-                    accounts.filter { it.server.equals(repo.ghRepositoryCoordinates.serverPath, true) }
-                if (matchingAccounts.size == 1) {
-                    currentAccount = matchingAccounts.single()
-                }
-            }
-            val account = currentAccount
-            LOG.debug("Updater.guessAndSetRepoAndAccount() => ${repo},${account}")
-            return if (repo != null && account != null) repo to account else null
-        }
-    }
-
-    private fun showWorkflowsComponent(
-        repositoryMapping: GHGitRepositoryMapping,
-        account: GithubAccount,
-        requestExecutor: GithubApiRequestExecutor,
-    ) {
         tab.displayName = "Workflows"
-        val mainPanel = tab.component.apply {
+        mainPanel = tab.component.apply {
             layout = BorderLayout()
             background = UIUtil.getListBackground()
         }
-        LOG.debug("Updater.showWorkflowsComponent()")
+        ghAuthManager.addListener(tab.disposer!!, object : AccountsListener<GithubAccount> {
+            override fun onAccountCredentialsChanged(account: GithubAccount) {
+                update()
+            }
+        })
+        ghRepositoryManager.addRepositoryListChangedListener(tab.disposer!!) {
+            update()
+        }
+        update()
+    }
+
+
+    fun update() {
+        LOG.info("Updater.update()")
+        val ghAccount = ghAuthManager.getSingleOrDefaultAccount(project)
+        if (ghAccount == null) {
+            LOG.info("No github account set")
+            tab.displayName = "Workflows"
+
+        } else {
+            LOG.info("GitHub account: ${ghAccount.name} on ${ghAccount.server}")
+            try {
+                val repo = ghRepositoryManager.knownRepositories.first()
+                val ghRequestExecutor = GithubApiRequestExecutorManager.getInstance().getExecutor(ghAccount)
+                showWorkflowsComponent(repo, ghAccount, ghRequestExecutor)
+            } catch (e: Exception) {
+                LOG.warn("Got exception ${e.message}")
+                null
+            }
+        }
+    }
+
+
+    private fun showWorkflowsComponent(
+        repositoryMapping: GHGitRepositoryMapping,
+        ghAccount: GithubAccount,
+        ghRequestExecutor: GithubApiRequestExecutor,
+    ) {
+
+        LOG.info("Updater.showWorkflowsComponent()")
         val repository = repositoryMapping.ghRepositoryCoordinates
         val remote = repositoryMapping.gitRemoteUrlCoordinates
 
@@ -139,13 +121,13 @@ internal class WorkflowToolWindowTabControllerImpl(
         }
 
         val loadingModel = GHCompletableFutureLoadingModel<WorkflowRunDataContext>(disposable).apply {
-            future = dataContextRepository.acquireContext(repository, remote, account, requestExecutor)
+            future = dataContextRepository.acquireContext(repository, remote, ghAccount, ghRequestExecutor)
         }
 
-        val errorHandler = GHApiLoadingErrorHandler(project, account) {
+        val errorHandler = GHApiLoadingErrorHandler(project, ghAccount) {
             val contextRepository = dataContextRepository
             contextRepository.clearContext(repository)
-            loadingModel.future = contextRepository.acquireContext(repository, remote, account, requestExecutor)
+            loadingModel.future = contextRepository.acquireContext(repository, remote, ghAccount, ghRequestExecutor)
         }
         val panel = GHLoadingPanelFactory(
             loadingModel,
@@ -153,9 +135,9 @@ internal class WorkflowToolWindowTabControllerImpl(
             GithubBundle.message("cannot.load.data.from.github"),
             errorHandler,
         ).create { _, result ->
-            LOG.debug("create content")
-            val content = createContent(result, account, disposable)
-            LOG.debug("done creating content")
+            LOG.info("create content")
+            val content = createContent(result, ghAccount, disposable)
+            LOG.info("done creating content")
 
             content
         }
@@ -220,7 +202,7 @@ internal class WorkflowToolWindowTabControllerImpl(
     }
 
     private fun createLogPanel(logModel: SingleValueModel<String?>, disposable: Disposable): JComponent {
-        LOG.debug("Create log panel")
+        LOG.info("Create log panel")
         val console = WorkflowRunLogConsole(project, logModel, disposable)
 
         val panel = JBPanelWithEmptyText(BorderLayout()).apply {
@@ -243,7 +225,7 @@ internal class WorkflowToolWindowTabControllerImpl(
         )
 
 //        logModel.addListener {
-//            LOG.debug("Log model changed - call panel.validate()")
+//            LOG.info("Log model changed - call panel.validate()")
 //            panel.validate()
 //        }
         return panel
@@ -265,7 +247,7 @@ internal class WorkflowToolWindowTabControllerImpl(
         val model: SingleValueModel<WorkflowRunDataProvider?> = SingleValueModel(null)
 
         fun setNewProvider(provider: WorkflowRunDataProvider?) {
-            LOG.debug("setNewProvider")
+            LOG.info("setNewProvider")
             val oldValue = model.value
             if (oldValue != null && provider != null && oldValue.url != provider.url) {
                 model.value = null
@@ -277,13 +259,13 @@ internal class WorkflowToolWindowTabControllerImpl(
         }
 
         listSelectionHolder.addSelectionChangeListener(parentDisposable) {
-            LOG.debug("selection change listener")
+            LOG.info("selection change listener")
             val provider = listSelectionHolder.selection?.let { context.dataLoader.getDataProvider(it.logs_url) }
             setNewProvider(provider)
         }
 
         context.dataLoader.addInvalidationListener(parentDisposable) {
-            LOG.debug("invalidation listener")
+            LOG.info("invalidation listener")
             val selection = listSelectionHolder.selection
             if (selection != null && selection.logs_url == it) {
                 setNewProvider(context.dataLoader.getDataProvider(selection.logs_url))
@@ -297,13 +279,13 @@ internal class WorkflowToolWindowTabControllerImpl(
         dataProviderModel: SingleValueModel<WorkflowRunDataProvider?>,
         parentDisposable: Disposable,
     ): GHCompletableFutureLoadingModel<String> {
-        LOG.debug("Create log loading model")
+        LOG.info("Create log loading model")
         val model = GHCompletableFutureLoadingModel<String>(parentDisposable)
 
         var listenerDisposable: Disposable? = null
 
         dataProviderModel.addListener {
-            LOG.debug("Value changed")
+            LOG.info("log loading model Value changed")
             val provider = dataProviderModel.value
             model.future = provider?.logRequest
 
@@ -319,7 +301,7 @@ internal class WorkflowToolWindowTabControllerImpl(
                 provider.addRunChangesListener(disposable,
                     object : WorkflowRunDataProvider.WorkflowRunChangedListener {
                         override fun logChanged() {
-                            LOG.debug("Log changed")
+                            LOG.info("Log changed")
                             model.future = provider.logRequest
                         }
                     })
@@ -334,20 +316,20 @@ internal class WorkflowToolWindowTabControllerImpl(
         val model = SingleValueModel<T?>(null)
         loadingModel.addStateChangeListener(object : GHLoadingModel.StateChangeListener {
             override fun onLoadingCompleted() {
-                LOG.debug("onLoadingCompleted")
+                LOG.info("onLoadingCompleted")
                 model.value = loadingModel.result
             }
 
             override fun onReset() {
-                LOG.debug("onReset")
+                LOG.info("onReset")
                 model.value = loadingModel.result
             }
         })
         return model
     }
 
-    companion object{
-        private val LOG = logger<WorkflowToolWindowTabControllerImpl>()
+    companion object {
+        private val LOG = thisLogger()
     }
 
 }

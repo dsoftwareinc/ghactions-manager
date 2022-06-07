@@ -4,7 +4,7 @@ import com.dsoftware.githubactionstab.api.GitHubWorkflowRun
 import com.dsoftware.githubactionstab.api.Workflows
 import com.dsoftware.githubactionstab.workflow.RepositoryCoordinates
 import com.intellij.openapi.Disposable
-import com.intellij.openapi.diagnostic.logger
+import com.intellij.openapi.diagnostic.thisLogger
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.util.Disposer
@@ -31,7 +31,7 @@ class WorkflowRunListLoader(
     }
 
     override fun reset() {
-        LOG.debug("Removing all from the list model")
+        LOG.info("Removing all from the list model")
         listModel.removeAll()
         loaded = false
 
@@ -46,15 +46,15 @@ class WorkflowRunListLoader(
     override fun canLoadMore() = !loading && !loaded
 
     override fun doLoadMore(indicator: ProgressIndicator, update: Boolean): List<GitHubWorkflowRun> {
-        LOG.debug("Do load more update: $update, indicator: $indicator")
+        LOG.info("Do load more update: $update, indicator: $indicator")
 
-        LOG.debug("Get workflow runs")
+        LOG.info("Get workflow runs")
         val request = Workflows.getWorkflowRuns(repositoryCoordinates)
         val result = requestExecutor.execute(indicator, request).workflow_runs
 
         //This is quite slow - N+1 requests, but there are no simpler way to get it, at least now.
         result.parallelStream().forEach {
-            LOG.debug("Get workflow by url ${it.workflow_url}")
+            LOG.info("Get workflow by url ${it.workflow_url}")
             it.workflowName = requestExecutor.execute(Workflows.getWorkflowByUrl(it.workflow_url)).name
         }
         loaded = true
@@ -62,6 +62,6 @@ class WorkflowRunListLoader(
     }
 
     companion object {
-        private val LOG = logger<WorkflowRunListLoader>()
+        private val LOG = thisLogger()
     }
 }

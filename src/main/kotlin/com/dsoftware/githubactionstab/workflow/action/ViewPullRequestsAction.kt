@@ -4,7 +4,7 @@ import com.dsoftware.githubactionstab.workflow.WorkflowToolWindowController
 import com.intellij.icons.AllIcons
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.components.service
-import com.intellij.openapi.diagnostic.logger
+import com.intellij.openapi.diagnostic.thisLogger
 import com.intellij.openapi.project.DumbAwareAction
 import java.util.function.Supplier
 
@@ -15,7 +15,7 @@ class ViewPullRequestsAction : DumbAwareAction(
 ) {
 
     override fun update(e: AnActionEvent) {
-        LOG.debug("update")
+        LOG.info("update")
         e.presentation.isEnabledAndVisible = isEnabledAndVisible(e)
     }
 
@@ -30,6 +30,6 @@ class ViewPullRequestsAction : DumbAwareAction(
     }
 
     companion object {
-        private val LOG = logger<ViewPullRequestsAction>()
+        private val LOG = thisLogger()
     }
 }

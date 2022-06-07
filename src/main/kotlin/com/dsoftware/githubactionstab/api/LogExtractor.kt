@@ -1,6 +1,6 @@
 package com.dsoftware.githubactionstab.api
 
-import com.intellij.openapi.diagnostic.logger
+import com.intellij.openapi.diagnostic.thisLogger
 import org.apache.commons.io.IOUtils
 import java.io.InputStream
 import java.nio.charset.StandardCharsets
@@ -47,7 +47,7 @@ class LogExtractor {
                 }
             }
         }
-        LOG.debug("Found ${jobNames.size} jobs: ${jobNames.values}")
+        LOG.info("Found ${jobNames.size} jobs: ${jobNames.values}")
 
         if (jobNames.isEmpty()) {
             return null
@@ -69,6 +69,6 @@ class LogExtractor {
     }
 
     companion object {
-        private val LOG = logger<LogExtractor>()
+        private val LOG = thisLogger()
     }
 }

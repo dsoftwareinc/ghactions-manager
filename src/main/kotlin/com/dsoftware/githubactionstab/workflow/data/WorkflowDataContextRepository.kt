@@ -7,7 +7,7 @@ import com.intellij.collaboration.async.CompletableFutureUtil.successOnEdt
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.components.service
-import com.intellij.openapi.diagnostic.logger
+import com.intellij.openapi.diagnostic.thisLogger
 import com.intellij.openapi.progress.ProcessCanceledException
 import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.project.Project
@@ -39,8 +39,8 @@ internal class WorkflowDataContextRepository {
         requestExecutor: GithubApiRequestExecutor,
         gitRemoteCoordinates: GitRemoteUrlCoordinates,
     ): WorkflowRunDataContext {
-        LOG.debug("Get WorkflowRunDataContext")
-        LOG.debug("Get User and  repository")
+        LOG.info("Get WorkflowRunDataContext")
+        LOG.info("Get User and  repository")
         val fullPath = GithubUrlUtil.getUserAndRepositoryFromRemoteUrl(gitRemoteCoordinates.url)
             ?: throw IllegalArgumentException(
                 "Invalid GitHub Repository URL - ${gitRemoteCoordinates.url} is not a GitHub repository"
@@ -48,7 +48,7 @@ internal class WorkflowDataContextRepository {
 
         val repositoryCoordinates = RepositoryCoordinates(account.server, fullPath)
 
-        LOG.debug("Create WorkflowDataLoader")
+        LOG.info("Create WorkflowDataLoader")
         val githubWorkflowDataLoader = WorkflowDataLoader {
             WorkflowRunDataProvider(ProgressManager.getInstance(), requestExecutor, it)
         }
@@ -57,7 +57,7 @@ internal class WorkflowDataContextRepository {
             githubWorkflowDataLoader.invalidateAllData()
         }
 
-        LOG.debug("Create CollectionListModel<GitHubWorkflowRun>() and loader")
+        LOG.info("Create CollectionListModel<GitHubWorkflowRun>() and loader")
         val listModel = CollectionListModel<GitHubWorkflowRun>()
 
         val listLoader = WorkflowRunListLoader(
@@ -119,7 +119,7 @@ internal class WorkflowDataContextRepository {
     }
 
     companion object {
-        private val LOG = logger<WorkflowDataContextRepository>()
+        private val LOG = thisLogger()
 
         fun getInstance(project: Project) = project.service<WorkflowDataContextRepository>()
     }

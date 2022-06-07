@@ -6,7 +6,7 @@ import com.intellij.execution.process.AnsiEscapeDecoder
 import com.intellij.execution.process.ProcessOutputTypes
 import com.intellij.execution.ui.ConsoleViewContentType
 import com.intellij.openapi.Disposable
-import com.intellij.openapi.diagnostic.logger
+import com.intellij.openapi.diagnostic.thisLogger
 import com.intellij.openapi.editor.impl.EditorImpl
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Disposer
@@ -25,7 +25,7 @@ class WorkflowRunLogConsole(
     private val objectInitialized = true;
 
     init {
-        LOG.debug("Create console")
+        LOG.info("Create console")
         logModel.addListener {
             if (!logModel.value.isNullOrBlank()) {
                 this.clear()
@@ -54,6 +54,6 @@ class WorkflowRunLogConsole(
     }
 
     companion object {
-        private val LOG = logger<WorkflowRunLogConsole>()
+        private val LOG = thisLogger()
     }
 }

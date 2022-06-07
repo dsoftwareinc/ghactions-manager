@@ -4,7 +4,7 @@ import com.dsoftware.githubactionstab.ui.WorkflowToolWindowTabController
 import com.dsoftware.githubactionstab.workflow.action.WorkflowToolWindowFactory
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.components.Service
-import com.intellij.openapi.diagnostic.logger
+import com.intellij.openapi.diagnostic.thisLogger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.wm.ToolWindow
 import com.intellij.openapi.wm.ToolWindowManager
@@ -21,7 +21,7 @@ internal class WorkflowToolWindowController(private val project: Project) : Disp
 
     @RequiresEdt
     fun activate() {
-        LOG.debug("WorkflowToolWindowController::Activate")
+        LOG.info("WorkflowToolWindowController::Activate")
         val toolWindow = ToolWindowManager.getInstance(project)
             .getToolWindow(WorkflowToolWindowFactory.ID) ?: return
         toolWindow.activate {
@@ -36,6 +36,6 @@ internal class WorkflowToolWindowController(private val project: Project) : Disp
     }
 
     companion object {
-        private val LOG = logger<WorkflowToolWindowController>()
+        private val LOG = thisLogger()
     }
 }

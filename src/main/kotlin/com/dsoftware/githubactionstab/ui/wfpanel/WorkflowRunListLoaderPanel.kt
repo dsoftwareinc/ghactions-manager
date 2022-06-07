@@ -10,7 +10,7 @@ import com.intellij.ide.actions.RefreshAction
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.actionSystem.*
 import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.diagnostic.logger
+import com.intellij.openapi.diagnostic.thisLogger
 import com.intellij.openapi.progress.util.ProgressWindow
 import com.intellij.openapi.util.Disposer
 import com.intellij.ui.ListUtil
@@ -37,7 +37,7 @@ internal class WorkflowRunListLoaderPanel(
     private lateinit var progressStripe: ProgressStripe
 
     override fun createCenterPanel(content: JComponent): JPanel {
-        LOG.debug("Create center panel")
+        LOG.info("Create center panel")
         val stripe = ProgressStripe(
             content, this,
             ProgressWindow.DEFAULT_PROGRESS_DIALOG_POSTPONE_TIME_MILLIS
@@ -52,13 +52,13 @@ internal class WorkflowRunListLoaderPanel(
 
     init {
 //        runListLoader.addOutdatedStateChangeListener(this) {
-//            LOG.debug("Update info panel")
+//            LOG.info("Update info panel")
 //            updateInfoPanel()
 //        }
     }
 
     override fun displayEmptyStatus(emptyText: StatusText) {
-        LOG.debug("Display empty status")
+        LOG.info("Display empty status")
         emptyText.text = "Nothing loaded. "
         emptyText.appendSecondaryText("Refresh", SimpleTextAttributes.LINK_PLAIN_ATTRIBUTES) {
             listLoader.reset()
@@ -76,7 +76,7 @@ internal class WorkflowRunListLoaderPanel(
     }
 
     companion object {
-        private val LOG = logger<WorkflowRunListLoaderPanel>()
+        private val LOG = thisLogger()
         private val actionManager = ActionManager.getInstance()
         private fun installPopup(list: WorkflowRunList) {
             val popupHandler = object : PopupHandler() {
@@ -160,7 +160,7 @@ internal class WorkflowRunListLoaderPanel(
 
             return WorkflowRunListLoaderPanel(context.listLoader, listReloadAction, list).apply {
                 errorHandler = LoadingErrorHandler {
-                    LOG.debug("Error on GitHub Workflow Run list loading, resetting the loader")
+                    LOG.info("Error on GitHub Workflow Run list loading, resetting the loader")
                     context.listLoader.reset()
                 }
             }.also {
