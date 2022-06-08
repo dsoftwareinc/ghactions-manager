@@ -18,6 +18,7 @@ import com.intellij.openapi.actionSystem.ActionGroup
 import com.intellij.openapi.actionSystem.ActionManager
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.DefaultActionGroup
+import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.diagnostic.thisLogger
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.actions.ToggleUseSoftWrapsToolbarAction
@@ -76,6 +77,7 @@ internal class WorkflowToolWindowTabControllerImpl(
                 LOG.info("GitHub accounts list changed")
                 update()
             }
+
             override fun onAccountCredentialsChanged(account: GithubAccount) {
                 LOG.info("GitHub account credentials changed")
                 update()
@@ -166,8 +168,7 @@ internal class WorkflowToolWindowTabControllerImpl(
 
         val dataProviderModel = createDataProviderModel(context, listSelectionHolder, disposable)
 
-        val logLoadingModel = createLogLoadingModel(dataProviderModel, disposable)
-        val logModel = createValueModel(logLoadingModel)
+        val (logLoadingModel, logModel) = createLogLoadingModel(dataProviderModel, disposable)
 
         val errorHandler = GHApiLoadingErrorHandler(project, account) {
         }
@@ -283,16 +284,33 @@ internal class WorkflowToolWindowTabControllerImpl(
     private fun createLogLoadingModel(
         dataProviderModel: SingleValueModel<WorkflowRunDataProvider?>,
         parentDisposable: Disposable,
-    ): GHCompletableFutureLoadingModel<String> {
+    ): Pair<GHCompletableFutureLoadingModel<String>, SingleValueModel<String?>> {
         LOG.info("Create log loading model")
-        val model = GHCompletableFutureLoadingModel<String>(parentDisposable)
+        val valueModel = SingleValueModel<String?>(null)
+
+        val loadingModel = GHCompletableFutureLoadingModel<String>(parentDisposable).also {
+            it.addStateChangeListener(object : GHLoadingModel.StateChangeListener {
+                override fun onLoadingCompleted() {
+                    LOG.info("onLoadingCompleted")
+                    if (it.resultAvailable) {
+                        LOG.info("result available ${it.result?.length}")
+                        valueModel.value = it.result
+                    }
+                }
+
+                override fun onReset() {
+                    LOG.info("onReset")
+                    valueModel.value = it.result
+                }
+            })
+        }
 
         var listenerDisposable: Disposable? = null
 
         dataProviderModel.addListener {
             LOG.info("log loading model Value changed")
             val provider = dataProviderModel.value
-            model.future = provider?.logRequest
+            loadingModel.future = provider?.logRequest
 
             listenerDisposable = listenerDisposable?.let {
                 Disposer.dispose(it)
@@ -306,35 +324,19 @@ internal class WorkflowToolWindowTabControllerImpl(
                 provider.addRunChangesListener(disposable,
                     object : WorkflowRunDataProvider.WorkflowRunChangedListener {
                         override fun logChanged() {
-                            LOG.info("Log changed")
-                            model.future = provider.logRequest
+                            LOG.info("Log changed ${provider.logRequest}")
+                            loadingModel.future = provider.logRequest
                         }
                     })
 
                 listenerDisposable = disposable
             }
         }
-        return model
-    }
-
-    private fun <T> createValueModel(loadingModel: GHCompletableFutureLoadingModel<T>): SingleValueModel<T?> {
-        val model = SingleValueModel<T?>(null)
-        loadingModel.addStateChangeListener(object : GHLoadingModel.StateChangeListener {
-            override fun onLoadingCompleted() {
-                LOG.info("onLoadingCompleted")
-                model.value = loadingModel.result
-            }
-
-            override fun onReset() {
-                LOG.info("onReset")
-                model.value = loadingModel.result
-            }
-        })
-        return model
+        return loadingModel to valueModel
     }
 
     companion object {
-        private val LOG = thisLogger()
+        private val LOG = logger<WorkflowToolWindowTabControllerImpl>()
     }
 
 }

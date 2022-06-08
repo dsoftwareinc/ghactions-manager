@@ -2,6 +2,7 @@ package com.dsoftware.githubactionstab.workflow.data
 
 import com.dsoftware.githubactionstab.api.Workflows
 import com.intellij.openapi.Disposable
+import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.diagnostic.thisLogger
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.progress.ProgressManager
@@ -45,6 +46,7 @@ class WorkflowRunDataProvider(
 
     @RequiresEdt
     fun reloadLog() {
+        LOG.info("reloadLog()")
         logValue.drop()
         runChangesEventDispatcher.multicaster.logChanged()
     }
@@ -62,6 +64,6 @@ class WorkflowRunDataProvider(
     }
 
     companion object {
-        private val LOG = thisLogger()
+        private val LOG = logger<WorkflowRunDataProvider>()
     }
 }
