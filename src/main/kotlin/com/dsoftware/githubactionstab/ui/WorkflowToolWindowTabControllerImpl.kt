@@ -72,7 +72,12 @@ internal class WorkflowToolWindowTabControllerImpl(
             background = UIUtil.getListBackground()
         }
         ghAuthManager.addListener(tab.disposer!!, object : AccountsListener<GithubAccount> {
+            override fun onAccountListChanged(old: Collection<GithubAccount>, new: Collection<GithubAccount>) {
+                LOG.info("GitHub accounts list changed")
+                update()
+            }
             override fun onAccountCredentialsChanged(account: GithubAccount) {
+                LOG.info("GitHub account credentials changed")
                 update()
             }
         })
