@@ -1,0 +1,51 @@
+<!-- Plugin Configuration File. Read more: https://plugins.jetbrains.com/docs/intellij/plugin-configuration-file.html -->
+<idea-plugin>
+    <id>com.dsoftware.ghtoolbar</id>
+    <name>GitHub Actions Tab</name>
+    <vendor>D Software</vendor>
+
+    <depends>com.intellij.modules.platform</depends>
+    <depends>org.jetbrains.plugins.github</depends>
+
+    <idea-version since-build="221.5080.210"/>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <applicationService serviceImplementation="com.dsoftware.ghtoolbar.services.MyApplicationService"/>
+        <projectService serviceImplementation="com.dsoftware.ghtoolbar.services.MyProjectService"/>
+
+        <toolWindow
+            id="GitHub Actions"
+            icon="com.dsoftware.githubactionstab.ui.Icons.WorkflowAllToolbar"
+            anchor="bottom"
+            factoryClass="com.dsoftware.ghtoolbar.ui.ToolWindowFactory">
+        </toolWindow>
+    </extensions>
+    <actions>
+        <group id="GHWorkflows.ActionGroup" popup="false">
+            <action id="Github.Workflow.List.Reload"
+                    class="com.dsoftware.ghtoolbar.workflow.action.list.ReloadListAction"
+                    use-shortcut-of="Refresh"/>
+        </group>
+
+        <group id="Github.Workflow.ToolWindow.List.Popup">
+            <reference id="Github.Workflow.List.Reload"/>
+        </group>
+
+        <group id="Github.Workflow.ToolWindow.List.Popup.Selected">
+            <action id="Github.Workflow.Open.In.Browser"
+                    class="com.dsoftware.ghtoolbar.workflow.action.list.OpenInBrowserAction"/>
+            <reference id="Github.Workflow.List.Reload"/>
+        </group>
+
+        <group id="Github.Workflow.Log.ToolWindow.List.Popup">
+            <action id="Github.Workflow.Log.List.Reload"
+                    class="com.dsoftware.ghtoolbar.workflow.action.log.ReloadLogAction"/>
+        </group>
+
+    </actions>
+
+    <applicationListeners>
+        <listener class="com.dsoftware.ghtoolbar.listeners.MyProjectManagerListener"
+                  topic="com.intellij.openapi.project.ProjectManagerListener"/>
+    </applicationListeners>
+</idea-plugin>
