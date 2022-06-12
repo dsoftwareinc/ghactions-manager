@@ -17,7 +17,7 @@
             id="GitHub Actions"
             icon="com.dsoftware.ghtoolbar.ui.Icons.WorkflowAllToolbar"
             anchor="bottom"
-            factoryClass="com.dsoftware.ghtoolbar.ui.ToolWindowFactory">
+            factoryClass="com.dsoftware.ghtoolbar.ui.GhActionsToolWindowFactory">
         </toolWindow>
     </extensions>
     <actions>

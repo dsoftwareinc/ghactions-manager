@@ -1,7 +1,8 @@
 package com.dsoftware.ghtoolbar.workflow
 
+import com.dsoftware.ghtoolbar.ui.GhActionsToolWindowFactory
 import com.dsoftware.ghtoolbar.ui.WorkflowToolWindowTabController
-import com.dsoftware.ghtoolbar.workflow.action.WorkflowToolWindowFactory
+
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.diagnostic.thisLogger
@@ -15,7 +16,7 @@ internal class WorkflowToolWindowController(private val project: Project) : Disp
     @RequiresEdt
     fun isAvailable(): Boolean {
         val toolWindow = ToolWindowManager.getInstance(project)
-            .getToolWindow(WorkflowToolWindowFactory.ID) ?: return false
+            .getToolWindow(GhActionsToolWindowFactory.ID) ?: return false
         return toolWindow.isAvailable
     }
 
@@ -23,7 +24,7 @@ internal class WorkflowToolWindowController(private val project: Project) : Disp
     fun activate() {
         LOG.info("WorkflowToolWindowController::Activate")
         val toolWindow = ToolWindowManager.getInstance(project)
-            .getToolWindow(WorkflowToolWindowFactory.ID) ?: return
+            .getToolWindow(GhActionsToolWindowFactory.ID) ?: return
         toolWindow.activate {
             getTabController(toolWindow)
         }

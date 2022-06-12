@@ -8,7 +8,6 @@ import com.dsoftware.ghtoolbar.workflow.action.ActionKeys
 import com.dsoftware.ghtoolbar.workflow.data.WorkflowDataContextRepository
 import com.dsoftware.ghtoolbar.workflow.data.WorkflowRunDataContext
 import com.dsoftware.ghtoolbar.workflow.data.WorkflowRunDataProvider
-import com.intellij.collaboration.auth.AccountsListener
 import com.intellij.collaboration.ui.SingleValueModel
 import com.intellij.execution.impl.ConsoleViewImpl
 import com.intellij.ide.DataManager
@@ -30,9 +29,7 @@ import com.intellij.ui.OnePixelSplitter
 import com.intellij.ui.components.JBPanelWithEmptyText
 import com.intellij.ui.content.Content
 import com.intellij.util.ui.UIUtil
-import org.jetbrains.plugins.github.api.GithubApiRequestExecutor
 import org.jetbrains.plugins.github.api.GithubApiRequestExecutorManager
-import org.jetbrains.plugins.github.authentication.GithubAuthenticationManager
 import org.jetbrains.plugins.github.authentication.accounts.GithubAccount
 import org.jetbrains.plugins.github.i18n.GithubBundle
 import org.jetbrains.plugins.github.pullrequest.ui.GHApiLoadingErrorHandler
@@ -40,20 +37,20 @@ import org.jetbrains.plugins.github.pullrequest.ui.GHCompletableFutureLoadingMod
 import org.jetbrains.plugins.github.pullrequest.ui.GHLoadingModel
 import org.jetbrains.plugins.github.pullrequest.ui.GHLoadingPanelFactory
 import org.jetbrains.plugins.github.util.GHGitRepositoryMapping
-import org.jetbrains.plugins.github.util.GHProjectRepositoriesManager
 import java.awt.BorderLayout
 import javax.swing.JComponent
 import kotlin.properties.Delegates
 
 internal class WorkflowToolWindowTabControllerImpl(
     private val project: Project,
-    private val ghAuthManager: GithubAuthenticationManager,
-    private val ghRepositoryManager: GHProjectRepositoriesManager,
+    repositoryMapping: GHGitRepositoryMapping,
+    ghAccount: GithubAccount,
     private val dataContextRepository: WorkflowDataContextRepository,
     private val tab: Content,
 ) : WorkflowToolWindowTabController {
     private val actionManager = ActionManager.getInstance()
     private val mainPanel: JComponent
+    private val ghRequestExecutor = GithubApiRequestExecutorManager.getInstance().getExecutor(ghAccount)
 
     private var contentDisposable by Delegates.observable<Disposable?>(null) { _, oldValue, newValue ->
         if (oldValue != null) Disposer.dispose(oldValue)
@@ -61,62 +58,17 @@ internal class WorkflowToolWindowTabControllerImpl(
     }
 
     var isDisposed: Boolean = false
-    open fun dispose() {
+    fun dispose() {
         isDisposed = true
     }
 
     init {
-        tab.displayName = "Workflows"
+        tab.displayName = repositoryMapping.repositoryPath
         mainPanel = tab.component.apply {
             layout = BorderLayout()
             background = UIUtil.getListBackground()
         }
-        ghAuthManager.addListener(tab.disposer!!, object : AccountsListener<GithubAccount> {
-            override fun onAccountListChanged(old: Collection<GithubAccount>, new: Collection<GithubAccount>) {
-                LOG.info("GitHub accounts list changed")
-                update()
-            }
 
-            override fun onAccountCredentialsChanged(account: GithubAccount) {
-                LOG.info("GitHub account credentials changed")
-                update()
-            }
-        })
-        ghRepositoryManager.addRepositoryListChangedListener(tab.disposer!!) {
-            update()
-        }
-        update()
-    }
-
-
-    fun update() {
-        LOG.info("Updater.update()")
-        val ghAccount = ghAuthManager.getSingleOrDefaultAccount(project)
-        if (ghAccount == null) {
-            LOG.info("No github account set")
-            tab.displayName = "Workflows"
-
-        } else {
-            LOG.info("GitHub account: ${ghAccount.name} on ${ghAccount.server}")
-            try {
-                val repo = ghRepositoryManager.knownRepositories.first()
-                val ghRequestExecutor = GithubApiRequestExecutorManager.getInstance().getExecutor(ghAccount)
-                showWorkflowsComponent(repo, ghAccount, ghRequestExecutor)
-            } catch (e: Exception) {
-                LOG.warn("Got exception ${e.message}")
-                null
-            }
-        }
-    }
-
-
-    private fun showWorkflowsComponent(
-        repositoryMapping: GHGitRepositoryMapping,
-        ghAccount: GithubAccount,
-        ghRequestExecutor: GithubApiRequestExecutor,
-    ) {
-
-        LOG.info("Updater.showWorkflowsComponent()")
         val repository = repositoryMapping.ghRepositoryCoordinates
         val remote = repositoryMapping.gitRemoteUrlCoordinates
 
