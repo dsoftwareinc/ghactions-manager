@@ -3,6 +3,7 @@ package com.dsoftware.ghtoolbar.ui
 import com.dsoftware.ghtoolbar.workflow.LoadingErrorHandler
 import com.dsoftware.ghtoolbar.workflow.data.WorkflowRunListLoader
 import com.intellij.openapi.Disposable
+import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.diagnostic.thisLogger
 import com.intellij.ui.ScrollPaneFactory
 import com.intellij.ui.SimpleTextAttributes
@@ -159,7 +160,7 @@ internal abstract class ListLoaderPanel(
     override fun dispose() {}
 
     companion object {
-        private val LOG = thisLogger()
+        private val LOG = logger<ListLoaderPanel>()
 
         private fun getLoadingErrorText(error: Throwable, newLineSeparator: String = "\n"): String {
             if (error is GithubStatusCodeException && error.error != null) {

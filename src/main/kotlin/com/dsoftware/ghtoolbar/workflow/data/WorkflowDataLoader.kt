@@ -3,6 +3,7 @@ package com.dsoftware.ghtoolbar.workflow.data
 import com.google.common.cache.CacheBuilder
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.application.runInEdt
+import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.diagnostic.thisLogger
 import com.intellij.util.EventDispatcher
 import com.intellij.util.concurrency.annotations.RequiresEdt
@@ -53,6 +54,6 @@ class WorkflowDataLoader(private val dataProviderFactory: (String) -> WorkflowRu
     }
 
     companion object {
-        private val LOG = thisLogger()
+        private val LOG = logger<WorkflowDataLoader>()
     }
 }

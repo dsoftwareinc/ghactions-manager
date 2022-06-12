@@ -10,7 +10,7 @@ import com.intellij.ide.actions.RefreshAction
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.actionSystem.*
 import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.diagnostic.thisLogger
+import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.progress.util.ProgressWindow
 import com.intellij.openapi.util.Disposer
 import com.intellij.ui.ListUtil
@@ -50,13 +50,6 @@ internal class WorkflowRunListLoaderPanel(
         if (isLoading) progressStripe.startLoading() else progressStripe.stopLoading()
     }
 
-    init {
-//        runListLoader.addOutdatedStateChangeListener(this) {
-//            LOG.info("Update info panel")
-//            updateInfoPanel()
-//        }
-    }
-
     override fun displayEmptyStatus(emptyText: StatusText) {
         LOG.info("Display empty status")
         emptyText.text = "Nothing loaded. "
@@ -65,41 +58,28 @@ internal class WorkflowRunListLoaderPanel(
         }
     }
 
-    override fun updateInfoPanel() {
-        super.updateInfoPanel()
-//        if (infoPanel.isEmpty && listLoader.outdated) {
-//            infoPanel.setInfo("<html><body>The list is outdated. <a href=''>Refresh</a></body></html>",
-//                HtmlInfoPanel.Severity.INFO) {
-//                ActionUtil.invokeAction(listReloadAction, this, ActionPlaces.UNKNOWN, it.inputEvent, null)
-//            }
-//        }
-    }
-
     companion object {
-        private val LOG = thisLogger()
+        private val LOG = logger<WorkflowRunListLoaderPanel>()
         private val actionManager = ActionManager.getInstance()
         private fun installPopup(list: WorkflowRunList) {
-            val popupHandler = object : PopupHandler() {
+            list.addMouseListener(object : PopupHandler() {
                 override fun invokePopup(comp: java.awt.Component, x: Int, y: Int) {
 
-                    val popupMenu: ActionPopupMenu = if (ListUtil.isPointOnSelection(list, x, y)) {
-                        actionManager
-                            .createActionPopupMenu(
-                                "GithubWorkflowListPopupSelected",
-                                actionManager.getAction("Github.Workflow.ToolWindow.List.Popup.Selected") as ActionGroup
-                            )
+                    val (place, groupId) = if (ListUtil.isPointOnSelection(list, x, y)) {
+                        Pair("GithubWorkflowListPopupSelected", "Github.Workflow.ToolWindow.List.Popup.Selected")
                     } else {
-                        actionManager
-                            .createActionPopupMenu(
-                                "GithubWorkflowListPopup",
-                                actionManager.getAction("Github.Workflow.ToolWindow.List.Popup") as ActionGroup
-                            )
+                        Pair("GithubWorkflowListPopup", "Github.Workflow.ToolWindow.List.Popup")
                     }
+                    val popupMenu: ActionPopupMenu =
+                        actionManager.createActionPopupMenu(
+                            place,
+                            actionManager.getAction(groupId) as ActionGroup
+                        )
+
                     popupMenu.setTargetComponent(list)
                     popupMenu.component.show(comp, x, y)
                 }
-            }
-            list.addMouseListener(popupHandler)
+            })
         }
 
         private fun installWorkflowRunSelectionSaver(
@@ -160,7 +140,7 @@ internal class WorkflowRunListLoaderPanel(
 
             return WorkflowRunListLoaderPanel(context.listLoader, listReloadAction, list).apply {
                 errorHandler = LoadingErrorHandler {
-                    LOG.info("Error on GitHub Workflow Run list loading, resetting the loader")
+                    LOG.warn("Error on GitHub Workflow Run list loading, resetting the loader")
                     context.listLoader.reset()
                 }
             }.also {

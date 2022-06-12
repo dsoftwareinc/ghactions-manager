@@ -72,6 +72,9 @@ object Workflows : GithubApiRequests.Entity("/repos") {
     fun getDownloadUrlForWorkflowLog(url: String) = DownloadUrlWorkflowRunLogGet(url)
         .withOperationName("Download Workflow log")
 
+    fun postRerunWorkflow(url: String) = GithubApiRequest.Post.Json(url, "", GitHubWorkflow::class.java, null)
+        .withOperationName("Rerun workflow")
+
     fun getWorkflowRuns(
         coordinates: RepositoryCoordinates,
         event: String? = null,

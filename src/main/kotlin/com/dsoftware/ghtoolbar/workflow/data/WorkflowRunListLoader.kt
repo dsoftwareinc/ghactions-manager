@@ -4,6 +4,7 @@ import com.dsoftware.ghtoolbar.api.GitHubWorkflowRun
 import com.dsoftware.ghtoolbar.api.Workflows
 import com.dsoftware.ghtoolbar.workflow.RepositoryCoordinates
 import com.intellij.openapi.Disposable
+import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.diagnostic.thisLogger
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.progress.ProgressManager
@@ -50,8 +51,9 @@ class WorkflowRunListLoader(
 
         LOG.info("Get workflow runs")
         val request = Workflows.getWorkflowRuns(repositoryCoordinates)
-        val result = requestExecutor.execute(indicator, request).workflow_runs
-
+        val response = requestExecutor.execute(indicator, request)
+        val result = response.workflow_runs
+        LOG.info("Got ${result.size} workflows")
         //This is quite slow - N+1 requests, but there are no simpler way to get it, at least now.
         result.parallelStream().forEach {
             LOG.info("Get workflow by url ${it.workflow_url}")
@@ -62,6 +64,6 @@ class WorkflowRunListLoader(
     }
 
     companion object {
-        private val LOG = thisLogger()
+        private val LOG = logger<WorkflowRunListLoader>()
     }
 }

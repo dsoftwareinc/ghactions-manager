@@ -53,7 +53,7 @@ fun extractFromStream(inputStream: InputStream): Map<String, Map<String, String>
 
 fun stepsAsLog(steps: Map<String, String>): String {
     return steps.entries
-        .map { "==== Step: ${it.key} ====\n${it.value}" }
+        .map { "---- Step: ${it.key} ----\n${it.value}" }
         .joinToString("\n")
 }
 

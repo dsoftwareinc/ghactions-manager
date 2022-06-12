@@ -34,6 +34,8 @@
         <group id="Github.Workflow.ToolWindow.List.Popup.Selected">
             <action id="Github.Workflow.Open.In.Browser"
                     class="com.dsoftware.ghtoolbar.workflow.action.list.OpenInBrowserAction"/>
+            <action id="Github.Workflow.Rerun"
+                    class="com.dsoftware.ghtoolbar.workflow.action.list.RerunWorkflowAction"/>
             <reference id="Github.Workflow.List.Reload"/>
         </group>
 

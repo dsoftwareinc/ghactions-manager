@@ -9,11 +9,9 @@ import com.dsoftware.ghtoolbar.workflow.data.WorkflowDataContextRepository
 import com.dsoftware.ghtoolbar.workflow.data.WorkflowRunDataContext
 import com.dsoftware.ghtoolbar.workflow.data.WorkflowRunDataProvider
 import com.intellij.collaboration.ui.SingleValueModel
-import com.intellij.execution.impl.ConsoleViewImpl
 import com.intellij.ide.DataManager
 import com.intellij.ide.actions.RefreshAction
 import com.intellij.openapi.Disposable
-import com.intellij.openapi.actionSystem.ActionGroup
 import com.intellij.openapi.actionSystem.ActionManager
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.DefaultActionGroup
@@ -114,8 +112,8 @@ internal class WorkflowToolWindowTabControllerImpl(
         disposable: Disposable,
     ): JComponent {
         val listSelectionHolder = WorkflowRunListSelectionHolder()
-        val workflowRunsList =
-            WorkflowRunListLoaderPanel.createWorkflowRunsListComponent(context, listSelectionHolder, disposable)
+        val workflowRunsList = WorkflowRunListLoaderPanel
+            .createWorkflowRunsListComponent(context, listSelectionHolder, disposable)
 
         val dataProviderModel = createDataProviderModel(context, listSelectionHolder, disposable)
 
@@ -141,10 +139,11 @@ internal class WorkflowToolWindowTabControllerImpl(
             firstComponent = workflowRunsList
             secondComponent = logLoadingPanel
                 .also {
-                    (actionManager.getAction("Github.Workflow.Log.List.Reload") as RefreshAction).registerCustomShortcutSet(
-                        it,
-                        disposable
-                    )
+                    (actionManager.getAction("Github.Workflow.Log.List.Reload") as RefreshAction)
+                        .registerCustomShortcutSet(
+                            it,
+                            disposable
+                        )
                 }
         }.also {
             DataManager.registerDataProvider(it) { dataId ->
@@ -166,34 +165,21 @@ internal class WorkflowToolWindowTabControllerImpl(
             isOpaque = false
             add(console.component, BorderLayout.CENTER)
         }
-        installLogPopup(console)
-
-        val editor = console.editor
-
-        val consoleActionsGroup = DefaultActionGroup()
-
-        consoleActionsGroup.add(actionManager.getAction("Github.Workflow.Log.List.Reload"))
-        consoleActionsGroup.add(
+        LOG.info("Adding popup actions")
+        val actionGroup = actionManager.getAction("Github.Workflow.Log.ToolWindow.List.Popup") as DefaultActionGroup
+        actionGroup.removeAll()
+        actionGroup.add(actionManager.getAction("Github.Workflow.Log.List.Reload"))
+        actionGroup.add(
             object : ToggleUseSoftWrapsToolbarAction(SoftWrapAppliancePlaces.CONSOLE) {
                 override fun getEditor(e: AnActionEvent): Editor? {
-                    return editor
+                    return console.editor
                 }
             }
         )
-
-//        logModel.addListener {
-//            LOG.info("Log model changed - call panel.validate()")
-//            panel.validate()
-//        }
-        return panel
-    }
-
-
-    private fun installLogPopup(console: ConsoleViewImpl) {
-        val actionGroup = actionManager.getAction("Github.Workflow.Log.ToolWindow.List.Popup") as ActionGroup
         val contextMenuPopupHandler = ContextMenuPopupHandler.Simple(actionGroup)
-
         (console.editor as EditorEx).installPopupHandler(contextMenuPopupHandler)
+
+        return panel
     }
 
     private fun createDataProviderModel(
