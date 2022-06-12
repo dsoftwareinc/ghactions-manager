@@ -123,7 +123,7 @@ internal class WorkflowToolWindowTabControllerImpl(
         }
         val logLoadingPanel = GHLoadingPanelFactory(
             logLoadingModel,
-            "Can't load data from GitHub",
+            "Select a workflow to show logs",
             GithubBundle.message("cannot.load.data.from.github"),
             errorHandler
         ).create { _, _ ->

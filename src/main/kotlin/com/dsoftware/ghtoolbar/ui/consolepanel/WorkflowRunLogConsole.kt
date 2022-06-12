@@ -3,7 +3,7 @@ package com.dsoftware.ghtoolbar.ui.consolepanel
 import com.intellij.collaboration.ui.SingleValueModel
 import com.intellij.execution.impl.ConsoleViewImpl
 import com.intellij.execution.process.AnsiEscapeDecoder
-import com.intellij.execution.process.ProcessOutputTypes
+import com.intellij.execution.process.ProcessOutputType
 import com.intellij.execution.ui.ConsoleViewContentType
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.diagnostic.logger
@@ -28,12 +28,12 @@ class WorkflowRunLogConsole(
         LOG.info("Create console")
         if (!logModel.value.isNullOrBlank()) {
             this.clear()
-            this.addData(logModel.value!!, ProcessOutputTypes.STDOUT)
+            this.addData(logModel.value!!, ProcessOutputType.STDOUT)
         }
         logModel.addListener {
             if (!logModel.value.isNullOrBlank()) {
                 this.clear()
-                this.addData(logModel.value!!, ProcessOutputTypes.STDOUT)
+                this.addData(logModel.value!!, ProcessOutputType.STDOUT)
             }
         }
 
