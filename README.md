@@ -1,5 +1,5 @@
-# github-actions-jetbrains-plugin
-
+github-actions-jetbrains-plugin
+===============================
 
 ![Build](https://github.com/dsoftwareinc/github-actions-jetbrains-plugin/workflows/Build/badge.svg)
 [![Version](https://img.shields.io/jetbrains/plugin/v/com.dsoftware.ghtoolbar.svg)](https://plugins.jetbrains.com/plugin/com.dsoftware.ghtoolbar)
@@ -13,9 +13,17 @@ some changes to the branch and want to see whether the repository's checks
 are passing on your changes.
 <!-- Plugin description end -->
 
-Based on [github-actions-tab](https://github.com/Otanikotani/view-github-actions-idea-plugin).
+Based on [Otanikotani's github-actions-tab](https://github.com/Otanikotani/view-github-actions-idea-plugin).
 
-## Installation
+# Contributions
+
+# Sponsor
+github-actions-toolbar for JetBrains products is developed for free.
+
+Support this project by becoming a sponsor.
+
+
+# Installation
 
 - Using IDE built-in plugin system:
   
@@ -30,8 +38,3 @@ Based on [github-actions-tab](https://github.com/Otanikotani/view-github-actions
   Download the [latest release](https://github.com/dsoftwareinc/github-actions-jetbrains-plugin/releases/latest) and install it manually using
   <kbd>Settings/Preferences</kbd> > <kbd>Plugins</kbd> > <kbd>⚙️</kbd> > <kbd>Install plugin from disk...</kbd>
 
-
----
-Plugin based on the [IntelliJ Platform Plugin Template][template].
-
-[template]: https://github.com/JetBrains/intellij-platform-plugin-template
