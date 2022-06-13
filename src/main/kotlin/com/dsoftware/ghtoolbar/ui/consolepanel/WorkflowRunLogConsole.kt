@@ -27,13 +27,11 @@ class WorkflowRunLogConsole(
     init {
         LOG.info("Create console")
         if (!logModel.value.isNullOrBlank()) {
-            this.clear()
-            this.addData(logModel.value!!, ProcessOutputType.STDOUT)
+            this.setData(logModel.value!!)
         }
         logModel.addListener {
             if (!logModel.value.isNullOrBlank()) {
-                this.clear()
-                this.addData(logModel.value!!, ProcessOutputType.STDOUT)
+                this.setData(logModel.value!!)
             }
         }
 
@@ -42,8 +40,9 @@ class WorkflowRunLogConsole(
         }
     }
 
-    private fun addData(message: String, outputType: Key<*>) {
-        ansiEscapeDecoder.escapeText(message, outputType, this)
+    private fun setData(message: String) {
+        this.clear()
+        ansiEscapeDecoder.escapeText(message, ProcessOutputType.STDOUT, this)
     }
 
     override fun coloredTextAvailable(text: String, attributes: Key<*>) {

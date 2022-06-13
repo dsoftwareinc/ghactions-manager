@@ -1,6 +1,8 @@
 package com.dsoftware.ghtoolbar.api
 
+import com.dsoftware.ghtoolbar.ui.consolepanel.DownloadUrlWorkflowRunLogGet
 import com.dsoftware.ghtoolbar.workflow.RepositoryCoordinates
+import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.diagnostic.thisLogger
 import org.jetbrains.plugins.github.api.GithubApiRequest
 import org.jetbrains.plugins.github.api.GithubApiRequest.Get
@@ -65,7 +67,7 @@ data class GitHubAuthor(
 )
 
 object Workflows : GithubApiRequests.Entity("/repos") {
-    private val LOG = thisLogger()
+    private val LOG = logger<Workflows>()
     fun getWorkflowByUrl(url: String) = Get.Json(url, GitHubWorkflow::class.java, null)
         .withOperationName("Get Workflow Description By URL")
 

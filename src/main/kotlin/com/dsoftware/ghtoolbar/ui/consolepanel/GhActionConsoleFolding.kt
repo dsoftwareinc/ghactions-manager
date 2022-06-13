@@ -12,7 +12,7 @@ class GhActionConsoleFolding : ConsoleFolding() {
     }
 
     override fun shouldFoldLine(project: Project, line: String): Boolean {
-        return !(line.startsWith("==== Job")
+        return !(line.startsWith("====")
             || line.startsWith("---- Step"))
     }
 

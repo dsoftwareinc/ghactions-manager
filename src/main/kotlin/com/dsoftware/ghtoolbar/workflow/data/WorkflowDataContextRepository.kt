@@ -26,7 +26,7 @@ import java.io.IOException
 import java.util.concurrent.CompletableFuture
 
 @Service
-internal class WorkflowDataContextRepository {
+class WorkflowDataContextRepository {
 
     private val repositories =
         mutableMapOf<GHRepositoryCoordinates, LazyCancellableBackgroundProcessValue<WorkflowRunDataContext>>()

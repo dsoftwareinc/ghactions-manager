@@ -1,4 +1,4 @@
-package com.dsoftware.ghtoolbar.api
+package com.dsoftware.ghtoolbar.ui.consolepanel
 
 import com.intellij.openapi.diagnostic.logger
 import org.apache.commons.io.IOUtils
@@ -40,9 +40,7 @@ fun extractFromStream(inputStream: InputStream): Map<String, Map<String, String>
                 val stepNameParts = stepFileName.split("_")
                 val stepIndex = stepNameParts[0].padStart(4, '0')
                 val stepName = stepNameParts.drop(1).joinToString("")
-
                 val stepLog = IOUtils.toString(it, StandardCharsets.UTF_8.toString())
-
                 content.computeIfAbsent(jobName) { TreeMap() }["${stepIndex}_${stepName}"] = stepLog
             }
         }
@@ -51,13 +49,6 @@ fun extractFromStream(inputStream: InputStream): Map<String, Map<String, String>
     return content
 }
 
-fun stepsAsLog(steps: Map<String, String>): String {
-    return steps.entries
-        .map {
-            "\u001b[1;97m---- Step: ${it.key} ----\u001b[0m\n${it.value}"
-        }
-        .joinToString("\n")
-}
 
 class DownloadUrlWorkflowRunLogGet(url: String) : GithubApiRequest.Get<String>(url) {
     private lateinit var workflowInfo: Map<String, Map<String, String>>
@@ -74,12 +65,26 @@ class DownloadUrlWorkflowRunLogGet(url: String) : GithubApiRequest.Get<String>(u
             if (workflowInfo.isEmpty()) {
                 "Logs are unavailable"
             } else {
+                val printLog = (sizeOfLogs(workflowInfo) < 1_000_000)
                 workflowInfo.entries
-                    .map { i -> "\u001b[1;96m==== Job: ${i.key} ====\u001b[0m\n${stepsAsLog(i.value)}" }
+                    .map { i -> "\u001b[1;96m==== Job: ${i.key} ====\u001b[0m\n${stepsAsLog(i.value, printLog)}" }
                     .joinToString("\n")
             }
 
         }
+    }
+
+    private fun stepsAsLog(steps: Map<String, String>, printLog: Boolean): String {
+        return steps.entries
+            .map {
+                val log = if (printLog) it.value else "Log bigger than 1mb, go to web..."
+                "\u001b[1;97m---- Step: ${it.key} ----\u001b[0m\n${log}"
+            }
+            .joinToString("\n")
+    }
+
+    private fun sizeOfLogs(workflowInfo: Map<String, Map<String, String>>): Int {
+        return workflowInfo.values.sumOf { it.values.sumOf { it.length } }
     }
 
     companion object {

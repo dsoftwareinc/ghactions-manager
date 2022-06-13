@@ -73,7 +73,7 @@ class GhActionsToolWindowFactory : ToolWindowFactory {
                     }.also {
                         it.putUserData(
                             WorkflowToolWindowTabController.KEY,
-                            WorkflowToolWindowTabControllerImpl(
+                            WorkflowToolWindowTabController(
                                 project,
                                 repo,
                                 ghAccount,
