@@ -54,7 +54,7 @@ fun extractFromStream(inputStream: InputStream): Map<String, Map<String, String>
 fun stepsAsLog(steps: Map<String, String>): String {
     return steps.entries
         .map {
-            "\u001b[93m---- Step: ${it.key} ----\u001b[0m\n${it.value}"
+            "\u001b[1;97m---- Step: ${it.key} ----\u001b[0m\n${it.value}"
         }
         .joinToString("\n")
 }
@@ -75,7 +75,7 @@ class DownloadUrlWorkflowRunLogGet(url: String) : GithubApiRequest.Get<String>(u
                 "Logs are unavailable"
             } else {
                 workflowInfo.entries
-                    .map { i -> "\u001b[1m\u001b[36m==== Job: ${i.key} ====\u001b[0m\n${stepsAsLog(i.value)}" }
+                    .map { i -> "\u001b[1;96m==== Job: ${i.key} ====\u001b[0m\n${stepsAsLog(i.value)}" }
                     .joinToString("\n")
             }
 
