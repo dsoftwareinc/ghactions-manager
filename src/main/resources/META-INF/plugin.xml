@@ -12,13 +12,13 @@
     <extensions defaultExtensionNs="com.intellij">
         <applicationService serviceImplementation="com.dsoftware.ghtoolbar.services.MyApplicationService"/>
         <projectService serviceImplementation="com.dsoftware.ghtoolbar.services.MyProjectService"/>
-
         <toolWindow
             id="GitHub Actions"
             icon="com.dsoftware.ghtoolbar.ui.Icons.WorkflowAllToolbar"
             anchor="bottom"
             factoryClass="com.dsoftware.ghtoolbar.ui.GhActionsToolWindowFactory">
         </toolWindow>
+        <console.folding implementation="com.dsoftware.ghtoolbar.ui.consolepanel.GhActionConsoleFolding"/>
     </extensions>
     <actions>
         <group id="GHWorkflows.ActionGroup" popup="false">

@@ -1,6 +1,6 @@
+import org.jetbrains.changelog.date
 import org.jetbrains.changelog.markdownToHTML
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-import org.jetbrains.changelog.date
 
 fun properties(key: String) = project.findProperty(key).toString()
 
@@ -8,7 +8,7 @@ plugins {
     // Java support
     id("java")
     // Kotlin support
-    id("org.jetbrains.kotlin.jvm") version "1.6.10"
+    id("org.jetbrains.kotlin.jvm") version "1.7.0"
     // Gradle IntelliJ Plugin
     id("org.jetbrains.intellij") version "1.6.0"
     // Gradle Changelog Plugin
@@ -69,6 +69,9 @@ tasks {
 
     wrapper {
         gradleVersion = properties("gradleVersion")
+    }
+    runIde {
+        autoReloadPlugins.set(true)
     }
 
     patchPluginXml {
