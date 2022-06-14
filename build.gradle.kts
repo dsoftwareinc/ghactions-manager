@@ -66,6 +66,9 @@ tasks {
             kotlinOptions.jvmTarget = it
         }
     }
+    runPluginVerifier {
+        ideVersions.set(listOf(properties("platformVersion")))
+    }
 
     wrapper {
         gradleVersion = properties("gradleVersion")

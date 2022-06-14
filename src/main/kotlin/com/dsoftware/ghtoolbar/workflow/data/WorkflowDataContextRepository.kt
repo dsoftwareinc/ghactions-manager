@@ -89,6 +89,7 @@ class WorkflowDataContextRepository {
     ): CompletableFuture<WorkflowRunDataContext> {
         return repositories.getOrPut(repository) {
             val contextDisposable = Disposer.newDisposable()
+
             LazyCancellableBackgroundProcessValue.create { indicator ->
                 ProgressManager.getInstance().submitIOTask(indicator) {
                     try {
@@ -98,11 +99,7 @@ class WorkflowDataContextRepository {
                         throw e
                     }
                 }.successOnEdt { ctx ->
-                    if (Disposer.isDisposed(contextDisposable)) {
-                        Disposer.dispose(ctx)
-                    } else {
-                        Disposer.register(contextDisposable, ctx)
-                    }
+                    Disposer.register(contextDisposable, ctx)
                     ctx
                 }
             }.also {

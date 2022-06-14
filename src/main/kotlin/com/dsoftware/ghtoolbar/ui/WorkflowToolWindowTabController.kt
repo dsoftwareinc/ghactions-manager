@@ -28,6 +28,7 @@ import com.intellij.ui.OnePixelSplitter
 import com.intellij.ui.components.JBPanelWithEmptyText
 import com.intellij.ui.content.Content
 import com.intellij.util.ui.UIUtil
+import org.jetbrains.plugins.github.api.GithubApiRequestExecutor
 import org.jetbrains.plugins.github.api.GithubApiRequestExecutorManager
 import org.jetbrains.plugins.github.authentication.accounts.GithubAccount
 import org.jetbrains.plugins.github.i18n.GithubBundle
@@ -49,7 +50,7 @@ class WorkflowToolWindowTabController(
 ) {
     private val actionManager = ActionManager.getInstance()
     private val mainPanel: JComponent
-    private val ghRequestExecutor = GithubApiRequestExecutorManager.getInstance().getExecutor(ghAccount)
+    private val ghRequestExecutor: GithubApiRequestExecutor.WithTokenAuth
 
     private var contentDisposable by Delegates.observable<Disposable?>(null) { _, oldValue, newValue ->
         if (oldValue != null) Disposer.dispose(oldValue)
@@ -62,6 +63,7 @@ class WorkflowToolWindowTabController(
     }
 
     init {
+        ghRequestExecutor = GithubApiRequestExecutorManager.getInstance().getExecutor(ghAccount)
         tab.displayName = repositoryMapping.repositoryPath
         mainPanel = tab.component.apply {
             layout = BorderLayout()
@@ -148,12 +150,10 @@ class WorkflowToolWindowTabController(
                 }
         }.also {
             DataManager.registerDataProvider(it) { dataId ->
-                if (Disposer.isDisposed(disposable)) null
-                else when {
+                when {
                     ActionKeys.ACTION_DATA_CONTEXT.`is`(dataId) -> selectionDataContext
                     else -> null
                 }
-
             }
         }
     }
