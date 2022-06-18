@@ -90,7 +90,7 @@ class WorkflowToolWindowTabController(
         }
         val panel = GHLoadingPanelFactory(
             loadingModel,
-            null,
+            "Not loading content",
             GithubBundle.message("cannot.load.data.from.github"),
             errorHandler,
         ).create { _, result ->
@@ -273,7 +273,7 @@ class WorkflowToolWindowTabController(
     }
 
     companion object {
-        val KEY = Key.create<WorkflowToolWindowTabController>("Github.PullRequests.ToolWindow.Tab.Controller")
+        val KEY = Key.create<WorkflowToolWindowTabController>("Github.Actions.ToolWindow.Tab.Controller")
         private val LOG = logger<WorkflowToolWindowTabController>()
     }
 }

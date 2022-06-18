@@ -8,6 +8,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.wm.ToolWindow
 import com.intellij.openapi.wm.ToolWindowFactory
+import com.intellij.ui.components.JBPanelWithEmptyText
 import org.jetbrains.plugins.github.authentication.GithubAuthenticationManager
 import org.jetbrains.plugins.github.authentication.accounts.GithubAccount
 import org.jetbrains.plugins.github.util.GHGitRepositoryMapping
@@ -43,22 +44,36 @@ class GhActionsToolWindowFactory : ToolWindowFactory {
         })
     }
 
-    override fun createToolWindowContent(project: Project, toolWindow: ToolWindow) =
+    fun noGitHubAccountView(toolWindow: ToolWindow) =
         with(toolWindow.contentManager) {
-            removeAllContents(true)
-            val ghAccount = authManager.getSingleOrDefaultAccount(project)
-            if (ghAccount == null) {
-                addContent(factory.createContent(JPanel(), "Workflows", false)
-                    .apply {
-                        isCloseable = false
-                        setDisposer(Disposer.newDisposable("GitHubWorkflow tab disposable"))
-                    }.also {
-                        //TODO Link to github settings
-                    }
-                )
-                return
-            }
+            LOG.info("No GitHub account configured")
+            val emptyTextPanel = JBPanelWithEmptyText()
+                .withEmptyText("GitHub account not configured, go to settings to fix")
 
+            addContent(factory.createContent(emptyTextPanel, "Workflows", false)
+                .apply {
+                    isCloseable = false
+                    setDisposer(Disposer.newDisposable("GitHubWorkflow tab disposable"))
+                }
+            )
+        }
+
+    fun noRepositories(toolWindow: ToolWindow) =
+        with(toolWindow.contentManager) {
+            LOG.info("No git repositories in project")
+            val emptyTextPanel = JBPanelWithEmptyText()
+                .withEmptyText("No git repositories in project")
+
+            addContent(factory.createContent(emptyTextPanel, "Workflows", false)
+                .apply {
+                    isCloseable = false
+                    setDisposer(Disposer.newDisposable("GitHubWorkflow tab disposable"))
+                }
+            )
+        }
+
+    fun ghAccountAndReposConfigured(project: Project, toolWindow: ToolWindow, ghAccount: GithubAccount) =
+        with(toolWindow.contentManager) {
             val dataContextRepository = WorkflowDataContextRepository.getInstance(project)
             LOG.info(
                 "createToolWindowContent github account: ${ghAccount.name}, " +
@@ -70,18 +85,31 @@ class GhActionsToolWindowFactory : ToolWindowFactory {
                     .apply {
                         isCloseable = false
                         setDisposer(Disposer.newDisposable("GitHubWorkflow tab disposable"))
-                    }.also {
-                        it.putUserData(
+
+                        this.putUserData(
                             WorkflowToolWindowTabController.KEY,
                             WorkflowToolWindowTabController(
                                 project,
                                 repo,
                                 ghAccount,
                                 dataContextRepository,
-                                it
+                                this
                             )
                         )
                     })
+            }
+        }
+
+    override fun createToolWindowContent(project: Project, toolWindow: ToolWindow) =
+        with(toolWindow.contentManager) {
+            removeAllContents(true)
+            val ghAccount = authManager.getSingleOrDefaultAccount(project)
+            if (ghAccount == null) {
+                noGitHubAccountView(toolWindow)
+            } else if (knownRepositories.isEmpty()) {
+                noRepositories(toolWindow)
+            } else {
+                ghAccountAndReposConfigured(project, toolWindow, ghAccount)
             }
         }
 
