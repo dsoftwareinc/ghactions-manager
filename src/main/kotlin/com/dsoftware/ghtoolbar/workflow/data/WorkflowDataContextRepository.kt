@@ -52,6 +52,7 @@ class WorkflowDataContextRepository {
         val githubWorkflowDataLoader = WorkflowDataLoader {
             WorkflowRunLogsDataProvider(ProgressManager.getInstance(), requestExecutor, it)
         }
+        Disposer.register(disposable, githubWorkflowDataLoader)
 
         requestExecutor.addListener(githubWorkflowDataLoader) {
             githubWorkflowDataLoader.invalidateAllData()
@@ -65,6 +66,7 @@ class WorkflowDataContextRepository {
             repositoryCoordinates,
             listModel
         )
+        Disposer.register(disposable, listLoader)
 
         listLoader.addDataListener(disposable, object : GHListLoader.ListDataListener {
             override fun onDataAdded(startIdx: Int) {

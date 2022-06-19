@@ -2,7 +2,6 @@ package com.dsoftware.ghtoolbar.ui.wfpanel
 
 
 import com.dsoftware.ghtoolbar.api.model.GitHubWorkflowRun
-import com.dsoftware.ghtoolbar.ui.ListLoaderPanel
 import com.dsoftware.ghtoolbar.workflow.LoadingErrorHandler
 import com.dsoftware.ghtoolbar.workflow.WorkflowRunListSelectionHolder
 import com.dsoftware.ghtoolbar.workflow.data.WorkflowRunDataContext
@@ -14,31 +13,76 @@ import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.progress.util.ProgressWindow
 import com.intellij.openapi.util.Disposer
-import com.intellij.ui.ListUtil
-import com.intellij.ui.PopupHandler
-import com.intellij.ui.ScrollingUtil
-import com.intellij.ui.SimpleTextAttributes
+import com.intellij.ui.*
+import com.intellij.util.ui.ComponentWithEmptyText
+import com.intellij.util.ui.JBUI
 import com.intellij.util.ui.StatusText
+import com.intellij.util.ui.components.BorderLayoutPanel
 import com.intellij.vcs.log.ui.frame.ProgressStripe
+import org.jetbrains.plugins.github.exceptions.GithubStatusCodeException
+import org.jetbrains.plugins.github.ui.HtmlInfoPanel
 import java.awt.BorderLayout
+import java.awt.event.ActionEvent
 import java.awt.event.FocusEvent
 import java.awt.event.FocusListener
 import javax.swing.JComponent
 import javax.swing.JPanel
+import javax.swing.ScrollPaneConstants
 import javax.swing.event.ListDataEvent
 import javax.swing.event.ListDataListener
 import javax.swing.event.ListSelectionEvent
 
 internal class WorkflowRunListLoaderPanel(
     disposable: Disposable,
-    runListLoader: WorkflowRunListLoader,
+    private val runListLoader: WorkflowRunListLoader,
     listReloadAction: RefreshAction,
-    contentComponent: JComponent
-) : ListLoaderPanel(runListLoader, contentComponent), Disposable {
+    private val contentComponent: JComponent,
+    private val loadAllAfterFirstScroll: Boolean = false
+) : BorderLayoutPanel(), Disposable {
 
     private lateinit var progressStripe: ProgressStripe
 
+    private var userScrolled = false
+    val scrollPane = ScrollPaneFactory.createScrollPane(
+        contentComponent,
+        ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
+        ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER
+    ).apply {
+        isOpaque = false
+        viewport.isOpaque = false
+        border = JBUI.Borders.empty()
+        verticalScrollBar.model.addChangeListener { potentiallyLoadMore() }
+        verticalScrollBar.model.addChangeListener {
+            if (!userScrolled && verticalScrollBar.value > 0) userScrolled = true
+        }
+    }
+
+    private val infoPanel = HtmlInfoPanel()
+
+    protected open val loadingText
+        get() = "Loading..."
+
+    var errorHandler: LoadingErrorHandler? = null
+
     init {
+        LOG.info("Initialize ListLoaderPanel")
+        addToCenter(createCenterPanel(JBUI.Panels.simplePanel(scrollPane).addToTop(infoPanel).apply {
+            isOpaque = false
+        }))
+
+        runListLoader.addLoadingStateChangeListener(this) {
+            setLoading(runListLoader.loading)
+            updateEmptyText()
+        }
+
+        runListLoader.addErrorChangeListener(this) {
+            updateInfoPanel()
+            updateEmptyText()
+        }
+
+        setLoading(runListLoader.loading)
+        updateInfoPanel()
+        updateEmptyText()
         errorHandler = LoadingErrorHandler {
             LOG.warn("Error on GitHub Workflow Run list loading, resetting the loader")
             runListLoader.reset()
@@ -58,7 +102,86 @@ internal class WorkflowRunListLoaderPanel(
         }
     }
 
-    override fun createCenterPanel(content: JComponent): JPanel {
+    private fun updateEmptyText() {
+        val emptyText = (contentComponent as? ComponentWithEmptyText)?.emptyText ?: return
+        emptyText.clear()
+        if (runListLoader.loading) {
+            emptyText.text = loadingText
+        } else {
+            val error = runListLoader.error
+            if (error != null) {
+                displayErrorStatus(emptyText, error)
+            } else {
+                displayEmptyStatus(emptyText)
+            }
+        }
+    }
+
+    private fun displayErrorStatus(emptyText: StatusText, error: Throwable) {
+        LOG.info("Display error status")
+        emptyText.appendText(getErrorPrefix(runListLoader.loadedData.isEmpty()), SimpleTextAttributes.ERROR_ATTRIBUTES)
+            .appendSecondaryText(getLoadingErrorText(error), SimpleTextAttributes.ERROR_ATTRIBUTES, null)
+
+        errorHandler?.getActionForError()?.let {
+            emptyText.appendSecondaryText(" ${it.getValue("Name")}", SimpleTextAttributes.LINK_PLAIN_ATTRIBUTES, it)
+        }
+    }
+
+    protected open fun updateInfoPanel() {
+        val error = runListLoader.error
+        if (error != null && runListLoader.loadedData.isNotEmpty()) {
+            val errorPrefix = getErrorPrefix(runListLoader.loadedData.isEmpty())
+            val errorText = getLoadingErrorText(error, "<br/>")
+            val action = errorHandler?.getActionForError()
+            if (action != null) {
+                //language=HTML
+                infoPanel.setInfo(
+                    """<html lang="en"><body>$errorPrefix<br/>$errorText<a href=''>&nbsp;${action.getValue("Name")}</a></body></html>""",
+                    HtmlInfoPanel.Severity.ERROR
+                ) {
+                    action.actionPerformed(
+                        ActionEvent(
+                            infoPanel,
+                            ActionEvent.ACTION_PERFORMED,
+                            it.eventType.toString()
+                        )
+                    )
+                }
+
+            } else {
+                //language=HTML
+                infoPanel.setInfo(
+                    """<html lang="en"><body>$errorPrefix<br/>$errorText</body></html>""",
+                    HtmlInfoPanel.Severity.ERROR
+                )
+            }
+        } else infoPanel.setInfo(null)
+    }
+
+    protected open fun getErrorPrefix(listEmpty: Boolean) = if (listEmpty) "Can't load list" else "Can't load full list"
+
+    private fun potentiallyLoadMore() {
+        LOG.info("Potentially loading more")
+        if (runListLoader.canLoadMore() && ((userScrolled && loadAllAfterFirstScroll) || isScrollAtThreshold())) {
+            LOG.info("Load more")
+            runListLoader.loadMore()
+        }
+    }
+
+    private fun isScrollAtThreshold(): Boolean {
+        val verticalScrollBar = scrollPane.verticalScrollBar
+        val visibleAmount = verticalScrollBar.visibleAmount
+        val value = verticalScrollBar.value
+        val maximum = verticalScrollBar.maximum
+        if (maximum == 0) return false
+        val scrollFraction = (visibleAmount + value) / maximum.toFloat()
+        if (scrollFraction < 0.5) return false
+        return true
+    }
+
+    override fun dispose() {}
+
+    fun createCenterPanel(content: JComponent): JPanel {
         LOG.info("Create center panel")
         val stripe = ProgressStripe(
             content, this,
@@ -68,15 +191,15 @@ internal class WorkflowRunListLoaderPanel(
         return stripe
     }
 
-    override fun setLoading(isLoading: Boolean) {
+    fun setLoading(isLoading: Boolean) {
         if (isLoading) progressStripe.startLoading() else progressStripe.stopLoading()
     }
 
-    override fun displayEmptyStatus(emptyText: StatusText) {
+    fun displayEmptyStatus(emptyText: StatusText) {
         LOG.info("Display empty status")
         emptyText.text = "Nothing loaded. "
         emptyText.appendSecondaryText("Refresh", SimpleTextAttributes.LINK_PLAIN_ATTRIBUTES) {
-            listLoader.reset()
+            runListLoader.reset()
         }
     }
 
@@ -160,5 +283,26 @@ internal class WorkflowRunListLoaderPanel(
 
             return WorkflowRunListLoaderPanel(disposable, context.listLoader, listReloadAction, list)
         }
+
+        private fun getLoadingErrorText(error: Throwable, newLineSeparator: String = "\n"): String {
+            if (error is GithubStatusCodeException && error.error != null) {
+                val githubError = error.error!!
+                val builder = StringBuilder(githubError.message)
+                if (githubError.errors?.isNotEmpty()!!) {
+                    builder.append(": ").append(newLineSeparator)
+                    for (e in githubError.errors!!) {
+                        builder.append(
+                            e.message
+                                ?: "${e.code} error in ${e.resource} field ${e.field}"
+                        ).append(newLineSeparator)
+                    }
+                }
+                return builder.toString()
+            }
+
+            return error.message?.let { addDotIfNeeded(it) } ?: "Unknown loading error."
+        }
+
+        private fun addDotIfNeeded(line: String) = if (line.endsWith('.')) line else "$line."
     }
 }
