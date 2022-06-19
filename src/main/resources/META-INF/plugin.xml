@@ -14,14 +14,23 @@
             id="GitHub Actions"
             icon="com.dsoftware.ghtoolbar.ui.Icons.WorkflowAllToolbar"
             anchor="bottom"
-            factoryClass="com.dsoftware.ghtoolbar.ui.GhActionsToolWindowFactory">
-        </toolWindow>
-        <console.folding implementation="com.dsoftware.ghtoolbar.ui.consolepanel.GhActionConsoleFolding"/>
+            factoryClass="com.dsoftware.ghtoolbar.ui.GhActionsToolWindowFactory"/>
+        <console.folding
+            implementation="com.dsoftware.ghtoolbar.ui.consolepanel.GhActionConsoleFolding"/>
+        <projectConfigurable
+            parentId="tools"
+            instance="com.dsoftware.ghtoolbar.ui.settings.GhActionsToolbarConfigurable"
+            />
     </extensions>
     <actions>
         <action
             id="ShowGithubSettings"
             class="com.dsoftware.ghtoolbar.ui.actions.ShowGithubSettingsAction"/>
+        <action
+            id="ShowGhActionsToolbarSettings"
+            class="com.dsoftware.ghtoolbar.ui.actions.ShowToolbarSettingsAction"
+            icon="AllIcons.General.GearPlain"
+        />
         <group id="GHWorkflows.ActionGroup" popup="false">
             <action id="Github.Workflow.List.Reload"
                     class="com.dsoftware.ghtoolbar.workflow.action.list.ReloadListAction"

@@ -4,7 +4,6 @@ import com.dsoftware.ghtoolbar.workflow.LoadingErrorHandler
 import com.dsoftware.ghtoolbar.workflow.data.WorkflowRunListLoader
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.diagnostic.logger
-import com.intellij.openapi.diagnostic.thisLogger
 import com.intellij.ui.ScrollPaneFactory
 import com.intellij.ui.SimpleTextAttributes
 import com.intellij.util.ui.ComponentWithEmptyText
@@ -40,7 +39,7 @@ internal abstract class ListLoaderPanel(
         }
     }
 
-    protected val infoPanel = HtmlInfoPanel()
+    private val infoPanel = HtmlInfoPanel()
 
     protected open val loadingText
         get() = "Loading..."
@@ -114,7 +113,7 @@ internal abstract class ListLoaderPanel(
             if (action != null) {
                 //language=HTML
                 infoPanel.setInfo(
-                    """<html><body>$errorPrefix<br/>$errorText<a href=''>&nbsp;${action.getValue("Name")}</a></body></html>""",
+                    """<html lang="en"><body>$errorPrefix<br/>$errorText<a href=''>&nbsp;${action.getValue("Name")}</a></body></html>""",
                     HtmlInfoPanel.Severity.ERROR
                 ) {
                     action.actionPerformed(
@@ -129,7 +128,7 @@ internal abstract class ListLoaderPanel(
             } else {
                 //language=HTML
                 infoPanel.setInfo(
-                    """<html><body>$errorPrefix<br/>$errorText</body></html>""",
+                    """<html lang="en"><body>$errorPrefix<br/>$errorText</body></html>""",
                     HtmlInfoPanel.Severity.ERROR
                 )
             }
