@@ -3,7 +3,6 @@ package com.dsoftware.ghtoolbar.ui
 import com.dsoftware.ghtoolbar.workflow.data.WorkflowDataContextRepository
 import com.intellij.collaboration.auth.AccountsListener
 import com.intellij.openapi.actionSystem.ActionPlaces
-import com.intellij.openapi.actionSystem.IdeActions
 import com.intellij.openapi.actionSystem.ex.ActionUtil
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.diagnostic.logger
@@ -22,7 +21,6 @@ import javax.swing.JPanel
 
 class GhActionsToolWindowFactory : ToolWindowFactory {
     private val authManager = GithubAuthenticationManager.getInstance()
-    private val basePanel: JPanel? = null
     private var knownRepositories: Set<GHGitRepositoryMapping> = emptySet()
 
     override fun init(toolWindow: ToolWindow) {

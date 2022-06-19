@@ -13,7 +13,7 @@ class ReloadListAction : RefreshAction("Refresh Workflow Runs", null, AllIcons.A
     }
 
     override fun actionPerformed(e: AnActionEvent) {
-        LOG.info("ReloadListAction action performed")
+        LOG.debug("ReloadListAction action performed")
         e.getRequiredData(ActionKeys.ACTION_DATA_CONTEXT).resetAllData()
     }
 

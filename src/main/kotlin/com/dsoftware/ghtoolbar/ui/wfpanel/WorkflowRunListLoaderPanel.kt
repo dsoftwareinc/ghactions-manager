@@ -44,11 +44,11 @@ internal class WorkflowRunListLoaderPanel(
             runListLoader.reset()
         }
         listReloadAction.registerCustomShortcutSet(this, disposable)
-
-        val logActionsGroup = DefaultActionGroup()
-        logActionsGroup.add(listReloadAction)
+        val actionsGroup = DefaultActionGroup()
+        actionsGroup.add(listReloadAction)
+        actionsGroup.add(actionManager.getAction("ShowGhActionsToolbarSettings"))
         val actionToolbar = ActionManager.getInstance()
-            .createActionToolbar(ActionPlaces.CONTEXT_TOOLBAR, logActionsGroup, false)
+            .createActionToolbar(ActionPlaces.CONTEXT_TOOLBAR, actionsGroup, false)
         actionToolbar.targetComponent = this
 
         add(actionToolbar.component, BorderLayout.WEST)
