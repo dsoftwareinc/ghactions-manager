@@ -1,6 +1,7 @@
 package com.dsoftware.ghtoolbar.ui.wfpanel
 
-import com.dsoftware.ghtoolbar.api.GitHubWorkflowRun
+
+import com.dsoftware.ghtoolbar.api.model.GitHubWorkflowRun
 import com.dsoftware.ghtoolbar.ui.ListLoaderPanel
 import com.dsoftware.ghtoolbar.workflow.LoadingErrorHandler
 import com.dsoftware.ghtoolbar.workflow.WorkflowRunListSelectionHolder
@@ -29,12 +30,33 @@ import javax.swing.event.ListDataListener
 import javax.swing.event.ListSelectionEvent
 
 internal class WorkflowRunListLoaderPanel(
+    disposable: Disposable,
     runListLoader: WorkflowRunListLoader,
-    private val listReloadAction: RefreshAction,
+    listReloadAction: RefreshAction,
     contentComponent: JComponent
 ) : ListLoaderPanel(runListLoader, contentComponent), Disposable {
 
     private lateinit var progressStripe: ProgressStripe
+
+    init {
+        errorHandler = LoadingErrorHandler {
+            LOG.warn("Error on GitHub Workflow Run list loading, resetting the loader")
+            runListLoader.reset()
+        }
+        listReloadAction.registerCustomShortcutSet(this, disposable)
+
+        val logActionsGroup = DefaultActionGroup()
+        logActionsGroup.add(listReloadAction)
+        val actionToolbar = ActionManager.getInstance()
+            .createActionToolbar(ActionPlaces.CONTEXT_TOOLBAR, logActionsGroup, false)
+        actionToolbar.targetComponent = this
+
+        add(actionToolbar.component, BorderLayout.WEST)
+
+        Disposer.register(disposable) {
+            Disposer.dispose(this)
+        }
+    }
 
     override fun createCenterPanel(content: JComponent): JPanel {
         LOG.info("Create center panel")
@@ -119,7 +141,6 @@ internal class WorkflowRunListLoaderPanel(
             listSelectionHolder: WorkflowRunListSelectionHolder,
             disposable: Disposable,
         ): JComponent {
-
             val list = WorkflowRunList(context.listModel).apply {
                 emptyText.clear()
             }.also {
@@ -135,29 +156,9 @@ internal class WorkflowRunListLoaderPanel(
                 installWorkflowRunSelectionSaver(it, listSelectionHolder)
             }
 
-            //Cannot seem to have context menu, when right click, why?
             val listReloadAction = actionManager.getAction("Github.Workflow.List.Reload") as RefreshAction
 
-            return WorkflowRunListLoaderPanel(context.listLoader, listReloadAction, list).apply {
-                errorHandler = LoadingErrorHandler {
-                    LOG.warn("Error on GitHub Workflow Run list loading, resetting the loader")
-                    context.listLoader.reset()
-                }
-            }.also {
-                listReloadAction.registerCustomShortcutSet(it, disposable)
-
-                val logActionsGroup = DefaultActionGroup()
-                logActionsGroup.add(listReloadAction)
-                val actionToolbar = ActionManager.getInstance()
-                    .createActionToolbar(ActionPlaces.CONTEXT_TOOLBAR, logActionsGroup, false)
-                actionToolbar.targetComponent = it
-
-                it.add(actionToolbar.component, BorderLayout.WEST)
-
-                Disposer.register(disposable) {
-                    Disposer.dispose(it)
-                }
-            }
+            return WorkflowRunListLoaderPanel(disposable, context.listLoader, listReloadAction, list)
         }
     }
 }

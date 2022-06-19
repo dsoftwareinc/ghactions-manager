@@ -1,6 +1,6 @@
 package com.dsoftware.ghtoolbar.workflow
 
-import com.dsoftware.ghtoolbar.api.GitHubWorkflowRun
+import com.dsoftware.ghtoolbar.api.model.GitHubWorkflowRun
 import com.intellij.collaboration.ui.SimpleEventListener
 import com.intellij.openapi.Disposable
 import com.intellij.util.EventDispatcher

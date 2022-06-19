@@ -1,11 +1,10 @@
 package com.dsoftware.ghtoolbar.workflow.data
 
-import com.dsoftware.ghtoolbar.api.GitHubWorkflowRun
+import com.dsoftware.ghtoolbar.api.model.GitHubWorkflowRun
 import com.dsoftware.ghtoolbar.api.Workflows
 import com.dsoftware.ghtoolbar.workflow.RepositoryCoordinates
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.diagnostic.logger
-import com.intellij.openapi.diagnostic.thisLogger
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.util.Disposer

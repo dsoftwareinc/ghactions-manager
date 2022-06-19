@@ -1,6 +1,6 @@
 package com.dsoftware.ghtoolbar.ui.wfpanel
 
-import com.dsoftware.ghtoolbar.api.GitHubWorkflowRun
+import com.dsoftware.ghtoolbar.api.model.GitHubWorkflowRun
 import com.dsoftware.ghtoolbar.ui.Icons
 import com.dsoftware.ghtoolbar.workflow.action.ActionKeys
 import com.intellij.icons.AllIcons
@@ -105,7 +105,7 @@ class WorkflowRunList(model: ListModel<GitHubWorkflowRun>) : JBList<GitHubWorkfl
 
         override fun getListCellRendererComponent(
             list: JList<out GitHubWorkflowRun>,
-            value: GitHubWorkflowRun,
+            ghWorkflowRun: GitHubWorkflowRun,
             index: Int,
             isSelected: Boolean,
             cellHasFocus: Boolean
@@ -114,54 +114,64 @@ class WorkflowRunList(model: ListModel<GitHubWorkflowRun>) : JBList<GitHubWorkfl
             val primaryTextColor = ListUiUtil.WithTallRow.foreground(isSelected, list.hasFocus())
             val secondaryTextColor = ListUiUtil.WithTallRow.secondaryForeground(list, isSelected)
 
-            stateIcon.apply {
-                icon = when (value.status) {
-                    "completed" -> {
-                        when (value.conclusion) {
-                            "success" -> AllIcons.Actions.Commit
-                            "failure" -> Icons.X
-                            else -> Icons.PrimitiveDot
-                        }
-                    }
-                    "queued" -> Icons.PrimitiveDot
-                    "in progress" -> Icons.PrimitiveDot
-                    "neutral" -> Icons.PrimitiveDot
-                    "success" -> AllIcons.Actions.Commit
-                    "failure" -> Icons.X
-                    "cancelled" -> Icons.X
-                    "action required" -> Icons.Watch
-                    "timed out" -> Icons.Watch
-                    "skipped" -> Icons.X
-                    "stale" -> Icons.Watch
-                    else -> Icons.PrimitiveDot
-                }
-            }
+            stateIcon.icon = ghWorkflowRunIcon(ghWorkflowRun)
             title.apply {
-                text = value.head_commit.message
+                text = ghWorkflowRun.head_commit.message
                 foreground = primaryTextColor
             }
-            var updatedAtLabel = "Unknown"
-            if (value.updated_at != null) {
-                updatedAtLabel = makeTimePretty(value.updated_at)
-            }
-            var action = "pushed by"
-            if (value.event == "release") {
-                action = "created by"
-            }
+
             info.apply {
-                text = "${value.workflowName} #${value.run_number}: " +
-                    "$action ${value.head_commit.author.name} " +
-                    "on $updatedAtLabel"
+                text = ghWorkflowRunInfo(ghWorkflowRun)
                 foreground = secondaryTextColor
             }
             labels.apply {
                 removeAll()
-                add(JBLabel(" ${value.head_branch} ", UIUtil.ComponentStyle.SMALL).apply {
+                add(JBLabel(" ${ghWorkflowRun.head_branch} ", UIUtil.ComponentStyle.SMALL).apply {
                     foreground = JBColor(ColorUtil.softer(secondaryTextColor), ColorUtil.softer(secondaryTextColor))
                 })
                 add(Box.createRigidArea(JBDimension(4, 0)))
             }
             return this
+        }
+    }
+
+    companion object {
+        private val LOG = thisLogger()
+        fun ghWorkflowRunIcon(ghWorkflowRun: GitHubWorkflowRun): Icon {
+            return when (ghWorkflowRun.status) {
+                "completed" -> {
+                    when (ghWorkflowRun.conclusion) {
+                        "success" -> AllIcons.Actions.Commit
+                        "failure" -> Icons.X
+                        else -> Icons.PrimitiveDot
+                    }
+                }
+                "queued" -> Icons.PrimitiveDot
+                "in progress" -> Icons.PrimitiveDot
+                "neutral" -> Icons.PrimitiveDot
+                "success" -> AllIcons.Actions.Commit
+                "failure" -> Icons.X
+                "cancelled" -> Icons.X
+                "action required" -> Icons.Watch
+                "timed out" -> Icons.Watch
+                "skipped" -> Icons.X
+                "stale" -> Icons.Watch
+                else -> Icons.PrimitiveDot
+            }
+        }
+
+        fun ghWorkflowRunInfo(ghWorkflowRun: GitHubWorkflowRun): String {
+            val updatedAtLabel =
+                if (ghWorkflowRun.updated_at == null) "Unknown"
+                else makeTimePretty(ghWorkflowRun.updated_at)
+
+            var action = "pushed by"
+            if (ghWorkflowRun.event == "release") {
+                action = "created by"
+            }
+            return "${ghWorkflowRun.workflowName} #${ghWorkflowRun.run_number}: " +
+                "$action ${ghWorkflowRun.head_commit.author.name} " +
+                "on $updatedAtLabel"
         }
 
         fun makeTimePretty(date: Date): String {
@@ -169,10 +179,6 @@ class WorkflowRunList(model: ListModel<GitHubWorkflowRun>) : JBList<GitHubWorkfl
             val zonedDateTime = localDateTime.atZone(ZoneOffset.UTC)
             return DateFormatUtil.formatPrettyDateTime(zonedDateTime.toInstant().toEpochMilli())
         }
-    }
-
-    companion object {
-        private val LOG = thisLogger()
     }
 
     override fun performCopy(dataContext: DataContext) {

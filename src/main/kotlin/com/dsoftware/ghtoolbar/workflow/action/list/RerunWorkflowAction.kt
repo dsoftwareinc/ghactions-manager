@@ -19,7 +19,7 @@ class RerunWorkflowAction : DumbAwareAction("Rerun Workflow") {
         e.dataContext.getData(CommonDataKeys.PROJECT) ?: return
         getData(e.dataContext)?.let {
             LOG.info("Triggering rerun ${it}")
-            //todo
+
         }
     }
 

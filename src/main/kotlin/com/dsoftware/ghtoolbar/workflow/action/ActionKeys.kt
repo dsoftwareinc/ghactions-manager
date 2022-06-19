@@ -1,6 +1,6 @@
 package com.dsoftware.ghtoolbar.workflow.action
 
-import com.dsoftware.ghtoolbar.api.GitHubWorkflowRun
+import com.dsoftware.ghtoolbar.api.model.GitHubWorkflowRun
 import com.dsoftware.ghtoolbar.workflow.WorkflowRunSelectionContext
 import com.intellij.openapi.actionSystem.DataKey
 

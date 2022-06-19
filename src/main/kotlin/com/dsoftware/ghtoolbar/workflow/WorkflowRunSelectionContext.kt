@@ -1,9 +1,9 @@
 package com.dsoftware.ghtoolbar.workflow
 
-import com.dsoftware.ghtoolbar.api.GitHubWorkflowRun
+import com.dsoftware.ghtoolbar.api.model.GitHubWorkflowRun
 import com.dsoftware.ghtoolbar.workflow.data.WorkflowRunDataContext
 import com.dsoftware.ghtoolbar.workflow.data.WorkflowRunDataProvider
-import com.intellij.openapi.diagnostic.thisLogger
+import com.intellij.openapi.diagnostic.logger
 
 class WorkflowRunSelectionContext internal constructor(
     private val dataContext: WorkflowRunDataContext,
@@ -23,6 +23,6 @@ class WorkflowRunSelectionContext internal constructor(
         get() = workflowRun?.let { dataContext.dataLoader.getDataProvider(it.logs_url) }
 
     companion object {
-        private val LOG = thisLogger()
+        private val LOG = logger<WorkflowRunSelectionContext>()
     }
 }
