@@ -1,5 +1,5 @@
-ghactions-toolbar
-===============================
+GitHub Actions Toolbar for JetBrains IDEs
+=========================================
 
 ![Build](https://github.com/dsoftwareinc/ghactions-toolbar/workflows/Build/badge.svg)
 [![Version](https://img.shields.io/jetbrains/plugin/v/com.dsoftware.ghtoolbar.svg)](https://plugins.jetbrains.com/plugin/19347-github-actions-toolbar)
@@ -12,8 +12,8 @@ ghactions-toolbar
 
 
 <!-- Plugin description -->
-This plugin creates a toolbar on JetBrains products (IntelliJ, PyCharm) where you 
-can manage GitHub Actions of the repository.
+This plugin creates a toolbar on JetBrains products (IntelliJ, PyCharm, ...) 
+where you can view GitHub workflow runs of the repository.
 This plugin is a good alternative to alt-tabbing for every time you push 
 some changes to the branch and want to see whether the repository's checks 
 are passing on your changes.
@@ -32,8 +32,8 @@ labeled with `Help wanted`.
 github-actions-toolbar for JetBrains products is developed for free.
 
 Support this project by becoming a sponsor using [this link](https://github.com/sponsors/cunla)
-
-Or you can [!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://buymeacoffee.com/danielmoran)
+ 
+[!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://buymeacoffee.com/danielmoran)
 
 
 # Installation
