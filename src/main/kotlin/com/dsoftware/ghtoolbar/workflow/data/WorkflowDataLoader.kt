@@ -6,10 +6,11 @@ import com.intellij.openapi.application.runInEdt
 import com.intellij.openapi.diagnostic.logger
 import com.intellij.util.EventDispatcher
 import com.intellij.util.concurrency.annotations.RequiresEdt
-import java.util.*
+import java.util.EventListener
 
-class WorkflowDataLoader(private val dataProviderFactory: (String) -> WorkflowRunLogsDataProvider) :
-    Disposable {
+class WorkflowDataLoader(
+    private val dataProviderFactory: (String) -> WorkflowRunLogsDataProvider
+) : Disposable {
 
     private var isDisposed = false
     private val cache = CacheBuilder.newBuilder()

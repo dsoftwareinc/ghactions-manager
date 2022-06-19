@@ -3,7 +3,6 @@ package com.dsoftware.ghtoolbar.api
 import WorkflowRunJobs
 import com.dsoftware.ghtoolbar.api.model.GitHubWorkflow
 import com.dsoftware.ghtoolbar.api.model.GitHubWorkflowRuns
-import com.dsoftware.ghtoolbar.ui.consolepanel.DownloadUrlWorkflowRunLogGet
 import com.dsoftware.ghtoolbar.workflow.RepositoryCoordinates
 import com.intellij.openapi.diagnostic.logger
 import org.jetbrains.plugins.github.api.GithubApiRequest
@@ -20,7 +19,7 @@ object Workflows : GithubApiRequests.Entity("/repos") {
     fun getWorkflowByUrl(url: String) = Get.Json(url, GitHubWorkflow::class.java, null)
         .withOperationName("Get Workflow Description By URL")
 
-    fun getDownloadUrlForWorkflowLog(url: String) = DownloadUrlWorkflowRunLogGet(url)
+    fun getDownloadUrlForWorkflowLog(url: String) = GetRunLogRequest(url)
         .withOperationName("Download Workflow log")
 
     fun postRerunWorkflow(url: String) = GithubApiRequest.Post.Json(url, "", GitHubWorkflow::class.java, null)

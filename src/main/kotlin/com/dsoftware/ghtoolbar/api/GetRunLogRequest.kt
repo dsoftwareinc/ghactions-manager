@@ -1,4 +1,4 @@
-package com.dsoftware.ghtoolbar.ui.consolepanel
+package com.dsoftware.ghtoolbar.api
 
 import com.intellij.openapi.diagnostic.logger
 import org.apache.commons.io.IOUtils
@@ -10,11 +10,11 @@ import java.util.TreeMap
 import java.util.zip.ZipInputStream
 
 
-class DownloadUrlWorkflowRunLogGet(url: String) : GithubApiRequest.Get<String>(url) {
+class GetRunLogRequest(url: String) : GithubApiRequest.Get<String>(url) {
     private lateinit var workflowInfo: Map<String, Map<String, String>>
 
     init {
-        LOG.info("DownloadUrlWorkflowRunLogGet ${url}")
+        LOG.info("GetRunLogRequest ${url}")
     }
 
     override fun extractResult(response: GithubApiResponse): String {
@@ -48,7 +48,7 @@ class DownloadUrlWorkflowRunLogGet(url: String) : GithubApiRequest.Get<String>(u
     }
 
     companion object {
-        private val LOG = logger<DownloadUrlWorkflowRunLogGet>()
+        private val LOG = logger<GetRunLogRequest>()
         fun extractFromStream(inputStream: InputStream): Map<String, Map<String, String>> {
             val jobNames = HashMap<String, String>()
             val content = HashMap<String, TreeMap<String, String>>()

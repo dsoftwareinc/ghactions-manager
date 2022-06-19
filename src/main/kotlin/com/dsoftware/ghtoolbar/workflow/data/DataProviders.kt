@@ -24,7 +24,7 @@ abstract class DataProvider<T>(
 ) {
     private val runChangesEventDispatcher = EventDispatcher.create(WorkflowRunChangedListener::class.java)
 
-    private val value: LazyCancellableBackgroundProcessValue<T> = backingValue {
+    protected val value: LazyCancellableBackgroundProcessValue<T> = backingValue {
         try {
             LOG.info("Executing $url")
             val request = buildRequest(url)
@@ -85,6 +85,8 @@ class WorkflowRunLogsDataProvider(
 
 }
 
+
+//TODO Use this as replacement for logs when logs are too big
 class WorkflowRunJobsDataProvider(
     progressManager: ProgressManager,
     requestExecutor: GithubApiRequestExecutor,
