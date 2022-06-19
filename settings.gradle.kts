@@ -1,1 +1,1 @@
-rootProject.name = "github-actions-jetbrains-plugin"
+rootProject.name = "ghactions-toolbar"

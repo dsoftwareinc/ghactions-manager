@@ -1,6 +1,6 @@
 <!-- Keep a Changelog guide -> https://keepachangelog.com -->
 
-# github-actions-jetbrains-plugin Changelog
+# ghactions-toolbar Changelog
 ## [Unreleased]
 
 ## [0.0.3] - 2022-06-13
