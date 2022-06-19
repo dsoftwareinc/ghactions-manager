@@ -10,8 +10,6 @@
     <idea-version since-build="221.5080.210"/>
 
     <extensions defaultExtensionNs="com.intellij">
-        <applicationService serviceImplementation="com.dsoftware.ghtoolbar.services.MyApplicationService"/>
-        <projectService serviceImplementation="com.dsoftware.ghtoolbar.services.MyProjectService"/>
         <toolWindow
             id="GitHub Actions"
             icon="com.dsoftware.ghtoolbar.ui.Icons.WorkflowAllToolbar"
@@ -21,6 +19,9 @@
         <console.folding implementation="com.dsoftware.ghtoolbar.ui.consolepanel.GhActionConsoleFolding"/>
     </extensions>
     <actions>
+        <action
+            id="ShowGithubSettings"
+            class="com.dsoftware.ghtoolbar.ui.actions.ShowGithubSettingsAction"/>
         <group id="GHWorkflows.ActionGroup" popup="false">
             <action id="Github.Workflow.List.Reload"
                     class="com.dsoftware.ghtoolbar.workflow.action.list.ReloadListAction"
@@ -46,8 +47,4 @@
 
     </actions>
 
-    <applicationListeners>
-        <listener class="com.dsoftware.ghtoolbar.listeners.MyProjectManagerListener"
-                  topic="com.intellij.openapi.project.ProjectManagerListener"/>
-    </applicationListeners>
 </idea-plugin>

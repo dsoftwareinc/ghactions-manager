@@ -2,12 +2,16 @@ package com.dsoftware.ghtoolbar.ui
 
 import com.dsoftware.ghtoolbar.workflow.data.WorkflowDataContextRepository
 import com.intellij.collaboration.auth.AccountsListener
+import com.intellij.openapi.actionSystem.ActionPlaces
+import com.intellij.openapi.actionSystem.IdeActions
+import com.intellij.openapi.actionSystem.ex.ActionUtil
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.wm.ToolWindow
 import com.intellij.openapi.wm.ToolWindowFactory
+import com.intellij.ui.SimpleTextAttributes
 import com.intellij.ui.components.JBPanelWithEmptyText
 import org.jetbrains.plugins.github.authentication.GithubAuthenticationManager
 import org.jetbrains.plugins.github.authentication.accounts.GithubAccount
@@ -44,11 +48,35 @@ class GhActionsToolWindowFactory : ToolWindowFactory {
         })
     }
 
-    fun noGitHubAccountView(toolWindow: ToolWindow) =
+
+    override fun createToolWindowContent(project: Project, toolWindow: ToolWindow) =
+        with(toolWindow.contentManager) {
+            removeAllContents(true)
+            val ghAccount = authManager.getSingleOrDefaultAccount(project)
+            if (ghAccount == null) {
+                noGitHubAccountPanel(toolWindow)
+            } else if (knownRepositories.isEmpty()) {
+                noRepositories(toolWindow)
+            } else {
+                ghAccountAndReposConfigured(project, toolWindow, ghAccount)
+            }
+        }
+
+    private fun noGitHubAccountPanel(toolWindow: ToolWindow) =
         with(toolWindow.contentManager) {
             LOG.info("No GitHub account configured")
             val emptyTextPanel = JBPanelWithEmptyText()
-                .withEmptyText("GitHub account not configured, go to settings to fix")
+            emptyTextPanel.emptyText
+                .appendText("GitHub account not configured, go to settings to fix")
+                .appendSecondaryText(
+                    "Go to Settings",
+                    SimpleTextAttributes.LINK_ATTRIBUTES,
+                    ActionUtil.createActionListener(
+                        "ShowGithubSettings",
+                        emptyTextPanel,
+                        ActionPlaces.UNKNOWN
+                    )
+                )
 
             addContent(factory.createContent(emptyTextPanel, "Workflows", false)
                 .apply {
@@ -58,7 +86,7 @@ class GhActionsToolWindowFactory : ToolWindowFactory {
             )
         }
 
-    fun noRepositories(toolWindow: ToolWindow) =
+    private fun noRepositories(toolWindow: ToolWindow) =
         with(toolWindow.contentManager) {
             LOG.info("No git repositories in project")
             val emptyTextPanel = JBPanelWithEmptyText()
@@ -72,7 +100,7 @@ class GhActionsToolWindowFactory : ToolWindowFactory {
             )
         }
 
-    fun ghAccountAndReposConfigured(project: Project, toolWindow: ToolWindow, ghAccount: GithubAccount) =
+    private fun ghAccountAndReposConfigured(project: Project, toolWindow: ToolWindow, ghAccount: GithubAccount) =
         with(toolWindow.contentManager) {
             val dataContextRepository = WorkflowDataContextRepository.getInstance(project)
             LOG.info(
@@ -97,19 +125,6 @@ class GhActionsToolWindowFactory : ToolWindowFactory {
                             )
                         )
                     })
-            }
-        }
-
-    override fun createToolWindowContent(project: Project, toolWindow: ToolWindow) =
-        with(toolWindow.contentManager) {
-            removeAllContents(true)
-            val ghAccount = authManager.getSingleOrDefaultAccount(project)
-            if (ghAccount == null) {
-                noGitHubAccountView(toolWindow)
-            } else if (knownRepositories.isEmpty()) {
-                noRepositories(toolWindow)
-            } else {
-                ghAccountAndReposConfigured(project, toolWindow, ghAccount)
             }
         }
 
