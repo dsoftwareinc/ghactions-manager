@@ -33,6 +33,9 @@ github-actions-toolbar for JetBrains products is developed for free.
 
 Support this project by becoming a sponsor using [this link](https://github.com/sponsors/cunla)
 
+Or you can [!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://buymeacoffee.com/danielmoran)
+
+
 # Installation
 
 - Using IDE built-in plugin system:
