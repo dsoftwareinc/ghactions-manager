@@ -1,3 +1,8 @@
+data class WorkflowRunJobs(
+    val total_count: Int,
+    val jobs: List<WorkflowRunJob>
+)
+
 /**
  * Information of a job execution in a workflow run
  * @param id The id of the job.

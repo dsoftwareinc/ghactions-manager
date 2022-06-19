@@ -50,7 +50,7 @@ class WorkflowDataContextRepository {
 
         LOG.info("Create WorkflowDataLoader")
         val githubWorkflowDataLoader = WorkflowDataLoader {
-            WorkflowRunDataProvider(ProgressManager.getInstance(), requestExecutor, it)
+            WorkflowRunLogsDataProvider(ProgressManager.getInstance(), requestExecutor, it)
         }
 
         requestExecutor.addListener(githubWorkflowDataLoader) {

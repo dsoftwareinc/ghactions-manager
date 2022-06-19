@@ -1,6 +1,6 @@
 package com.dsoftware.ghtoolbar.api
 
-import WorkflowRunJob
+import WorkflowRunJobs
 import com.dsoftware.ghtoolbar.api.model.GitHubWorkflow
 import com.dsoftware.ghtoolbar.api.model.GitHubWorkflowRuns
 import com.dsoftware.ghtoolbar.ui.consolepanel.DownloadUrlWorkflowRunLogGet
@@ -52,7 +52,7 @@ object Workflows : GithubApiRequests.Entity("/repos") {
         return get(url)
     }
 
-    fun getWorkflowRunJobs(url: String) = json<WorkflowRunJob>(url)
+    fun getWorkflowRunJobs(url: String) = json<WorkflowRunJobs>(url)
         .withOperationName("Get workflow-run jobs")
 
     fun get(url: String) = json<GitHubWorkflowRuns>(url)

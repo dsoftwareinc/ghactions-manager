@@ -4,25 +4,24 @@ import com.google.common.cache.CacheBuilder
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.application.runInEdt
 import com.intellij.openapi.diagnostic.logger
-import com.intellij.openapi.diagnostic.thisLogger
 import com.intellij.util.EventDispatcher
 import com.intellij.util.concurrency.annotations.RequiresEdt
 import java.util.*
 
-class WorkflowDataLoader(private val dataProviderFactory: (String) -> WorkflowRunDataProvider) :
+class WorkflowDataLoader(private val dataProviderFactory: (String) -> WorkflowRunLogsDataProvider) :
     Disposable {
 
     private var isDisposed = false
     private val cache = CacheBuilder.newBuilder()
-        .removalListener<String, WorkflowRunDataProvider> {
+        .removalListener<String, WorkflowRunLogsDataProvider> {
             runInEdt { invalidationEventDispatcher.multicaster.providerChanged(it.key!!) }
         }
         .maximumSize(200)
-        .build<String, WorkflowRunDataProvider>()
+        .build<String, WorkflowRunLogsDataProvider>()
 
     private val invalidationEventDispatcher = EventDispatcher.create(DataInvalidatedListener::class.java)
 
-    fun getDataProvider(url: String): WorkflowRunDataProvider {
+    fun getDataProvider(url: String): WorkflowRunLogsDataProvider {
         if (isDisposed) throw IllegalStateException("Already disposed")
 
         return cache.get(url) {

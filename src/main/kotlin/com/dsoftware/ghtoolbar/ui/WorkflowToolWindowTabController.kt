@@ -5,9 +5,10 @@ import com.dsoftware.ghtoolbar.ui.wfpanel.WorkflowRunListLoaderPanel
 import com.dsoftware.ghtoolbar.workflow.WorkflowRunListSelectionHolder
 import com.dsoftware.ghtoolbar.workflow.WorkflowRunSelectionContext
 import com.dsoftware.ghtoolbar.workflow.action.ActionKeys
+import com.dsoftware.ghtoolbar.workflow.data.DataProvider
 import com.dsoftware.ghtoolbar.workflow.data.WorkflowDataContextRepository
 import com.dsoftware.ghtoolbar.workflow.data.WorkflowRunDataContext
-import com.dsoftware.ghtoolbar.workflow.data.WorkflowRunDataProvider
+import com.dsoftware.ghtoolbar.workflow.data.WorkflowRunLogsDataProvider
 import com.intellij.collaboration.ui.SingleValueModel
 import com.intellij.ide.DataManager
 import com.intellij.ide.actions.RefreshAction
@@ -187,10 +188,10 @@ class WorkflowToolWindowTabController(
         context: WorkflowRunDataContext,
         listSelectionHolder: WorkflowRunListSelectionHolder,
         parentDisposable: Disposable,
-    ): SingleValueModel<WorkflowRunDataProvider?> {
-        val model: SingleValueModel<WorkflowRunDataProvider?> = SingleValueModel(null)
+    ): SingleValueModel<WorkflowRunLogsDataProvider?> {
+        val model: SingleValueModel<WorkflowRunLogsDataProvider?> = SingleValueModel(null)
 
-        fun setNewProvider(provider: WorkflowRunDataProvider?) {
+        fun setNewProvider(provider: WorkflowRunLogsDataProvider?) {
             LOG.info("setNewProvider")
             val oldValue = model.value
             if (oldValue != null && provider != null && oldValue.url != provider.url) {
@@ -220,7 +221,7 @@ class WorkflowToolWindowTabController(
     }
 
     private fun createLogLoadingModel(
-        dataProviderModel: SingleValueModel<WorkflowRunDataProvider?>,
+        dataProviderModel: SingleValueModel<WorkflowRunLogsDataProvider?>,
         parentDisposable: Disposable,
     ): Pair<GHCompletableFutureLoadingModel<String>, SingleValueModel<String?>> {
         LOG.info("Create log loading model")
@@ -247,7 +248,7 @@ class WorkflowToolWindowTabController(
         dataProviderModel.addListener {
             LOG.info("log loading model Value changed")
             val provider = dataProviderModel.value
-            loadingModel.future = provider?.logRequest
+            loadingModel.future = provider?.request
 
             listenerDisposable = listenerDisposable?.let {
                 Disposer.dispose(it)
@@ -259,10 +260,10 @@ class WorkflowToolWindowTabController(
                     Disposer.register(parentDisposable, this)
                 }
                 provider.addRunChangesListener(disposable,
-                    object : WorkflowRunDataProvider.WorkflowRunChangedListener {
-                        override fun logChanged() {
-                            LOG.info("Log changed ${provider.logRequest}")
-                            loadingModel.future = provider.logRequest
+                    object : DataProvider.WorkflowRunChangedListener {
+                        override fun changed() {
+                            LOG.info("Log changed ${provider.request}")
+                            loadingModel.future = provider.request
                         }
                     })
 

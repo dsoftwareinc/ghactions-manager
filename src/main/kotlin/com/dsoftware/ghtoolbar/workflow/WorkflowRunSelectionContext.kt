@@ -2,7 +2,7 @@ package com.dsoftware.ghtoolbar.workflow
 
 import com.dsoftware.ghtoolbar.api.model.GitHubWorkflowRun
 import com.dsoftware.ghtoolbar.workflow.data.WorkflowRunDataContext
-import com.dsoftware.ghtoolbar.workflow.data.WorkflowRunDataProvider
+import com.dsoftware.ghtoolbar.workflow.data.WorkflowRunLogsDataProvider
 import com.intellij.openapi.diagnostic.logger
 
 class WorkflowRunSelectionContext internal constructor(
@@ -19,7 +19,7 @@ class WorkflowRunSelectionContext internal constructor(
     val workflowRun: GitHubWorkflowRun?
         get() = selectionHolder.selection
 
-    val workflowRunDataProvider: WorkflowRunDataProvider?
+    val workflowRunLogsDataProvider: WorkflowRunLogsDataProvider?
         get() = workflowRun?.let { dataContext.dataLoader.getDataProvider(it.logs_url) }
 
     companion object {
