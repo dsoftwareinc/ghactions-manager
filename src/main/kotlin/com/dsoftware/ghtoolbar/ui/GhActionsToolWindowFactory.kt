@@ -21,7 +21,8 @@ import javax.swing.JPanel
 
 class GhActionsToolWindowFactory : ToolWindowFactory {
     private val authManager = GithubAuthenticationManager.getInstance()
-    private var knownRepositories: Set<GHGitRepositoryMapping> = emptySet()
+    var knownRepositories: Set<GHGitRepositoryMapping> = emptySet()
+        private set
 
     override fun init(toolWindow: ToolWindow) {
         ApplicationManager.getApplication().messageBus.connect(toolWindow.disposable)
