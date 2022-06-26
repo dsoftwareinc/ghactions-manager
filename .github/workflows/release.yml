@@ -4,7 +4,7 @@
 name: Release
 on:
   release:
-    types: [prereleased, released]
+    types: [ prereleased, released ]
 
 jobs:
 
@@ -30,13 +30,15 @@ jobs:
 
       # Update Unreleased section with the current release note
       - name: Patch Changelog
+        id: properties
         run: |
           CHANGELOG="$(cat << 'EOM' | sed -e 's/^[[:space:]]*$//g' -e '/./,$!d'
           ${{ github.event.release.body }}
           EOM
           )"
-          cat CHANGELOG.md
           ./gradlew patchChangelog --release-note="$CHANGELOG"
+          cat CHANGELOG.md
+          echo "::set-output name=changelog::$CHANGELOG"
 
       # Publish the plugin to the Marketplace
       - name: Publish Plugin

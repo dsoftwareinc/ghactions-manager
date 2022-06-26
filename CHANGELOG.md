@@ -3,6 +3,17 @@
 # ghactions-toolbar Changelog
 ## [Unreleased]
 
+## [0.0.7] - 2022-06-26
+### Added
+* Add a link to GitHub accounts settings in case GitHub account is not set #19
+* Add a link from toolbar window to Toolbar Settings #21
+* Toolbar settings - Resolve #18 by @cunla in https://github.com/dsoftwareinc/ghactions-toolbar/pull/25
+
+### Fixed
+* Fix memory leak issue #22
+
+**Full Changelog**: https://github.com/dsoftwareinc/ghactions-toolbar/compare/v0.0.6...v0.0.7
+
 ## [0.0.6] - 2022-06-19
 ### Added
 - Contribution guide.

@@ -16,6 +16,7 @@ plugins {
     // Gradle Qodana Plugin
     id("org.jetbrains.qodana") version "0.1.13"
     id("org.kordamp.gradle.markdown") version "2.0.0"
+    id("com.github.ben-manes.versions") version "0.42.0"
 }
 
 group = properties("pluginGroup")
