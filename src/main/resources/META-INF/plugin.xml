@@ -29,7 +29,7 @@
         <action
             id="ShowGhActionsToolbarSettings"
             class="com.dsoftware.ghtoolbar.ui.actions.ShowToolbarSettingsAction"
-            icon="AllIcons.General.GearPlain"
+            icon="AllIcons.General.Settings"
         />
         <group id="GHWorkflows.ActionGroup" popup="false">
             <action id="Github.Workflow.List.Reload"
