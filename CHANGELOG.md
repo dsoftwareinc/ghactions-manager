@@ -2,22 +2,15 @@
 
 # ghactions-toolbar Changelog
 ## [Unreleased]
-<!--
-## [Unreleased]
-### Added
-### Changed
-### Deprecated
-### Removed
-### Fixed
-### Security
--->
+
+## [0.0.8]
 
 ## [0.0.7]
 ### Added
 * Add a link to GitHub accounts settings in case GitHub account is not set #19
 * Add a link from toolbar window to Toolbar Settings #21
 * Toolbar settings - Resolve #18 by @cunla in https://github.com/dsoftwareinc/ghactions-toolbar/pull/25
-*
+
 ### Fixed
 * Fix memory leak issue #22
 
@@ -45,3 +38,14 @@ Full Changelog: https://github.com/dsoftwareinc/github-actions-jetbrains-plugin/
 - Initial scaffold created from [IntelliJ Platform Plugin Template](https://github.com/JetBrains/intellij-platform-plugin-template)
   
 Full Changelog: https://github.com/dsoftwareinc/github-actions-jetbrains-plugin/commits/v0.0.5
+
+
+<!--
+## [Unreleased]
+### Added
+### Changed
+### Deprecated
+### Removed
+### Fixed
+### Security
+-->
