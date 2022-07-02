@@ -59,7 +59,7 @@ internal class WorkflowRunListLoaderPanel(
 
     private val infoPanel = HtmlInfoPanel()
 
-    protected open val loadingText
+    private val loadingText
         get() = "Loading..."
 
     var errorHandler: LoadingErrorHandler? = null
@@ -126,7 +126,7 @@ internal class WorkflowRunListLoaderPanel(
         }
     }
 
-    protected open fun updateInfoPanel() {
+    private fun updateInfoPanel() {
         val error = runListLoader.error
         if (error != null && runListLoader.loadedData.isNotEmpty()) {
             val errorPrefix = getErrorPrefix(runListLoader.loadedData.isEmpty())
@@ -157,7 +157,7 @@ internal class WorkflowRunListLoaderPanel(
         } else infoPanel.setInfo(null)
     }
 
-    protected open fun getErrorPrefix(listEmpty: Boolean) = if (listEmpty) "Can't load list" else "Can't load full list"
+    private fun getErrorPrefix(listEmpty: Boolean) = if (listEmpty) "Can't load list" else "Can't load full list"
 
     private fun potentiallyLoadMore() {
         LOG.info("Potentially loading more")
