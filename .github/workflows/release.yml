@@ -22,7 +22,7 @@ jobs:
 
       # Setup Java 11 environment for the next steps
       - name: Setup Java
-        uses: actions/setup-java@v2
+        uses: actions/setup-java@v3
         with:
           distribution: zulu
           java-version: 11
@@ -46,12 +46,10 @@ jobs:
 
       # Update Unreleased section with the current release note
       - name: Patch Changelog
-        id: properties
-        run: |
-          CHANGELOG="$(cat << 'EOM' | sed -e 's/^[[:space:]]*$//g' -e '/./,$!d'
-          ${{ github.event.release.body }}
-          EOM
-          )"
+        if: ${{ steps.properties.outputs.changelog != '' }}
+        env:
+          CHANGELOG: ${{ steps.properties.outputs.changelog }}
+        run: |          
           ./gradlew patchChangelog --release-note="$CHANGELOG"        
 
       # Publish the plugin to the Marketplace
