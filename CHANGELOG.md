@@ -2,6 +2,12 @@
 
 # ghactions-toolbar Changelog
 ## [Unreleased]
+## [0.0.8] - 2022-06-26
+### Fixed
+- Issue with `GithubApiRequestExecutorManager.getExecutor`
+
+**Full Changelog**: https://github.com/dsoftwareinc/ghactions-toolbar/compare/v0.0.7...v0.0.8
+
 
 ## [0.0.7] - 2022-06-26
 ### Added
