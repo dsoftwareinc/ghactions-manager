@@ -6,19 +6,19 @@
 ### Fixed
 - Issue with `GithubApiRequestExecutorManager.getExecutor`
 
-**Full Changelog**: https://github.com/dsoftwareinc/ghactions-toolbar/compare/v0.0.7...v0.0.8
+**Full Changelog**: https://github.com/cunla/ghactions-toolbar/compare/v0.0.7...v0.0.8
 
 
 ## [0.0.7] - 2022-06-26
 ### Added
 * Add a link to GitHub accounts settings in case GitHub account is not set #19
 * Add a link from toolbar window to Toolbar Settings #21
-* Toolbar settings - Resolve #18 by @cunla in https://github.com/dsoftwareinc/ghactions-toolbar/pull/25
+* Toolbar settings - Resolve #18 by @cunla in https://github.com/cunla/ghactions-toolbar/pull/25
 
 ### Fixed
 * Fix memory leak issue #22
 
-**Full Changelog**: https://github.com/dsoftwareinc/ghactions-toolbar/compare/v0.0.6...v0.0.7
+**Full Changelog**: https://github.com/cunla/ghactions-toolbar/compare/v0.0.6...v0.0.7
 
 ## [0.0.6] - 2022-06-19
 ### Added
@@ -30,7 +30,7 @@
 ### Changed
 - Improved code structure
 
-Full Changelog: https://github.com/dsoftwareinc/github-actions-jetbrains-plugin/commits/v0.0.6
+Full Changelog: https://github.com/cunla/github-actions-jetbrains-plugin/commits/v0.0.6
 
 ## [0.0.5] - 2022-06-14
 ### Added
@@ -41,7 +41,7 @@ Full Changelog: https://github.com/dsoftwareinc/github-actions-jetbrains-plugin/
 - Migrated code from https://github.com/Otanikotani/view-github-actions-idea-plugin
 - Initial scaffold created from [IntelliJ Platform Plugin Template](https://github.com/JetBrains/intellij-platform-plugin-template)
   
-Full Changelog: https://github.com/dsoftwareinc/github-actions-jetbrains-plugin/commits/v0.0.5
+Full Changelog: https://github.com/cunla/github-actions-jetbrains-plugin/commits/v0.0.5
 
 
 <!--

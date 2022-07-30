@@ -1,7 +1,7 @@
 GitHub Actions Toolbar for JetBrains IDEs
 =========================================
 
-![Build](https://github.com/dsoftwareinc/ghactions-toolbar/workflows/Build/badge.svg)
+![Build](https://github.com/cunla/ghactions-toolbar/workflows/Build/badge.svg)
 [![Version](https://img.shields.io/jetbrains/plugin/v/com.dsoftware.ghtoolbar.svg)](https://plugins.jetbrains.com/plugin/19347-github-actions-toolbar)
 [![Downloads](https://img.shields.io/jetbrains/plugin/d/com.dsoftware.ghtoolbar.svg)](https://plugins.jetbrains.com/plugin/19347-github-actions-toolbar)
 
@@ -21,7 +21,7 @@ are passing on your changes.
 
 # Contributions
 Contributions are welcome. Please see the
-[contributing guide](https://github.com/dsoftwareinc/ghactions-toolbar//blob/master/.github/CONTRIBUTING.md) for more details.
+[contributing guide](https://github.com/cunla/ghactions-toolbar//blob/master/.github/CONTRIBUTING.md) for more details.
 The maintainer generally has very little time to work on ghactions-toolbar, so the
 best way to get a bug fixed is to contribute a pull request.
 
@@ -48,7 +48,7 @@ Support this project by becoming a sponsor using [this link](https://github.com/
 
 - Manually:
 
-  Download the [latest release](https://github.com/dsoftwareinc/ghactions-toolbar/releases/latest) and install it manually using
+  Download the [latest release](https://github.com/cunla/ghactions-toolbar/releases/latest) and install it manually using
   <kbd>Settings/Preferences</kbd> > <kbd>Plugins</kbd> > <kbd>⚙️</kbd> > <kbd>Install plugin from disk...</kbd>
 
 
