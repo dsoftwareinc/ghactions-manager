@@ -41,7 +41,7 @@ data class GitHubWorkflowRun(
     val cancel_url: String,
     val rerun_url: String,
     val workflow_url: String,
-    var workflowName: String?,
+    val name: String,
     val head_commit: GitHubHeadCommit
 )
 

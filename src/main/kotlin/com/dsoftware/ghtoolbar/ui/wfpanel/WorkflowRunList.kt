@@ -169,7 +169,7 @@ class WorkflowRunList(model: ListModel<GitHubWorkflowRun>) : JBList<GitHubWorkfl
             if (ghWorkflowRun.event == "release") {
                 action = "created by"
             }
-            return "${ghWorkflowRun.workflowName} #${ghWorkflowRun.run_number}: " +
+            return "${ghWorkflowRun.name} #${ghWorkflowRun.run_number}: " +
                 "$action ${ghWorkflowRun.head_commit.author.name} " +
                 "on $updatedAtLabel"
         }
