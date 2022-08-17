@@ -3,6 +3,7 @@ package com.dsoftware.ghtoolbar.data
 import com.dsoftware.ghtoolbar.api.model.GitHubWorkflowRun
 import com.dsoftware.ghtoolbar.workflow.RepositoryCoordinates
 import com.dsoftware.ghtoolbar.workflow.WorkflowRunDataContext
+import com.dsoftware.ghtoolbar.workflow.data.WorkflowDataLoader
 import com.intellij.collaboration.async.CompletableFutureUtil.submitIOTask
 import com.intellij.collaboration.async.CompletableFutureUtil.successOnEdt
 import com.intellij.openapi.Disposable
@@ -50,9 +51,7 @@ class WorkflowDataContextRepository {
         val repositoryCoordinates = RepositoryCoordinates(account.server, fullPath)
 
         LOG.info("Create WorkflowDataLoader")
-        val githubWorkflowDataLoader = WorkflowDataLoader {
-            WorkflowRunLogsDataProvider(ProgressManager.getInstance(), requestExecutor, it)
-        }
+        val githubWorkflowDataLoader = WorkflowDataLoader(requestExecutor)
         Disposer.register(disposable, githubWorkflowDataLoader)
 
         requestExecutor.addListener(githubWorkflowDataLoader) {

@@ -1,14 +1,14 @@
 package com.dsoftware.ghtoolbar.ui
 
-import com.dsoftware.ghtoolbar.ui.consolepanel.WorkflowRunLogConsole
-import com.dsoftware.ghtoolbar.ui.wfpanel.WorkflowRunListLoaderPanel
-import com.dsoftware.ghtoolbar.workflow.WorkflowRunListSelectionHolder
-import com.dsoftware.ghtoolbar.workflow.WorkflowRunSelectionContext
 import com.dsoftware.ghtoolbar.actions.ActionKeys
 import com.dsoftware.ghtoolbar.data.DataProvider
 import com.dsoftware.ghtoolbar.data.WorkflowDataContextRepository
 import com.dsoftware.ghtoolbar.data.WorkflowRunLogsDataProvider
+import com.dsoftware.ghtoolbar.ui.consolepanel.WorkflowRunLogConsole
+import com.dsoftware.ghtoolbar.ui.wfpanel.WorkflowRunListLoaderPanel
 import com.dsoftware.ghtoolbar.workflow.WorkflowRunDataContext
+import com.dsoftware.ghtoolbar.workflow.WorkflowRunListSelectionHolder
+import com.dsoftware.ghtoolbar.workflow.WorkflowRunSelectionContext
 import com.intellij.collaboration.ui.SingleValueModel
 import com.intellij.ide.DataManager
 import com.intellij.ide.actions.RefreshAction
@@ -108,14 +108,14 @@ class WorkflowToolWindowTabController(
         account: GithubAccount,
         disposable: Disposable,
     ): JComponent {
-        val listSelectionHolder = WorkflowRunListSelectionHolder()
-        val workflowRunsList = WorkflowRunListLoaderPanel
-            .createWorkflowRunsListComponent(context, listSelectionHolder, disposable)
+        val runsSelectionHolder = WorkflowRunListSelectionHolder()
+        val selectionDataContext = WorkflowRunSelectionContext(context, runsSelectionHolder)
 
-        val dataProviderModel = createDataProviderModel(context, listSelectionHolder, disposable)
+        val dataProviderModel = createLogsDataProviderModel(context, runsSelectionHolder, disposable)
 
         val (logLoadingModel, logModel) = createLogLoadingModel(dataProviderModel, disposable)
-
+        val workflowRunsList = WorkflowRunListLoaderPanel
+            .createWorkflowRunsListComponent(selectionDataContext, disposable)
         val errorHandler = GHApiLoadingErrorHandler(project, account) {
         }
         val logLoadingPanel = GHLoadingPanelFactory(
@@ -127,7 +127,7 @@ class WorkflowToolWindowTabController(
             createLogPanel(logModel, disposable)
         }
 
-        val selectionDataContext = WorkflowRunSelectionContext(context, listSelectionHolder)
+
 
         return OnePixelSplitter("GitHub.Workflows.Component", 0.3f).apply {
             background = UIUtil.getListBackground()
@@ -177,9 +177,9 @@ class WorkflowToolWindowTabController(
         return panel
     }
 
-    private fun createDataProviderModel(
+    private fun createLogsDataProviderModel(
         context: WorkflowRunDataContext,
-        listSelectionHolder: WorkflowRunListSelectionHolder,
+        runsSelectionHolder: WorkflowRunListSelectionHolder,
         parentDisposable: Disposable,
     ): SingleValueModel<WorkflowRunLogsDataProvider?> {
         val model: SingleValueModel<WorkflowRunLogsDataProvider?> = SingleValueModel(null)
@@ -196,17 +196,17 @@ class WorkflowToolWindowTabController(
             model.value = null
         }
 
-        listSelectionHolder.addSelectionChangeListener(parentDisposable) {
+        runsSelectionHolder.addSelectionChangeListener(parentDisposable) {
             LOG.info("selection change listener")
-            val provider = listSelectionHolder.selection?.let { context.dataLoader.getDataProvider(it.logs_url) }
+            val provider = runsSelectionHolder.selection?.let { context.dataLoader.getLogsDataProvider(it.logs_url) }
             setNewProvider(provider)
         }
 
         context.dataLoader.addInvalidationListener(parentDisposable) {
             LOG.info("invalidation listener")
-            val selection = listSelectionHolder.selection
+            val selection = runsSelectionHolder.selection
             if (selection != null && selection.logs_url == it) {
-                setNewProvider(context.dataLoader.getDataProvider(selection.logs_url))
+                setNewProvider(context.dataLoader.getLogsDataProvider(selection.logs_url))
             }
         }
 

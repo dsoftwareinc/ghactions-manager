@@ -1,10 +1,10 @@
 package com.dsoftware.ghtoolbar.workflow
 
 import com.dsoftware.ghtoolbar.api.model.GitHubWorkflowRun
-import com.dsoftware.ghtoolbar.data.WorkflowDataLoader
-
+import com.dsoftware.ghtoolbar.data.WorkflowRunJobsDataProvider
 import com.dsoftware.ghtoolbar.data.WorkflowRunListLoader
 import com.dsoftware.ghtoolbar.data.WorkflowRunLogsDataProvider
+import com.dsoftware.ghtoolbar.workflow.data.WorkflowDataLoader
 import com.intellij.collaboration.ui.SimpleEventListener
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.diagnostic.logger
@@ -55,8 +55,8 @@ class WorkflowRunListSelectionHolder {
 
 
 class WorkflowRunSelectionContext internal constructor(
-    private val dataContext: WorkflowRunDataContext,
-    private val selectionHolder: WorkflowRunListSelectionHolder
+    val dataContext: WorkflowRunDataContext,
+    val runSelectionHolder: WorkflowRunListSelectionHolder,
 ) {
 
     fun resetAllData() {
@@ -66,10 +66,12 @@ class WorkflowRunSelectionContext internal constructor(
     }
 
     val workflowRun: GitHubWorkflowRun?
-        get() = selectionHolder.selection
+        get() = runSelectionHolder.selection
 
-    val workflowRunLogsDataProvider: WorkflowRunLogsDataProvider?
-        get() = workflowRun?.let { dataContext.dataLoader.getDataProvider(it.logs_url) }
+    val logsDataProvider: WorkflowRunLogsDataProvider?
+        get() = workflowRun?.let { dataContext.dataLoader.getLogsDataProvider(it.logs_url) }
+    val jobsDataProvider: WorkflowRunJobsDataProvider?
+        get() = workflowRun?.let { dataContext.dataLoader.getJobsDataProvider(it.jobs_url) }
 
     companion object {
         private val LOG = logger<WorkflowRunSelectionContext>()

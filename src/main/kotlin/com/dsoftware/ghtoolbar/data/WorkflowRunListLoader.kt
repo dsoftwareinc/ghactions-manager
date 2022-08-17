@@ -1,7 +1,7 @@
 package com.dsoftware.ghtoolbar.data
 
-import com.dsoftware.ghtoolbar.api.model.GitHubWorkflowRun
 import com.dsoftware.ghtoolbar.api.Workflows
+import com.dsoftware.ghtoolbar.api.model.GitHubWorkflowRun
 import com.dsoftware.ghtoolbar.workflow.RepositoryCoordinates
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.diagnostic.logger

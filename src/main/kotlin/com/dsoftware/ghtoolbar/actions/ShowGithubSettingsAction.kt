@@ -8,6 +8,7 @@ import org.jetbrains.plugins.github.util.GithubUtil
 class ShowGithubSettingsAction : DumbAwareAction() {
     override fun actionPerformed(e: AnActionEvent) {
         ShowSettingsUtil.getInstance().showSettingsDialog(
-            e.getProject(), GithubUtil.SERVICE_DISPLAY_NAME)
+            e.getProject(), GithubUtil.SERVICE_DISPLAY_NAME
+        )
     }
 }
