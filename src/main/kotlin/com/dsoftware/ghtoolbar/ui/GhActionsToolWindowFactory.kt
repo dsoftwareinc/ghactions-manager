@@ -1,9 +1,9 @@
 package com.dsoftware.ghtoolbar.ui
 
+import com.dsoftware.ghtoolbar.data.WorkflowDataContextRepository
 import com.dsoftware.ghtoolbar.ui.settings.GhActionsSettingsService
 import com.dsoftware.ghtoolbar.ui.settings.GhActionsToolbarConfigurable
 import com.dsoftware.ghtoolbar.ui.settings.ToolbarSettings
-import com.dsoftware.ghtoolbar.workflow.data.WorkflowDataContextRepository
 import com.intellij.collaboration.auth.AccountsListener
 import com.intellij.openapi.actionSystem.ActionManager
 import com.intellij.openapi.actionSystem.ActionPlaces

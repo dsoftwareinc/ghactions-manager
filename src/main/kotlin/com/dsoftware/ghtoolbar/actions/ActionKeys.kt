@@ -1,4 +1,4 @@
-package com.dsoftware.ghtoolbar.workflow.action
+package com.dsoftware.ghtoolbar.actions
 
 import com.dsoftware.ghtoolbar.api.model.GitHubWorkflowRun
 import com.dsoftware.ghtoolbar.workflow.WorkflowRunSelectionContext
