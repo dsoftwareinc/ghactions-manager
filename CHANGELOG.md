@@ -2,6 +2,16 @@
 
 # ghactions-toolbar Changelog
 ## [Unreleased]
+
+## [1.0.1]
+### Added
+- Support for IntelliJ 2022.2
+### Fixed
+- Issue with `GithubApiRequestExecutorManager.getExecutor`
+ 
+**Full Changelog**: https://github.com/cunla/ghactions-toolbar/compare/v0.0.8...v1.0.1
+
+
 ## [0.0.8] - 2022-06-26
 ### Fixed
 - Issue with `GithubApiRequestExecutorManager.getExecutor`
