@@ -1,6 +1,5 @@
-package com.dsoftware.ghtoolbar.workflow.action.log
+package com.dsoftware.ghtoolbar.actions
 
-import com.dsoftware.ghtoolbar.workflow.action.ActionKeys
 import com.intellij.icons.AllIcons
 import com.intellij.ide.actions.RefreshAction
 import com.intellij.openapi.actionSystem.AnActionEvent

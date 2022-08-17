@@ -1,6 +1,5 @@
-package com.dsoftware.ghtoolbar.workflow.action.list
+package com.dsoftware.ghtoolbar.actions
 
-import com.dsoftware.ghtoolbar.workflow.action.ActionKeys
 import com.intellij.ide.BrowserUtil
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.CommonDataKeys

@@ -25,15 +25,15 @@
     <actions>
         <action
             id="ShowGithubSettings"
-            class="com.dsoftware.ghtoolbar.ui.actions.ShowGithubSettingsAction"/>
+            class="com.dsoftware.ghtoolbar.actions.ShowGithubSettingsAction"/>
         <action
             id="ShowGhActionsToolbarSettings"
-            class="com.dsoftware.ghtoolbar.ui.actions.ShowToolbarSettingsAction"
+            class="com.dsoftware.ghtoolbar.actions.ShowToolbarSettingsAction"
             icon="AllIcons.General.Settings"
         />
         <group id="GHWorkflows.ActionGroup" popup="false">
             <action id="Github.Workflow.List.Reload"
-                    class="com.dsoftware.ghtoolbar.workflow.action.list.ReloadListAction"
+                    class="com.dsoftware.ghtoolbar.actions.ReloadRunsListAction"
                     use-shortcut-of="Refresh"/>
         </group>
 
@@ -43,15 +43,15 @@
 
         <group id="Github.Workflow.ToolWindow.List.Popup.Selected">
             <action id="Github.Workflow.Open.In.Browser"
-                    class="com.dsoftware.ghtoolbar.workflow.action.list.OpenInBrowserAction"/>
+                    class="com.dsoftware.ghtoolbar.actions.OpenInBrowserAction"/>
             <action id="Github.Workflow.Rerun"
-                    class="com.dsoftware.ghtoolbar.workflow.action.list.RerunWorkflowAction"/>
+                    class="com.dsoftware.ghtoolbar.actions.RerunWorkflowAction"/>
             <reference id="Github.Workflow.List.Reload"/>
         </group>
 
         <group id="Github.Workflow.Log.ToolWindow.List.Popup">
             <action id="Github.Workflow.Log.List.Reload"
-                    class="com.dsoftware.ghtoolbar.workflow.action.log.ReloadLogAction"/>
+                    class="com.dsoftware.ghtoolbar.actions.ReloadLogAction"/>
         </group>
 
     </actions>

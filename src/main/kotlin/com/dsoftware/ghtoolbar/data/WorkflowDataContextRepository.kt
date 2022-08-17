@@ -1,7 +1,8 @@
-package com.dsoftware.ghtoolbar.workflow.data
+package com.dsoftware.ghtoolbar.data
 
 import com.dsoftware.ghtoolbar.api.model.GitHubWorkflowRun
 import com.dsoftware.ghtoolbar.workflow.RepositoryCoordinates
+import com.dsoftware.ghtoolbar.workflow.WorkflowRunDataContext
 import com.intellij.collaboration.async.CompletableFutureUtil.submitIOTask
 import com.intellij.collaboration.async.CompletableFutureUtil.successOnEdt
 import com.intellij.openapi.Disposable

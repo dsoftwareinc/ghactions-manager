@@ -1,4 +1,4 @@
-package com.dsoftware.ghtoolbar.workflow
+package com.dsoftware.ghtoolbar.ui
 
 import com.intellij.openapi.diagnostic.thisLogger
 import java.awt.event.ActionEvent

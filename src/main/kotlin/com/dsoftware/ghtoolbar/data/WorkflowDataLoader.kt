@@ -1,4 +1,4 @@
-package com.dsoftware.ghtoolbar.workflow.data
+package com.dsoftware.ghtoolbar.data
 
 import com.google.common.cache.CacheBuilder
 import com.intellij.openapi.Disposable

@@ -1,4 +1,4 @@
-package com.dsoftware.ghtoolbar.workflow.data
+package com.dsoftware.ghtoolbar.data
 
 import WorkflowRunJobs
 import com.dsoftware.ghtoolbar.api.Workflows

@@ -4,11 +4,11 @@ import com.dsoftware.ghtoolbar.ui.consolepanel.WorkflowRunLogConsole
 import com.dsoftware.ghtoolbar.ui.wfpanel.WorkflowRunListLoaderPanel
 import com.dsoftware.ghtoolbar.workflow.WorkflowRunListSelectionHolder
 import com.dsoftware.ghtoolbar.workflow.WorkflowRunSelectionContext
-import com.dsoftware.ghtoolbar.workflow.action.ActionKeys
-import com.dsoftware.ghtoolbar.workflow.data.DataProvider
-import com.dsoftware.ghtoolbar.workflow.data.WorkflowDataContextRepository
-import com.dsoftware.ghtoolbar.workflow.data.WorkflowRunDataContext
-import com.dsoftware.ghtoolbar.workflow.data.WorkflowRunLogsDataProvider
+import com.dsoftware.ghtoolbar.actions.ActionKeys
+import com.dsoftware.ghtoolbar.data.DataProvider
+import com.dsoftware.ghtoolbar.data.WorkflowDataContextRepository
+import com.dsoftware.ghtoolbar.data.WorkflowRunLogsDataProvider
+import com.dsoftware.ghtoolbar.workflow.WorkflowRunDataContext
 import com.intellij.collaboration.ui.SingleValueModel
 import com.intellij.ide.DataManager
 import com.intellij.ide.actions.RefreshAction
@@ -129,7 +129,7 @@ class WorkflowToolWindowTabController(
 
         val selectionDataContext = WorkflowRunSelectionContext(context, listSelectionHolder)
 
-        return OnePixelSplitter("GitHub.Workflows.Component", 0.5f).apply {
+        return OnePixelSplitter("GitHub.Workflows.Component", 0.3f).apply {
             background = UIUtil.getListBackground()
             isOpaque = true
             isFocusCycleRoot = true

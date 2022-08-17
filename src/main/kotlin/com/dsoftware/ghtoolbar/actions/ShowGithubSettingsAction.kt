@@ -1,4 +1,4 @@
-package com.dsoftware.ghtoolbar.ui.actions
+package com.dsoftware.ghtoolbar.actions
 
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.options.ShowSettingsUtil
