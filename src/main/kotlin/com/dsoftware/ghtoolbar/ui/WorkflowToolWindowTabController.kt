@@ -77,13 +77,14 @@ class WorkflowToolWindowTabController(
         }
 
         val loadingModel = GHCompletableFutureLoadingModel<WorkflowRunDataContext>(disposable).apply {
-            future = dataContextRepository.acquireContext(repository, remote, ghAccount, ghRequestExecutor)
+            future = dataContextRepository.acquireContext(project, repository, remote, ghAccount, ghRequestExecutor)
         }
 
         val errorHandler = GHApiLoadingErrorHandler(project, ghAccount) {
             val contextRepository = dataContextRepository
             contextRepository.clearContext(repository)
-            loadingModel.future = contextRepository.acquireContext(repository, remote, ghAccount, ghRequestExecutor)
+            loadingModel.future =
+                contextRepository.acquireContext(project, repository, remote, ghAccount, ghRequestExecutor)
         }
         val panel = GHLoadingPanelFactory(
             loadingModel,

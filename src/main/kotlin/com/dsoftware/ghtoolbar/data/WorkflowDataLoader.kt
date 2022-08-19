@@ -67,7 +67,7 @@ class WorkflowDataLoader(
         }, disposable)
 
     override fun dispose() {
-        LOG.info("Disposing...")
+        LOG.debug("Disposing...")
         invalidateAllData()
         isDisposed = true
     }

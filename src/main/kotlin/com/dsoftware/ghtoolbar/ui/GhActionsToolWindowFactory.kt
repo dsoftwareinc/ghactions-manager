@@ -15,7 +15,6 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.wm.ToolWindow
 import com.intellij.openapi.wm.ToolWindowFactory
-import com.intellij.openapi.wm.ex.ToolWindowEx
 import com.intellij.ui.SimpleTextAttributes
 import com.intellij.ui.components.JBPanelWithEmptyText
 import org.jetbrains.plugins.github.authentication.GithubAuthenticationManager
@@ -24,13 +23,23 @@ import org.jetbrains.plugins.github.util.GHGitRepositoryMapping
 import org.jetbrains.plugins.github.util.GHProjectRepositoriesManager
 import javax.swing.JPanel
 
+internal class GhActionToolWindow(
+    private val project: Project,
+    val toolWindow: ToolWindow,
+) {
+    var knownRepositories: Set<GHGitRepositoryMapping> = emptySet()
+
+}
 
 class GhActionsToolWindowFactory : ToolWindowFactory {
     private lateinit var settingsService: GhActionsSettingsService
     private val authManager = GithubAuthenticationManager.getInstance()
-    private var knownRepositories: Set<GHGitRepositoryMapping> = emptySet()
+    private val toolWindowsMap = mutableMapOf<Project, GhActionToolWindow>()
 
     override fun init(toolWindow: ToolWindow) {
+        if (!toolWindowsMap.containsKey(toolWindow.project)) {
+            toolWindowsMap[toolWindow.project] = GhActionToolWindow(toolWindow.project, toolWindow)
+        }
         settingsService = GhActionsSettingsService.getInstance(toolWindow.project)
         val bus = ApplicationManager.getApplication().messageBus.connect(toolWindow.disposable)
         bus.subscribe(
@@ -45,9 +54,10 @@ class GhActionsToolWindowFactory : ToolWindowFactory {
             object : GHProjectRepositoriesManager.ListChangeListener {
                 override fun repositoryListChanged(newList: Set<GHGitRepositoryMapping>, project: Project) {
                     LOG.info("Repos updated, new list has ${newList.size} repos")
-                    toolWindow.isAvailable = newList.isNotEmpty()
-                    knownRepositories = newList
-                    knownRepositories.forEach { repo ->
+                    val ghActionToolWindow = toolWindowsMap[project] ?: return
+                    ghActionToolWindow.toolWindow.isAvailable = newList.isNotEmpty()
+                    ghActionToolWindow.knownRepositories = newList
+                    ghActionToolWindow.knownRepositories.forEach { repo ->
                         settingsService.state.customRepos.putIfAbsent(
                             repo.gitRemoteUrlCoordinates.url,
                             ToolbarSettings.RepoSettings()
@@ -68,33 +78,32 @@ class GhActionsToolWindowFactory : ToolWindowFactory {
     }
 
 
-    override fun createToolWindowContent(project: Project, toolWindow: ToolWindow) =
-        with(toolWindow as ToolWindowEx) {
-            contentManager.removeAllContents(true)
-            val actionManager = ActionManager.getInstance()
-            setTitleActions(listOf(actionManager.getAction("ShowGhActionsToolbarSettings")))
-            setAdditionalGearActions(DefaultActionGroup())
+    override fun createToolWindowContent(project: Project, toolWindow: ToolWindow) {
+        val ghActionToolWindow = toolWindowsMap[project] ?: return
+        toolWindow.contentManager.removeAllContents(true)
+        with(ghActionToolWindow) {
             val ghAccount = authManager.getSingleOrDefaultAccount(project)
             if (ghAccount == null) {
-                noGitHubAccountPanel(toolWindow)
+                noGitHubAccountPanel(ghActionToolWindow)
                 return
             }
             if (knownRepositories.isEmpty()) {
-                noRepositories(toolWindow)
+                noRepositories(ghActionToolWindow)
                 return
             }
             val countRepos = knownRepositories.count {
                 settingsService.state.customRepos[it.gitRemoteUrlCoordinates.url]?.included ?: false
             }
             if (settingsService.state.useCustomRepos && countRepos == 0) {
-                noActiveRepositories(toolWindow)
+                noActiveRepositories(ghActionToolWindow)
                 return
             }
-            ghAccountAndReposConfigured(project, toolWindow, ghAccount)
+            ghAccountAndReposConfigured(project, ghActionToolWindow, ghAccount)
         }
+    }
 
-    private fun noActiveRepositories(toolWindow: ToolWindow) =
-        with(toolWindow.contentManager) {
+    private fun noActiveRepositories(ghActionToolWindow: GhActionToolWindow) =
+        with(ghActionToolWindow.toolWindow.contentManager) {
             LOG.info("No active repositories in project")
             val emptyTextPanel = JBPanelWithEmptyText()
             emptyTextPanel.emptyText
@@ -117,8 +126,8 @@ class GhActionsToolWindowFactory : ToolWindowFactory {
             )
         }
 
-    private fun noGitHubAccountPanel(toolWindow: ToolWindow) =
-        with(toolWindow.contentManager) {
+    private fun noGitHubAccountPanel(ghActionToolWindow: GhActionToolWindow) =
+        with(ghActionToolWindow.toolWindow.contentManager) {
             LOG.info("No GitHub account configured")
             val emptyTextPanel = JBPanelWithEmptyText()
             emptyTextPanel.emptyText
@@ -141,8 +150,8 @@ class GhActionsToolWindowFactory : ToolWindowFactory {
             )
         }
 
-    private fun noRepositories(toolWindow: ToolWindow) =
-        with(toolWindow.contentManager) {
+    private fun noRepositories(ghActionToolWindow: GhActionToolWindow) =
+        with(ghActionToolWindow.toolWindow.contentManager) {
             LOG.info("No git repositories in project")
             val emptyTextPanel = JBPanelWithEmptyText()
                 .withEmptyText("No git repositories in project")
@@ -155,8 +164,15 @@ class GhActionsToolWindowFactory : ToolWindowFactory {
             )
         }
 
-    private fun ghAccountAndReposConfigured(project: Project, toolWindow: ToolWindow, ghAccount: GithubAccount) =
-        with(toolWindow.contentManager) {
+    private fun ghAccountAndReposConfigured(
+        project: Project,
+        ghActionToolWindow: GhActionToolWindow,
+        ghAccount: GithubAccount
+    ) =
+        with(ghActionToolWindow) {
+            val actionManager = ActionManager.getInstance()
+            toolWindow.setTitleActions(listOf(actionManager.getAction("ShowGhActionsToolbarSettings")))
+            toolWindow.setAdditionalGearActions(DefaultActionGroup())
             val dataContextRepository = WorkflowDataContextRepository.getInstance(project)
             LOG.info(
                 "createToolWindowContent github account: ${ghAccount.name}, " +
@@ -166,22 +182,23 @@ class GhActionsToolWindowFactory : ToolWindowFactory {
                 .filter { settingsService.state.customRepos[it.gitRemoteUrlCoordinates.url]?.included ?: false }
                 .forEach {
                     LOG.info("adding panel for repo: ${it.repositoryPath}")
-                    addContent(factory.createContent(JPanel(null), it.repositoryPath, false)
-                        .apply {
-                            isCloseable = false
-                            setDisposer(Disposer.newDisposable("GitHubWorkflow tab disposable"))
+                    toolWindow.contentManager.addContent(
+                        toolWindow.contentManager.factory.createContent(JPanel(null), it.repositoryPath, false)
+                            .apply {
+                                isCloseable = false
+                                setDisposer(Disposer.newDisposable("GitHubWorkflow tab disposable"))
 
-                            this.putUserData(
-                                WorkflowToolWindowTabController.KEY,
-                                WorkflowToolWindowTabController(
-                                    project,
-                                    it,
-                                    ghAccount,
-                                    dataContextRepository,
-                                    this
+                                this.putUserData(
+                                    WorkflowToolWindowTabController.KEY,
+                                    WorkflowToolWindowTabController(
+                                        project,
+                                        it,
+                                        ghAccount,
+                                        dataContextRepository,
+                                        this
+                                    )
                                 )
-                            )
-                        })
+                            })
                 }
         }
 

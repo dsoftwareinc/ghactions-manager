@@ -41,8 +41,7 @@ class WorkflowDataContextRepository {
         requestExecutor: GithubApiRequestExecutor,
         gitRemoteCoordinates: GitRemoteUrlCoordinates,
     ): WorkflowRunDataContext {
-        LOG.info("Get WorkflowRunDataContext")
-        LOG.info("Get User and  repository")
+        LOG.debug("Get User and  repository")
         val fullPath = GithubUrlUtil.getUserAndRepositoryFromRemoteUrl(gitRemoteCoordinates.url)
             ?: throw IllegalArgumentException(
                 "Invalid GitHub Repository URL - ${gitRemoteCoordinates.url} is not a GitHub repository"
@@ -50,7 +49,7 @@ class WorkflowDataContextRepository {
 
         val repositoryCoordinates = RepositoryCoordinates(account.server, fullPath)
 
-        LOG.info("Create WorkflowDataLoader")
+        LOG.debug("Create WorkflowDataLoader")
         val githubWorkflowDataLoader = WorkflowDataLoader(requestExecutor)
         Disposer.register(disposable, githubWorkflowDataLoader)
 
@@ -86,11 +85,13 @@ class WorkflowDataContextRepository {
 
     @RequiresEdt
     fun acquireContext(
+        project: Project,
         repository: GHRepositoryCoordinates, remote: GitRemoteUrlCoordinates,
         account: GithubAccount, requestExecutor: GithubApiRequestExecutor,
     ): CompletableFuture<WorkflowRunDataContext> {
         return repositories.getOrPut(repository) {
-            val contextDisposable = Disposer.newDisposable()
+            val contextDisposable = Disposer.newDisposable("contextDisposable")
+            Disposer.register(project, contextDisposable)
 
             LazyCancellableBackgroundProcessValue.create { indicator ->
                 ProgressManager.getInstance().submitIOTask(indicator) {
@@ -103,10 +104,6 @@ class WorkflowDataContextRepository {
                 }.successOnEdt { ctx ->
                     Disposer.register(contextDisposable, ctx)
                     ctx
-                }
-            }.also {
-                it.addDropEventListener {
-                    Disposer.dispose(contextDisposable)
                 }
             }
         }.value
