@@ -1,9 +1,6 @@
 package com.dsoftware.ghtoolbar.ui.settings
 
-import com.intellij.openapi.components.PersistentStateComponent
-import com.intellij.openapi.components.Service
-import com.intellij.openapi.components.State
-import com.intellij.openapi.components.Storage
+import com.intellij.openapi.components.*
 import com.intellij.openapi.project.Project
 
 data class ToolbarSettings(
@@ -23,7 +20,7 @@ data class ToolbarSettings(
 @State(
     name = "GhActionsToolbarSettings",
     storages = [
-        Storage("ghactions-toolbar.xml")
+        Storage(StoragePathMacros.PRODUCT_WORKSPACE_FILE)
     ],
     reportStatistic = false,
 )
@@ -39,9 +36,6 @@ class GhActionsSettingsService : PersistentStateComponent<ToolbarSettings> {
     }
 
     companion object {
-        @JvmStatic
-        fun getInstance(project: Project): GhActionsSettingsService {
-            return project.getService(GhActionsSettingsService::class.java)
-        }
+        fun getInstance(project: Project): GhActionsSettingsService = project.service()
     }
 }
