@@ -2,6 +2,7 @@
 
 # ghactions-toolbar Changelog
 ## [Unreleased]
+## [1.0.3]
 
 ## [1.0.1]
 ### Added
