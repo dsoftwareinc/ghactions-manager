@@ -15,7 +15,6 @@ import com.intellij.openapi.Disposable
 import com.intellij.openapi.actionSystem.*
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.diagnostic.logger
-import com.intellij.openapi.diagnostic.thisLogger
 import com.intellij.openapi.progress.util.ProgressWindow
 import com.intellij.openapi.util.Disposer
 import com.intellij.ui.*
@@ -149,7 +148,6 @@ class WorkflowRunList(model: ListModel<GitHubWorkflowRun>) : JBList<GitHubWorkfl
     }
 
     companion object {
-        private val LOG = thisLogger()
         fun ghWorkflowRunIcon(ghWorkflowRun: GitHubWorkflowRun): Icon {
             return when (ghWorkflowRun.status) {
                 "completed" -> {

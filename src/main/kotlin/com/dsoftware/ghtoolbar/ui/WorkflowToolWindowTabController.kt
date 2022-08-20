@@ -175,20 +175,20 @@ class WorkflowToolWindowTabController(
 
         val panel = JBPanelWithEmptyText(BorderLayout()).apply {
             isOpaque = false
-            add(console.component, BorderLayout.CENTER)
+            add(console, BorderLayout.CENTER)
         }
         val actionGroup = actionManager.getAction("Github.Workflow.Log.ToolWindow.List.Popup") as DefaultActionGroup
         actionGroup.removeAll()
         actionGroup.add(actionManager.getAction("Github.Workflow.Log.List.Reload"))
-        actionGroup.add(
-            object : ToggleUseSoftWrapsToolbarAction(SoftWrapAppliancePlaces.CONSOLE) {
-                override fun getEditor(e: AnActionEvent): Editor? {
-                    return console.editor
-                }
-            }
-        )
-        val contextMenuPopupHandler = ContextMenuPopupHandler.Simple(actionGroup)
-        (console.editor as EditorEx).installPopupHandler(contextMenuPopupHandler)
+//        actionGroup.add(
+//            object : ToggleUseSoftWrapsToolbarAction(SoftWrapAppliancePlaces.CONSOLE) {
+//                override fun getEditor(e: AnActionEvent): Editor? {
+//                    return console.editor
+//                }
+//            }
+//        )
+//        val contextMenuPopupHandler = ContextMenuPopupHandler.Simple(actionGroup)
+//        (console.editor as EditorEx).installPopupHandler(contextMenuPopupHandler)
 
         return panel
     }

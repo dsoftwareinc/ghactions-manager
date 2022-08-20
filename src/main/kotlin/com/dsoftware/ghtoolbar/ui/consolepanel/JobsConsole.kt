@@ -1,23 +1,85 @@
-import com.dsoftware.ghtoolbar.ui.consolepanel.WorkflowRunLogConsole
+import com.dsoftware.ghtoolbar.ui.Icons
 import com.intellij.collaboration.ui.SingleValueModel
-import com.intellij.execution.impl.ConsoleViewImpl
-import com.intellij.execution.process.AnsiEscapeDecoder
-import com.intellij.execution.process.ProcessOutputType
-import com.intellij.execution.ui.ConsoleViewContentType
+import com.intellij.icons.AllIcons
 import com.intellij.openapi.Disposable
-import com.intellij.openapi.diagnostic.logger
-import com.intellij.openapi.editor.impl.EditorImpl
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.util.Disposer
-import com.intellij.openapi.util.Key
-import com.intellij.util.ui.UIUtil
-import javax.swing.plaf.PanelUI
+import com.intellij.ui.components.JBScrollPane
+import com.intellij.ui.dsl.builder.panel
+import com.intellij.util.text.DateFormatUtil
+import java.time.LocalDateTime
+import java.time.ZoneId
+import java.time.ZoneOffset
+import java.util.Date
+import javax.swing.Icon
+
+fun jobIcon(job: WorkflowRunJob): Icon {
+    return when (job.status) {
+        WorkflowRunJob.Status.COMPLETED ->
+            when (job.conclusion) {
+                "success" -> AllIcons.Actions.Commit
+                "failure" -> Icons.X
+                else -> Icons.PrimitiveDot
+            }
+
+        else -> Icons.PrimitiveDot
+    }
+}
+
+fun makeTimePretty(date: Date): String {
+    val localDateTime = LocalDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault())
+    val zonedDateTime = localDateTime.atZone(ZoneOffset.UTC)
+    return DateFormatUtil.formatPrettyDateTime(zonedDateTime.toInstant().toEpochMilli())
+}
+
+//fun JobsConsole(
+//    project: Project,
+//    jobModel: SingleValueModel<WorkflowRunJobs?>,
+//    disposable: Disposable,
+//): JBScrollPane {
+//
+//    fun setData(jobModel: WorkflowRunJobs): JBScrollPane {
+//        return JBScrollPane(panel {
+//            row("${jobModel.total_count} jobs") {}
+//            for (job in jobModel.jobs) {
+//                row {
+//
+//                    icon(jobIcon(job))
+//                    text("Job: ${job.name} attempt ${job.runAttempt} <a href='${job.htmlUrl}'>link</a>")
+//                    comment("Started at ${makeTimePretty(job.startedAt)}")
+//
+//                }
+////                panel {
+////                    val steps = job.steps?.toList() ?: emptyList()
+////                    for (step in steps) {
+////                        indent {
+////                            row {
+////                                text("${step.number}: ${step.name} -- ${step.conclusion}")
+////                            }
+////                        }
+////                    }
+////                }
+//            }
+//        })
+//    }
+//
+//
+//    var panel = JBScrollPane()
+//    if (jobModel.value != null) {
+//        panel = setData(jobModel.value!!)
+//    }
+//    jobModel.addListener {
+//        if (jobModel.value != null) {
+//            panel = setData(jobModel.value!!)
+//        }
+//    }
+//    return panel
+//}
 
 class JobsConsole(
     project: Project,
     jobModel: SingleValueModel<WorkflowRunJobs?>,
     disposable: Disposable,
-) : ConsoleViewImpl(project, true), AnsiEscapeDecoder.ColoredTextAcceptor {
+) : JBPanel<JobsConsole>() {
     private val ansiEscapeDecoder = AnsiEscapeDecoder()
 
     // when it's true its save to call editor, otherwise call 'editor' will throw an NPE
