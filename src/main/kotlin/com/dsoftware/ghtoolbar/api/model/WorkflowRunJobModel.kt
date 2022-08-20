@@ -46,7 +46,7 @@ data class WorkflowRunJob(
     /* The phase of the lifecycle that the job is currently in. */
     val status: WorkflowRunJob.Status,
     /* The outcome of the job. */
-    val conclusion: String,
+    val conclusion: String?,
     /* The time that the job started, in ISO 8601 format. */
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'")
     val startedAt: Date,
@@ -94,7 +94,7 @@ data class WorkflowRunJobSteps(
     /* The phase of the lifecycle that the job is currently in. */
     val status: WorkflowRunJobSteps.Status,
     /* The outcome of the job. */
-    val conclusion: String,
+    val conclusion: String?,
     /* The name of the job. */
     val name: String,
     val number: Int,
