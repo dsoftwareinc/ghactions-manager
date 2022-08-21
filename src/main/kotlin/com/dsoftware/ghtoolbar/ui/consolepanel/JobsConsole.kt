@@ -199,7 +199,7 @@ class JobList(model: ListModel<WorkflowRunJob>) : JBList<WorkflowRunJob>(model),
                     override fun focusLost(e: FocusEvent?) {}
                 })
                 installPopup(it)
-                installWorkflowRunSelectionSaver(it, jobSelectionHolder)
+                installJobSelectionSaver(it, jobSelectionHolder)
             }
 
             return ScrollPaneFactory.createScrollPane(
@@ -235,7 +235,7 @@ class JobList(model: ListModel<WorkflowRunJob>) : JBList<WorkflowRunJob>(model),
             })
         }
 
-        private fun installWorkflowRunSelectionSaver(
+        private fun installJobSelectionSaver(
             list: JobList,
             jobSelectionHolder: JobListSelectionHolder,
         ) {
