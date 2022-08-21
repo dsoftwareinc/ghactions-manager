@@ -1,6 +1,6 @@
 package com.dsoftware.ghtoolbar.ui
 
-import JobsConsole
+
 import WorkflowRunJobs
 import com.dsoftware.ghtoolbar.actions.ActionKeys
 import com.dsoftware.ghtoolbar.data.DataProvider
@@ -8,7 +8,9 @@ import com.dsoftware.ghtoolbar.data.WorkflowDataContextRepository
 import com.dsoftware.ghtoolbar.data.WorkflowRunJobsDataProvider
 import com.dsoftware.ghtoolbar.data.WorkflowRunLogsDataProvider
 import com.dsoftware.ghtoolbar.ui.consolepanel.WorkflowRunLogConsole
+import com.dsoftware.ghtoolbar.ui.wfpanel.JobList
 import com.dsoftware.ghtoolbar.ui.wfpanel.WorkflowRunListLoaderPanel
+import com.dsoftware.ghtoolbar.workflow.JobListSelectionHolder
 import com.dsoftware.ghtoolbar.workflow.WorkflowRunDataContext
 import com.dsoftware.ghtoolbar.workflow.WorkflowRunListSelectionHolder
 import com.dsoftware.ghtoolbar.workflow.WorkflowRunSelectionContext
@@ -113,7 +115,8 @@ class WorkflowToolWindowTabController(
         disposable: Disposable,
     ): JComponent {
         val runsSelectionHolder = WorkflowRunListSelectionHolder()
-        val selectionDataContext = WorkflowRunSelectionContext(context, runsSelectionHolder)
+        val jobsSelectionHolder = JobListSelectionHolder()
+        val selectionDataContext = WorkflowRunSelectionContext(context, runsSelectionHolder, jobsSelectionHolder)
 
         val dataProviderModel = createJobsDataProviderModel(context, runsSelectionHolder, disposable)
 
@@ -128,7 +131,7 @@ class WorkflowToolWindowTabController(
             GithubBundle.message("cannot.load.data.from.github"),
             errorHandler
         ).create { _, _ ->
-            createJobPanel(jobModel, disposable)
+            createJobPanel(jobModel, disposable, selectionDataContext)
         }
 //        val dataProviderModel = createLogsDataProviderModel(context, runsSelectionHolder, disposable)
 //
@@ -170,8 +173,14 @@ class WorkflowToolWindowTabController(
         }
     }
 
-    private fun createJobPanel(jobModel: SingleValueModel<WorkflowRunJobs?>, disposable: Disposable): JComponent {
-        val console = JobsConsole(project, jobModel, disposable)
+    private fun createJobPanel(
+        jobModel: SingleValueModel<WorkflowRunJobs?>,
+        disposable: Disposable,
+        selectionContext: WorkflowRunSelectionContext
+    ): JComponent {
+        val console = JobList.createWorkflowRunsListComponent(
+            project, jobModel, disposable, selectionContext.jobSelectionHolder
+        )
 
         val panel = JBPanelWithEmptyText(BorderLayout()).apply {
             isOpaque = false

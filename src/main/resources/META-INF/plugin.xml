@@ -43,10 +43,20 @@
 
         <group id="Github.Workflow.ToolWindow.List.Popup.Selected">
             <action id="Github.Workflow.Open.In.Browser"
-                    class="com.dsoftware.ghtoolbar.actions.OpenInBrowserAction"/>
+                    class="com.dsoftware.ghtoolbar.actions.WorkflowOpenInBrowserAction"/>
             <action id="Github.Workflow.Rerun"
                     class="com.dsoftware.ghtoolbar.actions.RerunWorkflowAction"/>
             <reference id="Github.Workflow.List.Reload"/>
+        </group>
+        <group id="Github.ToolWindow.JobList.Popup">
+<!--            <reference id="Github.Workflow.JobList.Reload"/>-->
+        </group>
+
+        <group id="Github.ToolWindow.JobList.Popup.Selected">
+            <action id="Github.Workflow.Jobs.Open.In.Browser"
+                    class="com.dsoftware.ghtoolbar.actions.JobOpenInBrowserAction"/>
+
+<!--            <reference id="Github.Workflow.Jobs.List.Reload"/>-->
         </group>
 
         <group id="Github.Workflow.Log.ToolWindow.List.Popup">
