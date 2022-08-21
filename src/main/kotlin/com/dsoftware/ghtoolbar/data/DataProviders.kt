@@ -71,15 +71,15 @@ class WorkflowRunLogsDataProvider(
     progressManager: ProgressManager,
     requestExecutor: GithubApiRequestExecutor,
     logsUrl: String,
-) : DataProvider<String>(
+) : DataProvider<Map<String,String>>(
     progressManager,
     requestExecutor,
     logsUrl,
-    """
+    mapOf("" to """"
         Logs are unavailable - either the workflow run is not
         finished (currently GitHub API returns 404 for logs for unfinished runs)
         or the url is incorrect. The log url: $logsUrl
-    """.trimIndent()
+    """.trimIndent())
 ) {
     override fun buildRequest(url: String) = Workflows.getDownloadUrlForWorkflowLog(url)
 

@@ -10,25 +10,27 @@ import java.util.TreeMap
 import java.util.zip.ZipInputStream
 
 
-class GetRunLogRequest(url: String) : GithubApiRequest.Get<String>(url) {
+class GetRunLogRequest(url: String) : GithubApiRequest.Get<Map<String, String>>(url) {
     private lateinit var workflowInfo: Map<String, Map<String, String>>
 
     init {
         LOG.info("GetRunLogRequest ${url}")
     }
 
-    override fun extractResult(response: GithubApiResponse): String {
+    override fun extractResult(response: GithubApiResponse): Map<String, String> {
         LOG.info("extracting result for $url")
         return response.handleBody {
             workflowInfo = extractFromStream(it)
             LOG.info("Got ${workflowInfo.size} jobs")
             if (workflowInfo.isEmpty()) {
-                "Logs are unavailable"
+                emptyMap<String, String>()
             } else {
-                val printLog = (sizeOfLogs(workflowInfo) < 1_000_000)
-                workflowInfo.entries
-                    .map { i -> "\u001b[1;96m==== Job: ${i.key} ====\u001b[0m\n${stepsAsLog(i.value, printLog)}" }
-                    .joinToString("\n")
+//                val printLog = (sizeOfLogs(workflowInfo) < 1_000_000)
+
+                workflowInfo.entries.map { (key, value) ->
+                    key to stepsAsLog(value, true)
+                }.toMap()
+
             }
 
         }

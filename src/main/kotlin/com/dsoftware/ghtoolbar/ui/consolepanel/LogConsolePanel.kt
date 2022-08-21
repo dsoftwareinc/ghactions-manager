@@ -1,6 +1,5 @@
 package com.dsoftware.ghtoolbar.ui.consolepanel
 
-import WorkflowRunJobs
 import com.intellij.collaboration.ui.SingleValueModel
 import com.intellij.execution.impl.ConsoleViewImpl
 import com.intellij.execution.process.AnsiEscapeDecoder
@@ -15,7 +14,7 @@ import com.intellij.openapi.util.Key
 import com.intellij.util.ui.UIUtil
 import javax.swing.plaf.PanelUI
 
-class WorkflowRunLogConsole(
+class LogConsolePanel(
     project: Project,
     logModel: SingleValueModel<String?>,
     disposable: Disposable,
@@ -58,7 +57,7 @@ class WorkflowRunLogConsole(
     }
 
     companion object {
-        private val LOG = logger<WorkflowRunLogConsole>()
+        private val LOG = logger<LogConsolePanel>()
     }
 }
 
