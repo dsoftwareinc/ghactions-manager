@@ -13,10 +13,7 @@ import com.intellij.openapi.Disposable
 import com.intellij.openapi.actionSystem.*
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.project.Project
-import com.intellij.ui.CollectionListModel
-import com.intellij.ui.ListUtil
-import com.intellij.ui.PopupHandler
-import com.intellij.ui.ScrollingUtil
+import com.intellij.ui.*
 import com.intellij.ui.components.JBList
 import com.intellij.ui.components.JBPanel
 import com.intellij.util.text.DateFormatUtil
@@ -205,7 +202,16 @@ class JobList(model: ListModel<WorkflowRunJob>) : JBList<WorkflowRunJob>(model),
                 installWorkflowRunSelectionSaver(it, jobSelectionHolder)
             }
 
-            return listComponent
+            return ScrollPaneFactory.createScrollPane(
+                listComponent,
+                ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
+                ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER
+            ).apply {
+                isOpaque = false
+                viewport.isOpaque = false
+                border = JBUI.Borders.empty()
+            }
+
         }
 
         private fun installPopup(list: JobList) {
