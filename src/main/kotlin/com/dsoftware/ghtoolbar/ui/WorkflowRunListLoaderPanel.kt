@@ -77,9 +77,7 @@ class WorkflowRunList(model: ListModel<GitHubWorkflowRun>) : JBList<GitHubWorkfl
         private val labels = JPanel().apply {
             layout = BoxLayout(this, BoxLayout.X_AXIS)
         }
-        private val assignees = JPanel().apply {
-            layout = BoxLayout(this, BoxLayout.X_AXIS)
-        }
+
 
         init {
             border = JBUI.Borders.empty(5, 8)
