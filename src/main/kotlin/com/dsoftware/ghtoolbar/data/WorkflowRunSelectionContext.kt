@@ -1,5 +1,6 @@
 package com.dsoftware.ghtoolbar.workflow
 
+import WorkflowRunJob
 import com.dsoftware.ghtoolbar.api.model.GitHubWorkflowRun
 import com.dsoftware.ghtoolbar.data.WorkflowRunJobsDataProvider
 import com.dsoftware.ghtoolbar.data.WorkflowRunListLoader
@@ -38,11 +39,11 @@ data class RepositoryCoordinates(val serverPath: GithubServerPath, val repositor
     }
 }
 
-class WorkflowRunListSelectionHolder {
+open class ListSelectionHolder<T> {
 
     @get:RequiresEdt
     @set:RequiresEdt
-    var selection: GitHubWorkflowRun? by Delegates.observable(null) { _, _, _ ->
+    var selection: T? by Delegates.observable(null) { _, _, _ ->
         selectionChangeEventDispatcher.multicaster.eventOccurred()
     }
 
@@ -52,11 +53,14 @@ class WorkflowRunListSelectionHolder {
     fun addSelectionChangeListener(disposable: Disposable, listener: () -> Unit) =
         SimpleEventListener.addDisposableListener(selectionChangeEventDispatcher, disposable, listener)
 }
+class WorkflowRunListSelectionHolder: ListSelectionHolder<GitHubWorkflowRun>()
+class JobListSelectionHolder: ListSelectionHolder<WorkflowRunJob>()
 
 
 class WorkflowRunSelectionContext internal constructor(
     val dataContext: WorkflowRunDataContext,
     val runSelectionHolder: WorkflowRunListSelectionHolder,
+    val jobSelectionHolder: JobListSelectionHolder,
 ) {
 
     fun resetAllData() {

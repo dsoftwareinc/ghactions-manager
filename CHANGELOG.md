@@ -2,7 +2,14 @@
 
 # ghactions-toolbar Changelog
 ## [Unreleased]
-## [1.0.3]
+## [1.1.0]
+### Added
+- Jobs panel view
+
+### Fixed
+- Allow empty conclusion, support in progress json - fix #30) by @cunla in #32
+- Multiple instances bug by @cunla in #31
+
 
 ## [1.0.1]
 ### Added

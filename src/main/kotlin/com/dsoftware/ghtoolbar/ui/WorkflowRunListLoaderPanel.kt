@@ -15,7 +15,6 @@ import com.intellij.openapi.Disposable
 import com.intellij.openapi.actionSystem.*
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.diagnostic.logger
-import com.intellij.openapi.diagnostic.thisLogger
 import com.intellij.openapi.progress.util.ProgressWindow
 import com.intellij.openapi.util.Disposer
 import com.intellij.ui.*
@@ -78,9 +77,7 @@ class WorkflowRunList(model: ListModel<GitHubWorkflowRun>) : JBList<GitHubWorkfl
         private val labels = JPanel().apply {
             layout = BoxLayout(this, BoxLayout.X_AXIS)
         }
-        private val assignees = JPanel().apply {
-            layout = BoxLayout(this, BoxLayout.X_AXIS)
-        }
+
 
         init {
             border = JBUI.Borders.empty(5, 8)
@@ -149,7 +146,6 @@ class WorkflowRunList(model: ListModel<GitHubWorkflowRun>) : JBList<GitHubWorkfl
     }
 
     companion object {
-        private val LOG = thisLogger()
         fun ghWorkflowRunIcon(ghWorkflowRun: GitHubWorkflowRun): Icon {
             return when (ghWorkflowRun.status) {
                 "completed" -> {

@@ -1,14 +1,16 @@
 package com.dsoftware.ghtoolbar.ui
 
-import JobsConsole
+
 import WorkflowRunJobs
 import com.dsoftware.ghtoolbar.actions.ActionKeys
 import com.dsoftware.ghtoolbar.data.DataProvider
 import com.dsoftware.ghtoolbar.data.WorkflowDataContextRepository
 import com.dsoftware.ghtoolbar.data.WorkflowRunJobsDataProvider
 import com.dsoftware.ghtoolbar.data.WorkflowRunLogsDataProvider
-import com.dsoftware.ghtoolbar.ui.consolepanel.WorkflowRunLogConsole
+import com.dsoftware.ghtoolbar.ui.consolepanel.LogConsolePanel
+import com.dsoftware.ghtoolbar.ui.wfpanel.JobList
 import com.dsoftware.ghtoolbar.ui.wfpanel.WorkflowRunListLoaderPanel
+import com.dsoftware.ghtoolbar.workflow.JobListSelectionHolder
 import com.dsoftware.ghtoolbar.workflow.WorkflowRunDataContext
 import com.dsoftware.ghtoolbar.workflow.WorkflowRunListSelectionHolder
 import com.dsoftware.ghtoolbar.workflow.WorkflowRunSelectionContext
@@ -113,45 +115,40 @@ class WorkflowToolWindowTabController(
         disposable: Disposable,
     ): JComponent {
         val runsSelectionHolder = WorkflowRunListSelectionHolder()
-        val selectionDataContext = WorkflowRunSelectionContext(context, runsSelectionHolder)
+        val jobsSelectionHolder = JobListSelectionHolder()
+        val selectionContext = WorkflowRunSelectionContext(context, runsSelectionHolder, jobsSelectionHolder)
 
-        val dataProviderModel = createJobsDataProviderModel(context, runsSelectionHolder, disposable)
+        val jobsdataProviderModel = createJobsDataProviderModel(context, runsSelectionHolder, disposable)
 
-        val (jobLoadingModel, jobModel) = createJobsLoadingModel(dataProviderModel, disposable)
+        val (jobLoadingModel, jobModel) = createJobsLoadingModel(jobsdataProviderModel, disposable)
         val workflowRunsList = WorkflowRunListLoaderPanel
-            .createWorkflowRunsListComponent(selectionDataContext, disposable)
+            .createWorkflowRunsListComponent(selectionContext, disposable)
         val errorHandler = GHApiLoadingErrorHandler(project, account) {
         }
-        val logLoadingPanel = GHLoadingPanelFactory(
+        val jobLoadingPanel = GHLoadingPanelFactory(
             jobLoadingModel,
-            "Select a workflow to show logs",
+            "Select a workflow to show list of jobs",
             GithubBundle.message("cannot.load.data.from.github"),
             errorHandler
         ).create { _, _ ->
-            createJobPanel(jobModel, disposable)
+            createJobPanel(jobModel, disposable, selectionContext)
         }
-//        val dataProviderModel = createLogsDataProviderModel(context, runsSelectionHolder, disposable)
-//
-//        val (logLoadingModel, logModel) = createLogLoadingModel(dataProviderModel, disposable)
-//        val workflowRunsList = WorkflowRunListLoaderPanel
-//            .createWorkflowRunsListComponent(selectionDataContext, disposable)
-//        val errorHandler = GHApiLoadingErrorHandler(project, account) {
-//        }
-//        val logLoadingPanel = GHLoadingPanelFactory(
-//            logLoadingModel,
-//            "Select a workflow to show logs",
-//            GithubBundle.message("cannot.load.data.from.github"),
-//            errorHandler
-//        ).create { _, _ ->
-//            createLogPanel(logModel, disposable)
-//        }
+        val logsDataProviderModel = createLogsDataProviderModel(selectionContext, disposable)
+        val (logLoadingModel, logModel) = createLogLoadingModel(logsDataProviderModel, jobsSelectionHolder, disposable)
+        val logLoadingPanel = GHLoadingPanelFactory(
+            logLoadingModel,
+            "Select a job to show logs",
+            GithubBundle.message("cannot.load.data.from.github"),
+            errorHandler
+        ).create { _, _ ->
+            createLogPanel(logModel, disposable)
+        }
 
-
-        return OnePixelSplitter("GitHub.Workflows.Component", 0.3f).apply {
+        val runPanel = OnePixelSplitter("GitHub.Workflows.Component", 0.3f).apply {
             background = UIUtil.getListBackground()
             isOpaque = true
             isFocusCycleRoot = true
-            firstComponent = workflowRunsList
+            firstComponent = jobLoadingPanel
             secondComponent = logLoadingPanel
                 .also {
                     (actionManager.getAction("Github.Workflow.Log.List.Reload") as RefreshAction)
@@ -163,39 +160,57 @@ class WorkflowToolWindowTabController(
         }.also {
             DataManager.registerDataProvider(it) { dataId ->
                 when {
-                    ActionKeys.ACTION_DATA_CONTEXT.`is`(dataId) -> selectionDataContext
+                    ActionKeys.ACTION_DATA_CONTEXT.`is`(dataId) -> selectionContext.runSelectionHolder
+                    else -> null
+                }
+            }
+        }
+
+        return OnePixelSplitter("GitHub.Workflows.Component", 0.3f).apply {
+            background = UIUtil.getListBackground()
+            isOpaque = true
+            isFocusCycleRoot = true
+            firstComponent = workflowRunsList
+            secondComponent = runPanel
+                .also {
+                    (actionManager.getAction("Github.Workflow.Log.List.Reload") as RefreshAction)
+                        .registerCustomShortcutSet(
+                            it,
+                            disposable
+                        )
+                }
+        }.also {
+            DataManager.registerDataProvider(it) { dataId ->
+                when {
+                    ActionKeys.ACTION_DATA_CONTEXT.`is`(dataId) -> selectionContext
                     else -> null
                 }
             }
         }
     }
 
-    private fun createJobPanel(jobModel: SingleValueModel<WorkflowRunJobs?>, disposable: Disposable): JComponent {
-        val console = JobsConsole(project, jobModel, disposable)
+    private fun createJobPanel(
+        jobModel: SingleValueModel<WorkflowRunJobs?>,
+        disposable: Disposable,
+        selectionContext: WorkflowRunSelectionContext
+    ): JComponent {
+        val console = JobList.createWorkflowRunsListComponent(
+            project, jobModel, disposable, selectionContext.jobSelectionHolder
+        )
 
         val panel = JBPanelWithEmptyText(BorderLayout()).apply {
             isOpaque = false
-            add(console.component, BorderLayout.CENTER)
+            add(console, BorderLayout.CENTER)
         }
         val actionGroup = actionManager.getAction("Github.Workflow.Log.ToolWindow.List.Popup") as DefaultActionGroup
         actionGroup.removeAll()
         actionGroup.add(actionManager.getAction("Github.Workflow.Log.List.Reload"))
-        actionGroup.add(
-            object : ToggleUseSoftWrapsToolbarAction(SoftWrapAppliancePlaces.CONSOLE) {
-                override fun getEditor(e: AnActionEvent): Editor? {
-                    return console.editor
-                }
-            }
-        )
-        val contextMenuPopupHandler = ContextMenuPopupHandler.Simple(actionGroup)
-        (console.editor as EditorEx).installPopupHandler(contextMenuPopupHandler)
-
         return panel
     }
 
     private fun createLogPanel(logModel: SingleValueModel<String?>, disposable: Disposable): JComponent {
         LOG.info("Create log panel")
-        val console = WorkflowRunLogConsole(project, logModel, disposable)
+        val console = LogConsolePanel(project, logModel, disposable)
 
         val panel = JBPanelWithEmptyText(BorderLayout()).apply {
             isOpaque = false
@@ -219,8 +234,7 @@ class WorkflowToolWindowTabController(
     }
 
     private fun createLogsDataProviderModel(
-        context: WorkflowRunDataContext,
-        runsSelectionHolder: WorkflowRunListSelectionHolder,
+        context: WorkflowRunSelectionContext,
         parentDisposable: Disposable,
     ): SingleValueModel<WorkflowRunLogsDataProvider?> {
         val model: SingleValueModel<WorkflowRunLogsDataProvider?> = SingleValueModel(null)
@@ -237,17 +251,25 @@ class WorkflowToolWindowTabController(
             model.value = null
         }
 
-        runsSelectionHolder.addSelectionChangeListener(parentDisposable) {
+        context.runSelectionHolder.addSelectionChangeListener(parentDisposable) {
             LOG.info("selection change listener")
-            val provider = runsSelectionHolder.selection?.let { context.dataLoader.getLogsDataProvider(it.logs_url) }
+            val provider = context.runSelectionHolder.selection?.let {
+                context.dataContext.dataLoader.getLogsDataProvider(it.logs_url)
+            }
+            setNewProvider(provider)
+        }
+        context.jobSelectionHolder.addSelectionChangeListener(parentDisposable) {
+            val provider = context.runSelectionHolder.selection?.let {
+                context.dataContext.dataLoader.getLogsDataProvider(it.logs_url)
+            }
             setNewProvider(provider)
         }
 
-        context.dataLoader.addInvalidationListener(parentDisposable) {
+        context.dataContext.dataLoader.addInvalidationListener(parentDisposable) {
             LOG.info("invalidation listener")
-            val selection = runsSelectionHolder.selection
+            val selection = context.runSelectionHolder.selection
             if (selection != null && selection.logs_url == it) {
-                setNewProvider(context.dataLoader.getLogsDataProvider(selection.logs_url))
+                setNewProvider(context.dataContext.dataLoader.getLogsDataProvider(selection.logs_url))
             }
         }
 
@@ -343,27 +365,33 @@ class WorkflowToolWindowTabController(
 
     private fun createLogLoadingModel(
         dataProviderModel: SingleValueModel<WorkflowRunLogsDataProvider?>,
+        jobsSelectionHolder: JobListSelectionHolder,
         parentDisposable: Disposable,
-    ): Pair<GHCompletableFutureLoadingModel<String>, SingleValueModel<String?>> {
+    ): Pair<GHCompletableFutureLoadingModel<Map<String, String>>, SingleValueModel<String?>> {
         LOG.info("Create log loading model")
         val valueModel = SingleValueModel<String?>(null)
-
-        val loadingModel = GHCompletableFutureLoadingModel<String>(parentDisposable).also {
+        var jobName = jobsSelectionHolder.selection?.name
+        val loadingModel = GHCompletableFutureLoadingModel<Map<String, String>>(parentDisposable).also {
             it.addStateChangeListener(object : GHLoadingModel.StateChangeListener {
                 override fun onLoadingCompleted() {
                     if (it.resultAvailable) {
-                        LOG.info("result available ${it.result?.length}")
-                        valueModel.value = it.result
+                        jobName = null
+                        valueModel.value = "Pick a job to view logs"
                     }
                 }
 
                 override fun onReset() {
                     LOG.info("onReset")
-                    valueModel.value = it.result
+                    val key = (jobName ?: "").replace("<", "").replace(">", "").trim()
+                    valueModel.value = it.result?.get(key) ?: "Job $jobName logs missing"
                 }
             })
         }
-
+        jobsSelectionHolder.addSelectionChangeListener(parentDisposable) {
+            jobName = jobsSelectionHolder.selection?.name
+            val key = (jobName ?: "").replace("<", "").replace(">", "").trim()
+            valueModel.value = loadingModel.result?.get(key) ?: "Job $jobName logs missing"
+        }
         var listenerDisposable: Disposable? = null
 
         dataProviderModel.addListener {

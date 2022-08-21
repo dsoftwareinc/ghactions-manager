@@ -1,4 +1,5 @@
-import com.dsoftware.ghtoolbar.ui.consolepanel.WorkflowRunLogConsole
+package com.dsoftware.ghtoolbar.ui.consolepanel
+
 import com.intellij.collaboration.ui.SingleValueModel
 import com.intellij.execution.impl.ConsoleViewImpl
 import com.intellij.execution.process.AnsiEscapeDecoder
@@ -13,9 +14,9 @@ import com.intellij.openapi.util.Key
 import com.intellij.util.ui.UIUtil
 import javax.swing.plaf.PanelUI
 
-class JobsConsole(
+class LogConsolePanel(
     project: Project,
-    jobModel: SingleValueModel<WorkflowRunJobs?>,
+    logModel: SingleValueModel<String?>,
     disposable: Disposable,
 ) : ConsoleViewImpl(project, true), AnsiEscapeDecoder.ColoredTextAcceptor {
     private val ansiEscapeDecoder = AnsiEscapeDecoder()
@@ -25,12 +26,12 @@ class JobsConsole(
 
     init {
         LOG.info("Create console")
-        if (jobModel.value != null) {
-            this.setData(jobModel.value!!)
+        if (!logModel.value.isNullOrBlank()) {
+            this.setData(logModel.value!!)
         }
-        jobModel.addListener {
-            if (jobModel.value != null) {
-                this.setData(jobModel.value!!)
+        logModel.addListener {
+            if (!logModel.value.isNullOrBlank()) {
+                this.setData(logModel.value!!)
             }
         }
 
@@ -39,20 +40,8 @@ class JobsConsole(
         }
     }
 
-    private fun setData(jobs: WorkflowRunJobs) {
+    private fun setData(message: String) {
         this.clear()
-        val msgBuilder = StringBuilder()
-        for (job in jobs.jobs) {
-            msgBuilder.append("\u001B[1;96m==== Job: ${job.name} attempt ${job.runAttempt} ${job.conclusion}:\u001B[0m\n")
-            msgBuilder.append("\t${job.htmlUrl}\n")
-            if (job.steps == null) {
-                continue
-            }
-            for (step in job.steps) {
-                msgBuilder.append("\tStep ${step.number}: ${step.name} -- ${step.conclusion}\n")
-            }
-        }
-        val message = msgBuilder.toString()
         ansiEscapeDecoder.escapeText(message, ProcessOutputType.STDOUT, this)
     }
 
@@ -68,6 +57,7 @@ class JobsConsole(
     }
 
     companion object {
-        private val LOG = logger<WorkflowRunLogConsole>()
+        private val LOG = logger<LogConsolePanel>()
     }
 }
+

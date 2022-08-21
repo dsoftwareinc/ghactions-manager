@@ -49,10 +49,10 @@ data class WorkflowRunJob(
     val conclusion: String?,
     /* The time that the job started, in ISO 8601 format. */
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'")
-    val startedAt: Date,
+    val startedAt: Date?,
     /* The time that the job finished, in ISO 8601 format. */
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'")
-    val completedAt: Date,
+    val completedAt: Date?,
     /* The name of the job. */
     val name: String,
     /* Steps in this job. */

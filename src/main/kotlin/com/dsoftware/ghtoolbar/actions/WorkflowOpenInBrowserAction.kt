@@ -6,7 +6,7 @@ import com.intellij.openapi.actionSystem.CommonDataKeys
 import com.intellij.openapi.actionSystem.DataContext
 import com.intellij.openapi.project.DumbAwareAction
 
-class OpenInBrowserAction : DumbAwareAction("Open GitHub link in browser") {
+abstract class OpenInBrowserAction : DumbAwareAction("Open GitHub link in browser") {
 
     override fun update(e: AnActionEvent) {
         val data = getData(e.dataContext)
@@ -17,8 +17,21 @@ class OpenInBrowserAction : DumbAwareAction("Open GitHub link in browser") {
         getData(e.dataContext)?.let { BrowserUtil.browse(it) }
     }
 
-    private fun getData(dataContext: DataContext): String? {
+    abstract fun getData(dataContext: DataContext): String?
+}
+
+class WorkflowOpenInBrowserAction : OpenInBrowserAction() {
+
+    override fun getData(dataContext: DataContext): String? {
         dataContext.getData(CommonDataKeys.PROJECT) ?: return null
         return dataContext.getData(ActionKeys.SELECTED_WORKFLOW_RUN)?.html_url
+    }
+}
+
+class JobOpenInBrowserAction : OpenInBrowserAction() {
+
+    override fun getData(dataContext: DataContext): String? {
+        dataContext.getData(CommonDataKeys.PROJECT) ?: return null
+        return dataContext.getData(ActionKeys.SELECTED_JOB)?.htmlUrl
     }
 }
