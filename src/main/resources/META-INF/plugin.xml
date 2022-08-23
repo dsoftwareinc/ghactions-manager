@@ -16,7 +16,7 @@
             anchor="bottom"
             factoryClass="com.dsoftware.ghtoolbar.ui.GhActionsToolWindowFactory"/>
         <console.folding
-            implementation="com.dsoftware.ghtoolbar.ui.consolepanel.GhActionConsoleFolding"/>
+            implementation="com.dsoftware.ghtoolbar.ui.panels.GhActionConsoleFolding"/>
         <projectConfigurable
             parentId="tools"
             instance="com.dsoftware.ghtoolbar.ui.settings.GhActionsToolbarConfigurable"

@@ -7,7 +7,7 @@ import com.dsoftware.ghtoolbar.data.DataProvider
 import com.dsoftware.ghtoolbar.data.WorkflowDataContextRepository
 import com.dsoftware.ghtoolbar.data.WorkflowRunJobsDataProvider
 import com.dsoftware.ghtoolbar.data.WorkflowRunLogsDataProvider
-import com.dsoftware.ghtoolbar.ui.consolepanel.LogConsolePanel
+import com.dsoftware.ghtoolbar.ui.panels.LogConsolePanel
 import com.dsoftware.ghtoolbar.ui.wfpanel.JobList
 import com.dsoftware.ghtoolbar.ui.wfpanel.WorkflowRunListLoaderPanel
 import com.dsoftware.ghtoolbar.workflow.JobListSelectionHolder
@@ -131,7 +131,7 @@ class WorkflowToolWindowTabController(
             GithubBundle.message("cannot.load.data.from.github"),
             errorHandler
         ).create { _, _ ->
-            createJobPanel(jobModel, disposable, selectionContext)
+            createJobPanel(jobModel, selectionContext)
         }
         val logsDataProviderModel = createLogsDataProviderModel(selectionContext, disposable)
         val (logLoadingModel, logModel) = createLogLoadingModel(logsDataProviderModel, jobsSelectionHolder, disposable)
@@ -191,11 +191,10 @@ class WorkflowToolWindowTabController(
 
     private fun createJobPanel(
         jobModel: SingleValueModel<WorkflowRunJobs?>,
-        disposable: Disposable,
         selectionContext: WorkflowRunSelectionContext
     ): JComponent {
-        val console = JobList.createWorkflowRunsListComponent(
-            project, jobModel, disposable, selectionContext.jobSelectionHolder
+        val console = JobList.createJobsListComponent(
+            jobModel, selectionContext.jobSelectionHolder
         )
 
         val panel = JBPanelWithEmptyText(BorderLayout()).apply {

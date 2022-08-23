@@ -10,12 +10,6 @@ data class ToolbarSettings(
     data class RepoSettings(var included: Boolean = true)
 }
 
-/**
- * Supports storing the application settings in a persistent way.
- * The [ToolbarSettings] and [Storage] annotations define the name of the data and the file name where
- * these persistent application settings are stored.
- */
-
 @Service
 @State(
     name = "GhActionsToolbarSettings",

@@ -5,18 +5,16 @@ import WorkflowRunJob
 import WorkflowRunJobs
 import com.dsoftware.ghtoolbar.actions.ActionKeys
 import com.dsoftware.ghtoolbar.ui.Icons
+import com.dsoftware.ghtoolbar.ui.ToolbarUtil
 import com.dsoftware.ghtoolbar.workflow.JobListSelectionHolder
 import com.intellij.collaboration.ui.SingleValueModel
 import com.intellij.icons.AllIcons
 import com.intellij.ide.CopyProvider
-import com.intellij.openapi.Disposable
 import com.intellij.openapi.actionSystem.*
 import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.project.Project
 import com.intellij.ui.*
 import com.intellij.ui.components.JBList
 import com.intellij.ui.components.JBPanel
-import com.intellij.util.text.DateFormatUtil
 import com.intellij.util.ui.JBUI
 import com.intellij.util.ui.ListUiUtil
 import com.intellij.util.ui.UIUtil
@@ -27,10 +25,6 @@ import java.awt.Component
 import java.awt.event.FocusEvent
 import java.awt.event.FocusListener
 import java.awt.event.MouseEvent
-import java.time.LocalDateTime
-import java.time.ZoneId
-import java.time.ZoneOffset
-import java.util.Date
 import javax.swing.*
 import javax.swing.event.ListDataEvent
 import javax.swing.event.ListDataListener
@@ -118,16 +112,13 @@ class JobList(model: ListModel<WorkflowRunJob>) : JBList<WorkflowRunJob>(model),
             val secondaryTextColor = ListUiUtil.WithTallRow.secondaryForeground(list, isSelected)
 
             title.apply {
-                icon = jobIcon(job)
+                icon = ToolbarUtil.statusIcon(job.status.value, job.conclusion)
                 text = job.name
                 foreground = primaryTextColor
             }
 
             info.apply {
-                val startedAtLabel =
-                    if (job.startedAt == null) "Unknown"
-                    else makeTimePretty(job.startedAt)
-
+                val startedAtLabel = ToolbarUtil.makeTimePretty(job.startedAt)
                 text = "Attempt #${job.runAttempt} started on $startedAtLabel"
                 foreground = secondaryTextColor
             }
@@ -150,32 +141,9 @@ class JobList(model: ListModel<WorkflowRunJob>) : JBList<WorkflowRunJob>(model),
 
     companion object {
         private val actionManager = ActionManager.getInstance()
-        private fun jobIcon(job: WorkflowRunJob): Icon {
-            return when (job.status) {
-                WorkflowRunJob.Status.COMPLETED -> {
-                    when (job.conclusion) {
-                        "success" -> AllIcons.Actions.Commit
-                        "failure" -> Icons.X
-                        else -> Icons.PrimitiveDot
-                    }
-                }
 
-                WorkflowRunJob.Status.INPROGRESS -> Icons.PrimitiveDot
-                WorkflowRunJob.Status.QUEUED -> Icons.PrimitiveDot
-                else -> Icons.PrimitiveDot
-            }
-        }
-
-        fun makeTimePretty(date: Date): String {
-            val localDateTime = LocalDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault())
-            val zonedDateTime = localDateTime.atZone(ZoneOffset.UTC)
-            return DateFormatUtil.formatPrettyDateTime(zonedDateTime.toInstant().toEpochMilli())
-        }
-
-        fun createWorkflowRunsListComponent(
-            project: Project,
+        fun createJobsListComponent(
             jobModel: SingleValueModel<WorkflowRunJobs?>,
-            disposable: Disposable,
             jobSelectionHolder: JobListSelectionHolder,
         ): JComponent {
             val list = CollectionListModel<WorkflowRunJob>()

@@ -6,7 +6,6 @@ import javax.swing.AbstractAction
 import javax.swing.Action
 
 class LoadingErrorHandler(private val resetRunnable: () -> Unit) {
-
     fun getActionForError(): Action {
         return RetryAction()
     }

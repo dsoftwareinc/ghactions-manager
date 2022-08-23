@@ -1,9 +1,11 @@
-package com.dsoftware.ghtoolbar.ui.consolepanel
+package com.dsoftware.ghtoolbar.ui.panels
 
 import com.intellij.collaboration.ui.SingleValueModel
+import com.intellij.execution.ConsoleFolding
 import com.intellij.execution.impl.ConsoleViewImpl
 import com.intellij.execution.process.AnsiEscapeDecoder
 import com.intellij.execution.process.ProcessOutputType
+import com.intellij.execution.ui.ConsoleView
 import com.intellij.execution.ui.ConsoleViewContentType
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.diagnostic.logger
@@ -13,6 +15,24 @@ import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.util.Key
 import com.intellij.util.ui.UIUtil
 import javax.swing.plaf.PanelUI
+
+class GhActionConsoleFolding : ConsoleFolding() {
+    override fun shouldBeAttachedToThePreviousLine(): Boolean = true
+
+    override fun getPlaceholderText(project: Project, lines: MutableList<String>): String? {
+        return "...${lines.size} lines..."
+    }
+
+    override fun shouldFoldLine(project: Project, line: String): Boolean {
+        return !(line.startsWith("====")
+            || line.startsWith("---- Step"))
+    }
+
+    override fun isEnabledForConsole(consoleView: ConsoleView): Boolean {
+        return true
+    }
+
+}
 
 class LogConsolePanel(
     project: Project,

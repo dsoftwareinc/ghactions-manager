@@ -4,11 +4,10 @@ package com.dsoftware.ghtoolbar.ui.wfpanel
 import com.dsoftware.ghtoolbar.actions.ActionKeys
 import com.dsoftware.ghtoolbar.api.model.GitHubWorkflowRun
 import com.dsoftware.ghtoolbar.data.WorkflowRunListLoader
-import com.dsoftware.ghtoolbar.ui.Icons
 import com.dsoftware.ghtoolbar.ui.LoadingErrorHandler
+import com.dsoftware.ghtoolbar.ui.ToolbarUtil
 import com.dsoftware.ghtoolbar.workflow.WorkflowRunListSelectionHolder
 import com.dsoftware.ghtoolbar.workflow.WorkflowRunSelectionContext
-import com.intellij.icons.AllIcons
 import com.intellij.ide.CopyProvider
 import com.intellij.ide.actions.RefreshAction
 import com.intellij.openapi.Disposable
@@ -20,7 +19,6 @@ import com.intellij.openapi.util.Disposer
 import com.intellij.ui.*
 import com.intellij.ui.components.JBLabel
 import com.intellij.ui.components.JBList
-import com.intellij.util.text.DateFormatUtil
 import com.intellij.util.ui.*
 import com.intellij.util.ui.components.BorderLayoutPanel
 import com.intellij.vcs.log.ui.frame.ProgressStripe
@@ -35,10 +33,6 @@ import java.awt.event.ActionEvent
 import java.awt.event.FocusEvent
 import java.awt.event.FocusListener
 import java.awt.event.MouseEvent
-import java.time.LocalDateTime
-import java.time.ZoneId
-import java.time.ZoneOffset
-import java.util.Date
 import javax.swing.*
 import javax.swing.event.ListDataEvent
 import javax.swing.event.ListDataListener
@@ -124,7 +118,7 @@ class WorkflowRunList(model: ListModel<GitHubWorkflowRun>) : JBList<GitHubWorkfl
             val primaryTextColor = ListUiUtil.WithTallRow.foreground(isSelected, list.hasFocus())
             val secondaryTextColor = ListUiUtil.WithTallRow.secondaryForeground(list, isSelected)
 
-            stateIcon.icon = ghWorkflowRunIcon(ghWorkflowRun)
+            stateIcon.icon = ToolbarUtil.statusIcon(ghWorkflowRun.status, ghWorkflowRun.conclusion)
             title.apply {
                 text = ghWorkflowRun.head_commit.message
                 foreground = primaryTextColor
@@ -146,34 +140,9 @@ class WorkflowRunList(model: ListModel<GitHubWorkflowRun>) : JBList<GitHubWorkfl
     }
 
     companion object {
-        fun ghWorkflowRunIcon(ghWorkflowRun: GitHubWorkflowRun): Icon {
-            return when (ghWorkflowRun.status) {
-                "completed" -> {
-                    when (ghWorkflowRun.conclusion) {
-                        "success" -> AllIcons.Actions.Commit
-                        "failure" -> Icons.X
-                        else -> Icons.PrimitiveDot
-                    }
-                }
-
-                "queued" -> Icons.PrimitiveDot
-                "in progress" -> Icons.PrimitiveDot
-                "neutral" -> Icons.PrimitiveDot
-                "success" -> AllIcons.Actions.Commit
-                "failure" -> Icons.X
-                "cancelled" -> Icons.X
-                "action required" -> Icons.Watch
-                "timed out" -> Icons.Watch
-                "skipped" -> Icons.X
-                "stale" -> Icons.Watch
-                else -> Icons.PrimitiveDot
-            }
-        }
 
         fun ghWorkflowRunInfo(ghWorkflowRun: GitHubWorkflowRun): String {
-            val updatedAtLabel =
-                if (ghWorkflowRun.updated_at == null) "Unknown"
-                else makeTimePretty(ghWorkflowRun.updated_at)
+            val updatedAtLabel = ToolbarUtil.makeTimePretty(ghWorkflowRun.updated_at)
 
             var action = "pushed by"
             if (ghWorkflowRun.event == "release") {
@@ -184,11 +153,6 @@ class WorkflowRunList(model: ListModel<GitHubWorkflowRun>) : JBList<GitHubWorkfl
                 "on $updatedAtLabel"
         }
 
-        fun makeTimePretty(date: Date): String {
-            val localDateTime = LocalDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault())
-            val zonedDateTime = localDateTime.atZone(ZoneOffset.UTC)
-            return DateFormatUtil.formatPrettyDateTime(zonedDateTime.toInstant().toEpochMilli())
-        }
     }
 
     override fun performCopy(dataContext: DataContext) {
