@@ -2,32 +2,22 @@
 name: Bug report
 about: Create a report to help us improve
 title: ''
-labels: bug
+labels: ''
 assignees: ''
-
 ---
 
 **Describe the bug**
 A clear and concise description of what the bug is.
 Add a screenshot if it is relevant.
 
-**To Reproduce**
-Steps to reproduce the behavior:
-1. Go to '...'
-2. Click on '....'
-3. Scroll down to '....'
-4. See error
+**Describe the bug:**
+<!-- A clear and concise description of what the bug is. -->
 
-**Expected behavior**
-A clear and concise description of what you expected to happen.
+**Steps to reproduce:** 
+<!-- Steps to reproduce the issue. -->
 
-**Screenshots**
-If applicable, add screenshots to help explain your problem.
+**Expected behavior:**
+<!-- A clear and concise description of what you expected to happen. -->
 
-**Desktop (please complete the following information):**
- - OS: [e.g. iOS]
- - JetBrains product + version: [e.g., IntelliJ 2022.1]
-
-
-**Additional context**
-Add any other context about the problem here.
+**Additional context:**
+<!-- Add any other context about the problem here. -->

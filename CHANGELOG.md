@@ -1,8 +1,11 @@
 <!-- Keep a Changelog guide -> https://keepachangelog.com -->
 
 # ghactions-toolbar Changelog
+
 ## [Unreleased]
-## [1.1.0]
+
+
+## [1.1.0] - 2022-08-25
 ### Added
 - Jobs panel view
 
