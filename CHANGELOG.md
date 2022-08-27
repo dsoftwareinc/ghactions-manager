@@ -6,6 +6,7 @@
 ## [1.1.1] - 2022-08-25
 ### Fixed
 - Bug serializing status of job
+- Viewing job logs while it is in progress #34
 ### Changed
 - Gradle version building project
 - Cleanup code
