@@ -4,11 +4,9 @@ package com.dsoftware.ghtoolbar.ui.wfpanel
 import WorkflowRunJob
 import WorkflowRunJobs
 import com.dsoftware.ghtoolbar.actions.ActionKeys
-import com.dsoftware.ghtoolbar.ui.Icons
 import com.dsoftware.ghtoolbar.ui.ToolbarUtil
 import com.dsoftware.ghtoolbar.workflow.JobListSelectionHolder
 import com.intellij.collaboration.ui.SingleValueModel
-import com.intellij.icons.AllIcons
 import com.intellij.ide.CopyProvider
 import com.intellij.openapi.actionSystem.*
 import com.intellij.openapi.application.ApplicationManager
@@ -224,6 +222,7 @@ class JobList(model: ListModel<WorkflowRunJob>) : JBList<WorkflowRunJob>(model),
                     if (e.type == ListDataEvent.INTERVAL_ADDED)
                         (e.index0..e.index1).find { list.model.getElementAt(it) == savedSelection }
                             ?.run {
+                                if (list.model.size == 0) return
                                 ApplicationManager.getApplication().invokeLater { ScrollingUtil.selectItem(list, this) }
                             }
                 }

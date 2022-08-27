@@ -10,6 +10,7 @@ import com.intellij.util.EventDispatcher
 import com.intellij.util.concurrency.annotations.RequiresEdt
 import org.jetbrains.plugins.github.api.GithubApiRequest
 import org.jetbrains.plugins.github.api.GithubApiRequestExecutor
+import org.jetbrains.plugins.github.exceptions.GithubStatusCodeException
 import org.jetbrains.plugins.github.util.LazyCancellableBackgroundProcessValue
 import java.io.IOException
 import java.util.EventListener
@@ -32,6 +33,9 @@ abstract class DataProvider<T>(
             response
         } catch (ioe: IOException) {
             LOG.error(ioe)
+            errorValue
+        } catch (e: GithubStatusCodeException) {
+            LOG.error("error executing URL ${url}, ${e}")
             errorValue
         }
     }
@@ -71,15 +75,17 @@ class WorkflowRunLogsDataProvider(
     progressManager: ProgressManager,
     requestExecutor: GithubApiRequestExecutor,
     logsUrl: String,
-) : DataProvider<Map<String,String>>(
+) : DataProvider<Map<String, String>>(
     progressManager,
     requestExecutor,
     logsUrl,
-    mapOf("" to """"
+    mapOf(
+        "" to """"
         Logs are unavailable - either the workflow run is not
         finished (currently GitHub API returns 404 for logs for unfinished runs)
         or the url is incorrect. The log url: $logsUrl
-    """.trimIndent())
+    """.trimIndent()
+    )
 ) {
     override fun buildRequest(url: String) = Workflows.getDownloadUrlForWorkflowLog(url)
 
