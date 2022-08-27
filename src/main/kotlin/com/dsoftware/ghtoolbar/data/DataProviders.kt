@@ -10,7 +10,6 @@ import com.intellij.util.EventDispatcher
 import com.intellij.util.concurrency.annotations.RequiresEdt
 import org.jetbrains.plugins.github.api.GithubApiRequest
 import org.jetbrains.plugins.github.api.GithubApiRequestExecutor
-import org.jetbrains.plugins.github.exceptions.GithubStatusCodeException
 import org.jetbrains.plugins.github.util.LazyCancellableBackgroundProcessValue
 import java.io.IOException
 import java.util.EventListener
@@ -33,9 +32,6 @@ abstract class DataProvider<T>(
             response
         } catch (ioe: IOException) {
             LOG.error(ioe)
-            errorValue
-        } catch (e: GithubStatusCodeException) {
-            LOG.error("error executing URL ${url}, ${e}")
             errorValue
         }
     }
