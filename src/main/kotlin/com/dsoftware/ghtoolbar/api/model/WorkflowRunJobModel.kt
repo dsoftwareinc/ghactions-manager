@@ -81,7 +81,7 @@ data class WorkflowRunJob(
  */
 data class WorkflowRunJobSteps(
     /* The phase of the lifecycle that the job is currently in. */
-    val status: WorkflowRunJobSteps.Status,
+    val status: String,
     /* The outcome of the job. */
     val conclusion: String?,
     /* The name of the job. */
@@ -93,14 +93,4 @@ data class WorkflowRunJobSteps(
     /* The time that the job finished, in ISO 8601 format. */
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSX")
     val completedAt: Date? = null
-) {
-    /**
-     * The phase of the lifecycle that the job is currently in.
-     * Values: QUEUED,INPROGRESS,COMPLETED
-     */
-    enum class Status(val value: String) {
-        QUEUED("queued"),
-        INPROGRESS("in_progress"),
-        COMPLETED("completed");
-    }
-}
+)

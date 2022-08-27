@@ -29,7 +29,7 @@ class GhActionConsoleFolding : ConsoleFolding() {
     }
 
     override fun isEnabledForConsole(consoleView: ConsoleView): Boolean {
-        return true
+        return consoleView is LogConsolePanel
     }
 
 }
