@@ -35,3 +35,9 @@ class JobOpenInBrowserAction : OpenInBrowserAction() {
         return dataContext.getData(ActionKeys.SELECTED_JOB)?.htmlUrl
     }
 }
+
+class PullRequestOpenInBrowserAction(val url: String) : DumbAwareAction("Open pull-request in browser") {
+    override fun actionPerformed(e: AnActionEvent) {
+        BrowserUtil.browse(url)
+    }
+}

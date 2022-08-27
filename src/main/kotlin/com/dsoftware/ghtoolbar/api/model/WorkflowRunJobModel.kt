@@ -44,7 +44,7 @@ data class WorkflowRunJob(
     val url: String,
     val htmlUrl: String,
     /* The phase of the lifecycle that the job is currently in. */
-    val status: WorkflowRunJob.Status,
+    val status: String,
     /* The outcome of the job. */
     val conclusion: String?,
     /* The time that the job started, in ISO 8601 format. */
@@ -68,18 +68,7 @@ data class WorkflowRunJob(
     val runnerGroupId: Long?,
     /* The name of the runner group to which this job has been assigned. (If a runner hasn't yet been assigned, this will be null.) */
     val runnerGroupName: String?
-) {
-    /**
-     * The phase of the lifecycle that the job is currently in.
-     * Values: QUEUED,INPROGRESS,COMPLETED
-     */
-    enum class Status(val value: String) {
-        QUEUED("queued"),
-        INPROGRESS("in_progress"),
-        COMPLETED("completed");
-    }
-}
-
+)
 
 /**
  *

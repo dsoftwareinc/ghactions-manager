@@ -112,7 +112,7 @@ class JobList(model: ListModel<WorkflowRunJob>) : JBList<WorkflowRunJob>(model),
             val secondaryTextColor = ListUiUtil.WithTallRow.secondaryForeground(list, isSelected)
 
             title.apply {
-                icon = ToolbarUtil.statusIcon(job.status.value, job.conclusion)
+                icon = ToolbarUtil.statusIcon(job.status, job.conclusion)
                 text = job.name
                 foreground = primaryTextColor
             }
