@@ -3,7 +3,12 @@
 # ghactions-toolbar Changelog
 
 ## [Unreleased]
-
+## [1.1.1] - 2022-08-25
+### Fixed
+- Bug serializing status of job
+### Changed
+- Gradle version building project
+- Cleanup code
 
 ## [1.1.0] - 2022-08-25
 ### Added
