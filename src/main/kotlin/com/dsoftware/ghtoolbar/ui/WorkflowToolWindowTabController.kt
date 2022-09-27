@@ -7,10 +7,10 @@ import com.dsoftware.ghtoolbar.data.DataProvider
 import com.dsoftware.ghtoolbar.data.WorkflowDataContextRepository
 import com.dsoftware.ghtoolbar.data.WorkflowRunJobsDataProvider
 import com.dsoftware.ghtoolbar.data.WorkflowRunLogsDataProvider
-import com.dsoftware.ghtoolbar.ui.panels.LogConsolePanel
-import com.dsoftware.ghtoolbar.ui.settings.ToolbarSettings
 import com.dsoftware.ghtoolbar.ui.panels.JobList
+import com.dsoftware.ghtoolbar.ui.panels.LogConsolePanel
 import com.dsoftware.ghtoolbar.ui.panels.WorkflowRunListLoaderPanel
+import com.dsoftware.ghtoolbar.ui.settings.ToolbarSettings
 import com.dsoftware.ghtoolbar.workflow.JobListSelectionHolder
 import com.dsoftware.ghtoolbar.workflow.WorkflowRunDataContext
 import com.dsoftware.ghtoolbar.workflow.WorkflowRunListSelectionHolder
@@ -58,7 +58,8 @@ class WorkflowToolWindowTabController(
     private val actionManager = ActionManager.getInstance()
     private val mainPanel: JComponent
     private val ghRequestExecutor = GithubApiRequestExecutorManager.getInstance().getExecutor(ghAccount)
-
+    private val NO_LOGS_MSG =
+        "Can not fetch logs when workflow in progress, please try again when workflow is completed";
     private var contentDisposable by Delegates.observable<Disposable?>(null) { _, oldValue, newValue ->
         if (oldValue != null) Disposer.dispose(oldValue)
         if (newValue != null) Disposer.register(tab.disposer!!, newValue)
@@ -98,9 +99,9 @@ class WorkflowToolWindowTabController(
             GithubBundle.message("cannot.load.data.from.github"),
             errorHandler,
         ).create { _, result ->
-            LOG.info("create content")
+            LOG.debug("create content")
             val content = createContent(result, ghAccount, disposable)
-            LOG.info("done creating content")
+            LOG.debug("done creating content")
 
             content
         }
@@ -198,14 +199,14 @@ class WorkflowToolWindowTabController(
     }
 
     private fun createLogPanel(logModel: SingleValueModel<String?>, disposable: Disposable): JComponent {
-        LOG.info("Create log panel")
+        LOG.debug("Create log panel")
         val console = LogConsolePanel(project, logModel, disposable)
 
         val panel = JBPanelWithEmptyText(BorderLayout()).apply {
             isOpaque = false
             add(console.component, BorderLayout.CENTER)
         }
-        LOG.info("Adding popup actions")
+        LOG.debug("Adding popup actions")
         val actionGroup = actionManager.getAction("Github.Workflow.Log.ToolWindow.List.Popup") as DefaultActionGroup
         actionGroup.removeAll()
         actionGroup.add(actionManager.getAction("Github.Workflow.Log.List.Reload"))
@@ -229,7 +230,6 @@ class WorkflowToolWindowTabController(
         val model: SingleValueModel<WorkflowRunLogsDataProvider?> = SingleValueModel(null)
 
         fun setNewProvider(provider: WorkflowRunLogsDataProvider?) {
-            LOG.info("setNewProvider")
             val oldValue = model.value
             if (oldValue != null && provider != null && oldValue.url != provider.url) {
                 model.value = null
@@ -241,7 +241,7 @@ class WorkflowToolWindowTabController(
         }
 
         context.runSelectionHolder.addSelectionChangeListener(parentDisposable) {
-            LOG.info("selection change listener")
+            LOG.debug("selection change listener")
             val provider = context.runSelectionHolder.selection?.let {
                 context.dataContext.dataLoader.getLogsDataProvider(it.logs_url)
             }
@@ -255,7 +255,7 @@ class WorkflowToolWindowTabController(
         }
 
         context.dataContext.dataLoader.addInvalidationListener(parentDisposable) {
-            LOG.info("invalidation listener")
+            LOG.debug("invalidation listener")
             val selection = context.runSelectionHolder.selection
             if (selection != null && selection.logs_url == it) {
                 setNewProvider(context.dataContext.dataLoader.getLogsDataProvider(selection.logs_url))
@@ -273,7 +273,7 @@ class WorkflowToolWindowTabController(
         val model: SingleValueModel<WorkflowRunJobsDataProvider?> = SingleValueModel(null)
 
         fun setNewProvider(provider: WorkflowRunJobsDataProvider?) {
-            LOG.info("createJobsDataProviderModel setNewProvider")
+            LOG.debug("createJobsDataProviderModel setNewProvider")
             val oldValue = model.value
             if (oldValue != null && provider != null && oldValue.url != provider.url) {
                 model.value = null
@@ -285,13 +285,13 @@ class WorkflowToolWindowTabController(
         }
 
         runsSelectionHolder.addSelectionChangeListener(parentDisposable) {
-            LOG.info("createJobsDataProviderModel selection change listener")
+            LOG.debug("createJobsDataProviderModel selection change listener")
             val provider = runsSelectionHolder.selection?.let { context.dataLoader.getJobsDataProvider(it.jobs_url) }
             setNewProvider(provider)
         }
 
         context.dataLoader.addInvalidationListener(parentDisposable) {
-            LOG.info("invalidation listener")
+            LOG.debug("invalidation listener")
             val selection = runsSelectionHolder.selection
             if (selection != null && selection.logs_url == it) {
                 setNewProvider(context.dataLoader.getJobsDataProvider(selection.jobs_url))
@@ -305,7 +305,7 @@ class WorkflowToolWindowTabController(
         dataProviderModel: SingleValueModel<WorkflowRunJobsDataProvider?>,
         parentDisposable: Disposable,
     ): Pair<GHCompletableFutureLoadingModel<WorkflowRunJobs>, SingleValueModel<WorkflowRunJobs?>> {
-        LOG.info("createJobsDataProviderModel Create log loading model")
+        LOG.debug("createJobsDataProviderModel Create log loading model")
         val valueModel = SingleValueModel<WorkflowRunJobs?>(null)
 
         val loadingModel = GHCompletableFutureLoadingModel<WorkflowRunJobs>(parentDisposable).also {
@@ -317,7 +317,7 @@ class WorkflowToolWindowTabController(
                 }
 
                 override fun onReset() {
-                    LOG.info("onReset")
+                    LOG.debug("onReset")
                     valueModel.value = it.result
                 }
             })
@@ -326,7 +326,7 @@ class WorkflowToolWindowTabController(
         var listenerDisposable: Disposable? = null
 
         dataProviderModel.addListener {
-            LOG.info("log loading model Value changed")
+            LOG.debug("Jobs loading model Value changed")
             val provider = dataProviderModel.value
             loadingModel.future = provider?.request
 
@@ -357,7 +357,7 @@ class WorkflowToolWindowTabController(
         jobsSelectionHolder: JobListSelectionHolder,
         parentDisposable: Disposable,
     ): Pair<GHCompletableFutureLoadingModel<Map<String, String>>, SingleValueModel<String?>> {
-        LOG.info("Create log loading model")
+        LOG.debug("Create log loading model")
         val valueModel = SingleValueModel<String?>(null)
         var jobName = jobsSelectionHolder.selection?.name
         val loadingModel = GHCompletableFutureLoadingModel<Map<String, String>>(parentDisposable).also {
@@ -370,21 +370,29 @@ class WorkflowToolWindowTabController(
                 }
 
                 override fun onReset() {
-                    LOG.info("onReset")
+                    LOG.debug("onReset")
                     val key = (jobName ?: "").replace("<", "").replace(">", "").trim()
-                    valueModel.value = it.result?.get(key) ?: "Job $jobName logs missing"
+                    valueModel.value = if (it.result?.isEmpty() == true) {
+                        NO_LOGS_MSG
+                    } else {
+                        it.result?.get(key) ?: "Job $jobName logs missing"
+                    }
                 }
             })
         }
         jobsSelectionHolder.addSelectionChangeListener(parentDisposable) {
             jobName = jobsSelectionHolder.selection?.name
             val key = (jobName ?: "").replace("<", "").replace(">", "").trim()
-            valueModel.value = loadingModel.result?.get(key) ?: "Job $jobName logs missing"
+            valueModel.value = if (loadingModel.result?.isEmpty() == true) {
+                NO_LOGS_MSG
+            } else {
+                loadingModel.result?.get(key) ?: "Job $jobName logs missing"
+            }
         }
         var listenerDisposable: Disposable? = null
 
         dataProviderModel.addListener {
-            LOG.info("log loading model Value changed")
+            LOG.debug("log loading model Value changed")
             val provider = dataProviderModel.value
             loadingModel.future = provider?.request
 
@@ -400,7 +408,7 @@ class WorkflowToolWindowTabController(
                 provider.addRunChangesListener(disposable,
                     object : DataProvider.WorkflowRunChangedListener {
                         override fun changed() {
-                            LOG.info("Log changed ${provider.request}")
+                            LOG.debug("Log changed ${provider.request}")
                             loadingModel.future = provider.request
                         }
                     })
