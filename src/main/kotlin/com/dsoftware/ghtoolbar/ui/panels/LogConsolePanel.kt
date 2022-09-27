@@ -19,7 +19,7 @@ import javax.swing.plaf.PanelUI
 class GhActionConsoleFolding : ConsoleFolding() {
     override fun shouldBeAttachedToThePreviousLine(): Boolean = true
 
-    override fun getPlaceholderText(project: Project, lines: MutableList<String>): String? {
+    override fun getPlaceholderText(project: Project, lines: MutableList<String>): String {
         return "...${lines.size} lines..."
     }
 
@@ -42,7 +42,7 @@ class LogConsolePanel(
     private val ansiEscapeDecoder = AnsiEscapeDecoder()
 
     // when it's true its save to call editor, otherwise call 'editor' will throw an NPE
-    private val objectInitialized = true;
+    private val objectInitialized = true
 
     init {
         LOG.info("Create console")
