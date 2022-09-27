@@ -12,7 +12,7 @@ class LoadingErrorHandler(private val resetRunnable: () -> Unit) {
 
     private inner class RetryAction : AbstractAction("Retry") {
         override fun actionPerformed(e: ActionEvent?) {
-            LOG.info("RetryAction performed")
+            LOG.debug("RetryAction performed")
             resetRunnable()
         }
     }

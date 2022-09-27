@@ -57,7 +57,7 @@ class WorkflowDataContextRepository {
             githubWorkflowDataLoader.invalidateAllData()
         }
 
-        LOG.info("Create CollectionListModel<GitHubWorkflowRun>() and loader")
+        LOG.debug("Create CollectionListModel<GitHubWorkflowRun>() and loader")
         val listModel = CollectionListModel<GitHubWorkflowRun>()
 
         val listLoader = WorkflowRunListLoader(
@@ -75,11 +75,11 @@ class WorkflowDataContextRepository {
         })
 
         return WorkflowRunDataContext(
-            repositoryCoordinates,
+//            repositoryCoordinates,
             listModel,
             githubWorkflowDataLoader,
             listLoader,
-            account
+//            account
         )
     }
 
@@ -98,7 +98,7 @@ class WorkflowDataContextRepository {
                     try {
                         getContext(contextDisposable, account, requestExecutor, remote)
                     } catch (e: Exception) {
-                        if (e !is ProcessCanceledException) LOG.info("Error occurred while creating data context", e)
+                        if (e !is ProcessCanceledException) LOG.error("Error occurred while creating data context", e)
                         throw e
                     }
                 }.successOnEdt { ctx ->

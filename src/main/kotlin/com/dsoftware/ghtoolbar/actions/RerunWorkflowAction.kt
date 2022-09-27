@@ -14,10 +14,10 @@ class RerunWorkflowAction : DumbAwareAction("Rerun Workflow") {
     }
 
     override fun actionPerformed(e: AnActionEvent) {
-        LOG.info("RerunWorkflowAction action")
+        LOG.debug("RerunWorkflowAction action")
         e.dataContext.getData(CommonDataKeys.PROJECT) ?: return
         getData(e.dataContext)?.let {
-            LOG.info("Triggering rerun ${it}")
+            LOG.debug("Triggering rerun ${it}")
 
         }
     }

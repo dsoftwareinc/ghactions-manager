@@ -26,12 +26,12 @@ abstract class DataProvider<T>(
 
     protected val value: LazyCancellableBackgroundProcessValue<T> = backingValue {
         try {
-            LOG.info("Executing $url")
+            LOG.debug("Executing $url")
             val request = buildRequest(url)
             val response = requestExecutor.execute(it, request)
             response
         } catch (ioe: IOException) {
-            LOG.error(ioe)
+            LOG.error("Error when getting $url: $ioe")
             errorValue
         }
     }
@@ -75,13 +75,7 @@ class WorkflowRunLogsDataProvider(
     progressManager,
     requestExecutor,
     logsUrl,
-    mapOf(
-        "" to """"
-        Logs are unavailable - either the workflow run is not
-        finished (currently GitHub API returns 404 for logs for unfinished runs)
-        or the url is incorrect. The log url: $logsUrl
-    """.trimIndent()
-    )
+    emptyMap()
 ) {
     override fun buildRequest(url: String) = Workflows.getDownloadUrlForWorkflowLog(url)
 

@@ -6,8 +6,11 @@
 
 
 ## [1.2.0] - 2022-10-01
+### Added
+- New icons for in progress/queued workflows
+- Ability to configure tab name for each repo (Fix #38)
 ### Fixed
-### Changed
+- Exception when workflow is in progress #35
 
 ## [1.1.1] - 2022-08-27
 ### Fixed

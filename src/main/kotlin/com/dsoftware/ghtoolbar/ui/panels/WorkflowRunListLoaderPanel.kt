@@ -296,9 +296,9 @@ internal class WorkflowRunListLoaderPanel(
     private fun getErrorPrefix(listEmpty: Boolean) = if (listEmpty) "Can't load list" else "Can't load full list"
 
     private fun potentiallyLoadMore() {
-        LOG.info("Potentially loading more")
+        LOG.debug("Potentially loading more")
         if (workflowRunsLoader.canLoadMore() && ((userScrolled && loadAllAfterFirstScroll) || isScrollAtThreshold())) {
-            LOG.info("Load more")
+            LOG.debug("Load more")
             workflowRunsLoader.loadMore()
         }
     }
@@ -331,7 +331,7 @@ internal class WorkflowRunListLoaderPanel(
     }
 
     fun displayEmptyStatus(emptyText: StatusText) {
-        LOG.info("Display empty status")
+        LOG.debug("Display empty status")
         emptyText.text = "Nothing loaded. "
         emptyText.appendSecondaryText("Refresh", SimpleTextAttributes.LINK_PLAIN_ATTRIBUTES) {
             workflowRunsLoader.reset()

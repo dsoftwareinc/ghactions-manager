@@ -52,7 +52,7 @@ class GhActionsToolWindowFactory : ToolWindowFactory {
             GHProjectRepositoriesManager.LIST_CHANGES_TOPIC,
             object : GHProjectRepositoriesManager.ListChangeListener {
                 override fun repositoryListChanged(newList: Set<GHGitRepositoryMapping>, project: Project) {
-                    LOG.info("Repos updated, new list has ${newList.size} repos")
+                    LOG.debug("Repos updated, new list has ${newList.size} repos")
                     val ghActionToolWindow = toolWindowsMap[project] ?: return
                     ghActionToolWindow.toolWindow.isAvailable = newList.isNotEmpty()
                     ghActionToolWindow.knownRepositories = newList
@@ -103,7 +103,7 @@ class GhActionsToolWindowFactory : ToolWindowFactory {
 
     private fun noActiveRepositories(ghActionToolWindow: GhActionToolWindow) =
         with(ghActionToolWindow.toolWindow.contentManager) {
-            LOG.info("No active repositories in project")
+            LOG.debug("No active repositories in project")
             val emptyTextPanel = JBPanelWithEmptyText()
             emptyTextPanel.emptyText
                 .appendText("No repositories configured for Github Actions Toolbar")
@@ -127,7 +127,7 @@ class GhActionsToolWindowFactory : ToolWindowFactory {
 
     private fun noGitHubAccountPanel(ghActionToolWindow: GhActionToolWindow) =
         with(ghActionToolWindow.toolWindow.contentManager) {
-            LOG.info("No GitHub account configured")
+            LOG.debug("No GitHub account configured")
             val emptyTextPanel = JBPanelWithEmptyText()
             emptyTextPanel.emptyText
                 .appendText("GitHub account not configured, go to settings to fix")
@@ -151,7 +151,7 @@ class GhActionsToolWindowFactory : ToolWindowFactory {
 
     private fun noRepositories(ghActionToolWindow: GhActionToolWindow) =
         with(ghActionToolWindow.toolWindow.contentManager) {
-            LOG.info("No git repositories in project")
+            LOG.debug("No git repositories in project")
             val emptyTextPanel = JBPanelWithEmptyText()
                 .withEmptyText("No git repositories in project")
 
@@ -173,14 +173,14 @@ class GhActionsToolWindowFactory : ToolWindowFactory {
             toolWindow.setTitleActions(listOf(actionManager.getAction("ShowGhActionsToolbarSettings")))
             toolWindow.setAdditionalGearActions(DefaultActionGroup())
             val dataContextRepository = WorkflowDataContextRepository.getInstance(project)
-            LOG.info(
+            LOG.debug(
                 "createToolWindowContent github account: ${ghAccount.name}, " +
                     "${knownRepositories.size} repositories"
             )
             knownRepositories
                 .filter { settingsService.state.customRepos[it.gitRemoteUrlCoordinates.url]?.included ?: false }
                 .forEach { repo ->
-                    LOG.info("adding panel for repo: ${repo.repositoryPath}")
+                    LOG.debug("adding panel for repo: ${repo.repositoryPath}")
                     toolWindow.contentManager.addContent(
                         toolWindow.contentManager.factory.createContent(JPanel(null), repo.repositoryPath, false)
                             .apply {

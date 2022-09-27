@@ -51,7 +51,7 @@ class WorkflowDataLoader(
 
     @RequiresEdt
     fun invalidateAllData() {
-        LOG.info("All cache invalidated")
+        LOG.debug("All cache invalidated")
         logsCache.invalidateAll()
     }
 

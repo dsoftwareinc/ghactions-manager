@@ -9,6 +9,9 @@ object Icons {
     }
 
     @JvmField
+    val InProgress = load("/icons/in-progress.svg")
+
+    @JvmField
     val PrimitiveDot = load("/icons/primitive-dot.svg")
 
     @JvmField
