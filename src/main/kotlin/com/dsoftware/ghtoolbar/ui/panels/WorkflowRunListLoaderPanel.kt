@@ -1,4 +1,4 @@
-package com.dsoftware.ghtoolbar.ui.wfpanel
+package com.dsoftware.ghtoolbar.ui.panels
 
 
 import com.dsoftware.ghtoolbar.actions.ActionKeys
@@ -195,9 +195,6 @@ internal class WorkflowRunListLoaderPanel(
 
     private val infoPanel = HtmlInfoPanel()
 
-    private val loadingText
-        get() = "Loading..."
-
     var errorHandler: LoadingErrorHandler? = null
 
     init {
@@ -241,7 +238,7 @@ internal class WorkflowRunListLoaderPanel(
         val emptyText = (contentComponent as? ComponentWithEmptyText)?.emptyText ?: return
         emptyText.clear()
         if (workflowRunsLoader.loading) {
-            emptyText.text = loadingText
+            emptyText.text = "Loading..."
         } else {
             val error = workflowRunsLoader.error
             if (error != null) {
@@ -346,7 +343,7 @@ internal class WorkflowRunListLoaderPanel(
         private val actionManager = ActionManager.getInstance()
         private fun installPopup(list: WorkflowRunList) {
             list.addMouseListener(object : PopupHandler() {
-                override fun invokePopup(comp: java.awt.Component, x: Int, y: Int) {
+                override fun invokePopup(comp: Component, x: Int, y: Int) {
 
                     val (place, groupId) = if (ListUtil.isPointOnSelection(list, x, y)) {
                         Pair("GithubWorkflowListPopupSelected", "Github.Workflow.ToolWindow.List.Popup.Selected")

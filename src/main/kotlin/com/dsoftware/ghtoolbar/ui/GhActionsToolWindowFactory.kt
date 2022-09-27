@@ -24,7 +24,6 @@ import org.jetbrains.plugins.github.util.GHProjectRepositoriesManager
 import javax.swing.JPanel
 
 internal class GhActionToolWindow(
-    private val project: Project,
     val toolWindow: ToolWindow,
 ) {
     var knownRepositories: Set<GHGitRepositoryMapping> = emptySet()
@@ -38,7 +37,7 @@ class GhActionsToolWindowFactory : ToolWindowFactory {
 
     override fun init(toolWindow: ToolWindow) {
         if (!toolWindowsMap.containsKey(toolWindow.project)) {
-            toolWindowsMap[toolWindow.project] = GhActionToolWindow(toolWindow.project, toolWindow)
+            toolWindowsMap[toolWindow.project] = GhActionToolWindow(toolWindow)
         }
         settingsService = GhActionsSettingsService.getInstance(toolWindow.project)
         val bus = ApplicationManager.getApplication().messageBus.connect(toolWindow.disposable)
@@ -204,7 +203,7 @@ class GhActionsToolWindowFactory : ToolWindowFactory {
         }
 
     companion object {
-        const val ID = "GitHub Workflows"
+//        const val ID = "GitHub Workflows"
         private val LOG = logger<ToolWindowFactory>()
     }
 }

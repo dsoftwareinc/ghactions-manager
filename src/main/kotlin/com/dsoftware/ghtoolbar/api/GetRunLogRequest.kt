@@ -28,7 +28,7 @@ class GetRunLogRequest(url: String) : GithubApiRequest.Get<Map<String, String>>(
 //                val printLog = (sizeOfLogs(workflowInfo) < 1_000_000)
 
                 workflowInfo.entries.map { (key, value) ->
-                    key to stepsAsLog(value, true)
+                    key to stepsAsLog(value)
                 }.toMap()
 
             }
@@ -36,17 +36,12 @@ class GetRunLogRequest(url: String) : GithubApiRequest.Get<Map<String, String>>(
         }
     }
 
-    private fun stepsAsLog(steps: Map<String, String>, printLog: Boolean): String {
+    private fun stepsAsLog(steps: Map<String, String>): String {
         return steps.entries
             .map {
-                val log = if (printLog) it.value else "Log bigger than 1mb, go to web..."
-                "\u001b[1;97m---- Step: ${it.key} ----\u001b[0m\n${log}"
+                "\u001b[1;97m---- Step: ${it.key} ----\u001b[0m\n${it.value}"
             }
             .joinToString("\n")
-    }
-
-    private fun sizeOfLogs(workflowInfo: Map<String, Map<String, String>>): Int {
-        return workflowInfo.values.sumOf { it.values.sumOf { it.length } }
     }
 
     companion object {

@@ -9,8 +9,8 @@ import com.dsoftware.ghtoolbar.data.WorkflowRunJobsDataProvider
 import com.dsoftware.ghtoolbar.data.WorkflowRunLogsDataProvider
 import com.dsoftware.ghtoolbar.ui.panels.LogConsolePanel
 import com.dsoftware.ghtoolbar.ui.settings.ToolbarSettings
-import com.dsoftware.ghtoolbar.ui.wfpanel.JobList
-import com.dsoftware.ghtoolbar.ui.wfpanel.WorkflowRunListLoaderPanel
+import com.dsoftware.ghtoolbar.ui.panels.JobList
+import com.dsoftware.ghtoolbar.ui.panels.WorkflowRunListLoaderPanel
 import com.dsoftware.ghtoolbar.workflow.JobListSelectionHolder
 import com.dsoftware.ghtoolbar.workflow.WorkflowRunDataContext
 import com.dsoftware.ghtoolbar.workflow.WorkflowRunListSelectionHolder
@@ -49,7 +49,7 @@ import kotlin.properties.Delegates
 
 class WorkflowToolWindowTabController(
     private val project: Project,
-    private val repoSettings: ToolbarSettings.RepoSettings,
+    repoSettings: ToolbarSettings.RepoSettings,
     repositoryMapping: GHGitRepositoryMapping,
     ghAccount: GithubAccount,
     private val dataContextRepository: WorkflowDataContextRepository,
@@ -148,7 +148,7 @@ class WorkflowToolWindowTabController(
             createLogPanel(logModel, disposable)
         }
 
-        val runPanel = OnePixelSplitter("GitHub.Workflows.Component", 0.3f).apply {
+        val runPanel = OnePixelSplitter("GitHub.Workflows.Component.Jobs", 0.5f).apply {
             background = UIUtil.getListBackground()
             isOpaque = true
             isFocusCycleRoot = true
@@ -161,13 +161,6 @@ class WorkflowToolWindowTabController(
                             disposable
                         )
                 }
-        }.also {
-            DataManager.registerDataProvider(it) { dataId ->
-                when {
-                    ActionKeys.ACTION_DATA_CONTEXT.`is`(dataId) -> selectionContext.runSelectionHolder
-                    else -> null
-                }
-            }
         }
 
         return OnePixelSplitter("GitHub.Workflows.Component", 0.3f).apply {
@@ -176,13 +169,6 @@ class WorkflowToolWindowTabController(
             isFocusCycleRoot = true
             firstComponent = workflowRunsList
             secondComponent = runPanel
-                .also {
-                    (actionManager.getAction("Github.Workflow.Log.List.Reload") as RefreshAction)
-                        .registerCustomShortcutSet(
-                            it,
-                            disposable
-                        )
-                }
         }.also {
             DataManager.registerDataProvider(it) { dataId ->
                 when {
