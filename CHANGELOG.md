@@ -11,6 +11,8 @@
 - Ability to configure tab name for each repo (Fix #38)
 ### Fixed
 - Exception when workflow is in progress #35
+### Changed
+- Logs less verbose
 
 ## [1.1.1] - 2022-08-27
 ### Fixed
