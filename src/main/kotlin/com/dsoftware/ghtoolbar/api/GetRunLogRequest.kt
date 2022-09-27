@@ -5,7 +5,6 @@ import org.apache.commons.io.IOUtils
 import org.jetbrains.plugins.github.api.GithubApiRequest
 import org.jetbrains.plugins.github.api.GithubApiResponse
 import java.io.EOFException
-import java.io.IOException
 import java.io.InputStream
 import java.nio.charset.StandardCharsets
 import java.util.TreeMap
@@ -21,23 +20,19 @@ class GetRunLogRequest(url: String) : GithubApiRequest.Get<Map<String, String>>(
 
     override fun extractResult(response: GithubApiResponse): Map<String, String> {
         LOG.debug("extracting result for $url")
-        try {
-            return response.handleBody {
-                workflowInfo = extractFromStream(it)
-                LOG.debug("Got ${workflowInfo.size} jobs")
-                if (workflowInfo.isEmpty()) {
-                    emptyMap<String, String>()
-                } else {
-                    workflowInfo.entries.map { (key, value) ->
-                        key to stepsAsLog(value)
-                    }.toMap()
+        return response.handleBody {
+            workflowInfo = extractFromStream(it)
+            LOG.debug("Got ${workflowInfo.size} jobs")
+            if (workflowInfo.isEmpty()) {
+                emptyMap<String, String>()
+            } else {
+                workflowInfo.entries.map { (key, value) ->
+                    key to stepsAsLog(value)
+                }.toMap()
 
-                }
             }
-        } catch (ieo: IOException) {
-            LOG.error(ieo.message)
-            return emptyMap()
         }
+
     }
 
     private fun stepsAsLog(steps: Map<String, String>): String {
@@ -88,7 +83,7 @@ class GetRunLogRequest(url: String) : GithubApiRequest.Get<Map<String, String>>(
                     }
                 }
             } catch (e: EOFException) {
-                LOG.error(e.message)
+                LOG.warn(e.message)
                 return emptyMap()
             }
             return content

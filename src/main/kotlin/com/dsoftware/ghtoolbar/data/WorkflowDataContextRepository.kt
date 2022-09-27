@@ -98,7 +98,7 @@ class WorkflowDataContextRepository {
                     try {
                         getContext(contextDisposable, account, requestExecutor, remote)
                     } catch (e: Exception) {
-                        if (e !is ProcessCanceledException) LOG.error("Error occurred while creating data context", e)
+                        if (e !is ProcessCanceledException) LOG.warn("Error occurred while creating data context", e)
                         throw e
                     }
                 }.successOnEdt { ctx ->

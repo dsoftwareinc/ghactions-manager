@@ -31,7 +31,7 @@ abstract class DataProvider<T>(
             val response = requestExecutor.execute(it, request)
             response
         } catch (ioe: IOException) {
-            LOG.error("Error when getting $url: $ioe")
+            LOG.warn("Error when getting $url: $ioe")
             errorValue
         }
     }

@@ -1,6 +1,8 @@
 package com.dsoftware.ghtoolbar.ui
 
 import com.intellij.openapi.util.IconLoader
+import com.intellij.ui.AnimatedIcon
+import com.intellij.ui.SpinningProgressIcon
 import javax.swing.Icon
 
 object Icons {
