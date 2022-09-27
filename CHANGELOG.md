@@ -3,9 +3,21 @@
 # ghactions-toolbar Changelog
 
 ## [Unreleased]
-## [1.1.1] - 2022-08-25
+
+
+## [1.2.0] - 2022-10-01
+### Added
+- New icons for in progress/queued workflows
+- Ability to configure tab name for each repo (Fix #38)
+### Fixed
+- Exception when workflow is in progress #35
+### Changed
+- Logs less verbose
+
+## [1.1.1] - 2022-08-27
 ### Fixed
 - Bug serializing status of job
+- Viewing job logs while it is in progress #34
 ### Changed
 - Gradle version building project
 - Cleanup code

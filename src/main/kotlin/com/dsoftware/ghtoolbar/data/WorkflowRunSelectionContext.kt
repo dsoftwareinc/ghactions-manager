@@ -18,11 +18,11 @@ import javax.swing.ListModel
 import kotlin.properties.Delegates
 
 class WorkflowRunDataContext(
-    val repositoryCoordinates: RepositoryCoordinates,
+//    val repositoryCoordinates: RepositoryCoordinates,
     val runsListModel: ListModel<GitHubWorkflowRun>,
     val dataLoader: WorkflowDataLoader,
     val runsListLoader: WorkflowRunListLoader,
-    val account: GithubAccount
+//    val account: GithubAccount
 ) : Disposable {
     override fun dispose() {
     }
@@ -64,7 +64,7 @@ class WorkflowRunSelectionContext internal constructor(
 ) {
 
     fun resetAllData() {
-        LOG.info("resetAllData")
+        LOG.debug("resetAllData")
         dataContext.runsListLoader.reset()
         dataContext.dataLoader.invalidateAllData()
     }

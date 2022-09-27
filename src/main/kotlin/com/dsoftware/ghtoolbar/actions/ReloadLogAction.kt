@@ -12,7 +12,7 @@ class ReloadLogAction : RefreshAction("Refresh Workflow Log", null, AllIcons.Act
     }
 
     override fun actionPerformed(e: AnActionEvent) {
-        LOG.info("GitHubWorkflowLogReloadAction action performed")
+        LOG.debug("GitHubWorkflowLogReloadAction action performed")
         e.getRequiredData(ActionKeys.ACTION_DATA_CONTEXT).logsDataProvider?.reloadLog()
     }
 

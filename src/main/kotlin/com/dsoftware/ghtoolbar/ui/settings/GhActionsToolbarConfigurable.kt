@@ -9,10 +9,7 @@ import com.intellij.openapi.options.BoundConfigurable
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.DialogPanel
 import com.intellij.ui.components.JBCheckBox
-import com.intellij.ui.dsl.builder.Cell
-import com.intellij.ui.dsl.builder.bindSelected
-import com.intellij.ui.dsl.builder.panel
-import com.intellij.ui.dsl.builder.selected
+import com.intellij.ui.dsl.builder.*
 import com.intellij.util.messages.Topic
 import org.jetbrains.plugins.github.util.GHProjectRepositoriesManager
 
@@ -42,16 +39,20 @@ internal class GhActionsToolbarConfigurable internal constructor(
             }
 
             group {
-                twoColumnsRow({ label("Repository") }, { label("Selected") })
+                threeColumnsRow({ label("Repository") }, { label("Selected") }, {label("Custom tab name")})
                 knownRepositories
                     .map { it.gitRemoteUrlCoordinates.url }
                     .forEach {
                         val settingsValue = state.customRepos.getOrPut(it) { RepoSettings() }
-                        twoColumnsRow(
+                        threeColumnsRow(
                             { text(it) },
                             {
                                 checkBox("")
                                     .bindSelected(settingsValue::included, settingsValue::included::set)
+                            },
+                            {
+                                textField()
+                                    .bindText(settingsValue::customName, settingsValue::customName::set)
                             })
                     }
             }.enabledIf(projectRepos.selected)

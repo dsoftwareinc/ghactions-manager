@@ -7,7 +7,10 @@ data class ToolbarSettings(
     var useCustomRepos: Boolean = true,
     var customRepos: MutableMap<String, RepoSettings> = mutableMapOf()
 ) {
-    data class RepoSettings(var included: Boolean = true)
+    data class RepoSettings(
+        var included: Boolean = true,
+        var customName: String = ""
+    )
 }
 
 @Service

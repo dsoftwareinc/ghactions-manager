@@ -1,4 +1,4 @@
-package com.dsoftware.ghtoolbar.ui.wfpanel
+package com.dsoftware.ghtoolbar.ui.panels
 
 
 import WorkflowRunJob

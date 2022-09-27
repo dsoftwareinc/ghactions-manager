@@ -1,6 +1,5 @@
 package com.dsoftware.ghtoolbar.ui
 
-import com.dsoftware.ghtoolbar.api.model.GitHubWorkflowRun
 import com.intellij.icons.AllIcons
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.util.text.DateFormatUtil
@@ -16,14 +15,15 @@ object ToolbarUtil {
 
     const val SETTINGS_DISPLAY_NAME = "Workflows Toolbar"
     fun makeTimePretty(date: Date?): String {
-        if(date==null){
+        if (date == null) {
             return "Unknown"
         }
         val localDateTime = LocalDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault())
         val zonedDateTime = localDateTime.atZone(ZoneOffset.UTC)
         return DateFormatUtil.formatPrettyDateTime(zonedDateTime.toInstant().toEpochMilli())
     }
-    fun statusIcon(status:String, conclusion:String?): Icon {
+
+    fun statusIcon(status: String, conclusion: String?): Icon {
         return when (status) {
             "completed" -> {
                 when (conclusion) {
@@ -32,8 +32,9 @@ object ToolbarUtil {
                     else -> Icons.PrimitiveDot
                 }
             }
-            "queued" -> Icons.PrimitiveDot
-            "in progress" -> Icons.PrimitiveDot
+
+            "queued" -> Icons.Watch
+            "in_progress" -> Icons.InProgress
             "neutral" -> Icons.PrimitiveDot
             "success" -> AllIcons.Actions.Commit
             "failure" -> Icons.X
