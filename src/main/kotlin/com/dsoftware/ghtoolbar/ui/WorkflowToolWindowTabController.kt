@@ -8,6 +8,7 @@ import com.dsoftware.ghtoolbar.data.WorkflowDataContextRepository
 import com.dsoftware.ghtoolbar.data.WorkflowRunJobsDataProvider
 import com.dsoftware.ghtoolbar.data.WorkflowRunLogsDataProvider
 import com.dsoftware.ghtoolbar.ui.panels.LogConsolePanel
+import com.dsoftware.ghtoolbar.ui.settings.ToolbarSettings
 import com.dsoftware.ghtoolbar.ui.wfpanel.JobList
 import com.dsoftware.ghtoolbar.ui.wfpanel.WorkflowRunListLoaderPanel
 import com.dsoftware.ghtoolbar.workflow.JobListSelectionHolder
@@ -48,6 +49,7 @@ import kotlin.properties.Delegates
 
 class WorkflowToolWindowTabController(
     private val project: Project,
+    private val repoSettings: ToolbarSettings.RepoSettings,
     repositoryMapping: GHGitRepositoryMapping,
     ghAccount: GithubAccount,
     private val dataContextRepository: WorkflowDataContextRepository,
@@ -63,7 +65,9 @@ class WorkflowToolWindowTabController(
     }
 
     init {
-        tab.displayName = repositoryMapping.repositoryPath
+        tab.displayName =
+            if (repoSettings.customName.isEmpty()) repositoryMapping.repositoryPath
+            else repoSettings.customName
         mainPanel = tab.component.apply {
             layout = BorderLayout()
             background = UIUtil.getListBackground()

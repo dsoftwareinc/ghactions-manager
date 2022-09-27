@@ -180,10 +180,10 @@ class GhActionsToolWindowFactory : ToolWindowFactory {
             )
             knownRepositories
                 .filter { settingsService.state.customRepos[it.gitRemoteUrlCoordinates.url]?.included ?: false }
-                .forEach {
-                    LOG.info("adding panel for repo: ${it.repositoryPath}")
+                .forEach { repo ->
+                    LOG.info("adding panel for repo: ${repo.repositoryPath}")
                     toolWindow.contentManager.addContent(
-                        toolWindow.contentManager.factory.createContent(JPanel(null), it.repositoryPath, false)
+                        toolWindow.contentManager.factory.createContent(JPanel(null), repo.repositoryPath, false)
                             .apply {
                                 isCloseable = false
                                 setDisposer(Disposer.newDisposable("GitHubWorkflow tab disposable"))
@@ -192,7 +192,8 @@ class GhActionsToolWindowFactory : ToolWindowFactory {
                                     WorkflowToolWindowTabController.KEY,
                                     WorkflowToolWindowTabController(
                                         project,
-                                        it,
+                                        settingsService.state.customRepos[repo.gitRemoteUrlCoordinates.url]!!,
+                                        repo,
                                         ghAccount,
                                         dataContextRepository,
                                         this

@@ -3,7 +3,13 @@
 # ghactions-toolbar Changelog
 
 ## [Unreleased]
-## [1.1.1] - 2022-08-25
+
+
+## [1.2.0] - 2022-10-01
+### Fixed
+### Changed
+
+## [1.1.1] - 2022-08-27
 ### Fixed
 - Bug serializing status of job
 - Viewing job logs while it is in progress #34
