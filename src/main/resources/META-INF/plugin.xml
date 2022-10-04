@@ -55,7 +55,8 @@
         <group id="Github.ToolWindow.JobList.Popup.Selected">
             <action id="Github.Workflow.Jobs.Open.In.Browser"
                     class="com.dsoftware.ghtoolbar.actions.JobOpenInBrowserAction"/>
-
+            <action id="Github.Workflow.Job.List.Reload"
+                    class="com.dsoftware.ghtoolbar.actions.ReloadJobsAction"/>
 <!--            <reference id="Github.Workflow.Jobs.List.Reload"/>-->
         </group>
 

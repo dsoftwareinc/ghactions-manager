@@ -39,12 +39,13 @@ abstract class DataProvider<T>(
     val request by backgroundProcessValue(value)
     abstract fun buildRequest(url: String): GithubApiRequest<T>
 
-    private fun <T> backgroundProcessValue(backingValue: LazyCancellableBackgroundProcessValue<T>): ReadOnlyProperty<Any?, CompletableFuture<T>> =
+    private fun <T> backgroundProcessValue(backingValue: LazyCancellableBackgroundProcessValue<T>)
+        : ReadOnlyProperty<Any?, CompletableFuture<T>> =
         ReadOnlyProperty { _, _ -> backingValue.value }
 
 
     @RequiresEdt
-    fun reloadLog() {
+    fun reload() {
         LOG.debug("reloadLog()")
         value.drop()
         runChangesEventDispatcher.multicaster.changed()
