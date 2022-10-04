@@ -22,7 +22,7 @@ object Workflows : GithubApiRequests.Entity("/repos") {
     fun getDownloadUrlForWorkflowLog(url: String) = GetRunLogRequest(url)
         .withOperationName("Download Workflow log")
 
-    fun postRerunWorkflow(url: String) = GithubApiRequest.Post.Json(url, "", GitHubWorkflow::class.java, null)
+    fun postRerunWorkflow(url: String) = GithubApiRequest.Post.Json(url, Object(), Object::class.java, null)
         .withOperationName("Rerun workflow")
 
     fun getWorkflowRuns(

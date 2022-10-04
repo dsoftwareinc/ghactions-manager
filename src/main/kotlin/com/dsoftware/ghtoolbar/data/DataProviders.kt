@@ -19,32 +19,33 @@ import kotlin.properties.ReadOnlyProperty
 abstract class DataProvider<T>(
     private val progressManager: ProgressManager,
     private val requestExecutor: GithubApiRequestExecutor,
-    val url: String,
-    val errorValue: T,
+    private val githubApiRequest: GithubApiRequest<T>,
+    private val errorValue: T?,
 ) {
     private val runChangesEventDispatcher = EventDispatcher.create(WorkflowRunChangedListener::class.java)
 
     protected val value: LazyCancellableBackgroundProcessValue<T> = backingValue {
         try {
-            LOG.debug("Executing $url")
-            val request = buildRequest(url)
+            LOG.debug("Executing ${githubApiRequest.url}")
+            val request = githubApiRequest
             val response = requestExecutor.execute(it, request)
             response
         } catch (ioe: IOException) {
-            LOG.warn("Error when getting $url: $ioe")
-            errorValue
+            LOG.warn("Error when getting $githubApiRequest.url: $ioe")
+            errorValue ?: throw ioe
         }
     }
 
     val request by backgroundProcessValue(value)
-    abstract fun buildRequest(url: String): GithubApiRequest<T>
 
-    private fun <T> backgroundProcessValue(backingValue: LazyCancellableBackgroundProcessValue<T>): ReadOnlyProperty<Any?, CompletableFuture<T>> =
+    private fun <T> backgroundProcessValue(backingValue: LazyCancellableBackgroundProcessValue<T>)
+        : ReadOnlyProperty<Any?, CompletableFuture<T>> =
         ReadOnlyProperty { _, _ -> backingValue.value }
 
+    fun url(): String = githubApiRequest.url
 
     @RequiresEdt
-    fun reloadLog() {
+    fun reload() {
         LOG.debug("reloadLog()")
         value.drop()
         runChangesEventDispatcher.multicaster.changed()
@@ -67,6 +68,12 @@ abstract class DataProvider<T>(
     }
 }
 
+class DefaultDataProvider<T>(
+    progressManager: ProgressManager,
+    requestExecutor: GithubApiRequestExecutor,
+    githubApiRequest: GithubApiRequest<T>
+) : DataProvider<T>(progressManager, requestExecutor, githubApiRequest, null)
+
 class WorkflowRunLogsDataProvider(
     progressManager: ProgressManager,
     requestExecutor: GithubApiRequestExecutor,
@@ -74,15 +81,11 @@ class WorkflowRunLogsDataProvider(
 ) : DataProvider<Map<String, String>>(
     progressManager,
     requestExecutor,
-    logsUrl,
+    Workflows.getDownloadUrlForWorkflowLog(logsUrl),
     emptyMap()
-) {
-    override fun buildRequest(url: String) = Workflows.getDownloadUrlForWorkflowLog(url)
-
-}
+)
 
 
-//TODO Use this as replacement for logs when logs are too big
 class WorkflowRunJobsDataProvider(
     progressManager: ProgressManager,
     requestExecutor: GithubApiRequestExecutor,
@@ -90,8 +93,6 @@ class WorkflowRunJobsDataProvider(
 ) : DataProvider<WorkflowRunJobs>(
     progressManager,
     requestExecutor,
-    jobsUrl,
+    Workflows.getWorkflowRunJobs(jobsUrl),
     WorkflowRunJobs(0, emptyList())
-) {
-    override fun buildRequest(url: String) = Workflows.getWorkflowRunJobs(url)
-}
+)
