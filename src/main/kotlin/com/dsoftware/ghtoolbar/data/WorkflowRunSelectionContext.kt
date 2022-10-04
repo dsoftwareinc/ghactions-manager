@@ -13,7 +13,6 @@ import com.intellij.util.EventDispatcher
 import com.intellij.util.concurrency.annotations.RequiresEdt
 import org.jetbrains.plugins.github.api.GHRepositoryPath
 import org.jetbrains.plugins.github.api.GithubServerPath
-import org.jetbrains.plugins.github.authentication.accounts.GithubAccount
 import javax.swing.ListModel
 import kotlin.properties.Delegates
 
@@ -53,8 +52,9 @@ open class ListSelectionHolder<T> {
     fun addSelectionChangeListener(disposable: Disposable, listener: () -> Unit) =
         SimpleEventListener.addDisposableListener(selectionChangeEventDispatcher, disposable, listener)
 }
-class WorkflowRunListSelectionHolder: ListSelectionHolder<GitHubWorkflowRun>()
-class JobListSelectionHolder: ListSelectionHolder<WorkflowRunJob>()
+
+class WorkflowRunListSelectionHolder : ListSelectionHolder<GitHubWorkflowRun>()
+class JobListSelectionHolder : ListSelectionHolder<WorkflowRunJob>()
 
 
 class WorkflowRunSelectionContext internal constructor(
@@ -62,7 +62,6 @@ class WorkflowRunSelectionContext internal constructor(
     val runSelectionHolder: WorkflowRunListSelectionHolder,
     val jobSelectionHolder: JobListSelectionHolder,
 ) {
-
     fun resetAllData() {
         LOG.debug("resetAllData")
         dataContext.runsListLoader.reset()

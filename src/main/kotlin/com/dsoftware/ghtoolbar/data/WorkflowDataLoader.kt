@@ -1,5 +1,7 @@
 package com.dsoftware.ghtoolbar.workflow.data
 
+import com.dsoftware.ghtoolbar.data.DataProvider
+import com.dsoftware.ghtoolbar.data.DefaultDataProvider
 import com.dsoftware.ghtoolbar.data.WorkflowRunJobsDataProvider
 import com.dsoftware.ghtoolbar.data.WorkflowRunLogsDataProvider
 import com.google.common.cache.CacheBuilder
@@ -9,6 +11,7 @@ import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.progress.ProgressManager
 import com.intellij.util.EventDispatcher
 import com.intellij.util.concurrency.annotations.RequiresEdt
+import org.jetbrains.plugins.github.api.GithubApiRequest
 import org.jetbrains.plugins.github.api.GithubApiRequestExecutor
 import java.util.EventListener
 
@@ -47,6 +50,11 @@ class WorkflowDataLoader(
         return jobsCache.get(url) {
             WorkflowRunJobsDataProvider(progressManager, requestExecutor, url)
         }
+    }
+
+    fun <T> createDataProvider(request: GithubApiRequest<T>): DataProvider<T> {
+        if (isDisposed) throw IllegalStateException("Already disposed")
+        return DefaultDataProvider<T>(progressManager, requestExecutor, request)
     }
 
     @RequiresEdt

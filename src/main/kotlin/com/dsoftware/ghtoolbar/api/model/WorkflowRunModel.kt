@@ -14,7 +14,12 @@ data class GitHubWorkflow(
     val url: String,
     val html_url: String,
     val badge_url: String
-)
+) {
+    companion object {
+        fun empty() = GitHubWorkflow(0, "", "", "", "", null, null, "", "", "")
+
+    }
+}
 
 data class GitHubWorkflowRuns(
     val total_count: Int,

@@ -1,5 +1,6 @@
 package com.dsoftware.ghtoolbar.actions
 
+import com.dsoftware.ghtoolbar.api.Workflows
 import com.intellij.icons.AllIcons
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.CommonDataKeys
@@ -8,10 +9,10 @@ import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.project.DumbAwareAction
 
 class RerunWorkflowAction : DumbAwareAction("Rerun Workflow", null, AllIcons.Actions.Rerun) {
-    //todo
+
     override fun update(e: AnActionEvent) {
-        val data = getUrl(e.dataContext)
-        e.presentation.isEnabledAndVisible = data != null
+        val url = getUrl(e.dataContext)
+        e.presentation.isEnabledAndVisible = url != null
     }
 
     override fun actionPerformed(e: AnActionEvent) {
@@ -19,6 +20,12 @@ class RerunWorkflowAction : DumbAwareAction("Rerun Workflow", null, AllIcons.Act
         e.dataContext.getData(CommonDataKeys.PROJECT) ?: return
         getUrl(e.dataContext)?.let {
             LOG.debug("Triggering rerun ${it}")
+            val request = Workflows.postRerunWorkflow(it)
+            val context = e.getRequiredData(ActionKeys.ACTION_DATA_CONTEXT)
+            val future = context.dataContext.dataLoader.createDataProvider(request).request
+            future.thenApply {
+                context.resetAllData()
+            }
         }
     }
 

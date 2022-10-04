@@ -67,8 +67,7 @@ class WorkflowToolWindowTabController(
 
     init {
         tab.displayName =
-            if (repoSettings.customName.isEmpty()) repositoryMapping.repositoryPath
-            else repoSettings.customName
+            repoSettings.customName.ifEmpty { repositoryMapping.repositoryPath }
         mainPanel = tab.component.apply {
             layout = BorderLayout()
             background = UIUtil.getListBackground()
@@ -231,7 +230,7 @@ class WorkflowToolWindowTabController(
 
         fun setNewProvider(provider: WorkflowRunLogsDataProvider?) {
             val oldValue = model.value
-            if (oldValue != null && provider != null && oldValue.url != provider.url) {
+            if (oldValue != null && provider != null && oldValue.url() != provider.url()) {
                 model.value = null
             }
             model.value = provider
@@ -275,7 +274,7 @@ class WorkflowToolWindowTabController(
         fun setNewProvider(provider: WorkflowRunJobsDataProvider?) {
             LOG.debug("createJobsDataProviderModel setNewProvider")
             val oldValue = model.value
-            if (oldValue != null && provider != null && oldValue.url != provider.url) {
+            if (oldValue != null && provider != null && oldValue.url() != provider.url()) {
                 model.value = null
             }
             model.value = provider
