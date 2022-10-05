@@ -29,6 +29,7 @@ object ToolbarUtil {
                 when (conclusion) {
                     "success" -> AllIcons.Actions.Commit
                     "failure" -> Icons.X
+                    "cancelled" -> AllIcons.Actions.Cancel
                     else -> Icons.PrimitiveDot
                 }
             }
@@ -38,7 +39,7 @@ object ToolbarUtil {
             "neutral" -> Icons.PrimitiveDot
             "success" -> AllIcons.Actions.Commit
             "failure" -> Icons.X
-            "cancelled" -> Icons.X
+            "cancelled" -> AllIcons.Actions.Cancel
             "action required" -> Icons.Watch
             "timed out" -> Icons.Watch
             "skipped" -> Icons.X
