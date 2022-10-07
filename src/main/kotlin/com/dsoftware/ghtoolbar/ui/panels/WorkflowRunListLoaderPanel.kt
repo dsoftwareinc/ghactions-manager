@@ -85,25 +85,25 @@ class WorkflowRunList(model: ListModel<GitHubWorkflowRun>) : JBList<GitHubWorkfl
             val gapAfter = "${JBUI.scale(5)}px"
             add(
                 stateIcon, CC()
-                    .gapAfter(gapAfter)
+                .gapAfter(gapAfter)
             )
             add(
                 title, CC()
-                    .growX()
-                    .pushX()
-                    .minWidth("pref/2px")
+                .growX()
+                .pushX()
+                .minWidth("pref/2px")
             )
             add(
                 labels, CC()
-                    .minWidth("pref/2px")
-                    .alignX("right")
-                    .wrap()
+                .minWidth("pref/2px")
+                .alignX("right")
+                .wrap()
             )
             add(
                 info, CC()
-                    .minWidth("pref/2px")
-                    .skip(1)
-                    .spanX(3)
+                .minWidth("pref/2px")
+                .skip(1)
+                .spanX(3)
             )
         }
 
@@ -239,26 +239,30 @@ internal class WorkflowRunListLoaderPanel(
         emptyText.clear()
         if (workflowRunsLoader.loading) {
             emptyText.text = "Loading..."
-        } else {
-            val error = workflowRunsLoader.error
-            if (error != null) {
-                displayErrorStatus(emptyText, error)
-            } else {
-                displayEmptyStatus(emptyText)
-            }
+            return
         }
-    }
+        val error = workflowRunsLoader.error
+        if (error != null) {
+            LOG.info("Display error status ${error.message}")
+            emptyText
+                .appendText(
+                    getErrorPrefix(workflowRunsLoader.loadedData.isEmpty()),
+                    SimpleTextAttributes.ERROR_ATTRIBUTES
+                ).appendSecondaryText(
+                    getLoadingErrorText(error),
+                    SimpleTextAttributes.ERROR_ATTRIBUTES,
+                    null
+                )
 
-    private fun displayErrorStatus(emptyText: StatusText, error: Throwable) {
-        LOG.info("Display error status")
-        emptyText.appendText(
-            getErrorPrefix(workflowRunsLoader.loadedData.isEmpty()),
-            SimpleTextAttributes.ERROR_ATTRIBUTES
-        )
-            .appendSecondaryText(getLoadingErrorText(error), SimpleTextAttributes.ERROR_ATTRIBUTES, null)
-
-        errorHandler?.getActionForError()?.let {
-            emptyText.appendSecondaryText(" ${it.getValue("Name")}", SimpleTextAttributes.LINK_PLAIN_ATTRIBUTES, it)
+            errorHandler?.getActionForError()?.let {
+                emptyText.appendSecondaryText(" ${it.getValue("Name")}", SimpleTextAttributes.LINK_PLAIN_ATTRIBUTES, it)
+            }
+        } else {
+            LOG.debug("Display empty status")
+            emptyText.text = "Nothing loaded. "
+            emptyText.appendSecondaryText("Refresh", SimpleTextAttributes.LINK_PLAIN_ATTRIBUTES) {
+                workflowRunsLoader.reset()
+            }
         }
     }
 
@@ -328,14 +332,6 @@ internal class WorkflowRunListLoaderPanel(
 
     fun setLoading(isLoading: Boolean) {
         if (isLoading) progressStripe.startLoading() else progressStripe.stopLoading()
-    }
-
-    fun displayEmptyStatus(emptyText: StatusText) {
-        LOG.debug("Display empty status")
-        emptyText.text = "Nothing loaded. "
-        emptyText.appendSecondaryText("Refresh", SimpleTextAttributes.LINK_PLAIN_ATTRIBUTES) {
-            workflowRunsLoader.reset()
-        }
     }
 
     companion object {
