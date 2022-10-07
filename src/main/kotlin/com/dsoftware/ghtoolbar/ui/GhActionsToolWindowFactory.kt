@@ -171,7 +171,7 @@ class GhActionsToolWindowFactory : ToolWindowFactory {
 
     private fun guessAccountForRepository(repo: GHGitRepositoryMapping): GithubAccount? {
         val accounts = authManager.getAccounts()
-        return accounts.first { it.server.equals(repo.ghRepositoryCoordinates.serverPath, true) }
+        return accounts.firstOrNull { it.server.equals(repo.ghRepositoryCoordinates.serverPath, true) }
     }
 
     private fun ghAccountAndReposConfigured(
