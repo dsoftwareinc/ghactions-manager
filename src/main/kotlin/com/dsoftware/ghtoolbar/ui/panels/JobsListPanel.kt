@@ -23,10 +23,12 @@ import java.awt.Component
 import java.awt.event.FocusEvent
 import java.awt.event.FocusListener
 import java.awt.event.MouseEvent
+import java.time.Duration
 import javax.swing.*
 import javax.swing.event.ListDataEvent
 import javax.swing.event.ListDataListener
 import javax.swing.event.ListSelectionEvent
+
 
 class JobList(model: ListModel<WorkflowRunJob>) : JBList<WorkflowRunJob>(model), DataProvider,
     CopyProvider {
@@ -71,31 +73,11 @@ class JobList(model: ListModel<WorkflowRunJob>) : JBList<WorkflowRunJob>(model),
 
         init {
             border = JBUI.Borders.empty(5, 8)
-
-
             val gapAfter = "${JBUI.scale(5)}px"
-            add(
-                stateIcon, CC()
-                    .gapAfter(gapAfter)
-            )
-            add(
-                title, CC()
-                    .growX()
-                    .pushX()
-                    .minWidth("pref/2px")
-            )
-            add(
-                labels, CC()
-                    .minWidth("pref/2px")
-                    .alignX("right")
-                    .wrap()
-            )
-            add(
-                info, CC()
-                    .minWidth("pref/2px")
-                    .skip(1)
-                    .spanX(3)
-            )
+            add(stateIcon, CC().gapAfter(gapAfter))
+            add(title, CC().growX().pushX().minWidth("pref/2px"))
+            add(labels, CC().minWidth("pref/2px").alignX("right").wrap())
+            add(info, CC().minWidth("pref/2px").skip(1).spanX(3))
         }
 
         override fun getListCellRendererComponent(
@@ -117,7 +99,13 @@ class JobList(model: ListModel<WorkflowRunJob>) : JBList<WorkflowRunJob>(model),
 
             info.apply {
                 val startedAtLabel = ToolbarUtil.makeTimePretty(job.startedAt)
-                text = "Attempt #${job.runAttempt} started on $startedAtLabel"
+                val took = if (job.conclusion == "cancelled" || job.completedAt == null || job.startedAt == null)
+                    ""
+                else {
+                    val duration = Duration.between(job.startedAt.toInstant(), job.completedAt.toInstant())
+                    "took ${duration.toMinutes()}:${duration.toSecondsPart()} "
+                }
+                text = "Attempt #${job.runAttempt} at $startedAtLabel $took"
                 foreground = secondaryTextColor
             }
             return this

@@ -19,6 +19,8 @@ import com.intellij.openapi.util.Disposer
 import com.intellij.ui.*
 import com.intellij.ui.components.JBLabel
 import com.intellij.ui.components.JBList
+import com.intellij.util.alsoIfNull
+import com.intellij.util.applyIf
 import com.intellij.util.ui.*
 import com.intellij.util.ui.components.BorderLayoutPanel
 import com.intellij.vcs.log.ui.frame.ProgressStripe
@@ -72,39 +74,18 @@ class WorkflowRunList(model: ListModel<GitHubWorkflowRun>) : JBList<GitHubWorkfl
             layout = BoxLayout(this, BoxLayout.X_AXIS)
         }
 
-
         init {
             border = JBUI.Borders.empty(5, 8)
-
             layout = MigLayout(
                 LC().gridGap("0", "0")
                     .insets("0", "0", "0", "0")
                     .fillX()
             )
-
             val gapAfter = "${JBUI.scale(5)}px"
-            add(
-                stateIcon, CC()
-                    .gapAfter(gapAfter)
-            )
-            add(
-                title, CC()
-                    .growX()
-                    .pushX()
-                    .minWidth("pref/2px")
-            )
-            add(
-                labels, CC()
-                    .minWidth("pref/2px")
-                    .alignX("right")
-                    .wrap()
-            )
-            add(
-                info, CC()
-                    .minWidth("pref/2px")
-                    .skip(1)
-                    .spanX(3)
-            )
+            add(stateIcon, CC().gapAfter(gapAfter))
+            add(title, CC().growX().pushX().minWidth("pref/2px"))
+            add(labels, CC().minWidth("pref/2px").alignX("right").wrap())
+            add(info, CC().minWidth("pref/2px").skip(1).spanX(3))
         }
 
         override fun getListCellRendererComponent(
@@ -121,6 +102,7 @@ class WorkflowRunList(model: ListModel<GitHubWorkflowRun>) : JBList<GitHubWorkfl
             stateIcon.icon = ToolbarUtil.statusIcon(ghWorkflowRun.status, ghWorkflowRun.conclusion)
             title.apply {
                 text = ghWorkflowRun.head_commit.message
+
                 foreground = primaryTextColor
             }
 
@@ -179,7 +161,7 @@ internal class WorkflowRunListLoaderPanel(
     private lateinit var progressStripe: ProgressStripe
 
     private var userScrolled = false
-    val scrollPane = ScrollPaneFactory.createScrollPane(
+    private val scrollPane = ScrollPaneFactory.createScrollPane(
         contentComponent,
         ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
         ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER
@@ -187,9 +169,9 @@ internal class WorkflowRunListLoaderPanel(
         isOpaque = false
         viewport.isOpaque = false
         border = JBUI.Borders.empty()
-        verticalScrollBar.model.addChangeListener { potentiallyLoadMore() }
         verticalScrollBar.model.addChangeListener {
             if (!userScrolled && verticalScrollBar.value > 0) userScrolled = true
+            potentiallyLoadMore()
         }
     }
 
@@ -198,7 +180,7 @@ internal class WorkflowRunListLoaderPanel(
     var errorHandler: LoadingErrorHandler? = null
 
     init {
-        LOG.info("Initialize ListLoaderPanel")
+        LOG.info("Initialize WorkflowRunListLoaderPanel")
         addToCenter(createCenterPanel(JBUI.Panels.simplePanel(scrollPane).addToTop(infoPanel).apply {
             isOpaque = false
         }))
@@ -239,66 +221,71 @@ internal class WorkflowRunListLoaderPanel(
         emptyText.clear()
         if (workflowRunsLoader.loading) {
             emptyText.text = "Loading..."
+            return
+        }
+        val error = workflowRunsLoader.error
+        if (error == null) {
+            emptyText.text = "Nothing loaded. "
+            emptyText.appendSecondaryText("Refresh", SimpleTextAttributes.LINK_PLAIN_ATTRIBUTES) {
+                workflowRunsLoader.reset()
+            }
         } else {
-            val error = workflowRunsLoader.error
-            if (error != null) {
-                displayErrorStatus(emptyText, error)
-            } else {
-                displayEmptyStatus(emptyText)
+            emptyText.appendText(
+                getErrorPrefix(workflowRunsLoader.loadedData.isEmpty()),
+                SimpleTextAttributes.ERROR_ATTRIBUTES
+            )
+                .appendSecondaryText(getLoadingErrorText(error), SimpleTextAttributes.ERROR_ATTRIBUTES, null)
+
+            errorHandler?.getActionForError()?.let {
+                emptyText.appendSecondaryText(" ${it.getValue("Name")}", SimpleTextAttributes.LINK_PLAIN_ATTRIBUTES, it)
             }
         }
-    }
 
-    private fun displayErrorStatus(emptyText: StatusText, error: Throwable) {
-        LOG.info("Display error status")
-        emptyText.appendText(
-            getErrorPrefix(workflowRunsLoader.loadedData.isEmpty()),
-            SimpleTextAttributes.ERROR_ATTRIBUTES
-        )
-            .appendSecondaryText(getLoadingErrorText(error), SimpleTextAttributes.ERROR_ATTRIBUTES, null)
-
-        errorHandler?.getActionForError()?.let {
-            emptyText.appendSecondaryText(" ${it.getValue("Name")}", SimpleTextAttributes.LINK_PLAIN_ATTRIBUTES, it)
-        }
     }
 
     private fun updateInfoPanel() {
         val error = workflowRunsLoader.error
-        if (error != null && workflowRunsLoader.loadedData.isNotEmpty()) {
-            val errorPrefix = getErrorPrefix(workflowRunsLoader.loadedData.isEmpty())
-            val errorText = getLoadingErrorText(error, "<br/>")
-            val action = errorHandler?.getActionForError()
-            if (action != null) {
-                //language=HTML
-                infoPanel.setInfo(
-                    """<html lang="en"><body>$errorPrefix<br/>$errorText<a href=''>&nbsp;${action.getValue("Name")}</a></body></html>""",
-                    HtmlInfoPanel.Severity.ERROR
-                ) {
-                    action.actionPerformed(
-                        ActionEvent(
-                            infoPanel,
-                            ActionEvent.ACTION_PERFORMED,
-                            it.eventType.toString()
-                        )
-                    )
-                }
-
-            } else {
-                //language=HTML
-                infoPanel.setInfo(
-                    """<html lang="en"><body>$errorPrefix<br/>$errorText</body></html>""",
-                    HtmlInfoPanel.Severity.ERROR
+        if (error == null || workflowRunsLoader.loadedData.isEmpty()) {
+            infoPanel.setInfo(null);
+            return
+        }
+        val errorPrefix = getErrorPrefix(workflowRunsLoader.loadedData.isEmpty())
+        val errorText = getLoadingErrorText(error, "<br/>")
+        val action = errorHandler?.getActionForError()
+        if (action == null) {
+            //language=HTML
+            infoPanel.setInfo(
+                """<html lang="en"><body>$errorPrefix<br/>$errorText</body></html>""",
+                HtmlInfoPanel.Severity.ERROR
+            )
+            return
+        }
+        //language=HTML
+        infoPanel.setInfo(
+            """<html lang="en"><body>$errorPrefix<br/>$errorText<a href=''>&nbsp;${action.getValue("Name")}</a></body></html>""",
+            HtmlInfoPanel.Severity.ERROR
+        ) {
+            action.actionPerformed(
+                ActionEvent(
+                    infoPanel,
+                    ActionEvent.ACTION_PERFORMED,
+                    it.eventType.toString()
                 )
-            }
-        } else infoPanel.setInfo(null)
+            )
+        }
+
     }
 
     private fun getErrorPrefix(listEmpty: Boolean) = if (listEmpty) "Can't load list" else "Can't load full list"
 
     private fun potentiallyLoadMore() {
-        LOG.debug("Potentially loading more")
-        if (workflowRunsLoader.canLoadMore() && ((userScrolled && loadAllAfterFirstScroll) || isScrollAtThreshold())) {
-            LOG.debug("Load more")
+        val canLoadMore = workflowRunsLoader.canLoadMore()
+        val isScrollAtThreshold = isScrollAtThreshold()
+        LOG.debug(
+            "Potentially loading more workflow-runs: canLoadMore=${canLoadMore} &&" +
+                "((userScrolled=$userScrolled && loadAllAfterFirstScroll=$loadAllAfterFirstScroll) || isScrollAtThreshold=$isScrollAtThreshold) "
+        )
+        if (canLoadMore && ((userScrolled && loadAllAfterFirstScroll) || isScrollAtThreshold)) {
             workflowRunsLoader.loadMore()
         }
     }
@@ -326,16 +313,8 @@ internal class WorkflowRunListLoaderPanel(
         return stripe
     }
 
-    fun setLoading(isLoading: Boolean) {
+    private fun setLoading(isLoading: Boolean) {
         if (isLoading) progressStripe.startLoading() else progressStripe.stopLoading()
-    }
-
-    fun displayEmptyStatus(emptyText: StatusText) {
-        LOG.debug("Display empty status")
-        emptyText.text = "Nothing loaded. "
-        emptyText.appendSecondaryText("Refresh", SimpleTextAttributes.LINK_PLAIN_ATTRIBUTES) {
-            workflowRunsLoader.reset()
-        }
     }
 
     companion object {
