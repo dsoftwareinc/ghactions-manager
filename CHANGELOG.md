@@ -5,6 +5,15 @@
 ## [Unreleased]
 
 
+## [1.3.0] - 2022-10-07
+### Added
+* Refresh jobs + rerun workflow run by @cunla in https://github.com/cunla/ghactions-toolbar/pull/40
+* Update cancelled icon by @cunla in https://github.com/cunla/ghactions-toolbar/pull/44
+* Add cancel workflow action #43 by @cunla in https://github.com/cunla/ghactions-toolbar/pull/46
+* Guess github account per repo when there are multiple GitHub accounts by @cunla in https://github.com/cunla/ghactions-toolbar/pull/48
+
+**Full Changelog**: https://github.com/cunla/ghactions-toolbar/compare/v1.2.0...v1.3.0
+
 ## [1.2.0] - 2022-10-01
 ### Added
 - New icons for in progress/queued workflows

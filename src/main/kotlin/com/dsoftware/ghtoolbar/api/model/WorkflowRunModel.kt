@@ -29,8 +29,8 @@ data class GitHubWorkflowRuns(
 data class GitHubWorkflowRun(
     val id: Long,
     val node_id: String,
-    val head_branch: String,
-    val head_sha: String,
+    val head_branch: String?,
+    val head_sha: String?,
     val run_number: Int,
     val event: String,
     val status: String,
