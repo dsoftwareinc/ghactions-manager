@@ -59,27 +59,33 @@ class WorkflowDataContextRepository {
 
         LOG.debug("Create CollectionListModel<GitHubWorkflowRun>() and loader")
         val listModel = CollectionListModel<GitHubWorkflowRun>()
-
+        listModel.removeAll()
         val listLoader = WorkflowRunListLoader(
             ProgressManager.getInstance(), requestExecutor,
-            repositoryCoordinates,
-            listModel
+            repositoryCoordinates
         )
         Disposer.register(disposable, listLoader)
-
         listLoader.addDataListener(disposable, object : GHListLoader.ListDataListener {
             override fun onDataAdded(startIdx: Int) {
                 val loadedData = listLoader.loadedData
                 listModel.add(loadedData.subList(startIdx, loadedData.size))
+                listModel.sort(object : Comparator<GitHubWorkflowRun> {
+                    override fun compare(o1: GitHubWorkflowRun, o2: GitHubWorkflowRun): Int {
+                        return o2.created_at?.compareTo(o1.created_at) ?: 1
+                    }
+                })
+            }
+
+            override fun onDataUpdated(idx: Int) {
+                val loadedData = listLoader.loadedData
+                listModel.setElementAt(loadedData[idx], idx)
             }
         })
 
         return WorkflowRunDataContext(
-//            repositoryCoordinates,
             listModel,
             githubWorkflowDataLoader,
-            listLoader,
-//            account
+            listLoader
         )
     }
 

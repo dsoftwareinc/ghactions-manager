@@ -149,10 +149,11 @@ internal class WorkflowRunListLoaderPanel(
         isOpaque = false
         viewport.isOpaque = false
         border = JBUI.Borders.empty()
-        verticalScrollBar.model.addChangeListener {
-            if (!userScrolled && verticalScrollBar.value > 0) userScrolled = true
-            potentiallyLoadMore()
-        }
+//        verticalScrollBar.model.addChangeListener {
+//            if (!userScrolled && verticalScrollBar.value > 0) userScrolled = true
+//            potentiallyLoadMore()
+//        }
+        workflowRunsLoader.loadMore()
     }
     private val progressStripe: ProgressStripe
     private val infoPanel = HtmlInfoPanel()
@@ -208,16 +209,16 @@ internal class WorkflowRunListLoaderPanel(
     }
 
     private fun updateEmptyText() {
-        val emptyText = runListComponent.emptyText ?: return
-        emptyText.clear()
+
+        runListComponent.emptyText.clear()
         if (workflowRunsLoader.loading) {
-            emptyText.text = "Loading..."
+            runListComponent.emptyText.text = "Loading..."
             return
         }
         val error = workflowRunsLoader.error
         if (error == null) {
-            emptyText.text = "Nothing loaded. "
-            emptyText.appendSecondaryText("Refresh", SimpleTextAttributes.LINK_PLAIN_ATTRIBUTES) {
+            runListComponent.emptyText.text = "Nothing loaded. "
+            runListComponent.emptyText.appendSecondaryText("Refresh", SimpleTextAttributes.LINK_PLAIN_ATTRIBUTES) {
                 workflowRunsLoader.reset()
             }
             infoPanel.setInfo(when {
@@ -226,14 +227,14 @@ internal class WorkflowRunListLoaderPanel(
                 else -> "${workflowRunsLoader.loadedData.size} workflow runs loaded out of ${workflowRunsLoader.totalCount}"
             })
         } else {
-            emptyText.appendText(
+            runListComponent.emptyText.appendText(
                 getErrorPrefix(workflowRunsLoader.loadedData.isEmpty()),
                 SimpleTextAttributes.ERROR_ATTRIBUTES
             )
                 .appendSecondaryText(getLoadingErrorText(error), SimpleTextAttributes.ERROR_ATTRIBUTES, null)
 
             errorHandler?.getActionForError()?.let {
-                emptyText.appendSecondaryText(" ${it.getValue("Name")}", SimpleTextAttributes.LINK_PLAIN_ATTRIBUTES, it)
+                runListComponent.emptyText.appendSecondaryText(" ${it.getValue("Name")}", SimpleTextAttributes.LINK_PLAIN_ATTRIBUTES, it)
             }
         }
 
