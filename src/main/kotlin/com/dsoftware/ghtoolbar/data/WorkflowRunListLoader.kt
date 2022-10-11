@@ -9,9 +9,11 @@ import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.util.Disposer
 import com.intellij.ui.CollectionListModel
+import com.intellij.util.concurrency.AppExecutorUtil
 import org.jetbrains.plugins.github.api.GithubApiRequestExecutor
 import org.jetbrains.plugins.github.api.data.request.GithubRequestPagination
 import org.jetbrains.plugins.github.pullrequest.data.GHListLoaderBase
+import java.util.concurrent.TimeUnit
 
 class WorkflowRunListLoader(
     progressManager: ProgressManager,
@@ -29,6 +31,10 @@ class WorkflowRunListLoader(
 
         resetDisposable = Disposer.newDisposable()
         Disposer.register(this, resetDisposable)
+        val scheduler = AppExecutorUtil.getAppScheduledExecutorService()
+        scheduler.scheduleWithFixedDelay({
+            loadMore(update = true)
+        }, 60, 60, TimeUnit.SECONDS)
     }
 
     override fun reset() {
