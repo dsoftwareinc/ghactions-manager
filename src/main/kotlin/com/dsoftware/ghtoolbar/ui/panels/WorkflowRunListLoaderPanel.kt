@@ -153,7 +153,6 @@ internal class WorkflowRunListLoaderPanel(
 //            if (!userScrolled && verticalScrollBar.value > 0) userScrolled = true
 //            potentiallyLoadMore()
 //        }
-        workflowRunsLoader.loadMore()
     }
     private val progressStripe: ProgressStripe
     private val infoPanel = HtmlInfoPanel()
@@ -209,7 +208,6 @@ internal class WorkflowRunListLoaderPanel(
     }
 
     private fun updateEmptyText() {
-
         runListComponent.emptyText.clear()
         if (workflowRunsLoader.loading) {
             runListComponent.emptyText.text = "Loading..."

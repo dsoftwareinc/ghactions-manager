@@ -29,7 +29,7 @@ class WorkflowRunListLoader(
         val scheduler = AppExecutorUtil.getAppScheduledExecutorService()
         scheduler.scheduleWithFixedDelay({
             loadMore(update = true)
-        }, frequency, frequency, TimeUnit.SECONDS)
+        }, 1, frequency, TimeUnit.SECONDS)
     }
 
     override fun reset() {
