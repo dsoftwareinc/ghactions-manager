@@ -19,7 +19,7 @@ class WorkflowRunListLoader(
     private val repositoryCoordinates: RepositoryCoordinates,
     private val listModel: CollectionListModel<GitHubWorkflowRun>,
 ) : GHListLoaderBase<GitHubWorkflowRun>(progressManager) {
-    private var totalCount: Int = 1
+    var totalCount: Int = 1
     private val pageSize = 50
     var page: Int = 0
     private var resetDisposable: Disposable
@@ -33,8 +33,8 @@ class WorkflowRunListLoader(
 
     override fun reset() {
         LOG.debug("Removing all from the list model")
+        super.reset()
         page = 0
-
         Disposer.dispose(resetDisposable)
         resetDisposable = Disposer.newDisposable()
         Disposer.register(this, resetDisposable)
