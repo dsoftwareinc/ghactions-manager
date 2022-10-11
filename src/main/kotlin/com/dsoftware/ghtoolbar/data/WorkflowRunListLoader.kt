@@ -25,7 +25,7 @@ class WorkflowRunListLoader(
     private var resetDisposable: Disposable
 
     init {
-        requestExecutor.addListener(this) { reset() }
+//        requestExecutor.addListener(this) { reset() }
 
         resetDisposable = Disposer.newDisposable()
         Disposer.register(this, resetDisposable)

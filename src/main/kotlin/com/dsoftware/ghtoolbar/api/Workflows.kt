@@ -27,10 +27,10 @@ object Workflows : GithubApiRequests.Entity("/repos") {
 
     fun getWorkflowRuns(
         coordinates: RepositoryCoordinates,
-//        event: String? = null,
-//        status: String? = null,
-//        branch: String? = null,
-//        actor: String? = null,
+        event: String? = null,
+        status: String? = null,
+        branch: String? = null,
+        actor: String? = null,
         pagination: GithubRequestPagination? = null
     ): GithubApiRequest<GitHubWorkflowRuns> {
         val url = GithubApiRequests.getUrl(coordinates.serverPath,
@@ -39,12 +39,12 @@ object Workflows : GithubApiRequests.Entity("/repos") {
             "/actions",
             "/runs",
             GithubApiUrlQueryBuilder.urlQuery {
-//                param("q", GithubApiSearchQueryBuilder.searchQuery {
-//                    qualifier("event", event)
-//                    qualifier("status", status)
-//                    qualifier("branch", branch)
-//                    qualifier("actor", actor)
-//                })
+                param("q", GithubApiSearchQueryBuilder.searchQuery {
+                    qualifier("event", event)
+                    qualifier("status", status)
+                    qualifier("branch", branch)
+                    qualifier("actor", actor)
+                })
                 param(pagination)
             })
         LOG.info("Workflows.getWorkflowRuns() url=${url}")
