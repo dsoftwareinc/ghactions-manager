@@ -8,57 +8,55 @@ import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.util.Disposer
-import com.intellij.ui.CollectionListModel
+import com.intellij.util.concurrency.AppExecutorUtil
 import org.jetbrains.plugins.github.api.GithubApiRequestExecutor
+import org.jetbrains.plugins.github.api.data.request.GithubRequestPagination
 import org.jetbrains.plugins.github.pullrequest.data.GHListLoaderBase
+import java.util.concurrent.TimeUnit
 
 class WorkflowRunListLoader(
     progressManager: ProgressManager,
     private val requestExecutor: GithubApiRequestExecutor,
     private val repositoryCoordinates: RepositoryCoordinates,
-    private val listModel: CollectionListModel<GitHubWorkflowRun>,
 ) : GHListLoaderBase<GitHubWorkflowRun>(progressManager) {
-
-    var loaded: Boolean = false
-
-    private var resetDisposable: Disposable
+    var totalCount: Int = 1
+    private val pageSize = 30
+    private val page: Int = 1
+    private val frequency: Long = 30
 
     init {
-        requestExecutor.addListener(this) { reset() }
 
-        resetDisposable = Disposer.newDisposable()
-        Disposer.register(this, resetDisposable)
+        val scheduler = AppExecutorUtil.getAppScheduledExecutorService()
+        scheduler.scheduleWithFixedDelay({
+            loadMore(update = true)
+        }, 1, frequency, TimeUnit.SECONDS)
     }
 
     override fun reset() {
         LOG.debug("Removing all from the list model")
-        listModel.removeAll()
-        loaded = false
-
-        Disposer.dispose(resetDisposable)
-        resetDisposable = Disposer.newDisposable()
-        Disposer.register(this, resetDisposable)
-
-        loadMore()
+        super.reset()
     }
 
-    //This should not be needed, it is weird that originally it requires error != null to be able to load data
-    override fun canLoadMore() = !loading && !loaded
+    override fun canLoadMore() = !loading && (page * pageSize < totalCount)
 
     override fun doLoadMore(indicator: ProgressIndicator, update: Boolean): List<GitHubWorkflowRun> {
-        LOG.debug("Do load more update: $update, indicator: $indicator")
+        LOG.info("Do load more update: $update, indicator: $indicator")
 
-        LOG.debug("Get workflow runs")
-        val request = Workflows.getWorkflowRuns(repositoryCoordinates)
+        val request = Workflows.getWorkflowRuns(
+            repositoryCoordinates,
+            pagination = GithubRequestPagination(page, pageSize)
+        )
         val response = requestExecutor.execute(indicator, request)
+        totalCount = response.total_count
         val result = response.workflow_runs
-        LOG.debug("Got ${result.size} workflows")
-        //This is quite slow - N+1 requests, but there are no simpler way to get it, at least now.
-//        result.parallelStream().forEach {
-//            LOG.info("Get workflow by url ${it.workflow_url}")
-//            it.workflowName = requestExecutor.execute(Workflows.getWorkflowByUrl(it.workflow_url)).name
-//        }
-        loaded = true
+        if (update) {
+            val newRuns = result.filter { run -> loadedData.all { it != run } }
+            result.forEach { run ->
+                updateData(run)
+            }
+            return newRuns
+        }
+        LOG.debug("Got ${result.size} in page $page workflows (totalCount=$totalCount)")
         return result
     }
 

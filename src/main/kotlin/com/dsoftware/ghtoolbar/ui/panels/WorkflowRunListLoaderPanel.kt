@@ -19,7 +19,10 @@ import com.intellij.openapi.util.Disposer
 import com.intellij.ui.*
 import com.intellij.ui.components.JBLabel
 import com.intellij.ui.components.JBList
-import com.intellij.util.ui.*
+import com.intellij.util.ui.JBDimension
+import com.intellij.util.ui.JBUI
+import com.intellij.util.ui.ListUiUtil
+import com.intellij.util.ui.UIUtil
 import com.intellij.util.ui.components.BorderLayoutPanel
 import com.intellij.vcs.log.ui.frame.ProgressStripe
 import net.miginfocom.layout.CC
@@ -29,7 +32,6 @@ import org.jetbrains.plugins.github.exceptions.GithubStatusCodeException
 import org.jetbrains.plugins.github.ui.HtmlInfoPanel
 import java.awt.BorderLayout
 import java.awt.Component
-import java.awt.event.ActionEvent
 import java.awt.event.FocusEvent
 import java.awt.event.FocusListener
 import java.awt.event.MouseEvent
@@ -72,39 +74,18 @@ class WorkflowRunList(model: ListModel<GitHubWorkflowRun>) : JBList<GitHubWorkfl
             layout = BoxLayout(this, BoxLayout.X_AXIS)
         }
 
-
         init {
             border = JBUI.Borders.empty(5, 8)
-
             layout = MigLayout(
                 LC().gridGap("0", "0")
                     .insets("0", "0", "0", "0")
                     .fillX()
             )
-
             val gapAfter = "${JBUI.scale(5)}px"
-            add(
-                stateIcon, CC()
-                .gapAfter(gapAfter)
-            )
-            add(
-                title, CC()
-                .growX()
-                .pushX()
-                .minWidth("pref/2px")
-            )
-            add(
-                labels, CC()
-                .minWidth("pref/2px")
-                .alignX("right")
-                .wrap()
-            )
-            add(
-                info, CC()
-                .minWidth("pref/2px")
-                .skip(1)
-                .spanX(3)
-            )
+            add(stateIcon, CC().gapAfter(gapAfter))
+            add(title, CC().growX().pushX().minWidth("pref/2px"))
+            add(labels, CC().minWidth("pref/2px").alignX("right").wrap())
+            add(info, CC().minWidth("pref/2px").skip(1).spanX(3))
         }
 
         override fun getListCellRendererComponent(
@@ -121,11 +102,19 @@ class WorkflowRunList(model: ListModel<GitHubWorkflowRun>) : JBList<GitHubWorkfl
             stateIcon.icon = ToolbarUtil.statusIcon(ghWorkflowRun.status, ghWorkflowRun.conclusion)
             title.apply {
                 text = ghWorkflowRun.head_commit.message
+
                 foreground = primaryTextColor
             }
 
             info.apply {
-                text = ghWorkflowRunInfo(ghWorkflowRun)
+                val updatedAtLabel = ToolbarUtil.makeTimePretty(ghWorkflowRun.updated_at)
+                var action = "pushed by"
+                if (ghWorkflowRun.event == "release") {
+                    action = "created by"
+                }
+                text = "${ghWorkflowRun.name} #${ghWorkflowRun.run_number}: " +
+                    "$action ${ghWorkflowRun.head_commit.author.name} " +
+                    "on $updatedAtLabel"
                 foreground = secondaryTextColor
             }
             labels.apply {
@@ -139,69 +128,45 @@ class WorkflowRunList(model: ListModel<GitHubWorkflowRun>) : JBList<GitHubWorkfl
         }
     }
 
-    companion object {
-
-        fun ghWorkflowRunInfo(ghWorkflowRun: GitHubWorkflowRun): String {
-            val updatedAtLabel = ToolbarUtil.makeTimePretty(ghWorkflowRun.updated_at)
-
-            var action = "pushed by"
-            if (ghWorkflowRun.event == "release") {
-                action = "created by"
-            }
-            return "${ghWorkflowRun.name} #${ghWorkflowRun.run_number}: " +
-                "$action ${ghWorkflowRun.head_commit.author.name} " +
-                "on $updatedAtLabel"
-        }
-
-    }
-
-    override fun performCopy(dataContext: DataContext) {
-        TODO("Not yet implemented")
-    }
-
-    override fun isCopyEnabled(dataContext: DataContext): Boolean {
-        return false
-    }
-
-    override fun isCopyVisible(dataContext: DataContext): Boolean {
-        return false
-    }
+    override fun performCopy(dataContext: DataContext) = TODO("Not yet implemented")
+    override fun isCopyEnabled(dataContext: DataContext): Boolean = false
+    override fun isCopyVisible(dataContext: DataContext): Boolean = false
 }
 
 internal class WorkflowRunListLoaderPanel(
     disposable: Disposable,
     private val workflowRunsLoader: WorkflowRunListLoader,
     listReloadAction: RefreshAction,
-    private val contentComponent: JComponent,
+    private val runListComponent: WorkflowRunList,
     private val loadAllAfterFirstScroll: Boolean = false
 ) : BorderLayoutPanel(), Disposable {
-
-    private lateinit var progressStripe: ProgressStripe
-
     private var userScrolled = false
-    val scrollPane = ScrollPaneFactory.createScrollPane(
-        contentComponent,
+    private val scrollPane = ScrollPaneFactory.createScrollPane(
+        runListComponent,
         ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
         ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER
     ).apply {
         isOpaque = false
         viewport.isOpaque = false
         border = JBUI.Borders.empty()
-        verticalScrollBar.model.addChangeListener { potentiallyLoadMore() }
-        verticalScrollBar.model.addChangeListener {
-            if (!userScrolled && verticalScrollBar.value > 0) userScrolled = true
-        }
+//        verticalScrollBar.model.addChangeListener {
+//            if (!userScrolled && verticalScrollBar.value > 0) userScrolled = true
+//            potentiallyLoadMore()
+//        }
     }
-
+    private val progressStripe: ProgressStripe
     private val infoPanel = HtmlInfoPanel()
 
     var errorHandler: LoadingErrorHandler? = null
 
     init {
-        LOG.info("Initialize ListLoaderPanel")
-        addToCenter(createCenterPanel(JBUI.Panels.simplePanel(scrollPane).addToTop(infoPanel).apply {
-            isOpaque = false
-        }))
+        LOG.info("Initialize WorkflowRunListLoaderPanel")
+        progressStripe = ProgressStripe(
+            JBUI.Panels.simplePanel(scrollPane).addToTop(infoPanel).apply {
+                isOpaque = false
+            }, this, ProgressWindow.DEFAULT_PROGRESS_DIALOG_POSTPONE_TIME_MILLIS
+        )
+        addToCenter(progressStripe)
 
         workflowRunsLoader.addLoadingStateChangeListener(this) {
             setLoading(workflowRunsLoader.loading)
@@ -209,12 +174,10 @@ internal class WorkflowRunListLoaderPanel(
         }
 
         workflowRunsLoader.addErrorChangeListener(this) {
-            updateInfoPanel()
             updateEmptyText()
         }
 
         setLoading(workflowRunsLoader.loading)
-        updateInfoPanel()
         updateEmptyText()
         errorHandler = LoadingErrorHandler {
             LOG.warn("Error on GitHub Workflow Run list loading, resetting the loader")
@@ -232,77 +195,59 @@ internal class WorkflowRunListLoaderPanel(
         Disposer.register(disposable) {
             Disposer.dispose(this)
         }
+        runListComponent.model.addListDataListener(object : ListDataListener {
+            override fun intervalAdded(e: ListDataEvent) {
+                if (e.type == ListDataEvent.INTERVAL_ADDED) updateEmptyText()
+            }
+
+            override fun contentsChanged(e: ListDataEvent) {}
+            override fun intervalRemoved(e: ListDataEvent) {
+                if (e.type == ListDataEvent.INTERVAL_REMOVED) updateEmptyText()
+            }
+        })
     }
 
     private fun updateEmptyText() {
-        val emptyText = (contentComponent as? ComponentWithEmptyText)?.emptyText ?: return
-        emptyText.clear()
+        runListComponent.emptyText.clear()
         if (workflowRunsLoader.loading) {
-            emptyText.text = "Loading..."
+            runListComponent.emptyText.text = "Loading..."
             return
         }
         val error = workflowRunsLoader.error
-        if (error != null) {
-            LOG.info("Display error status ${error.message}")
-            emptyText
-                .appendText(
-                    getErrorPrefix(workflowRunsLoader.loadedData.isEmpty()),
-                    SimpleTextAttributes.ERROR_ATTRIBUTES
-                ).appendSecondaryText(
-                    getLoadingErrorText(error),
-                    SimpleTextAttributes.ERROR_ATTRIBUTES,
-                    null
-                )
-
-            errorHandler?.getActionForError()?.let {
-                emptyText.appendSecondaryText(" ${it.getValue("Name")}", SimpleTextAttributes.LINK_PLAIN_ATTRIBUTES, it)
-            }
-        } else {
-            LOG.debug("Display empty status")
-            emptyText.text = "Nothing loaded. "
-            emptyText.appendSecondaryText("Refresh", SimpleTextAttributes.LINK_PLAIN_ATTRIBUTES) {
+        if (error == null) {
+            runListComponent.emptyText.text = "Nothing loaded. "
+            runListComponent.emptyText.appendSecondaryText("Refresh", SimpleTextAttributes.LINK_PLAIN_ATTRIBUTES) {
                 workflowRunsLoader.reset()
             }
-        }
-    }
+            infoPanel.setInfo(when {
+                workflowRunsLoader.loading -> "Loading..."
+                workflowRunsLoader.loadedData.isEmpty() -> "No workflow runs"
+                else -> "${workflowRunsLoader.loadedData.size} workflow runs loaded out of ${workflowRunsLoader.totalCount}"
+            })
+        } else {
+            runListComponent.emptyText.appendText(
+                getErrorPrefix(workflowRunsLoader.loadedData.isEmpty()),
+                SimpleTextAttributes.ERROR_ATTRIBUTES
+            )
+                .appendSecondaryText(getLoadingErrorText(error), SimpleTextAttributes.ERROR_ATTRIBUTES, null)
 
-    private fun updateInfoPanel() {
-        val error = workflowRunsLoader.error
-        if (error != null && workflowRunsLoader.loadedData.isNotEmpty()) {
-            val errorPrefix = getErrorPrefix(workflowRunsLoader.loadedData.isEmpty())
-            val errorText = getLoadingErrorText(error, "<br/>")
-            val action = errorHandler?.getActionForError()
-            if (action != null) {
-                //language=HTML
-                infoPanel.setInfo(
-                    """<html lang="en"><body>$errorPrefix<br/>$errorText<a href=''>&nbsp;${action.getValue("Name")}</a></body></html>""",
-                    HtmlInfoPanel.Severity.ERROR
-                ) {
-                    action.actionPerformed(
-                        ActionEvent(
-                            infoPanel,
-                            ActionEvent.ACTION_PERFORMED,
-                            it.eventType.toString()
-                        )
-                    )
-                }
-
-            } else {
-                //language=HTML
-                infoPanel.setInfo(
-                    """<html lang="en"><body>$errorPrefix<br/>$errorText</body></html>""",
-                    HtmlInfoPanel.Severity.ERROR
-                )
+            errorHandler?.getActionForError()?.let {
+                runListComponent.emptyText.appendSecondaryText(" ${it.getValue("Name")}", SimpleTextAttributes.LINK_PLAIN_ATTRIBUTES, it)
             }
-        } else infoPanel.setInfo(null)
+        }
+
     }
 
     private fun getErrorPrefix(listEmpty: Boolean) = if (listEmpty) "Can't load list" else "Can't load full list"
 
     private fun potentiallyLoadMore() {
-        LOG.debug("Potentially loading more")
-        if (workflowRunsLoader.canLoadMore() && ((userScrolled && loadAllAfterFirstScroll) || isScrollAtThreshold())) {
-            LOG.debug("Load more")
+        val canLoadMore = workflowRunsLoader.canLoadMore()
+        val isScrollAtThreshold = isScrollAtThreshold()
+        LOG.debug(
+            "Potentially loading more workflow-runs: canLoadMore=${canLoadMore} &&" +
+                "((userScrolled=$userScrolled && loadAllAfterFirstScroll=$loadAllAfterFirstScroll) || isScrollAtThreshold=$isScrollAtThreshold) "
+        )
+        if (canLoadMore && ((userScrolled && loadAllAfterFirstScroll) || isScrollAtThreshold)) {
             workflowRunsLoader.loadMore()
         }
     }
@@ -320,17 +265,7 @@ internal class WorkflowRunListLoaderPanel(
 
     override fun dispose() {}
 
-    fun createCenterPanel(content: JComponent): JPanel {
-        LOG.info("Create center panel")
-        val stripe = ProgressStripe(
-            content, this,
-            ProgressWindow.DEFAULT_PROGRESS_DIALOG_POSTPONE_TIME_MILLIS
-        )
-        progressStripe = stripe
-        return stripe
-    }
-
-    fun setLoading(isLoading: Boolean) {
+    private fun setLoading(isLoading: Boolean) {
         if (isLoading) progressStripe.startLoading() else progressStripe.stopLoading()
     }
 
@@ -376,11 +311,12 @@ internal class WorkflowRunListLoaderPanel(
 
             list.model.addListDataListener(object : ListDataListener {
                 override fun intervalAdded(e: ListDataEvent) {
-                    if (e.type == ListDataEvent.INTERVAL_ADDED)
+                    if (e.type == ListDataEvent.INTERVAL_ADDED) {
                         (e.index0..e.index1).find { list.model.getElementAt(it) == savedSelection }
                             ?.run {
                                 ApplicationManager.getApplication().invokeLater { ScrollingUtil.selectItem(list, this) }
                             }
+                    }
                 }
 
                 override fun contentsChanged(e: ListDataEvent) {}
@@ -417,7 +353,7 @@ internal class WorkflowRunListLoaderPanel(
         private fun getLoadingErrorText(error: Throwable, newLineSeparator: String = "\n"): String {
             if (error is GithubStatusCodeException && error.error != null) {
                 val githubError = error.error!!
-                val builder = StringBuilder(githubError.message)
+                val builder = StringBuilder(error.message).append(newLineSeparator)
                 if (githubError.errors?.isNotEmpty()!!) {
                     builder.append(": ").append(newLineSeparator)
                     for (e in githubError.errors!!) {
