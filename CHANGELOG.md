@@ -3,6 +3,9 @@
 # ghactions-toolbar Changelog
 
 ## [Unreleased]
+
+
+## [1.4.0]
 ### Added
 * Refresh workflow runs status in the background
 
