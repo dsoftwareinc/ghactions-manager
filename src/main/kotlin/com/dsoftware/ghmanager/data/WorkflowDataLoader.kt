@@ -54,13 +54,14 @@ class WorkflowDataLoader(
 
     fun <T> createDataProvider(request: GithubApiRequest<T>): DataProvider<T> {
         if (isDisposed) throw IllegalStateException("Already disposed")
-        return DefaultDataProvider<T>(progressManager, requestExecutor, request)
+        return DefaultDataProvider(progressManager, requestExecutor, request)
     }
 
     @RequiresEdt
     fun invalidateAllData() {
         LOG.debug("All cache invalidated")
         logsCache.invalidateAll()
+        jobsCache.invalidateAll()
     }
 
     private interface DataInvalidatedListener : EventListener {

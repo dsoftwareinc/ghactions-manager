@@ -361,34 +361,40 @@ class WorkflowToolWindowTabController(
     ): Pair<GHCompletableFutureLoadingModel<Map<String, String>>, SingleValueModel<String?>> {
         LOG.debug("Create log loading model")
         val valueModel = SingleValueModel<String?>(null)
-        var jobName = jobsSelectionHolder.selection?.name
+
+        fun getJobName(): String? {
+            val jobName = jobsSelectionHolder.selection?.name
+            return jobName?.replace("<", "")?.replace(">", "")?.trim()
+        }
+
         val loadingModel = GHCompletableFutureLoadingModel<Map<String, String>>(parentDisposable).also {
             it.addStateChangeListener(object : GHLoadingModel.StateChangeListener {
                 override fun onLoadingCompleted() {
                     if (it.resultAvailable) {
-                        jobName = null
-                        valueModel.value = "Pick a job to view logs"
+                        val jobName = getJobName()
+                        valueModel.value = if (jobName == null) {
+                            "Pick a job to view logs"
+                        } else {
+                            it.result?.get(jobName) ?: "Job ${jobsSelectionHolder.selection?.name} logs missing"
+                        }
                     }
                 }
 
                 override fun onReset() {
                     LOG.debug("onReset")
-                    val key = (jobName ?: "").replace("<", "").replace(">", "").trim()
                     valueModel.value = if (it.result?.isEmpty() == true) {
                         NO_LOGS_MSG
                     } else {
-                        it.result?.get(key) ?: "Job $jobName logs missing"
+                        it.result?.get(getJobName()) ?: "Job ${jobsSelectionHolder.selection?.name} logs missing"
                     }
                 }
             })
         }
         jobsSelectionHolder.addSelectionChangeListener(parentDisposable) {
-            jobName = jobsSelectionHolder.selection?.name
-            val key = (jobName ?: "").replace("<", "").replace(">", "").trim()
             valueModel.value = if (loadingModel.result?.isEmpty() == true) {
                 NO_LOGS_MSG
             } else {
-                loadingModel.result?.get(key) ?: "Job $jobName logs missing"
+                loadingModel.result?.get(getJobName()) ?: "Job ${jobsSelectionHolder.selection?.name} logs missing"
             }
         }
         var listenerDisposable: Disposable? = null

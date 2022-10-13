@@ -32,9 +32,11 @@ import javax.swing.event.ListDataListener
 import javax.swing.event.ListSelectionEvent
 
 
-class JobList(model: ListModel<WorkflowRunJob>, private val infoInNewLine: Boolean) : JBList<WorkflowRunJob>(model), DataProvider, CopyProvider {
+class JobList(model: ListModel<WorkflowRunJob>, private val infoInNewLine: Boolean) : JBList<WorkflowRunJob>(model),
+    DataProvider, CopyProvider {
 
     init {
+        isEnabled = true
         selectionModel.selectionMode = ListSelectionModel.SINGLE_SELECTION
 
         val renderer = JobsListCellRenderer()
@@ -66,7 +68,7 @@ class JobList(model: ListModel<WorkflowRunJob>, private val infoInNewLine: Boole
         private val info = JLabel()
 
         init {
-            val infoCC = CC().minWidth("pref/2px").maxWidth("pref/1px").applyIf(infoInNewLine){newline()}
+            val infoCC = CC().minWidth("pref/2px").maxWidth("pref/1px").applyIf(infoInNewLine) { newline() }
             border = JBUI.Borders.empty(5, 8)
             add(title, CC().growX().pushX().minWidth("pref/2px").maxWidth("pref/1px"))
             add(info, infoCC)
@@ -118,7 +120,7 @@ class JobList(model: ListModel<WorkflowRunJob>, private val infoInNewLine: Boole
         fun createJobsListComponent(
             jobModel: SingleValueModel<WorkflowRunJobs?>,
             runSelectionContext: WorkflowRunSelectionContext,
-            infoInNewLine:Boolean,
+            infoInNewLine: Boolean,
         ): JComponent {
             val list = CollectionListModel<WorkflowRunJob>()
             if (jobModel.value != null) {
