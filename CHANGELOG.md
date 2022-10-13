@@ -1,6 +1,6 @@
 <!-- Keep a Changelog guide -> https://keepachangelog.com -->
 
-# ghactions-toolbar Changelog
+# ghactions-manager Changelog
 
 ## [Unreleased]
 
@@ -12,12 +12,12 @@
 
 ## [1.3.0] - 2022-10-07
 ### Added
-* Refresh jobs + rerun workflow run by @cunla in https://github.com/cunla/ghactions-toolbar/pull/40
-* Update cancelled icon by @cunla in https://github.com/cunla/ghactions-toolbar/pull/44
-* Add cancel workflow action #43 by @cunla in https://github.com/cunla/ghactions-toolbar/pull/46
-* Guess github account per repo when there are multiple GitHub accounts by @cunla in https://github.com/cunla/ghactions-toolbar/pull/48
+* Refresh jobs + rerun workflow run by @cunla in https://github.com/cunla/ghactions-manager/pull/40
+* Update cancelled icon by @cunla in https://github.com/cunla/ghactions-manager/pull/44
+* Add cancel workflow action #43 by @cunla in https://github.com/cunla/ghactions-manager/pull/46
+* Guess github account per repo when there are multiple GitHub accounts by @cunla in https://github.com/cunla/ghactions-manager/pull/48
 
-**Full Changelog**: https://github.com/cunla/ghactions-toolbar/compare/v1.2.0...v1.3.0
+**Full Changelog**: https://github.com/cunla/ghactions-manager/compare/v1.2.0...v1.3.0
 
 ## [1.2.0] - 2022-10-01
 ### Added
@@ -51,26 +51,26 @@
 ### Fixed
 - Issue with `GithubApiRequestExecutorManager.getExecutor`
  
-**Full Changelog**: https://github.com/cunla/ghactions-toolbar/compare/v0.0.8...v1.0.1
+**Full Changelog**: https://github.com/cunla/ghactions-manager/compare/v0.0.8...v1.0.1
 
 
 ## [0.0.8] - 2022-06-26
 ### Fixed
 - Issue with `GithubApiRequestExecutorManager.getExecutor`
 
-**Full Changelog**: https://github.com/cunla/ghactions-toolbar/compare/v0.0.7...v0.0.8
+**Full Changelog**: https://github.com/cunla/ghactions-manager/compare/v0.0.7...v0.0.8
 
 
 ## [0.0.7] - 2022-06-26
 ### Added
 * Add a link to GitHub accounts settings in case GitHub account is not set #19
 * Add a link from toolbar window to Toolbar Settings #21
-* Toolbar settings - Resolve #18 by @cunla in https://github.com/cunla/ghactions-toolbar/pull/25
+* Toolbar settings - Resolve #18 by @cunla in https://github.com/cunla/ghactions-manager/pull/25
 
 ### Fixed
 * Fix memory leak issue #22
 
-**Full Changelog**: https://github.com/cunla/ghactions-toolbar/compare/v0.0.6...v0.0.7
+**Full Changelog**: https://github.com/cunla/ghactions-manager/compare/v0.0.6...v0.0.7
 
 ## [0.0.6] - 2022-06-19
 ### Added

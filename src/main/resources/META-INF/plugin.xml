@@ -1,7 +1,7 @@
 <!-- Plugin Configuration File. Read more: https://plugins.jetbrains.com/docs/intellij/plugin-configuration-file.html -->
 <idea-plugin>
-    <id>com.dsoftware.ghtoolbar</id>
-    <name>GitHub Actions Toolbar</name>
+    <id>com.dsoftware.ghmanager</id>
+    <name>GitHub Actions Manager</name>
     <vendor>D Software</vendor>
 
     <depends>com.intellij.modules.platform</depends>
@@ -12,28 +12,28 @@
     <extensions defaultExtensionNs="com.intellij">
         <toolWindow
             id="GitHub Actions"
-            icon="com.dsoftware.ghtoolbar.ui.Icons.WorkflowAllToolbar"
+            icon="com.dsoftware.ghmanager.ui.Icons.WorkflowAllToolbar"
             anchor="bottom"
-            factoryClass="com.dsoftware.ghtoolbar.ui.GhActionsToolWindowFactory"/>
+            factoryClass="com.dsoftware.ghmanager.ui.GhActionsToolWindowFactory"/>
         <console.folding
-            implementation="com.dsoftware.ghtoolbar.ui.panels.GhActionConsoleFolding"/>
+            implementation="com.dsoftware.ghmanager.ui.panels.GhActionConsoleFolding"/>
         <projectConfigurable
             parentId="tools"
-            instance="com.dsoftware.ghtoolbar.ui.settings.GhActionsToolbarConfigurable"
+            instance="com.dsoftware.ghmanager.ui.settings.GhActionsManagerConfigurable"
             />
     </extensions>
     <actions>
         <action
             id="ShowGithubSettings"
-            class="com.dsoftware.ghtoolbar.actions.ShowGithubSettingsAction"/>
+            class="com.dsoftware.ghmanager.actions.ShowGithubSettingsAction"/>
         <action
-            id="ShowGhActionsToolbarSettings"
-            class="com.dsoftware.ghtoolbar.actions.ShowToolbarSettingsAction"
+            id="ShowGhActionsManagerSettings"
+            class="com.dsoftware.ghmanager.actions.ShowPluginSettingsAction"
             icon="AllIcons.General.Settings"
         />
         <group id="GHWorkflows.ActionGroup" popup="false">
             <action id="Github.Workflow.List.Reload"
-                    class="com.dsoftware.ghtoolbar.actions.ReloadRunsListAction"
+                    class="com.dsoftware.ghmanager.actions.ReloadRunsListAction"
                     use-shortcut-of="Refresh"/>
         </group>
 
@@ -43,11 +43,11 @@
 
         <group id="Github.Workflow.ToolWindow.List.Popup.Selected">
             <action id="Github.Workflow.Open.In.Browser"
-                    class="com.dsoftware.ghtoolbar.actions.WorkflowOpenInBrowserAction"/>
+                    class="com.dsoftware.ghmanager.actions.WorkflowOpenInBrowserAction"/>
             <action id="Github.Workflow.Rerun"
-                    class="com.dsoftware.ghtoolbar.actions.RerunWorkflowAction"/>
+                    class="com.dsoftware.ghmanager.actions.RerunWorkflowAction"/>
             <action id="Github.Workflow.Cancel"
-                    class="com.dsoftware.ghtoolbar.actions.CancelWorkflowAction"/>
+                    class="com.dsoftware.ghmanager.actions.CancelWorkflowAction"/>
             <reference id="Github.Workflow.List.Reload"/>
         </group>
         <group id="Github.ToolWindow.JobList.Popup">
@@ -56,15 +56,15 @@
 
         <group id="Github.ToolWindow.JobList.Popup.Selected">
             <action id="Github.Workflow.Jobs.Open.In.Browser"
-                    class="com.dsoftware.ghtoolbar.actions.JobOpenInBrowserAction"/>
+                    class="com.dsoftware.ghmanager.actions.JobOpenInBrowserAction"/>
             <action id="Github.Workflow.Job.List.Reload"
-                    class="com.dsoftware.ghtoolbar.actions.ReloadJobsAction"/>
+                    class="com.dsoftware.ghmanager.actions.ReloadJobsAction"/>
 <!--            <reference id="Github.Workflow.Jobs.List.Reload"/>-->
         </group>
 
         <group id="Github.Workflow.Log.ToolWindow.List.Popup">
             <action id="Github.Workflow.Log.List.Reload"
-                    class="com.dsoftware.ghtoolbar.actions.ReloadLogAction"/>
+                    class="com.dsoftware.ghmanager.actions.ReloadLogAction"/>
         </group>
 
     </actions>

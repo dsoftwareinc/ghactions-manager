@@ -1,4 +1,4 @@
-# Code of Conduct - ghactions-toolbar
+# Code of Conduct - GitHub Actions Manager
 
 ## Our Pledge
 
