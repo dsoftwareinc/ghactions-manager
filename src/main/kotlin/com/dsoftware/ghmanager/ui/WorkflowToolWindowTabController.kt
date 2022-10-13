@@ -3,19 +3,12 @@ package com.dsoftware.ghmanager.ui
 
 import WorkflowRunJobs
 import com.dsoftware.ghmanager.actions.ActionKeys
-import com.dsoftware.ghmanager.data.DataProvider
-import com.dsoftware.ghmanager.data.WorkflowDataContextRepository
-import com.dsoftware.ghmanager.data.WorkflowRunJobsDataProvider
-import com.dsoftware.ghmanager.data.WorkflowRunLogsDataProvider
+import com.dsoftware.ghmanager.data.*
 import com.dsoftware.ghmanager.ui.panels.JobList
 import com.dsoftware.ghmanager.ui.panels.LogConsolePanel
 import com.dsoftware.ghmanager.ui.panels.WorkflowRunListLoaderPanel
 import com.dsoftware.ghmanager.ui.settings.GhActionsSettingsService
 import com.dsoftware.ghmanager.ui.settings.GithubActionsManagerSettings
-import com.dsoftware.ghmanager.data.JobListSelectionHolder
-import com.dsoftware.ghmanager.data.WorkflowRunDataContext
-import com.dsoftware.ghmanager.data.WorkflowRunListSelectionHolder
-import com.dsoftware.ghmanager.data.WorkflowRunSelectionContext
 import com.intellij.collaboration.ui.SingleValueModel
 import com.intellij.ide.DataManager
 import com.intellij.ide.actions.RefreshAction
@@ -58,7 +51,6 @@ class WorkflowToolWindowTabController(
 ) {
     private val settingsService = GhActionsSettingsService.getInstance(project)
     private val actionManager = ActionManager.getInstance()
-    private val mainPanel: JComponent
     private val ghRequestExecutor = GithubApiRequestExecutorManager.getInstance().getExecutor(ghAccount)
     private var contentDisposable by Delegates.observable<Disposable?>(null) { _, oldValue, newValue ->
         if (oldValue != null) Disposer.dispose(oldValue)
@@ -68,10 +60,7 @@ class WorkflowToolWindowTabController(
     init {
         tab.displayName =
             repoSettings.customName.ifEmpty { repositoryMapping.repositoryPath }
-        mainPanel = tab.component.apply {
-            layout = BorderLayout()
-            background = UIUtil.getListBackground()
-        }
+
 
         val repository = repositoryMapping.ghRepositoryCoordinates
         val remote = repositoryMapping.gitRemoteUrlCoordinates
@@ -101,8 +90,9 @@ class WorkflowToolWindowTabController(
             val content = createContent(result, disposable)
             content
         }
-
-        with(mainPanel) {
+        tab.component.apply {
+            layout = BorderLayout()
+            background = UIUtil.getListBackground()
             removeAll()
             add(panel, BorderLayout.CENTER)
             revalidate()
@@ -121,7 +111,7 @@ class WorkflowToolWindowTabController(
 
         val jobLoadingPanel = createJobsPanel(context, selectedRunContext, disposable)
 
-        val logLoadingPanel = createLogPanel(selectedRunContext,disposable)
+        val logLoadingPanel = createLogPanel(selectedRunContext, disposable)
 
         val runPanel = OnePixelSplitter(
             settingsService.state.jobListAboveLogs,
@@ -173,7 +163,7 @@ class WorkflowToolWindowTabController(
         val console = LogConsolePanel(project, logModel, disposable)
         val errorHandler = GHApiLoadingErrorHandler(project, ghAccount) {
         }
-        val panel=GHLoadingPanelFactory(
+        val panel = GHLoadingPanelFactory(
             logLoadingModel,
             "Select a job to show logs",
             GithubBundle.message("cannot.load.data.from.github"),
@@ -184,16 +174,17 @@ class WorkflowToolWindowTabController(
                 add(console.component, BorderLayout.CENTER)
             }
             LOG.debug("Adding popup actions")
-            val actionGroup = actionManager.getAction("Github.Workflow.Log.ToolWindow.List.Popup") as DefaultActionGroup
-            actionGroup.removeAll()
-            actionGroup.add(actionManager.getAction("Github.Workflow.Log.List.Reload"))
-            actionGroup.add(
-                object : ToggleUseSoftWrapsToolbarAction(SoftWrapAppliancePlaces.CONSOLE) {
-                    override fun getEditor(e: AnActionEvent): Editor? {
-                        return console.editor
+            val actionGroup = DefaultActionGroup().apply {
+                removeAll()
+                add(actionManager.getAction("Github.Workflow.Log.List.Reload"))
+                add(
+                    object : ToggleUseSoftWrapsToolbarAction(SoftWrapAppliancePlaces.CONSOLE) {
+                        override fun getEditor(e: AnActionEvent): Editor? {
+                            return console.editor
+                        }
                     }
-                }
-            )
+                )
+            }
             val contextMenuPopupHandler = ContextMenuPopupHandler.Simple(actionGroup)
             (console.editor as EditorEx).installPopupHandler(contextMenuPopupHandler)
             panel
