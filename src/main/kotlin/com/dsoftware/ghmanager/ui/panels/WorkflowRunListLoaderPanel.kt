@@ -101,8 +101,7 @@ class WorkflowRunList(model: ListModel<GitHubWorkflowRun>) : JBList<GitHubWorkfl
 
             stateIcon.icon = ToolbarUtil.statusIcon(ghWorkflowRun.status, ghWorkflowRun.conclusion)
             title.apply {
-                text = ghWorkflowRun.head_commit.message
-
+                text = ghWorkflowRun.head_commit.message.split("\n")[0]
                 foreground = primaryTextColor
             }
 
@@ -136,7 +135,6 @@ class WorkflowRunList(model: ListModel<GitHubWorkflowRun>) : JBList<GitHubWorkfl
 internal class WorkflowRunListLoaderPanel(
     disposable: Disposable,
     private val workflowRunsLoader: WorkflowRunListLoader,
-    listReloadAction: RefreshAction,
     private val runListComponent: WorkflowRunList
 ) : BorderLayoutPanel(), Disposable {
     private val scrollPane = ScrollPaneFactory.createScrollPane(
@@ -177,10 +175,9 @@ internal class WorkflowRunListLoaderPanel(
             LOG.warn("Error on GitHub Workflow Run list loading, resetting the loader")
             workflowRunsLoader.reset()
         }
-        listReloadAction.registerCustomShortcutSet(this, disposable)
-        val actionsGroup = DefaultActionGroup()
-        actionsGroup.add(listReloadAction)
-        val actionToolbar = ActionManager.getInstance()
+        val actionsManager = ActionManager.getInstance()
+        val actionsGroup = actionsManager.getAction("GHWorkflows.ActionGroup") as ActionGroup
+        val actionToolbar = actionsManager
             .createActionToolbar(ActionPlaces.CONTEXT_TOOLBAR, actionsGroup, false)
         actionToolbar.targetComponent = this
 
@@ -213,11 +210,13 @@ internal class WorkflowRunListLoaderPanel(
             runListComponent.emptyText.appendSecondaryText("Refresh", SimpleTextAttributes.LINK_PLAIN_ATTRIBUTES) {
                 workflowRunsLoader.reset()
             }
-            infoPanel.setInfo(when {
-                workflowRunsLoader.loading -> "Loading..."
-                workflowRunsLoader.loadedData.isEmpty() -> "No workflow runs"
-                else -> "${workflowRunsLoader.loadedData.size} workflow runs loaded out of ${workflowRunsLoader.totalCount}"
-            })
+            infoPanel.setInfo(
+                when {
+                    workflowRunsLoader.loading -> "Loading..."
+                    workflowRunsLoader.loadedData.isEmpty() -> "No workflow runs"
+                    else -> "${workflowRunsLoader.loadedData.size} workflow runs loaded out of ${workflowRunsLoader.totalCount}"
+                }
+            )
         } else {
             runListComponent.emptyText.appendText(
                 getErrorPrefix(workflowRunsLoader.loadedData.isEmpty()),
@@ -226,7 +225,11 @@ internal class WorkflowRunListLoaderPanel(
                 .appendSecondaryText(getLoadingErrorText(error), SimpleTextAttributes.ERROR_ATTRIBUTES, null)
 
             errorHandler?.getActionForError()?.let {
-                runListComponent.emptyText.appendSecondaryText(" ${it.getValue("Name")}", SimpleTextAttributes.LINK_PLAIN_ATTRIBUTES, it)
+                runListComponent.emptyText.appendSecondaryText(
+                    " ${it.getValue("Name")}",
+                    SimpleTextAttributes.LINK_PLAIN_ATTRIBUTES,
+                    it
+                )
             }
         }
 
@@ -316,9 +319,7 @@ internal class WorkflowRunListLoaderPanel(
                 installWorkflowRunSelectionSaver(it, context.runSelectionHolder)
             }
 
-            val listReloadAction = actionManager.getAction("Github.Workflow.List.Reload") as RefreshAction
-
-            return WorkflowRunListLoaderPanel(disposable, context.dataContext.runsListLoader, listReloadAction, list)
+            return WorkflowRunListLoaderPanel(disposable, context.dataContext.runsListLoader, list)
         }
 
         private fun getLoadingErrorText(error: Throwable, newLineSeparator: String = "\n"): String {

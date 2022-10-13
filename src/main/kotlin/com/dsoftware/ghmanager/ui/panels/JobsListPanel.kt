@@ -103,7 +103,7 @@ class JobList(model: ListModel<WorkflowRunJob>) : JBList<WorkflowRunJob>(model),
                     ""
                 else {
                     val duration = Duration.between(job.startedAt.toInstant(), job.completedAt.toInstant())
-                    "took ${duration.toMinutes()}:${duration.toSecondsPart()} "
+                    "took ${duration.toMinutes()}:${duration.toSecondsPart()} mins"
                 }
                 text = "Attempt #${job.runAttempt} at $startedAtLabel $took"
                 foreground = secondaryTextColor

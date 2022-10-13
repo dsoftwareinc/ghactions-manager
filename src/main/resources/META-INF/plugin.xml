@@ -26,15 +26,16 @@
         <action
             id="ShowGithubSettings"
             class="com.dsoftware.ghmanager.actions.ShowGithubSettingsAction"/>
-        <action
-            id="ShowGhActionsManagerSettings"
-            class="com.dsoftware.ghmanager.actions.ShowPluginSettingsAction"
-            icon="AllIcons.General.Settings"
-        />
+
         <group id="GHWorkflows.ActionGroup" popup="false">
             <action id="Github.Workflow.List.Reload"
                     class="com.dsoftware.ghmanager.actions.ReloadRunsListAction"
                     use-shortcut-of="Refresh"/>
+            <action
+                id="Github.Actions.Manager.Settings.Open"
+                class="com.dsoftware.ghmanager.actions.ShowPluginSettingsAction"
+                icon="AllIcons.General.Settings"
+            />
         </group>
 
         <group id="Github.Workflow.ToolWindow.List.Popup">

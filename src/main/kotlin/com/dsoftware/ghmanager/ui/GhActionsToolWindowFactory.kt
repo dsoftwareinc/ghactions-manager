@@ -117,7 +117,7 @@ class GhActionsToolWindowFactory : ToolWindowFactory {
                     "Go to GitHub-Actions-Manager settings",
                     SimpleTextAttributes.LINK_ATTRIBUTES,
                     ActionUtil.createActionListener(
-                        "ShowGhActionsManagerSettings",
+                        "Github.Actions.Manager.Settings.Open",
                         emptyTextPanel,
                         ActionPlaces.UNKNOWN
                     )
@@ -180,8 +180,8 @@ class GhActionsToolWindowFactory : ToolWindowFactory {
     ) =
         with(ghActionToolWindow) {
             val actionManager = ActionManager.getInstance()
-            toolWindow.setTitleActions(listOf(actionManager.getAction("ShowGhActionsManagerSettings")))
-            toolWindow.setAdditionalGearActions(DefaultActionGroup())
+//            toolWindow.setTitleActions(listOf(actionManager.getAction("Github.Actions.Manager.Settings.Open")))
+            toolWindow.setAdditionalGearActions(DefaultActionGroup(actionManager.getAction("Github.Actions.Manager.Settings.Open")))
             val dataContextRepository = WorkflowDataContextRepository.getInstance(project)
             knownRepositories
                 .filter { settingsService.state.customRepos[it.gitRemoteUrlCoordinates.url]?.included ?: false }
