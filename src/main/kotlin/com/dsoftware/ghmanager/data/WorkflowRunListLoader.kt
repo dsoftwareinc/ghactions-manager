@@ -10,6 +10,7 @@ import com.intellij.util.concurrency.AppExecutorUtil
 import org.jetbrains.plugins.github.api.GithubApiRequestExecutor
 import org.jetbrains.plugins.github.api.data.request.GithubRequestPagination
 import org.jetbrains.plugins.github.pullrequest.data.GHListLoaderBase
+import java.util.concurrent.ScheduledFuture
 import java.util.concurrent.TimeUnit
 
 class WorkflowRunListLoader(
@@ -21,13 +22,18 @@ class WorkflowRunListLoader(
     private val pageSize = 30
     private val page: Int = 1
     private val frequency: Long = 30
+    private val task: ScheduledFuture<*>
 
     init {
-
         val scheduler = AppExecutorUtil.getAppScheduledExecutorService()
-        scheduler.scheduleWithFixedDelay({
+        task = scheduler.scheduleWithFixedDelay({
             loadMore(update = true)
         }, 1, frequency, TimeUnit.SECONDS)
+    }
+
+    override fun dispose() {
+        super.dispose()
+        task.cancel(true)
     }
 
     override fun reset() {

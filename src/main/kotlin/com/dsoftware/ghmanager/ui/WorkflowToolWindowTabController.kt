@@ -52,7 +52,7 @@ class WorkflowToolWindowTabController(
     private val project: Project,
     repoSettings: GithubActionsManagerSettings.RepoSettings,
     repositoryMapping: GHGitRepositoryMapping,
-    ghAccount: GithubAccount,
+    private val ghAccount: GithubAccount,
     private val dataContextRepository: WorkflowDataContextRepository,
     private val tab: Content,
 ) {
@@ -98,10 +98,7 @@ class WorkflowToolWindowTabController(
             GithubBundle.message("cannot.load.data.from.github"),
             errorHandler,
         ).create { _, result ->
-            LOG.debug("create content")
-            val content = createContent(result, ghAccount, disposable)
-            LOG.debug("done creating content")
-
+            val content = createContent(result, disposable)
             content
         }
 
@@ -115,38 +112,18 @@ class WorkflowToolWindowTabController(
 
     private fun createContent(
         context: WorkflowRunDataContext,
-        account: GithubAccount,
         disposable: Disposable,
     ): JComponent {
         val runsSelectionHolder = WorkflowRunListSelectionHolder()
         val jobsSelectionHolder = JobListSelectionHolder()
-        val selectionContext = WorkflowRunSelectionContext(context, runsSelectionHolder, jobsSelectionHolder)
+        val selectedRunContext = WorkflowRunSelectionContext(context, runsSelectionHolder, jobsSelectionHolder)
 
-        val jobsdataProviderModel = createJobsDataProviderModel(context, runsSelectionHolder, disposable)
 
-        val (jobLoadingModel, jobModel) = createJobsLoadingModel(jobsdataProviderModel, disposable)
         val workflowRunsList = WorkflowRunListLoaderPanel
-            .createWorkflowRunsListComponent(selectionContext, disposable)
-        val errorHandler = GHApiLoadingErrorHandler(project, account) {
-        }
-        val jobLoadingPanel = GHLoadingPanelFactory(
-            jobLoadingModel,
-            "Select a workflow to show list of jobs",
-            GithubBundle.message("cannot.load.data.from.github"),
-            errorHandler
-        ).create { _, _ ->
-            createJobPanel(jobModel, selectionContext, settingsService.state)
-        }
-        val logsDataProviderModel = createLogsDataProviderModel(selectionContext, disposable)
-        val (logLoadingModel, logModel) = createLogLoadingModel(logsDataProviderModel, jobsSelectionHolder, disposable)
-        val logLoadingPanel = GHLoadingPanelFactory(
-            logLoadingModel,
-            "Select a job to show logs",
-            GithubBundle.message("cannot.load.data.from.github"),
-            errorHandler
-        ).create { _, _ ->
-            createLogPanel(logModel, disposable)
-        }
+            .createWorkflowRunsListComponent(selectedRunContext, disposable)
+        val jobLoadingPanel = createJobsPanel(context, selectedRunContext, disposable)
+
+        val logLoadingPanel = createLogPanel(selectedRunContext,disposable)
 
         val runPanel = OnePixelSplitter(
             settingsService.state.jobListAboveLogs,
@@ -176,52 +153,53 @@ class WorkflowToolWindowTabController(
         }.also {
             DataManager.registerDataProvider(it) { dataId ->
                 when {
-                    ActionKeys.ACTION_DATA_CONTEXT.`is`(dataId) -> selectionContext
+                    ActionKeys.ACTION_DATA_CONTEXT.`is`(dataId) -> selectedRunContext
                     else -> null
                 }
             }
         }
     }
 
-    private fun createJobPanel(
-        jobModel: SingleValueModel<WorkflowRunJobs?>,
-        selectionContext: WorkflowRunSelectionContext,
-        settings: GithubActionsManagerSettings
+
+    private fun createLogPanel(
+        selectedRunContext: WorkflowRunSelectionContext,
+        disposable: Disposable
     ): JComponent {
-        val jobListPanel = JobList.createJobsListComponent(
-            jobModel, selectionContext,
-            infoInNewLine = !settings.jobListAboveLogs,
+        val logsDataProviderModel = createLogsDataProviderModel(selectedRunContext, disposable)
+        val (logLoadingModel, logModel) = createLogLoadingModel(
+            logsDataProviderModel,
+            selectedRunContext.jobSelectionHolder,
+            disposable
         )
-
-        val panel = JBPanelWithEmptyText(BorderLayout()).apply {
-            isOpaque = false
-            add(jobListPanel, BorderLayout.CENTER)
-        }
-        return panel
-    }
-
-    private fun createLogPanel(logModel: SingleValueModel<String?>, disposable: Disposable): JComponent {
         LOG.debug("Create log panel")
         val console = LogConsolePanel(project, logModel, disposable)
-
-        val panel = JBPanelWithEmptyText(BorderLayout()).apply {
-            isOpaque = false
-            add(console.component, BorderLayout.CENTER)
+        val errorHandler = GHApiLoadingErrorHandler(project, ghAccount) {
         }
-        LOG.debug("Adding popup actions")
-        val actionGroup = actionManager.getAction("Github.Workflow.Log.ToolWindow.List.Popup") as DefaultActionGroup
-        actionGroup.removeAll()
-        actionGroup.add(actionManager.getAction("Github.Workflow.Log.List.Reload"))
-        actionGroup.add(
-            object : ToggleUseSoftWrapsToolbarAction(SoftWrapAppliancePlaces.CONSOLE) {
-                override fun getEditor(e: AnActionEvent): Editor? {
-                    return console.editor
-                }
+        val panel=GHLoadingPanelFactory(
+            logLoadingModel,
+            "Select a job to show logs",
+            GithubBundle.message("cannot.load.data.from.github"),
+            errorHandler
+        ).create { _, _ ->
+            val panel = JBPanelWithEmptyText(BorderLayout()).apply {
+                isOpaque = false
+                add(console.component, BorderLayout.CENTER)
             }
-        )
-        val contextMenuPopupHandler = ContextMenuPopupHandler.Simple(actionGroup)
-        (console.editor as EditorEx).installPopupHandler(contextMenuPopupHandler)
-
+            LOG.debug("Adding popup actions")
+            val actionGroup = actionManager.getAction("Github.Workflow.Log.ToolWindow.List.Popup") as DefaultActionGroup
+            actionGroup.removeAll()
+            actionGroup.add(actionManager.getAction("Github.Workflow.Log.List.Reload"))
+            actionGroup.add(
+                object : ToggleUseSoftWrapsToolbarAction(SoftWrapAppliancePlaces.CONSOLE) {
+                    override fun getEditor(e: AnActionEvent): Editor? {
+                        return console.editor
+                    }
+                }
+            )
+            val contextMenuPopupHandler = ContextMenuPopupHandler.Simple(actionGroup)
+            (console.editor as EditorEx).installPopupHandler(contextMenuPopupHandler)
+            panel
+        }
         return panel
     }
 
@@ -303,11 +281,42 @@ class WorkflowToolWindowTabController(
         return model
     }
 
+    private fun createJobsPanel(
+        context: WorkflowRunDataContext,
+        selectedRunContext: WorkflowRunSelectionContext,
+        disposable: Disposable,
+    ): JComponent {
+        val jobsdataProviderModel =
+            createJobsDataProviderModel(context, selectedRunContext.runSelectionHolder, disposable)
+        val (jobLoadingModel, jobModel) = createJobsLoadingModel(jobsdataProviderModel, disposable)
+
+        val errorHandler = GHApiLoadingErrorHandler(project, ghAccount) {
+        }
+        val jobLoadingPanel = GHLoadingPanelFactory(
+            jobLoadingModel,
+            "Select a workflow to show list of jobs",
+            GithubBundle.message("cannot.load.data.from.github"),
+            errorHandler
+        ).create { _, _ ->
+            val jobListPanel = JobList.createJobsListComponent(
+                jobModel, selectedRunContext,
+                infoInNewLine = !settingsService.state.jobListAboveLogs,
+            )
+
+            val panel = JBPanelWithEmptyText(BorderLayout()).apply {
+                isOpaque = false
+                add(jobListPanel, BorderLayout.CENTER)
+            }
+            panel
+        }
+        return jobLoadingPanel
+    }
+
     private fun createJobsLoadingModel(
         dataProviderModel: SingleValueModel<WorkflowRunJobsDataProvider?>,
         parentDisposable: Disposable,
     ): Pair<GHCompletableFutureLoadingModel<WorkflowRunJobs>, SingleValueModel<WorkflowRunJobs?>> {
-        LOG.debug("createJobsDataProviderModel Create log loading model")
+        LOG.debug("createJobsDataProviderModel Create jobs loading model")
         val valueModel = SingleValueModel<WorkflowRunJobs?>(null)
 
         val loadingModel = GHCompletableFutureLoadingModel<WorkflowRunJobs>(parentDisposable).also {

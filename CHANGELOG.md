@@ -6,6 +6,9 @@
 
 
 ## [1.5.0]
+### Added
+* Ability to change how often refresh of workflow runs is done
+* Refresh jobs of workflow run if still in progress
 ### Changed
 * Allowing job log to be beneath jobs list - configurable in plugin settings
 ### Fixed
