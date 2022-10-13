@@ -5,6 +5,12 @@
 ## [Unreleased]
 
 
+## [1.5.0]
+### Changed
+* Allowing job log to be beneath jobs list - configurable in plugin settings
+### Fixed
+* Showing logs of selected job once logs are loaded
+
 ## [1.4.0]
 ### Added
 * Refresh workflow runs status in the background
