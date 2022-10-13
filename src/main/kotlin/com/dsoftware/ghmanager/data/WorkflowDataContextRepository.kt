@@ -91,13 +91,13 @@ class WorkflowDataContextRepository {
 
     @RequiresEdt
     fun acquireContext(
-        project: Project,
+        disposable:Disposable,
         repository: GHRepositoryCoordinates, remote: GitRemoteUrlCoordinates,
         account: GithubAccount, requestExecutor: GithubApiRequestExecutor,
     ): CompletableFuture<WorkflowRunDataContext> {
         return repositories.getOrPut(repository) {
             val contextDisposable = Disposer.newDisposable("contextDisposable")
-            Disposer.register(project, contextDisposable)
+            Disposer.register(disposable, contextDisposable)
 
             LazyCancellableBackgroundProcessValue.create { indicator ->
                 ProgressManager.getInstance().submitIOTask(indicator) {

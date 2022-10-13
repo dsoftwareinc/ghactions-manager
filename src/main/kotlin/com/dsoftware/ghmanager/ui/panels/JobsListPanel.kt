@@ -6,6 +6,7 @@ import WorkflowRunJobs
 import com.dsoftware.ghmanager.actions.ActionKeys
 import com.dsoftware.ghmanager.ui.ToolbarUtil
 import com.dsoftware.ghmanager.workflow.JobListSelectionHolder
+import com.dsoftware.ghmanager.workflow.WorkflowRunSelectionContext
 import com.intellij.collaboration.ui.SingleValueModel
 import com.intellij.ide.CopyProvider
 import com.intellij.openapi.actionSystem.*
@@ -116,7 +117,7 @@ class JobList(model: ListModel<WorkflowRunJob>, private val infoInNewLine: Boole
 
         fun createJobsListComponent(
             jobModel: SingleValueModel<WorkflowRunJobs?>,
-            jobSelectionHolder: JobListSelectionHolder,
+            runSelectionContext: WorkflowRunSelectionContext,
             infoInNewLine:Boolean,
         ): JComponent {
             val list = CollectionListModel<WorkflowRunJob>()
@@ -140,7 +141,7 @@ class JobList(model: ListModel<WorkflowRunJob>, private val infoInNewLine: Boole
                     override fun focusLost(e: FocusEvent?) {}
                 })
                 installPopup(it)
-                installJobSelectionSaver(it, jobSelectionHolder)
+                installJobSelectionSaver(it, runSelectionContext.jobSelectionHolder)
             }
 
             return ScrollPaneFactory.createScrollPane(

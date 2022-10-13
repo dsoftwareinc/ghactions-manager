@@ -83,14 +83,14 @@ class WorkflowToolWindowTabController(
         }
 
         val loadingModel = GHCompletableFutureLoadingModel<WorkflowRunDataContext>(disposable).apply {
-            future = dataContextRepository.acquireContext(project, repository, remote, ghAccount, ghRequestExecutor)
+            future = dataContextRepository.acquireContext(disposable, repository, remote, ghAccount, ghRequestExecutor)
         }
 
         val errorHandler = GHApiLoadingErrorHandler(project, ghAccount) {
             val contextRepository = dataContextRepository
             contextRepository.clearContext(repository)
             loadingModel.future =
-                contextRepository.acquireContext(project, repository, remote, ghAccount, ghRequestExecutor)
+                contextRepository.acquireContext(disposable, repository, remote, ghAccount, ghRequestExecutor)
         }
         val panel = GHLoadingPanelFactory(
             loadingModel,
@@ -189,7 +189,7 @@ class WorkflowToolWindowTabController(
         settings: GithubActionsManagerSettings
     ): JComponent {
         val jobListPanel = JobList.createJobsListComponent(
-            jobModel, selectionContext.jobSelectionHolder,
+            jobModel, selectionContext,
             infoInNewLine = !settings.jobListAboveLogs,
         )
 
