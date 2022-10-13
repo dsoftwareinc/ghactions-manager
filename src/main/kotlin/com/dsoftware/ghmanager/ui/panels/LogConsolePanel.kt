@@ -55,9 +55,7 @@ class LogConsolePanel(
             }
         }
 
-        Disposer.register(disposable) {
-            Disposer.dispose(this)
-        }
+        Disposer.register(disposable, this)
     }
 
     private fun setData(message: String) {

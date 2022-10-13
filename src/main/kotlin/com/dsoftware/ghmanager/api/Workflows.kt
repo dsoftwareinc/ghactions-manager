@@ -2,7 +2,7 @@ package com.dsoftware.ghmanager.api
 
 import WorkflowRunJobs
 import com.dsoftware.ghmanager.api.model.GitHubWorkflowRuns
-import com.dsoftware.ghmanager.workflow.RepositoryCoordinates
+import com.dsoftware.ghmanager.data.RepositoryCoordinates
 import com.intellij.openapi.diagnostic.logger
 import org.jetbrains.plugins.github.api.GithubApiRequest
 import org.jetbrains.plugins.github.api.GithubApiRequest.Get.Companion.json

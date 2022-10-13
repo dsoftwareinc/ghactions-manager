@@ -12,10 +12,10 @@ import com.dsoftware.ghmanager.ui.panels.LogConsolePanel
 import com.dsoftware.ghmanager.ui.panels.WorkflowRunListLoaderPanel
 import com.dsoftware.ghmanager.ui.settings.GhActionsSettingsService
 import com.dsoftware.ghmanager.ui.settings.GithubActionsManagerSettings
-import com.dsoftware.ghmanager.workflow.JobListSelectionHolder
-import com.dsoftware.ghmanager.workflow.WorkflowRunDataContext
-import com.dsoftware.ghmanager.workflow.WorkflowRunListSelectionHolder
-import com.dsoftware.ghmanager.workflow.WorkflowRunSelectionContext
+import com.dsoftware.ghmanager.data.JobListSelectionHolder
+import com.dsoftware.ghmanager.data.WorkflowRunDataContext
+import com.dsoftware.ghmanager.data.WorkflowRunListSelectionHolder
+import com.dsoftware.ghmanager.data.WorkflowRunSelectionContext
 import com.intellij.collaboration.ui.SingleValueModel
 import com.intellij.ide.DataManager
 import com.intellij.ide.actions.RefreshAction
@@ -114,13 +114,11 @@ class WorkflowToolWindowTabController(
         context: WorkflowRunDataContext,
         disposable: Disposable,
     ): JComponent {
-        val runsSelectionHolder = WorkflowRunListSelectionHolder()
-        val jobsSelectionHolder = JobListSelectionHolder()
-        val selectedRunContext = WorkflowRunSelectionContext(context, runsSelectionHolder, jobsSelectionHolder)
-
+        val selectedRunContext = WorkflowRunSelectionContext(context)
 
         val workflowRunsList = WorkflowRunListLoaderPanel
             .createWorkflowRunsListComponent(selectedRunContext, disposable)
+
         val jobLoadingPanel = createJobsPanel(context, selectedRunContext, disposable)
 
         val logLoadingPanel = createLogPanel(selectedRunContext,disposable)

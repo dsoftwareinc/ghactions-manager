@@ -1,8 +1,6 @@
 package com.dsoftware.ghmanager.data
 
 import com.dsoftware.ghmanager.api.model.GitHubWorkflowRun
-import com.dsoftware.ghmanager.workflow.RepositoryCoordinates
-import com.dsoftware.ghmanager.workflow.WorkflowRunDataContext
 import com.dsoftware.ghmanager.workflow.data.WorkflowDataLoader
 import com.intellij.collaboration.async.CompletableFutureUtil.submitIOTask
 import com.intellij.collaboration.async.CompletableFutureUtil.successOnEdt

@@ -5,8 +5,8 @@ import WorkflowRunJob
 import WorkflowRunJobs
 import com.dsoftware.ghmanager.actions.ActionKeys
 import com.dsoftware.ghmanager.ui.ToolbarUtil
-import com.dsoftware.ghmanager.workflow.JobListSelectionHolder
-import com.dsoftware.ghmanager.workflow.WorkflowRunSelectionContext
+import com.dsoftware.ghmanager.data.JobListSelectionHolder
+import com.dsoftware.ghmanager.data.WorkflowRunSelectionContext
 import com.intellij.collaboration.ui.SingleValueModel
 import com.intellij.ide.CopyProvider
 import com.intellij.openapi.actionSystem.*

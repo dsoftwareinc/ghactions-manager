@@ -2,7 +2,6 @@ package com.dsoftware.ghmanager.data
 
 import com.dsoftware.ghmanager.api.Workflows
 import com.dsoftware.ghmanager.api.model.GitHubWorkflowRun
-import com.dsoftware.ghmanager.workflow.RepositoryCoordinates
 import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.progress.ProgressManager

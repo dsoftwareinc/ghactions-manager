@@ -6,10 +6,9 @@ import com.dsoftware.ghmanager.api.model.GitHubWorkflowRun
 import com.dsoftware.ghmanager.data.WorkflowRunListLoader
 import com.dsoftware.ghmanager.ui.LoadingErrorHandler
 import com.dsoftware.ghmanager.ui.ToolbarUtil
-import com.dsoftware.ghmanager.workflow.WorkflowRunListSelectionHolder
-import com.dsoftware.ghmanager.workflow.WorkflowRunSelectionContext
+import com.dsoftware.ghmanager.data.WorkflowRunListSelectionHolder
+import com.dsoftware.ghmanager.data.WorkflowRunSelectionContext
 import com.intellij.ide.CopyProvider
-import com.intellij.ide.actions.RefreshAction
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.actionSystem.*
 import com.intellij.openapi.application.ApplicationManager

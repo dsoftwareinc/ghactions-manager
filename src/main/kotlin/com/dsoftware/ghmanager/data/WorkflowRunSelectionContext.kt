@@ -1,10 +1,7 @@
-package com.dsoftware.ghmanager.workflow
+package com.dsoftware.ghmanager.data
 
 import WorkflowRunJob
 import com.dsoftware.ghmanager.api.model.GitHubWorkflowRun
-import com.dsoftware.ghmanager.data.WorkflowRunJobsDataProvider
-import com.dsoftware.ghmanager.data.WorkflowRunListLoader
-import com.dsoftware.ghmanager.data.WorkflowRunLogsDataProvider
 import com.dsoftware.ghmanager.workflow.data.WorkflowDataLoader
 import com.intellij.collaboration.ui.SimpleEventListener
 import com.intellij.openapi.Disposable
@@ -17,11 +14,9 @@ import javax.swing.ListModel
 import kotlin.properties.Delegates
 
 class WorkflowRunDataContext(
-//    val repositoryCoordinates: RepositoryCoordinates,
     val runsListModel: ListModel<GitHubWorkflowRun>,
     val dataLoader: WorkflowDataLoader,
     val runsListLoader: WorkflowRunListLoader,
-//    val account: GithubAccount
 ) : Disposable {
     override fun dispose() {
     }
@@ -56,8 +51,8 @@ class JobListSelectionHolder : ListSelectionHolder<WorkflowRunJob>()
 
 class WorkflowRunSelectionContext internal constructor(
     val dataContext: WorkflowRunDataContext,
-    val runSelectionHolder: WorkflowRunListSelectionHolder,
-    val jobSelectionHolder: JobListSelectionHolder,
+    val runSelectionHolder: WorkflowRunListSelectionHolder = WorkflowRunListSelectionHolder(),
+    val jobSelectionHolder: JobListSelectionHolder = JobListSelectionHolder(),
 ) {
     fun resetAllData() {
         LOG.debug("resetAllData")

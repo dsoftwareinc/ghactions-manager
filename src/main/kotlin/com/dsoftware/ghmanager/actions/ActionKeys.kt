@@ -2,7 +2,7 @@ package com.dsoftware.ghmanager.actions
 
 import WorkflowRunJob
 import com.dsoftware.ghmanager.api.model.GitHubWorkflowRun
-import com.dsoftware.ghmanager.workflow.WorkflowRunSelectionContext
+import com.dsoftware.ghmanager.data.WorkflowRunSelectionContext
 import com.intellij.openapi.actionSystem.DataKey
 
 object ActionKeys {
