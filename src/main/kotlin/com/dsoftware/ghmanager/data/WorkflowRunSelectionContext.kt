@@ -62,6 +62,7 @@ class WorkflowRunSelectionContext internal constructor(
     fun resetAllData() {
         LOG.debug("resetAllData")
         dataContext.runsListLoader.reset()
+        dataContext.runsListLoader.loadMore()
         dataContext.dataLoader.invalidateAllData()
     }
 
