@@ -60,24 +60,15 @@ class JobList(model: ListModel<WorkflowRunJob>) : JBList<WorkflowRunJob>(model),
         MigLayout(
             LC().gridGap("0", "0")
                 .insets("0", "0", "0", "0")
-                .fillX()
         )
     ) {
-
-        private val stateIcon = JLabel()
         private val title = JLabel()
         private val info = JLabel()
-        private val labels = JPanel().apply {
-            layout = BoxLayout(this, BoxLayout.X_AXIS)
-        }
 
         init {
             border = JBUI.Borders.empty(5, 8)
-            val gapAfter = "${JBUI.scale(5)}px"
-            add(stateIcon, CC().gapAfter(gapAfter))
-            add(title, CC().growX().pushX().minWidth("pref/2px"))
-            add(labels, CC().minWidth("pref/2px").alignX("right").wrap())
-            add(info, CC().minWidth("pref/2px").skip(1).spanX(3))
+            add(title, CC().growX().pushX().minWidth("pref/2px").maxWidth("pref/1px"))
+            add(info, CC().newline().minWidth("pref/2px").maxWidth("pref/1px"))
         }
 
         override fun getListCellRendererComponent(
@@ -105,7 +96,8 @@ class JobList(model: ListModel<WorkflowRunJob>) : JBList<WorkflowRunJob>(model),
                     val duration = Duration.between(job.startedAt.toInstant(), job.completedAt.toInstant())
                     "took ${duration.toMinutes()}:${duration.toSecondsPart()} mins"
                 }
-                text = "Attempt #${job.runAttempt} at $startedAtLabel $took"
+                val info = "Attempt #${job.runAttempt} at $startedAtLabel $took"
+                text = "<html>$info</html>"
                 foreground = secondaryTextColor
             }
             return this
@@ -113,17 +105,11 @@ class JobList(model: ListModel<WorkflowRunJob>) : JBList<WorkflowRunJob>(model),
     }
 
 
-    override fun performCopy(dataContext: DataContext) {
-        TODO("Not yet implemented")
-    }
+    override fun performCopy(dataContext: DataContext) = TODO("Not yet implemented")
 
-    override fun isCopyEnabled(dataContext: DataContext): Boolean {
-        return false
-    }
+    override fun isCopyEnabled(dataContext: DataContext): Boolean = false
 
-    override fun isCopyVisible(dataContext: DataContext): Boolean {
-        return false
-    }
+    override fun isCopyVisible(dataContext: DataContext): Boolean = false
 
     companion object {
         private val actionManager = ActionManager.getInstance()
