@@ -3,7 +3,7 @@ package com.dsoftware.ghmanager.ui
 import com.dsoftware.ghmanager.data.WorkflowDataContextRepository
 import com.dsoftware.ghmanager.ui.settings.GhActionsSettingsService
 import com.dsoftware.ghmanager.ui.settings.GhActionsManagerConfigurable
-import com.dsoftware.ghmanager.ui.settings.ToolbarSettings
+import com.dsoftware.ghmanager.ui.settings.GithubActionsManagerSettings
 import com.intellij.collaboration.auth.AccountsListener
 import com.intellij.openapi.actionSystem.ActionManager
 import com.intellij.openapi.actionSystem.ActionPlaces
@@ -60,7 +60,7 @@ class GhActionsToolWindowFactory : ToolWindowFactory {
                     ghActionToolWindow.knownRepositories.forEach { repo ->
                         settingsService.state.customRepos.putIfAbsent(
                             repo.gitRemoteUrlCoordinates.url,
-                            ToolbarSettings.RepoSettings()
+                            GithubActionsManagerSettings.RepoSettings()
                         )
                     }
                     createToolWindowContent(project, toolWindow)

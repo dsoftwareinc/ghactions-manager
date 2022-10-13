@@ -10,7 +10,8 @@ import com.dsoftware.ghmanager.data.WorkflowRunLogsDataProvider
 import com.dsoftware.ghmanager.ui.panels.JobList
 import com.dsoftware.ghmanager.ui.panels.LogConsolePanel
 import com.dsoftware.ghmanager.ui.panels.WorkflowRunListLoaderPanel
-import com.dsoftware.ghmanager.ui.settings.ToolbarSettings
+import com.dsoftware.ghmanager.ui.settings.GhActionsSettingsService
+import com.dsoftware.ghmanager.ui.settings.GithubActionsManagerSettings
 import com.dsoftware.ghmanager.workflow.JobListSelectionHolder
 import com.dsoftware.ghmanager.workflow.WorkflowRunDataContext
 import com.dsoftware.ghmanager.workflow.WorkflowRunListSelectionHolder
@@ -49,12 +50,13 @@ import kotlin.properties.Delegates
 
 class WorkflowToolWindowTabController(
     private val project: Project,
-    repoSettings: ToolbarSettings.RepoSettings,
+    repoSettings: GithubActionsManagerSettings.RepoSettings,
     repositoryMapping: GHGitRepositoryMapping,
     ghAccount: GithubAccount,
     private val dataContextRepository: WorkflowDataContextRepository,
     private val tab: Content,
 ) {
+    private val settingsService = GhActionsSettingsService.getInstance(project)
     private val actionManager = ActionManager.getInstance()
     private val mainPanel: JComponent
     private val ghRequestExecutor = GithubApiRequestExecutorManager.getInstance().getExecutor(ghAccount)
@@ -133,7 +135,7 @@ class WorkflowToolWindowTabController(
             GithubBundle.message("cannot.load.data.from.github"),
             errorHandler
         ).create { _, _ ->
-            createJobPanel(jobModel, selectionContext)
+            createJobPanel(jobModel, selectionContext, settingsService.state)
         }
         val logsDataProviderModel = createLogsDataProviderModel(selectionContext, disposable)
         val (logLoadingModel, logModel) = createLogLoadingModel(logsDataProviderModel, jobsSelectionHolder, disposable)
@@ -146,7 +148,11 @@ class WorkflowToolWindowTabController(
             createLogPanel(logModel, disposable)
         }
 
-        val runPanel = OnePixelSplitter("GitHub.Workflows.Component.Jobs", 0.5f).apply {
+        val runPanel = OnePixelSplitter(
+            settingsService.state.jobListAboveLogs,
+            "GitHub.Workflows.Component.Jobs",
+            if (settingsService.state.jobListAboveLogs) 0.3f else 0.5f
+        ).apply {
             background = UIUtil.getListBackground()
             isOpaque = true
             isFocusCycleRoot = true
@@ -179,19 +185,18 @@ class WorkflowToolWindowTabController(
 
     private fun createJobPanel(
         jobModel: SingleValueModel<WorkflowRunJobs?>,
-        selectionContext: WorkflowRunSelectionContext
+        selectionContext: WorkflowRunSelectionContext,
+        settings: GithubActionsManagerSettings
     ): JComponent {
-        val console = JobList.createJobsListComponent(
-            jobModel, selectionContext.jobSelectionHolder
+        val jobListPanel = JobList.createJobsListComponent(
+            jobModel, selectionContext.jobSelectionHolder,
+            infoInNewLine = !settings.jobListAboveLogs,
         )
 
         val panel = JBPanelWithEmptyText(BorderLayout()).apply {
             isOpaque = false
-            add(console, BorderLayout.CENTER)
+            add(jobListPanel, BorderLayout.CENTER)
         }
-        val actionGroup = actionManager.getAction("Github.Workflow.Log.ToolWindow.List.Popup") as DefaultActionGroup
-        actionGroup.removeAll()
-        actionGroup.add(actionManager.getAction("Github.Workflow.Log.List.Reload"))
         return panel
     }
 

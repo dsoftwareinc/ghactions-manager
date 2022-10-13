@@ -2,7 +2,7 @@
 package com.dsoftware.ghmanager.ui.settings
 
 import com.dsoftware.ghmanager.ui.ToolbarUtil
-import com.dsoftware.ghmanager.ui.settings.ToolbarSettings.RepoSettings
+import com.dsoftware.ghmanager.ui.settings.GithubActionsManagerSettings.RepoSettings
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.components.service
 import com.intellij.openapi.options.BoundConfigurable
@@ -31,6 +31,11 @@ internal class GhActionsManagerConfigurable internal constructor(
     override fun createPanel(): DialogPanel {
         val knownRepositories = repoManager.knownRepositories
         return panel {
+            row {
+                checkBox("Show jobs list above logs?")
+                    .comment("If this is unchecked, it will show side by side")
+                    .bindSelected(state::jobListAboveLogs, state::jobListAboveLogs::set)
+            }
             lateinit var projectRepos: Cell<JBCheckBox>
             row {
                 projectRepos = checkBox("Use custom repositories")
@@ -39,7 +44,7 @@ internal class GhActionsManagerConfigurable internal constructor(
             }
 
             group {
-                threeColumnsRow({ label("Repository") }, { label("Selected") }, {label("Custom tab name")})
+                threeColumnsRow({ label("Repository") }, { label("Selected") }, { label("Custom tab name") })
                 knownRepositories
                     .map { it.gitRemoteUrlCoordinates.url }
                     .forEach {

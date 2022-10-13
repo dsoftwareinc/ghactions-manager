@@ -13,6 +13,7 @@ import com.intellij.openapi.application.ApplicationManager
 import com.intellij.ui.*
 import com.intellij.ui.components.JBList
 import com.intellij.ui.components.JBPanel
+import com.intellij.util.applyIf
 import com.intellij.util.ui.JBUI
 import com.intellij.util.ui.ListUiUtil
 import com.intellij.util.ui.UIUtil
@@ -30,8 +31,7 @@ import javax.swing.event.ListDataListener
 import javax.swing.event.ListSelectionEvent
 
 
-class JobList(model: ListModel<WorkflowRunJob>) : JBList<WorkflowRunJob>(model), DataProvider,
-    CopyProvider {
+class JobList(model: ListModel<WorkflowRunJob>, private val infoInNewLine: Boolean) : JBList<WorkflowRunJob>(model), DataProvider, CopyProvider {
 
     init {
         selectionModel.selectionMode = ListSelectionModel.SINGLE_SELECTION
@@ -39,7 +39,6 @@ class JobList(model: ListModel<WorkflowRunJob>) : JBList<WorkflowRunJob>(model),
         val renderer = JobsListCellRenderer()
         cellRenderer = renderer
         putClientProperty(UIUtil.NOT_IN_HIERARCHY_COMPONENTS, listOf(renderer))
-
         ScrollingUtil.installActions(this)
     }
 
@@ -66,9 +65,10 @@ class JobList(model: ListModel<WorkflowRunJob>) : JBList<WorkflowRunJob>(model),
         private val info = JLabel()
 
         init {
+            val infoCC = CC().minWidth("pref/2px").maxWidth("pref/1px").applyIf(infoInNewLine){newline()}
             border = JBUI.Borders.empty(5, 8)
             add(title, CC().growX().pushX().minWidth("pref/2px").maxWidth("pref/1px"))
-            add(info, CC().newline().minWidth("pref/2px").maxWidth("pref/1px"))
+            add(info, infoCC)
         }
 
         override fun getListCellRendererComponent(
@@ -117,6 +117,7 @@ class JobList(model: ListModel<WorkflowRunJob>) : JBList<WorkflowRunJob>(model),
         fun createJobsListComponent(
             jobModel: SingleValueModel<WorkflowRunJobs?>,
             jobSelectionHolder: JobListSelectionHolder,
+            infoInNewLine:Boolean,
         ): JComponent {
             val list = CollectionListModel<WorkflowRunJob>()
             if (jobModel.value != null) {
@@ -128,7 +129,7 @@ class JobList(model: ListModel<WorkflowRunJob>) : JBList<WorkflowRunJob>(model),
                     list.add(jobModel.value!!.jobs)
                 }
             }
-            val listComponent = JobList(list).apply {
+            val listComponent = JobList(list, infoInNewLine).apply {
                 emptyText.clear()
             }.also {
                 it.addFocusListener(object : FocusListener {

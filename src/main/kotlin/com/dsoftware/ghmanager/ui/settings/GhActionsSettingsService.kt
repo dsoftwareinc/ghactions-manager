@@ -3,9 +3,10 @@ package com.dsoftware.ghmanager.ui.settings
 import com.intellij.openapi.components.*
 import com.intellij.openapi.project.Project
 
-data class ToolbarSettings(
+data class GithubActionsManagerSettings(
     var useCustomRepos: Boolean = true,
-    var customRepos: MutableMap<String, RepoSettings> = mutableMapOf()
+    var customRepos: MutableMap<String, RepoSettings> = mutableMapOf(),
+    var jobListAboveLogs: Boolean = true,
 ) {
     data class RepoSettings(
         var included: Boolean = true,
@@ -21,14 +22,14 @@ data class ToolbarSettings(
     ],
     reportStatistic = false,
 )
-class GhActionsSettingsService : PersistentStateComponent<ToolbarSettings> {
-    private var state = ToolbarSettings()
+class GhActionsSettingsService : PersistentStateComponent<GithubActionsManagerSettings> {
+    private var state = GithubActionsManagerSettings()
 
-    override fun getState(): ToolbarSettings {
+    override fun getState(): GithubActionsManagerSettings {
         return state
     }
 
-    override fun loadState(state: ToolbarSettings) {
+    override fun loadState(state: GithubActionsManagerSettings) {
         this.state = state
     }
 
