@@ -104,7 +104,7 @@ class WorkflowToolWindowTabController(
         context: WorkflowRunDataContext,
         disposable: Disposable,
     ): JComponent {
-        val selectedRunContext = WorkflowRunSelectionContext(context)
+        val selectedRunContext = WorkflowRunSelectionContext(disposable, context)
 
         val workflowRunsList = WorkflowRunListLoaderPanel
             .createWorkflowRunsListComponent(selectedRunContext, disposable)
@@ -234,49 +234,12 @@ class WorkflowToolWindowTabController(
         return model
     }
 
-    private fun createJobsDataProviderModel(
-        context: WorkflowRunDataContext,
-        runsSelectionHolder: WorkflowRunListSelectionHolder,
-        parentDisposable: Disposable,
-    ): SingleValueModel<WorkflowRunJobsDataProvider?> {
-        val model: SingleValueModel<WorkflowRunJobsDataProvider?> = SingleValueModel(null)
-
-        fun setNewProvider(provider: WorkflowRunJobsDataProvider?) {
-            LOG.debug("createJobsDataProviderModel setNewProvider")
-            val oldValue = model.value
-            if (oldValue != null && provider != null && oldValue.url() != provider.url()) {
-                model.value = null
-            }
-            model.value = provider
-        }
-        Disposer.register(parentDisposable) {
-            model.value = null
-        }
-
-        runsSelectionHolder.addSelectionChangeListener(parentDisposable) {
-            LOG.debug("createJobsDataProviderModel selection change listener")
-            val provider = runsSelectionHolder.selection?.let { context.dataLoader.getJobsDataProvider(it.jobs_url) }
-            setNewProvider(provider)
-        }
-
-        context.dataLoader.addInvalidationListener(parentDisposable) {
-            LOG.debug("invalidation listener")
-            val selection = runsSelectionHolder.selection
-            if (selection != null && selection.logs_url == it) {
-                setNewProvider(context.dataLoader.getJobsDataProvider(selection.jobs_url))
-            }
-        }
-
-        return model
-    }
-
     private fun createJobsPanel(
         context: WorkflowRunDataContext,
         selectedRunContext: WorkflowRunSelectionContext,
         disposable: Disposable,
     ): JComponent {
-        val jobsdataProviderModel =
-            createJobsDataProviderModel(context, selectedRunContext.runSelectionHolder, disposable)
+        val jobsdataProviderModel = selectedRunContext.jobDataProviderModel
         val (jobLoadingModel, jobModel) = createJobsLoadingModel(jobsdataProviderModel, disposable)
 
         val errorHandler = GHApiLoadingErrorHandler(project, ghAccount) {

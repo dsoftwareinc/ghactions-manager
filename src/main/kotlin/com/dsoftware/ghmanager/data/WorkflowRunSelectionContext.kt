@@ -4,6 +4,7 @@ import WorkflowRunJob
 import com.dsoftware.ghmanager.api.model.GitHubWorkflowRun
 import com.dsoftware.ghmanager.workflow.data.WorkflowDataLoader
 import com.intellij.collaboration.ui.SimpleEventListener
+import com.intellij.collaboration.ui.SingleValueModel
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.diagnostic.logger
 import com.intellij.util.EventDispatcher
@@ -50,10 +51,32 @@ class JobListSelectionHolder : ListSelectionHolder<WorkflowRunJob>()
 
 
 class WorkflowRunSelectionContext internal constructor(
+    parentDisposable: Disposable,
     val dataContext: WorkflowRunDataContext,
     val runSelectionHolder: WorkflowRunListSelectionHolder = WorkflowRunListSelectionHolder(),
     val jobSelectionHolder: JobListSelectionHolder = JobListSelectionHolder(),
 ) {
+    val jobDataProviderModel: SingleValueModel<WorkflowRunJobsDataProvider?> = SingleValueModel(null)
+
+    init {
+        runSelectionHolder.addSelectionChangeListener(parentDisposable) {
+            LOG.debug("runSelectionHolder selection change listener")
+            setNewProvider()
+        }
+        dataContext.dataLoader.addInvalidationListener(parentDisposable) {
+            LOG.debug("invalidation listener")
+            setNewProvider()
+        }
+    }
+
+    private fun setNewProvider() {
+        val oldValue = jobDataProviderModel.value
+        if (oldValue != null && jobsDataProvider != null && oldValue.url() != jobsDataProvider?.url()) {
+            jobDataProviderModel.value = null
+        }
+        jobDataProviderModel.value = jobsDataProvider
+    }
+
     fun resetAllData() {
         LOG.debug("resetAllData")
         dataContext.runsListLoader.reset()
@@ -61,7 +84,7 @@ class WorkflowRunSelectionContext internal constructor(
         dataContext.dataLoader.invalidateAllData()
     }
 
-    val workflowRun: GitHubWorkflowRun?
+    private val workflowRun: GitHubWorkflowRun?
         get() = runSelectionHolder.selection
 
     val logsDataProvider: WorkflowRunLogsDataProvider?
