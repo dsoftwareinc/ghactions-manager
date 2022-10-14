@@ -22,7 +22,7 @@ abstract class DataProvider<T>(
     private val githubApiRequest: GithubApiRequest<T>,
     private val errorValue: T?,
 ) {
-    private val runChangesEventDispatcher = EventDispatcher.create(WorkflowRunChangedListener::class.java)
+    private val runChangesEventDispatcher = EventDispatcher.create(DataProviderChangeListener::class.java)
 
     protected val value: LazyCancellableBackgroundProcessValue<T> = backingValue {
         try {
@@ -56,10 +56,10 @@ abstract class DataProvider<T>(
             supplier(it)
         }
 
-    fun addRunChangesListener(disposable: Disposable, listener: WorkflowRunChangedListener) =
+    fun addRunChangesListener(disposable: Disposable, listener: DataProviderChangeListener) =
         runChangesEventDispatcher.addListener(listener, disposable)
 
-    interface WorkflowRunChangedListener : EventListener {
+    interface DataProviderChangeListener : EventListener {
         fun changed() {}
     }
 

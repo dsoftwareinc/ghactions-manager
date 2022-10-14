@@ -56,6 +56,7 @@ class WorkflowToolWindowTabController(
         if (oldValue != null) Disposer.dispose(oldValue)
         if (newValue != null) Disposer.register(tab.disposer!!, newValue)
     }
+    private val disposable = Disposer.newDisposable()
 
     init {
         tab.displayName =
@@ -65,7 +66,6 @@ class WorkflowToolWindowTabController(
         val repository = repositoryMapping.ghRepositoryCoordinates
         val remote = repositoryMapping.gitRemoteUrlCoordinates
 
-        val disposable = Disposer.newDisposable()
         contentDisposable = Disposable {
             Disposer.dispose(disposable)
             dataContextRepository.clearContext(repository)
@@ -87,7 +87,7 @@ class WorkflowToolWindowTabController(
             GithubBundle.message("cannot.load.data.from.github"),
             errorHandler,
         ).create { _, result ->
-            val content = createContent(result, disposable)
+            val content = createContent(result)
             content
         }
         tab.component.apply {
@@ -102,16 +102,15 @@ class WorkflowToolWindowTabController(
 
     private fun createContent(
         context: WorkflowRunDataContext,
-        disposable: Disposable,
     ): JComponent {
         val selectedRunContext = WorkflowRunSelectionContext(disposable, context)
 
         val workflowRunsList = WorkflowRunListLoaderPanel
             .createWorkflowRunsListComponent(selectedRunContext, disposable)
 
-        val jobLoadingPanel = createJobsPanel(context, selectedRunContext, disposable)
+        val jobLoadingPanel = createJobsPanel(selectedRunContext)
 
-        val logLoadingPanel = createLogPanel(selectedRunContext, disposable)
+        val logLoadingPanel = createLogPanel(selectedRunContext)
 
         val runPanel = OnePixelSplitter(
             settingsService.state.jobListAboveLogs,
@@ -149,15 +148,10 @@ class WorkflowToolWindowTabController(
     }
 
 
-    private fun createLogPanel(
-        selectedRunContext: WorkflowRunSelectionContext,
-        disposable: Disposable
-    ): JComponent {
-        val logsDataProviderModel = createLogsDataProviderModel(selectedRunContext, disposable)
+    private fun createLogPanel(selectedRunContext: WorkflowRunSelectionContext): JComponent {
         val (logLoadingModel, logModel) = createLogLoadingModel(
-            logsDataProviderModel,
-            selectedRunContext.jobSelectionHolder,
-            disposable
+            selectedRunContext.logDataProviderModel,
+            selectedRunContext.jobSelectionHolder
         )
         LOG.debug("Create log panel")
         val console = LogConsolePanel(project, logModel, disposable)
@@ -192,55 +186,8 @@ class WorkflowToolWindowTabController(
         return panel
     }
 
-    private fun createLogsDataProviderModel(
-        context: WorkflowRunSelectionContext,
-        parentDisposable: Disposable,
-    ): SingleValueModel<WorkflowRunLogsDataProvider?> {
-        val model: SingleValueModel<WorkflowRunLogsDataProvider?> = SingleValueModel(null)
-
-        fun setNewProvider(provider: WorkflowRunLogsDataProvider?) {
-            val oldValue = model.value
-            if (oldValue != null && provider != null && oldValue.url() != provider.url()) {
-                model.value = null
-            }
-            model.value = provider
-        }
-        Disposer.register(parentDisposable) {
-            model.value = null
-        }
-
-        context.runSelectionHolder.addSelectionChangeListener(parentDisposable) {
-            LOG.debug("selection change listener")
-            val provider = context.runSelectionHolder.selection?.let {
-                context.dataContext.dataLoader.getLogsDataProvider(it.logs_url)
-            }
-            setNewProvider(provider)
-        }
-        context.jobSelectionHolder.addSelectionChangeListener(parentDisposable) {
-            val provider = context.runSelectionHolder.selection?.let {
-                context.dataContext.dataLoader.getLogsDataProvider(it.logs_url)
-            }
-            setNewProvider(provider)
-        }
-
-        context.dataContext.dataLoader.addInvalidationListener(parentDisposable) {
-            LOG.debug("invalidation listener")
-            val selection = context.runSelectionHolder.selection
-            if (selection != null && selection.logs_url == it) {
-                setNewProvider(context.dataContext.dataLoader.getLogsDataProvider(selection.logs_url))
-            }
-        }
-
-        return model
-    }
-
-    private fun createJobsPanel(
-        context: WorkflowRunDataContext,
-        selectedRunContext: WorkflowRunSelectionContext,
-        disposable: Disposable,
-    ): JComponent {
-        val jobsdataProviderModel = selectedRunContext.jobDataProviderModel
-        val (jobLoadingModel, jobModel) = createJobsLoadingModel(jobsdataProviderModel, disposable)
+    private fun createJobsPanel(selectedRunContext: WorkflowRunSelectionContext): JComponent {
+        val (jobLoadingModel, jobModel) = createJobsLoadingModel(selectedRunContext.jobDataProviderModel)
 
         val errorHandler = GHApiLoadingErrorHandler(project, ghAccount) {
         }
@@ -266,12 +213,11 @@ class WorkflowToolWindowTabController(
 
     private fun createJobsLoadingModel(
         dataProviderModel: SingleValueModel<WorkflowRunJobsDataProvider?>,
-        parentDisposable: Disposable,
     ): Pair<GHCompletableFutureLoadingModel<WorkflowRunJobs>, SingleValueModel<WorkflowRunJobs?>> {
         LOG.debug("createJobsDataProviderModel Create jobs loading model")
         val valueModel = SingleValueModel<WorkflowRunJobs?>(null)
 
-        val loadingModel = GHCompletableFutureLoadingModel<WorkflowRunJobs>(parentDisposable).also {
+        val loadingModel = GHCompletableFutureLoadingModel<WorkflowRunJobs>(disposable).also {
             it.addStateChangeListener(object : GHLoadingModel.StateChangeListener {
                 override fun onLoadingCompleted() {
                     if (it.resultAvailable) {
@@ -300,10 +246,10 @@ class WorkflowToolWindowTabController(
 
             if (provider != null) {
                 val disposable = Disposer.newDisposable().apply {
-                    Disposer.register(parentDisposable, this)
+                    Disposer.register(disposable, this)
                 }
                 provider.addRunChangesListener(disposable,
-                    object : DataProvider.WorkflowRunChangedListener {
+                    object : DataProvider.DataProviderChangeListener {
                         override fun changed() {
                             loadingModel.future = provider.request
                         }
@@ -318,7 +264,6 @@ class WorkflowToolWindowTabController(
     private fun createLogLoadingModel(
         dataProviderModel: SingleValueModel<WorkflowRunLogsDataProvider?>,
         jobsSelectionHolder: JobListSelectionHolder,
-        parentDisposable: Disposable,
     ): Pair<GHCompletableFutureLoadingModel<Map<String, String>>, SingleValueModel<String?>> {
         LOG.debug("Create log loading model")
         val valueModel = SingleValueModel<String?>(null)
@@ -328,7 +273,7 @@ class WorkflowToolWindowTabController(
             return jobName?.replace("<", "")?.replace(">", "")?.trim()
         }
 
-        val loadingModel = GHCompletableFutureLoadingModel<Map<String, String>>(parentDisposable).also {
+        val loadingModel = GHCompletableFutureLoadingModel<Map<String, String>>(disposable).also {
             it.addStateChangeListener(object : GHLoadingModel.StateChangeListener {
                 override fun onLoadingCompleted() {
                     if (it.resultAvailable) {
@@ -351,7 +296,7 @@ class WorkflowToolWindowTabController(
                 }
             })
         }
-        jobsSelectionHolder.addSelectionChangeListener(parentDisposable) {
+        jobsSelectionHolder.addSelectionChangeListener(disposable) {
             valueModel.value = if (loadingModel.result?.isEmpty() == true) {
                 NO_LOGS_MSG
             } else {
@@ -372,10 +317,10 @@ class WorkflowToolWindowTabController(
 
             if (provider != null) {
                 val disposable = Disposer.newDisposable().apply {
-                    Disposer.register(parentDisposable, this)
+                    Disposer.register(disposable, this)
                 }
                 provider.addRunChangesListener(disposable,
-                    object : DataProvider.WorkflowRunChangedListener {
+                    object : DataProvider.DataProviderChangeListener {
                         override fun changed() {
                             LOG.debug("Log changed ${provider.request}")
                             loadingModel.future = provider.request

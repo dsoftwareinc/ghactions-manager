@@ -57,24 +57,35 @@ class WorkflowRunSelectionContext internal constructor(
     val jobSelectionHolder: JobListSelectionHolder = JobListSelectionHolder(),
 ) {
     val jobDataProviderModel: SingleValueModel<WorkflowRunJobsDataProvider?> = SingleValueModel(null)
+    val logDataProviderModel: SingleValueModel<WorkflowRunLogsDataProvider?> = SingleValueModel(null)
 
     init {
         runSelectionHolder.addSelectionChangeListener(parentDisposable) {
             LOG.debug("runSelectionHolder selection change listener")
-            setNewProvider()
+            setNewJobsProvider()
+            setNewLogProvider()
         }
         dataContext.dataLoader.addInvalidationListener(parentDisposable) {
             LOG.debug("invalidation listener")
-            setNewProvider()
+            setNewJobsProvider()
+            setNewLogProvider()
         }
+
     }
 
-    private fun setNewProvider() {
-        val oldValue = jobDataProviderModel.value
-        if (oldValue != null && jobsDataProvider != null && oldValue.url() != jobsDataProvider?.url()) {
+    private fun setNewJobsProvider() {
+        val oldJobDataProviderModelValue = jobDataProviderModel.value
+        if (oldJobDataProviderModelValue != null && jobsDataProvider != null && oldJobDataProviderModelValue.url() != jobsDataProvider?.url()) {
             jobDataProviderModel.value = null
         }
         jobDataProviderModel.value = jobsDataProvider
+    }
+    private fun setNewLogProvider() {
+        val oldValue = logDataProviderModel.value
+        if (oldValue != null && logsDataProvider != null && oldValue.url() != logsDataProvider?.url()) {
+            logDataProviderModel.value = null
+        }
+        logDataProviderModel.value = logsDataProvider
     }
 
     fun resetAllData() {
