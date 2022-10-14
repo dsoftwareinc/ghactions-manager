@@ -30,6 +30,7 @@ object ToolbarUtil {
                     "success" -> AllIcons.Actions.Commit
                     "failure" -> Icons.X
                     "cancelled" -> AllIcons.Actions.Cancel
+                    "skipped" -> Icons.Skipped
                     else -> Icons.PrimitiveDot
                 }
             }

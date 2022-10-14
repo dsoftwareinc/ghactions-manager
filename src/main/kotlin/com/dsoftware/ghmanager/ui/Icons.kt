@@ -28,4 +28,7 @@ object Icons {
 
     @JvmField
     val X = load("/icons/x.svg")
+
+    @JvmField
+    val Skipped = load("/icons/skipped.svg")
 }
