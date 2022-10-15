@@ -14,10 +14,6 @@ import java.util.zip.ZipInputStream
 class GetRunLogRequest(url: String) : GithubApiRequest.Get<Map<String, String>>(url) {
     private lateinit var workflowInfo: Map<String, Map<String, String>>
 
-    init {
-        LOG.info("GetRunLogRequest ${url}")
-    }
-
     override fun extractResult(response: GithubApiResponse): Map<String, String> {
         LOG.debug("extracting result for $url")
         return response.handleBody {

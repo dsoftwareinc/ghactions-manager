@@ -71,7 +71,7 @@ class WorkflowToolWindowTabController(
             dataContextRepository.clearContext(repository)
         }
 
-        val loadingModel = GHCompletableFutureLoadingModel<WorkflowRunDataContext>(disposable).apply {
+        val loadingModel = GHCompletableFutureLoadingModel<WorkflowRunSelectionContext>(disposable).apply {
             future = dataContextRepository.acquireContext(disposable, repository, remote, ghAccount, ghRequestExecutor)
         }
 
@@ -101,9 +101,8 @@ class WorkflowToolWindowTabController(
     }
 
     private fun createContent(
-        context: WorkflowRunDataContext,
+        selectedRunContext: WorkflowRunSelectionContext,
     ): JComponent {
-        val selectedRunContext = WorkflowRunSelectionContext(disposable, context)
 
         val workflowRunsList = WorkflowRunListLoaderPanel
             .createWorkflowRunsListComponent(selectedRunContext, disposable)
@@ -150,7 +149,7 @@ class WorkflowToolWindowTabController(
 
     private fun createLogPanel(selectedRunContext: WorkflowRunSelectionContext): JComponent {
         val (logLoadingModel, logModel) = createLogLoadingModel(
-            selectedRunContext.logDataProviderModel,
+            selectedRunContext.logDataProviderLoadModel,
             selectedRunContext.jobSelectionHolder
         )
         LOG.debug("Create log panel")
@@ -187,7 +186,7 @@ class WorkflowToolWindowTabController(
     }
 
     private fun createJobsPanel(selectedRunContext: WorkflowRunSelectionContext): JComponent {
-        val (jobLoadingModel, jobModel) = createJobsLoadingModel(selectedRunContext.jobDataProviderModel)
+        val (jobLoadingModel, jobModel) = createJobsLoadingModel(selectedRunContext.jobDataProviderLoadModel)
 
         val errorHandler = GHApiLoadingErrorHandler(project, ghAccount) {
         }

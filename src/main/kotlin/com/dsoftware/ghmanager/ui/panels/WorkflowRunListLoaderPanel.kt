@@ -303,7 +303,7 @@ internal class WorkflowRunListLoaderPanel(
             context: WorkflowRunSelectionContext,
             disposable: Disposable,
         ): JComponent {
-            val list = WorkflowRunList(context.dataContext.runsListModel).apply {
+            val list = WorkflowRunList(context.runsListModel).apply {
                 emptyText.clear()
             }.also {
                 it.addFocusListener(object : FocusListener {
@@ -318,7 +318,7 @@ internal class WorkflowRunListLoaderPanel(
                 installWorkflowRunSelectionSaver(it, context.runSelectionHolder)
             }
 
-            return WorkflowRunListLoaderPanel(disposable, context.dataContext.runsListLoader, list)
+            return WorkflowRunListLoaderPanel(disposable, context.runsListLoader, list)
         }
 
         private fun getLoadingErrorText(error: Throwable, newLineSeparator: String = "\n"): String {

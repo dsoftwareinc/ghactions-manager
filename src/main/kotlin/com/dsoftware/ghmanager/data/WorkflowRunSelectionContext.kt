@@ -2,26 +2,90 @@ package com.dsoftware.ghmanager.data
 
 import WorkflowRunJob
 import com.dsoftware.ghmanager.api.model.GitHubWorkflowRun
-import com.dsoftware.ghmanager.workflow.data.WorkflowDataLoader
+import com.google.common.cache.CacheBuilder
 import com.intellij.collaboration.ui.SimpleEventListener
 import com.intellij.collaboration.ui.SingleValueModel
 import com.intellij.openapi.Disposable
+import com.intellij.openapi.application.runInEdt
 import com.intellij.openapi.diagnostic.logger
+import com.intellij.openapi.progress.ProgressManager
 import com.intellij.util.EventDispatcher
+import com.intellij.util.concurrency.AppExecutorUtil
 import com.intellij.util.concurrency.annotations.RequiresEdt
 import org.jetbrains.plugins.github.api.GHRepositoryPath
+import org.jetbrains.plugins.github.api.GithubApiRequest
+import org.jetbrains.plugins.github.api.GithubApiRequestExecutor
 import org.jetbrains.plugins.github.api.GithubServerPath
+import java.util.EventListener
+import java.util.concurrent.TimeUnit
 import javax.swing.ListModel
 import kotlin.properties.Delegates
 
-class WorkflowRunDataContext(
-    val runsListModel: ListModel<GitHubWorkflowRun>,
-    val dataLoader: WorkflowDataLoader,
-    val runsListLoader: WorkflowRunListLoader,
+
+class WorkflowDataLoader(
+    private val requestExecutor: GithubApiRequestExecutor
 ) : Disposable {
-    override fun dispose() {
+
+    private var isDisposed = false
+    private val cache = CacheBuilder.newBuilder()
+        .removalListener<String, DataProvider<*>> {
+            runInEdt { invalidationEventDispatcher.multicaster.providerChanged(it.key!!) }
+        }
+        .maximumSize(200)
+        .build<String, DataProvider<*>>()
+
+
+    private val invalidationEventDispatcher = EventDispatcher.create(DataInvalidatedListener::class.java)
+
+    fun getLogsDataProvider(workflowRun: GitHubWorkflowRun): WorkflowRunLogsDataProvider {
+        if (isDisposed) throw IllegalStateException("Already disposed")
+
+        return cache.get(workflowRun.logs_url) {
+            WorkflowRunLogsDataProvider(progressManager, requestExecutor, workflowRun.logs_url)
+        } as WorkflowRunLogsDataProvider
+
     }
 
+    fun getJobsDataProvider(workflowRun: GitHubWorkflowRun): WorkflowRunJobsDataProvider {
+        if (isDisposed) throw IllegalStateException("Already disposed")
+
+        return cache.get(workflowRun.jobs_url) {
+            WorkflowRunJobsDataProvider(progressManager, requestExecutor, workflowRun.jobs_url)
+        } as WorkflowRunJobsDataProvider
+    }
+
+    fun <T> createDataProvider(request: GithubApiRequest<T>): DataProvider<T> {
+        if (isDisposed) throw IllegalStateException("Already disposed")
+        return DefaultDataProvider(progressManager, requestExecutor, request)
+    }
+
+    @RequiresEdt
+    fun invalidateAllData() {
+        LOG.debug("All cache invalidated")
+        cache.invalidateAll()
+    }
+
+    private interface DataInvalidatedListener : EventListener {
+        fun providerChanged(url: String)
+    }
+
+    fun addInvalidationListener(disposable: Disposable, listener: (String) -> Unit) =
+        invalidationEventDispatcher.addListener(object : DataInvalidatedListener {
+            override fun providerChanged(url: String) {
+                listener(url)
+            }
+        }, disposable)
+
+    override fun dispose() {
+        LOG.debug("Disposing...")
+        invalidateAllData()
+        isDisposed = true
+    }
+
+    companion object {
+        private val LOG = logger<WorkflowDataLoader>()
+        private val progressManager = ProgressManager.getInstance()
+    }
 }
 
 data class RepositoryCoordinates(val serverPath: GithubServerPath, val repositoryPath: GHRepositoryPath) {
@@ -52,12 +116,14 @@ class JobListSelectionHolder : ListSelectionHolder<WorkflowRunJob>()
 
 class WorkflowRunSelectionContext internal constructor(
     parentDisposable: Disposable,
-    val dataContext: WorkflowRunDataContext,
+    val runsListModel: ListModel<GitHubWorkflowRun>,
+    val dataLoader: WorkflowDataLoader,
+    val runsListLoader: WorkflowRunListLoader,
     val runSelectionHolder: WorkflowRunListSelectionHolder = WorkflowRunListSelectionHolder(),
     val jobSelectionHolder: JobListSelectionHolder = JobListSelectionHolder(),
-) {
-    val jobDataProviderModel: SingleValueModel<WorkflowRunJobsDataProvider?> = SingleValueModel(null)
-    val logDataProviderModel: SingleValueModel<WorkflowRunLogsDataProvider?> = SingleValueModel(null)
+) : Disposable {
+    val jobDataProviderLoadModel: SingleValueModel<WorkflowRunJobsDataProvider?> = SingleValueModel(null)
+    val logDataProviderLoadModel: SingleValueModel<WorkflowRunLogsDataProvider?> = SingleValueModel(null)
 
     init {
         runSelectionHolder.addSelectionChangeListener(parentDisposable) {
@@ -65,45 +131,56 @@ class WorkflowRunSelectionContext internal constructor(
             setNewJobsProvider()
             setNewLogProvider()
         }
-        dataContext.dataLoader.addInvalidationListener(parentDisposable) {
+        dataLoader.addInvalidationListener(parentDisposable) {
             LOG.debug("invalidation listener")
             setNewJobsProvider()
             setNewLogProvider()
         }
-
+        val scheduler = AppExecutorUtil.getAppScheduledExecutorService()
+        scheduler.scheduleWithFixedDelay({
+            if (workflowRun?.status == "in_progress") {
+                jobsDataProvider?.reload()
+                logsDataProvider?.reload()
+            }
+        }, 1, frequency, TimeUnit.SECONDS)
     }
 
     private fun setNewJobsProvider() {
-        val oldJobDataProviderModelValue = jobDataProviderModel.value
+        val oldJobDataProviderModelValue = jobDataProviderLoadModel.value
         if (oldJobDataProviderModelValue != null && jobsDataProvider != null && oldJobDataProviderModelValue.url() != jobsDataProvider?.url()) {
-            jobDataProviderModel.value = null
+            jobDataProviderLoadModel.value = null
         }
-        jobDataProviderModel.value = jobsDataProvider
+        jobDataProviderLoadModel.value = jobsDataProvider
     }
+
     private fun setNewLogProvider() {
-        val oldValue = logDataProviderModel.value
+        val oldValue = logDataProviderLoadModel.value
         if (oldValue != null && logsDataProvider != null && oldValue.url() != logsDataProvider?.url()) {
-            logDataProviderModel.value = null
+            logDataProviderLoadModel.value = null
         }
-        logDataProviderModel.value = logsDataProvider
+        logDataProviderLoadModel.value = logsDataProvider
     }
 
     fun resetAllData() {
         LOG.debug("resetAllData")
-        dataContext.runsListLoader.reset()
-        dataContext.runsListLoader.loadMore()
-        dataContext.dataLoader.invalidateAllData()
+        runsListLoader.reset()
+        runsListLoader.loadMore()
+        dataLoader.invalidateAllData()
     }
 
     private val workflowRun: GitHubWorkflowRun?
         get() = runSelectionHolder.selection
 
     val logsDataProvider: WorkflowRunLogsDataProvider?
-        get() = workflowRun?.let { dataContext.dataLoader.getLogsDataProvider(it.logs_url) }
+        get() = workflowRun?.let { dataLoader.getLogsDataProvider(it) }
     val jobsDataProvider: WorkflowRunJobsDataProvider?
-        get() = workflowRun?.let { dataContext.dataLoader.getJobsDataProvider(it.jobs_url) }
+        get() = workflowRun?.let { dataLoader.getJobsDataProvider(it) }
 
     companion object {
         private val LOG = logger<WorkflowRunSelectionContext>()
+        private const val frequency: Long = 30
+    }
+
+    override fun dispose() {
     }
 }

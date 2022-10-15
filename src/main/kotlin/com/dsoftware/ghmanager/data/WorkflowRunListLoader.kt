@@ -20,7 +20,7 @@ class WorkflowRunListLoader(
     var totalCount: Int = 1
     private val pageSize = 30
     private val page: Int = 1
-    private val frequency: Long = 30
+
     private val task: ScheduledFuture<*>
 
     init {
@@ -53,11 +53,11 @@ class WorkflowRunListLoader(
         totalCount = response.total_count
         val result = response.workflow_runs
         if (update) {
-            val newRuns = result.filter { run -> loadedData.all { it != run } }
-            result.forEach { run ->
+            val existingRunIds = loadedData.map { it.id }.toSet()
+            result.filter { existingRunIds.contains(it.id) }.forEach { run ->
                 updateData(run)
             }
-            return newRuns
+            return result.filter { !existingRunIds.contains(it.id) }
         }
         LOG.debug("Got ${result.size} in page $page workflows (totalCount=$totalCount)")
         return result
@@ -65,5 +65,6 @@ class WorkflowRunListLoader(
 
     companion object {
         private val LOG = logger<WorkflowRunListLoader>()
+        private const val frequency: Long = 30
     }
 }

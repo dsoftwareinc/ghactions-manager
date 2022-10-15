@@ -26,7 +26,7 @@ abstract class DataProvider<T>(
 
     protected val value: LazyCancellableBackgroundProcessValue<T> = backingValue {
         try {
-            LOG.debug("Executing ${githubApiRequest.url}")
+            LOG.info("Executing ${githubApiRequest.url}")
             val request = githubApiRequest
             val response = requestExecutor.execute(it, request)
             response

@@ -43,7 +43,7 @@ object Workflows : GithubApiRequests.Entity("/repos") {
                 })
                 param(pagination)
             })
-        LOG.info("Workflows.getWorkflowRuns() url=${url}")
+        LOG.debug("Workflows.getWorkflowRuns() url=${url}")
         return get(url)
     }
 

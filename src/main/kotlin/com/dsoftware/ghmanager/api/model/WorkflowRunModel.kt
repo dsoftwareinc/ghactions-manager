@@ -43,10 +43,7 @@ data class GitHubWorkflowRun(
     val workflow_url: String,
     val name: String,
     val head_commit: GitHubHeadCommit
-) {
-    override fun equals(other: Any?): Boolean = other != null && (other is GitHubWorkflowRun) && this.id == other.id
-    override fun hashCode(): Int = id.hashCode()
-}
+)
 
 data class GitHubHeadCommit(
     val id: String,

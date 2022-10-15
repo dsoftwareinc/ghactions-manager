@@ -1,7 +1,6 @@
 package com.dsoftware.ghmanager.data
 
 import com.dsoftware.ghmanager.api.model.GitHubWorkflowRun
-import com.dsoftware.ghmanager.workflow.data.WorkflowDataLoader
 import com.intellij.collaboration.async.CompletableFutureUtil.submitIOTask
 import com.intellij.collaboration.async.CompletableFutureUtil.successOnEdt
 import com.intellij.openapi.Disposable
@@ -29,7 +28,7 @@ import java.util.concurrent.CompletableFuture
 class WorkflowDataContextRepository {
 
     private val repositories =
-        mutableMapOf<GHRepositoryCoordinates, LazyCancellableBackgroundProcessValue<WorkflowRunDataContext>>()
+        mutableMapOf<GHRepositoryCoordinates, LazyCancellableBackgroundProcessValue<WorkflowRunSelectionContext>>()
 
     @RequiresBackgroundThread
     @Throws(IOException::class)
@@ -38,7 +37,7 @@ class WorkflowDataContextRepository {
         account: GithubAccount,
         requestExecutor: GithubApiRequestExecutor,
         gitRemoteCoordinates: GitRemoteUrlCoordinates,
-    ): WorkflowRunDataContext {
+    ): WorkflowRunSelectionContext {
         LOG.debug("Get User and  repository")
         val fullPath = GithubUrlUtil.getUserAndRepositoryFromRemoteUrl(gitRemoteCoordinates.url)
             ?: throw IllegalArgumentException(
@@ -80,7 +79,8 @@ class WorkflowDataContextRepository {
             }
         })
 
-        return WorkflowRunDataContext(
+        return WorkflowRunSelectionContext(
+            disposable,
             listModel,
             githubWorkflowDataLoader,
             listLoader
@@ -89,10 +89,10 @@ class WorkflowDataContextRepository {
 
     @RequiresEdt
     fun acquireContext(
-        disposable:Disposable,
+        disposable: Disposable,
         repository: GHRepositoryCoordinates, remote: GitRemoteUrlCoordinates,
         account: GithubAccount, requestExecutor: GithubApiRequestExecutor,
-    ): CompletableFuture<WorkflowRunDataContext> {
+    ): CompletableFuture<WorkflowRunSelectionContext> {
         return repositories.getOrPut(repository) {
             val contextDisposable = Disposer.newDisposable("contextDisposable")
             Disposer.register(disposable, contextDisposable)

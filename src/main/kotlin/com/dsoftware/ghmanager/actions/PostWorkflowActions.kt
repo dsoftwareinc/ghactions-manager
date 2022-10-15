@@ -25,7 +25,7 @@ abstract class PostUrlAction(
             LOG.debug("Triggering rerun ${it}")
             val request = Workflows.postRerunWorkflow(it)
             val context = e.getRequiredData(ActionKeys.ACTION_DATA_CONTEXT)
-            val future = context.dataContext.dataLoader.createDataProvider(request).request
+            val future = context.dataLoader.createDataProvider(request).request
             future.thenApply {
                 context.resetAllData()
             }
