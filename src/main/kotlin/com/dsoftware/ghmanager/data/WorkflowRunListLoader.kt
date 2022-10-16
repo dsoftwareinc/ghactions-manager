@@ -20,7 +20,7 @@ class WorkflowRunListLoader(
     settingsService: GhActionsSettingsService,
 ) : GHListLoaderBase<GitHubWorkflowRun>(progressManager) {
     var totalCount: Int = 1
-    val frequency: Long = settingsService.state.frequency
+    val frequency: Long = settingsService.state.frequency.toLong()
     private val pageSize = 30
     private val page: Int = 1
 
