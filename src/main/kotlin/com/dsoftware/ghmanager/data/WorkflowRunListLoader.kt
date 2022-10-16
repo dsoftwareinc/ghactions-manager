@@ -2,6 +2,7 @@ package com.dsoftware.ghmanager.data
 
 import com.dsoftware.ghmanager.api.Workflows
 import com.dsoftware.ghmanager.api.model.GitHubWorkflowRun
+import com.dsoftware.ghmanager.ui.settings.GhActionsSettingsService
 import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.progress.ProgressManager
@@ -16,8 +17,10 @@ class WorkflowRunListLoader(
     progressManager: ProgressManager,
     private val requestExecutor: GithubApiRequestExecutor,
     private val repositoryCoordinates: RepositoryCoordinates,
+    settingsService: GhActionsSettingsService,
 ) : GHListLoaderBase<GitHubWorkflowRun>(progressManager) {
     var totalCount: Int = 1
+    val frequency: Long = settingsService.state.frequency
     private val pageSize = 30
     private val page: Int = 1
 
@@ -65,6 +68,5 @@ class WorkflowRunListLoader(
 
     companion object {
         private val LOG = logger<WorkflowRunListLoader>()
-        private const val frequency: Long = 30
     }
 }

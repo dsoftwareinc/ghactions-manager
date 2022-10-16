@@ -124,7 +124,7 @@ class WorkflowRunSelectionContext internal constructor(
 ) : Disposable {
     val jobDataProviderLoadModel: SingleValueModel<WorkflowRunJobsDataProvider?> = SingleValueModel(null)
     val logDataProviderLoadModel: SingleValueModel<WorkflowRunLogsDataProvider?> = SingleValueModel(null)
-
+    private val frequency:Long = runsListLoader.frequency
     init {
         runSelectionHolder.addSelectionChangeListener(parentDisposable) {
             LOG.debug("runSelectionHolder selection change listener")
@@ -178,7 +178,6 @@ class WorkflowRunSelectionContext internal constructor(
 
     companion object {
         private val LOG = logger<WorkflowRunSelectionContext>()
-        private const val frequency: Long = 30
     }
 
     override fun dispose() {

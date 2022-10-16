@@ -1,6 +1,7 @@
 package com.dsoftware.ghmanager.data
 
 import com.dsoftware.ghmanager.api.model.GitHubWorkflowRun
+import com.dsoftware.ghmanager.ui.settings.GhActionsSettingsService
 import com.intellij.collaboration.async.CompletableFutureUtil.submitIOTask
 import com.intellij.collaboration.async.CompletableFutureUtil.successOnEdt
 import com.intellij.openapi.Disposable
@@ -37,6 +38,7 @@ class WorkflowDataContextRepository {
         account: GithubAccount,
         requestExecutor: GithubApiRequestExecutor,
         gitRemoteCoordinates: GitRemoteUrlCoordinates,
+        settingsService: GhActionsSettingsService,
     ): WorkflowRunSelectionContext {
         LOG.debug("Get User and  repository")
         val fullPath = GithubUrlUtil.getUserAndRepositoryFromRemoteUrl(gitRemoteCoordinates.url)
@@ -58,8 +60,10 @@ class WorkflowDataContextRepository {
         val listModel = CollectionListModel<GitHubWorkflowRun>()
         listModel.removeAll()
         val listLoader = WorkflowRunListLoader(
-            ProgressManager.getInstance(), requestExecutor,
-            repositoryCoordinates
+            ProgressManager.getInstance(),
+            requestExecutor,
+            repositoryCoordinates,
+            settingsService
         )
         Disposer.register(disposable, listLoader)
         listLoader.addDataListener(disposable, object : GHListLoader.ListDataListener {
@@ -92,6 +96,7 @@ class WorkflowDataContextRepository {
         disposable: Disposable,
         repository: GHRepositoryCoordinates, remote: GitRemoteUrlCoordinates,
         account: GithubAccount, requestExecutor: GithubApiRequestExecutor,
+        settingsService: GhActionsSettingsService,
     ): CompletableFuture<WorkflowRunSelectionContext> {
         return repositories.getOrPut(repository) {
             val contextDisposable = Disposer.newDisposable("contextDisposable")
@@ -100,7 +105,7 @@ class WorkflowDataContextRepository {
             LazyCancellableBackgroundProcessValue.create { indicator ->
                 ProgressManager.getInstance().submitIOTask(indicator) {
                     try {
-                        getContext(contextDisposable, account, requestExecutor, remote)
+                        getContext(contextDisposable, account, requestExecutor, remote,settingsService)
                     } catch (e: Exception) {
                         if (e !is ProcessCanceledException) LOG.warn("Error occurred while creating data context", e)
                         throw e

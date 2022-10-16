@@ -7,6 +7,7 @@ data class GithubActionsManagerSettings(
     var useCustomRepos: Boolean = true,
     var customRepos: MutableMap<String, RepoSettings> = mutableMapOf(),
     var jobListAboveLogs: Boolean = true,
+    var frequency: Long = 30,
 ) {
     data class RepoSettings(
         var included: Boolean = true,

@@ -8,6 +8,7 @@ import com.intellij.openapi.components.service
 import com.intellij.openapi.options.BoundConfigurable
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.DialogPanel
+import com.intellij.profile.codeInspection.ui.getBordersForOptions
 import com.intellij.ui.components.JBCheckBox
 import com.intellij.ui.dsl.builder.*
 import com.intellij.util.messages.Topic
@@ -32,6 +33,11 @@ internal class GhActionsManagerConfigurable internal constructor(
         val knownRepositories = repoManager.knownRepositories
         return panel {
             row {
+                intTextField(0..100).bindIntText(state::frequency, state::frequency::set)
+                    .label("How often Should the list of workflows be updated")
+                    .comment("In secs")
+            }
+            row {
                 checkBox("Show jobs list above logs?")
                     .comment("If this is unchecked, it will show side by side")
                     .bindSelected(state::jobListAboveLogs, state::jobListAboveLogs::set)
@@ -42,23 +48,22 @@ internal class GhActionsManagerConfigurable internal constructor(
                     .comment("Do not use all repositories in the project")
                     .bindSelected(state::useCustomRepos, state::useCustomRepos::set)
             }
-
-            group {
-                threeColumnsRow({ label("Repository") }, { label("Selected") }, { label("Custom tab name") })
+            group("Repositories") {
+                row {
+                    label("Repository")
+                    label("Show").comment("Show tab for repository")
+                    label("Tab name")
+                }.layout(RowLayout.PARENT_GRID)
                 knownRepositories
                     .map { it.gitRemoteUrlCoordinates.url }
                     .forEach {
                         val settingsValue = state.customRepos.getOrPut(it) { RepoSettings() }
-                        threeColumnsRow(
-                            { text(it) },
-                            {
-                                checkBox("")
-                                    .bindSelected(settingsValue::included, settingsValue::included::set)
-                            },
-                            {
-                                textField()
-                                    .bindText(settingsValue::customName, settingsValue::customName::set)
-                            })
+                        row(it) {
+                            checkBox("")
+                                .bindSelected(settingsValue::included, settingsValue::included::set)
+                            textField()
+                                .bindText(settingsValue::customName, settingsValue::customName::set)
+                        }.layout(RowLayout.PARENT_GRID)
                     }
             }.enabledIf(projectRepos.selected)
         }
