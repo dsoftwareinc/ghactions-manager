@@ -9,6 +9,7 @@ import com.intellij.openapi.Disposable
 import com.intellij.openapi.application.runInEdt
 import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.progress.ProgressManager
+import com.intellij.openapi.util.Disposer
 import com.intellij.util.EventDispatcher
 import com.intellij.util.concurrency.AppExecutorUtil
 import com.intellij.util.concurrency.annotations.RequiresEdt
@@ -17,6 +18,7 @@ import org.jetbrains.plugins.github.api.GithubApiRequest
 import org.jetbrains.plugins.github.api.GithubApiRequestExecutor
 import org.jetbrains.plugins.github.api.GithubServerPath
 import java.util.EventListener
+import java.util.concurrent.ScheduledFuture
 import java.util.concurrent.TimeUnit
 import javax.swing.ListModel
 import kotlin.properties.Delegates
@@ -124,7 +126,9 @@ class WorkflowRunSelectionContext internal constructor(
 ) : Disposable {
     val jobDataProviderLoadModel: SingleValueModel<WorkflowRunJobsDataProvider?> = SingleValueModel(null)
     val logDataProviderLoadModel: SingleValueModel<WorkflowRunLogsDataProvider?> = SingleValueModel(null)
-    private val frequency:Long = runsListLoader.frequency
+    private val frequency: Long = runsListLoader.frequency
+    private val task: ScheduledFuture<*>
+
     init {
         runSelectionHolder.addSelectionChangeListener(parentDisposable) {
             LOG.debug("runSelectionHolder selection change listener")
@@ -136,9 +140,11 @@ class WorkflowRunSelectionContext internal constructor(
             setNewJobsProvider()
             setNewLogProvider()
         }
+        val checkedDisposable = Disposer.newCheckedDisposable()
+        Disposer.register(this, checkedDisposable)
         val scheduler = AppExecutorUtil.getAppScheduledExecutorService()
-        scheduler.scheduleWithFixedDelay({
-            if (workflowRun?.status == "in_progress") {
+        task = scheduler.scheduleWithFixedDelay({
+            if (workflowRun?.status == "in_progress") runInEdt{
                 jobsDataProvider?.reload()
                 logsDataProvider?.reload()
             }
@@ -181,5 +187,6 @@ class WorkflowRunSelectionContext internal constructor(
     }
 
     override fun dispose() {
+        task.cancel(true)
     }
 }

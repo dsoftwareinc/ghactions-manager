@@ -4,6 +4,9 @@
 
 ## [Unreleased]
 
+## [1.5.1]
+### Fixed
+* Running refresh in background
 
 ## [1.5.0]
 ### Added

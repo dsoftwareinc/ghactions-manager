@@ -6,7 +6,9 @@ import com.dsoftware.ghmanager.ui.settings.GhActionsSettingsService
 import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.progress.ProgressManager
+import com.intellij.openapi.util.Disposer
 import com.intellij.util.concurrency.AppExecutorUtil
+import com.intellij.vcs.log.runInEdt
 import org.jetbrains.plugins.github.api.GithubApiRequestExecutor
 import org.jetbrains.plugins.github.api.data.request.GithubRequestPagination
 import org.jetbrains.plugins.github.pullrequest.data.GHListLoaderBase
@@ -27,9 +29,11 @@ class WorkflowRunListLoader(
     private val task: ScheduledFuture<*>
 
     init {
+        val checkedDisposable = Disposer.newCheckedDisposable()
+        Disposer.register(this, checkedDisposable)
         val scheduler = AppExecutorUtil.getAppScheduledExecutorService()
         task = scheduler.scheduleWithFixedDelay({
-            loadMore(update = true)
+            runInEdt(checkedDisposable) { loadMore(update = true) }
         }, 1, frequency, TimeUnit.SECONDS)
     }
 
