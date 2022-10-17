@@ -140,8 +140,6 @@ class WorkflowRunSelectionContext internal constructor(
             setNewJobsProvider()
             setNewLogProvider()
         }
-        val checkedDisposable = Disposer.newCheckedDisposable()
-        Disposer.register(this, checkedDisposable)
         val scheduler = AppExecutorUtil.getAppScheduledExecutorService()
         task = scheduler.scheduleWithFixedDelay({
             if (workflowRun?.status == "in_progress") runInEdt{
