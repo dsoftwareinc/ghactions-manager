@@ -151,7 +151,7 @@ internal class WorkflowRunListLoaderPanel(
     var errorHandler: LoadingErrorHandler? = null
 
     init {
-        LOG.info("Initialize WorkflowRunListLoaderPanel")
+        LOG.debug("Initialize WorkflowRunListLoaderPanel")
         progressStripe = ProgressStripe(
             JBUI.Panels.simplePanel(scrollPane).addToTop(infoPanel).apply {
                 isOpaque = false

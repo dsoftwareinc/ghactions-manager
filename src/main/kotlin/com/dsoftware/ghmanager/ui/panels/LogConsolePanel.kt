@@ -45,7 +45,7 @@ class LogConsolePanel(
     private val objectInitialized = true
 
     init {
-        LOG.info("Create console")
+        LOG.debug("Create console")
         if (!logModel.value.isNullOrBlank()) {
             this.setData(logModel.value!!)
         }

@@ -38,6 +38,8 @@ import org.jetbrains.plugins.github.pullrequest.ui.GHLoadingModel
 import org.jetbrains.plugins.github.pullrequest.ui.GHLoadingPanelFactory
 import org.jetbrains.plugins.github.util.GHGitRepositoryMapping
 import java.awt.BorderLayout
+import java.awt.event.FocusEvent
+import java.awt.event.FocusListener
 import javax.swing.JComponent
 import kotlin.properties.Delegates
 

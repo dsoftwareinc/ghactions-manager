@@ -105,7 +105,7 @@ class WorkflowDataContextRepository {
             LazyCancellableBackgroundProcessValue.create { indicator ->
                 ProgressManager.getInstance().submitIOTask(indicator) {
                     try {
-                        getContext(contextDisposable, account, requestExecutor, remote,settingsService)
+                        getContext(contextDisposable, account, requestExecutor, remote, settingsService)
                     } catch (e: Exception) {
                         if (e !is ProcessCanceledException) LOG.warn("Error occurred while creating data context", e)
                         throw e

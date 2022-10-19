@@ -27,13 +27,15 @@ class WorkflowRunListLoader(
     private val page: Int = 1
 
     private val task: ScheduledFuture<*>
+    var refreshRuns: Boolean = true
 
     init {
         val checkedDisposable = Disposer.newCheckedDisposable()
         Disposer.register(this, checkedDisposable)
         val scheduler = AppExecutorUtil.getAppScheduledExecutorService()
         task = scheduler.scheduleWithFixedDelay({
-            runInEdt(checkedDisposable) { loadMore(update = true) }
+            if (refreshRuns)
+                runInEdt(checkedDisposable) { loadMore(update = true) }
         }, 1, frequency, TimeUnit.SECONDS)
     }
 
@@ -50,7 +52,7 @@ class WorkflowRunListLoader(
     override fun canLoadMore() = !loading && (page * pageSize < totalCount)
 
     override fun doLoadMore(indicator: ProgressIndicator, update: Boolean): List<GitHubWorkflowRun> {
-        LOG.info("Do load more update: $update, indicator: $indicator")
+        LOG.debug("Do load more update: $update, indicator: $indicator")
 
         val request = Workflows.getWorkflowRuns(
             repositoryCoordinates,
