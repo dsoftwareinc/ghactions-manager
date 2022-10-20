@@ -1,7 +1,6 @@
 package com.dsoftware.ghmanager.ui
 
 import com.dsoftware.ghmanager.data.WorkflowDataContextRepository
-import com.dsoftware.ghmanager.data.WorkflowRunListLoader
 import com.dsoftware.ghmanager.ui.settings.GhActionsManagerConfigurable
 import com.dsoftware.ghmanager.ui.settings.GhActionsSettingsService
 import com.dsoftware.ghmanager.ui.settings.GithubActionsManagerSettings
@@ -16,15 +15,19 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.wm.ToolWindow
 import com.intellij.openapi.wm.ToolWindowFactory
+import com.intellij.ui.AnimatedIcon
+import com.intellij.ui.ClientProperty
 import com.intellij.ui.SimpleTextAttributes
 import com.intellij.ui.components.JBPanelWithEmptyText
 import com.intellij.ui.content.ContentManagerEvent
 import com.intellij.ui.content.ContentManagerListener
+import com.intellij.util.ui.UIUtil
 import org.jetbrains.plugins.github.authentication.GithubAuthenticationManager
 import org.jetbrains.plugins.github.authentication.accounts.GithubAccount
 import org.jetbrains.plugins.github.pullrequest.data.provider.GHPRDataOperationsListener
 import org.jetbrains.plugins.github.util.GHGitRepositoryMapping
 import org.jetbrains.plugins.github.util.GHProjectRepositoriesManager
+import java.awt.BorderLayout
 import javax.swing.JPanel
 
 internal class ProjectRepositories(
@@ -182,37 +185,40 @@ class GhActionsToolWindowFactory : ToolWindowFactory {
             val actionManager = ActionManager.getInstance()
             toolWindow.setAdditionalGearActions(DefaultActionGroup(actionManager.getAction("Github.Actions.Manager.Settings.Open")))
             val dataContextRepository = WorkflowDataContextRepository.getInstance(project)
-            toolWindow.contentManager.addContentManagerListener(object : ContentManagerListener {
-                override fun selectionChanged(event: ContentManagerEvent) {
-                    val content = event.content
-                    val runListLoader = content.getUserData(WorkflowRunListLoader.KEY)
-                    runListLoader?.refreshRuns = content.isSelected
-                }
-            })
             knownRepositories
                 .filter { settingsService.state.customRepos[it.gitRemoteUrlCoordinates.url]?.included ?: false }
                 .forEach { repo ->
                     val ghAccount = guessAccountForRepository(repo)
                     if (ghAccount != null) {
                         LOG.info("adding panel for repo: ${repo.repositoryPath}, ${ghAccount.name}")
-                        toolWindow.contentManager.addContent(
-                            toolWindow.contentManager.factory.createContent(JPanel(null), repo.repositoryPath, false)
-                                .apply {
-                                    isCloseable = false
-                                    setDisposer(Disposer.newDisposable("GitHubWorkflow tab disposable"))
-                                    val controller = WorkflowToolWindowTabController(
-                                        project,
-                                        settingsService.state.customRepos[repo.gitRemoteUrlCoordinates.url]!!,
-                                        repo,
-                                        ghAccount,
-                                        dataContextRepository,
-                                        this
-                                    )
-                                    this.putUserData(
-                                        WorkflowToolWindowTabController.KEY,
-                                        controller
-                                    )
-                                })
+                        val repoSettings = settingsService.state.customRepos[repo.gitRemoteUrlCoordinates.url]!!
+                        val tab = toolWindow.contentManager.factory.createContent(
+                            JPanel(null), repo.repositoryPath, false
+                        ).apply {
+                            isCloseable = false
+                            setDisposer(toolWindow.disposable)
+                            displayName = repoSettings.customName.ifEmpty { repo.repositoryPath }
+                        }
+                        val controller = WorkflowToolWindowTabController(
+                            project,
+                            repoSettings,
+                            repo,
+                            ghAccount,
+                            dataContextRepository,
+                            tab.disposer!!
+                        )
+                        tab.component.apply {
+                            layout = BorderLayout()
+                            background = UIUtil.getListBackground()
+                            removeAll()
+                            add(controller.panel, BorderLayout.CENTER)
+                            revalidate()
+                            repaint()
+
+                            ClientProperty.put(this, AnimatedIcon.ANIMATION_IN_RENDERER_ALLOWED, true)
+                        }
+                        tab.putUserData(WorkflowToolWindowTabController.KEY, controller)
+                        toolWindow.contentManager.addContent(tab)
                     } else {
                         val emptyTextPanel = JBPanelWithEmptyText()
                         emptyTextPanel.emptyText
@@ -231,6 +237,14 @@ class GhActionsToolWindowFactory : ToolWindowFactory {
                         )
                     }
                 }
+            toolWindow.contentManager.addContentManagerListener(object : ContentManagerListener {
+                override fun selectionChanged(event: ContentManagerEvent) {
+                    val content = event.content
+                    content.getUserData(WorkflowToolWindowTabController.KEY)?.let {
+                        it.loadingModel.result?.runsListLoader?.refreshRuns = content.isSelected
+                    }
+                }
+            })
         }
 
     companion object {

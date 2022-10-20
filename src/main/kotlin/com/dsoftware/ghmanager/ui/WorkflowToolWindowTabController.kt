@@ -25,11 +25,8 @@ import com.intellij.openapi.editor.impl.softwrap.SoftWrapAppliancePlaces
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.util.Key
-import com.intellij.ui.AnimatedIcon
-import com.intellij.ui.ClientProperty
 import com.intellij.ui.OnePixelSplitter
 import com.intellij.ui.components.JBPanelWithEmptyText
-import com.intellij.ui.content.Content
 import com.intellij.util.ui.UIUtil
 import org.jetbrains.plugins.github.api.GithubApiRequestExecutorManager
 import org.jetbrains.plugins.github.authentication.accounts.GithubAccount
@@ -41,7 +38,6 @@ import org.jetbrains.plugins.github.pullrequest.ui.GHLoadingPanelFactory
 import org.jetbrains.plugins.github.util.GHGitRepositoryMapping
 import java.awt.BorderLayout
 import javax.swing.JComponent
-import kotlin.properties.Delegates
 
 class WorkflowToolWindowTabController(
     private val project: Project,
@@ -49,30 +45,21 @@ class WorkflowToolWindowTabController(
     repositoryMapping: GHGitRepositoryMapping,
     private val ghAccount: GithubAccount,
     private val dataContextRepository: WorkflowDataContextRepository,
-    private val tab: Content,
+    parentDisposable: Disposable
 ) {
+    val loadingModel: GHCompletableFutureLoadingModel<WorkflowRunSelectionContext>
     private val settingsService = GhActionsSettingsService.getInstance(project)
     private val actionManager = ActionManager.getInstance()
     private val ghRequestExecutor = GithubApiRequestExecutorManager.getInstance().getExecutor(ghAccount)
-    private var contentDisposable by Delegates.observable<Disposable?>(null) { _, oldValue, newValue ->
-        if (oldValue != null) Disposer.dispose(oldValue)
-        if (newValue != null) Disposer.register(tab.disposer!!, newValue)
-    }
     private val disposable = Disposer.newDisposable()
+    val panel: JComponent
 
     init {
-        tab.displayName =
-            repoSettings.customName.ifEmpty { repositoryMapping.repositoryPath }
-        Disposer.register(tab.disposer!!, disposable)
+        Disposer.register(parentDisposable, disposable)
         val repository = repositoryMapping.ghRepositoryCoordinates
         val remote = repositoryMapping.gitRemoteUrlCoordinates
 
-        contentDisposable = Disposable {
-            Disposer.dispose(disposable)
-            dataContextRepository.clearContext(repository)
-        }
-
-        val loadingModel = GHCompletableFutureLoadingModel<WorkflowRunSelectionContext>(disposable).apply {
+        loadingModel = GHCompletableFutureLoadingModel<WorkflowRunSelectionContext>(disposable).apply {
             future = dataContextRepository.acquireContext(
                 disposable,
                 repository,
@@ -82,11 +69,6 @@ class WorkflowToolWindowTabController(
                 settingsService
             )
         }
-        loadingModel.addStateChangeListener(object :GHLoadingModel.StateChangeListener{
-            override fun onLoadingCompleted() {
-                tab.putUserData(WorkflowRunListLoader.KEY, loadingModel.result?.runsListLoader)
-            }
-        })
 
 
         val errorHandler = GHApiLoadingErrorHandler(project, ghAccount) {
@@ -102,7 +84,7 @@ class WorkflowToolWindowTabController(
                     settingsService
                 )
         }
-        val panel = GHLoadingPanelFactory(
+        panel = GHLoadingPanelFactory(
             loadingModel,
             "Not loading content",
             GithubBundle.message("cannot.load.data.from.github"),
@@ -111,16 +93,7 @@ class WorkflowToolWindowTabController(
             val content = createContent(result)
             content
         }
-        tab.component.apply {
-            layout = BorderLayout()
-            background = UIUtil.getListBackground()
-            removeAll()
-            add(panel, BorderLayout.CENTER)
-            revalidate()
-            repaint()
 
-            ClientProperty.put(this, AnimatedIcon.ANIMATION_IN_RENDERER_ALLOWED, true)
-        }
     }
 
     private fun createContent(

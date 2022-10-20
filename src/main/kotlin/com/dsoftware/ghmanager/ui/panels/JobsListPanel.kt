@@ -5,12 +5,12 @@ import WorkflowRunJob
 import WorkflowRunJobs
 import com.dsoftware.ghmanager.actions.ActionKeys
 import com.dsoftware.ghmanager.data.JobListSelectionHolder
+import com.dsoftware.ghmanager.data.ListSelectionHolder
 import com.dsoftware.ghmanager.data.WorkflowRunSelectionContext
 import com.dsoftware.ghmanager.ui.ToolbarUtil
 import com.intellij.collaboration.ui.SingleValueModel
 import com.intellij.ide.CopyProvider
 import com.intellij.openapi.actionSystem.*
-import com.intellij.openapi.application.ApplicationManager
 import com.intellij.ui.*
 import com.intellij.ui.components.JBList
 import com.intellij.ui.components.JBPanel
@@ -28,8 +28,6 @@ import java.awt.event.FocusListener
 import java.awt.event.MouseEvent
 import java.time.Duration
 import javax.swing.*
-import javax.swing.event.ListDataEvent
-import javax.swing.event.ListDataListener
 import javax.swing.event.ListSelectionEvent
 
 
@@ -140,15 +138,9 @@ class JobList(model: ListModel<WorkflowRunJob>, private val infoInNewLine: Boole
             val listComponent = JobList(list, infoInNewLine).apply {
                 emptyText.clear()
             }.also {
-                it.addFocusListener(object : FocusListener {
-                    override fun focusGained(e: FocusEvent?) {
-                        if (it.selectedIndex < 0 && !it.isEmpty) it.selectedIndex = 0
-                    }
 
-                    override fun focusLost(e: FocusEvent?) {}
-                })
                 installPopup(it)
-                installJobSelectionSaver(it, runSelectionContext.jobSelectionHolder)
+                ToolbarUtil.installSelectionHolder(it, runSelectionContext.jobSelectionHolder)
             }
 
             return ScrollPaneFactory.createScrollPane(
@@ -184,37 +176,5 @@ class JobList(model: ListModel<WorkflowRunJob>, private val infoInNewLine: Boole
             })
         }
 
-        private fun installJobSelectionSaver(
-            list: JobList,
-            jobSelectionHolder: JobListSelectionHolder,
-        ) {
-            var savedSelection: WorkflowRunJob? = null
-
-            list.selectionModel.addListSelectionListener { e: ListSelectionEvent ->
-                if (!e.valueIsAdjusting) {
-                    val selectedIndex = list.selectedIndex
-                    if (selectedIndex >= 0 && selectedIndex < list.model.size) {
-                        jobSelectionHolder.selection = list.model.getElementAt(selectedIndex)
-                        savedSelection = null
-                    }
-                }
-            }
-
-            list.model.addListDataListener(object : ListDataListener {
-                override fun intervalAdded(e: ListDataEvent) {
-                    if (e.type == ListDataEvent.INTERVAL_ADDED)
-                        (e.index0..e.index1).find { list.model.getElementAt(it) == savedSelection }
-                            ?.run {
-                                if (list.model.size == 0) return
-                                ApplicationManager.getApplication().invokeLater { ScrollingUtil.selectItem(list, this) }
-                            }
-                }
-
-                override fun contentsChanged(e: ListDataEvent) {}
-                override fun intervalRemoved(e: ListDataEvent) {
-                    if (e.type == ListDataEvent.INTERVAL_REMOVED) savedSelection = jobSelectionHolder.selection
-                }
-            })
-        }
     }
 }

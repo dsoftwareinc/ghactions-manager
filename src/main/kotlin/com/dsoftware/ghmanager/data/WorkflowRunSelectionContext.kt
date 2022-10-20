@@ -129,6 +129,7 @@ class WorkflowRunSelectionContext internal constructor(
     private val task: ScheduledFuture<*>
     val runsListModel: CollectionListModel<GitHubWorkflowRun>
         get() = runsListLoader.listModel
+
     init {
         Disposer.register(parentDisposable, dataLoader)
         Disposer.register(parentDisposable, runsListLoader)
@@ -144,7 +145,7 @@ class WorkflowRunSelectionContext internal constructor(
         }
         val scheduler = AppExecutorUtil.getAppScheduledExecutorService()
         task = scheduler.scheduleWithFixedDelay({
-            if (workflowRun?.status == "in_progress") runInEdt{
+            if (workflowRun?.status == "in_progress") runInEdt {
                 jobsDataProvider?.reload()
                 logsDataProvider?.reload()
             }
@@ -154,8 +155,7 @@ class WorkflowRunSelectionContext internal constructor(
     private fun setNewJobsProvider() {
         val oldValue = jobDataProviderLoadModel.value
         val newValue = jobsDataProvider
-        if (newValue != null && oldValue?.url() != newValue.url()) {
-            jobDataProviderLoadModel.value = null
+        if (oldValue != newValue && newValue != null && oldValue?.url() != newValue.url()) {
             jobDataProviderLoadModel.value = newValue
         }
     }
@@ -163,8 +163,7 @@ class WorkflowRunSelectionContext internal constructor(
     private fun setNewLogProvider() {
         val oldValue = logDataProviderLoadModel.value
         val newValue = logsDataProvider
-        if (newValue != null && oldValue?.url() != newValue.url()) {
-
+        if (oldValue != newValue && newValue != null && oldValue?.url() != newValue.url()) {
             logDataProviderLoadModel.value = newValue
         }
     }

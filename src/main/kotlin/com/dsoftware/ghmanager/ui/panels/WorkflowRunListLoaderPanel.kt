@@ -4,10 +4,10 @@ package com.dsoftware.ghmanager.ui.panels
 import com.dsoftware.ghmanager.actions.ActionKeys
 import com.dsoftware.ghmanager.api.model.GitHubWorkflowRun
 import com.dsoftware.ghmanager.data.WorkflowRunListLoader
-import com.dsoftware.ghmanager.ui.LoadingErrorHandler
-import com.dsoftware.ghmanager.ui.ToolbarUtil
 import com.dsoftware.ghmanager.data.WorkflowRunListSelectionHolder
 import com.dsoftware.ghmanager.data.WorkflowRunSelectionContext
+import com.dsoftware.ghmanager.ui.LoadingErrorHandler
+import com.dsoftware.ghmanager.ui.ToolbarUtil
 import com.intellij.ide.CopyProvider
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.actionSystem.*
@@ -266,38 +266,24 @@ internal class WorkflowRunListLoaderPanel(
             })
         }
 
-        private fun installWorkflowRunSelectionSaver(
-            list: WorkflowRunList,
-            listSelectionHolder: WorkflowRunListSelectionHolder,
-        ) {
-            var savedSelection: GitHubWorkflowRun? = null
-
-            list.selectionModel.addListSelectionListener { e: ListSelectionEvent ->
-                if (!e.valueIsAdjusting) {
-                    val selectedIndex = list.selectedIndex
-                    if (selectedIndex >= 0 && selectedIndex < list.model.size) {
-                        listSelectionHolder.selection = list.model.getElementAt(selectedIndex)
-                        savedSelection = null
-                    }
-                }
-            }
-
-            list.model.addListDataListener(object : ListDataListener {
-                override fun intervalAdded(e: ListDataEvent) {
-                    if (e.type == ListDataEvent.INTERVAL_ADDED) {
-                        (e.index0..e.index1).find { list.model.getElementAt(it) == savedSelection }
-                            ?.run {
-                                ApplicationManager.getApplication().invokeLater { ScrollingUtil.selectItem(list, this) }
-                            }
-                    }
-                }
-
-                override fun contentsChanged(e: ListDataEvent) {}
-                override fun intervalRemoved(e: ListDataEvent) {
-                    if (e.type == ListDataEvent.INTERVAL_REMOVED) savedSelection = listSelectionHolder.selection
-                }
-            })
-        }
+//        private fun installWorkflowRunSelectionSaver(
+//            list: WorkflowRunList,
+//            listSelectionHolder: WorkflowRunListSelectionHolder,
+//        ) {
+//
+//            list.selectionModel.addListSelectionListener { e: ListSelectionEvent ->
+//                if (!e.valueIsAdjusting) {
+//                    val selectedIndex = list.selectedIndex
+//                    if (selectedIndex >= 0 && selectedIndex < list.model.size) {
+//                        val currSelection = list.model.getElementAt(selectedIndex)
+//                        if (listSelectionHolder.selection != currSelection)
+//                            listSelectionHolder.selection = currSelection
+//
+//                    }
+//                }
+//            }
+//
+//        }
 
         fun createWorkflowRunsListComponent(
             context: WorkflowRunSelectionContext,
@@ -306,16 +292,9 @@ internal class WorkflowRunListLoaderPanel(
             val list = WorkflowRunList(context.runsListModel).apply {
                 emptyText.clear()
             }.also {
-                it.addFocusListener(object : FocusListener {
-                    override fun focusGained(e: FocusEvent?) {
-                        if (it.selectedIndex < 0 && !it.isEmpty) it.selectedIndex = 0
-                    }
-
-                    override fun focusLost(e: FocusEvent?) {}
-                })
 
                 installPopup(it)
-                installWorkflowRunSelectionSaver(it, context.runSelectionHolder)
+                ToolbarUtil.installSelectionHolder(it, context.runSelectionHolder)
             }
 
             return WorkflowRunListLoaderPanel(disposable, context.runsListLoader, list)
