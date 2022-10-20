@@ -265,7 +265,10 @@ class WorkflowToolWindowTabController(
 
         fun getJobName(): String? {
             val jobName = jobsSelectionHolder.selection?.name
-            return jobName?.replace("<", "")?.replace(">", "")?.trim()
+            val removeChars = setOf('<','>','/')
+            return jobName?.filterNot{
+                removeChars.contains(it)
+            }?.trim()
         }
 
         val loadingModel = GHCompletableFutureLoadingModel<Map<String, String>>(disposable).also {
