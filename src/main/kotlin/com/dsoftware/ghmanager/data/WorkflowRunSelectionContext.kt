@@ -10,6 +10,7 @@ import com.intellij.openapi.application.runInEdt
 import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.util.Disposer
+import com.intellij.ui.CollectionListModel
 import com.intellij.util.EventDispatcher
 import com.intellij.util.concurrency.AppExecutorUtil
 import com.intellij.util.concurrency.annotations.RequiresEdt
@@ -24,7 +25,7 @@ import javax.swing.ListModel
 import kotlin.properties.Delegates
 
 
-class WorkflowDataLoader(
+class SingleRunDataLoader(
     private val requestExecutor: GithubApiRequestExecutor
 ) : Disposable {
 
@@ -85,7 +86,7 @@ class WorkflowDataLoader(
     }
 
     companion object {
-        private val LOG = logger<WorkflowDataLoader>()
+        private val LOG = logger<SingleRunDataLoader>()
         private val progressManager = ProgressManager.getInstance()
     }
 }
@@ -118,8 +119,7 @@ class JobListSelectionHolder : ListSelectionHolder<WorkflowRunJob>()
 
 class WorkflowRunSelectionContext internal constructor(
     parentDisposable: Disposable,
-    val runsListModel: ListModel<GitHubWorkflowRun>,
-    val dataLoader: WorkflowDataLoader,
+    val dataLoader: SingleRunDataLoader,
     val runsListLoader: WorkflowRunListLoader,
     val runSelectionHolder: WorkflowRunListSelectionHolder = WorkflowRunListSelectionHolder(),
     val jobSelectionHolder: JobListSelectionHolder = JobListSelectionHolder(),
@@ -128,8 +128,11 @@ class WorkflowRunSelectionContext internal constructor(
     val logDataProviderLoadModel: SingleValueModel<WorkflowRunLogsDataProvider?> = SingleValueModel(null)
     private val frequency: Long = runsListLoader.frequency
     private val task: ScheduledFuture<*>
-
+    val runsListModel: CollectionListModel<GitHubWorkflowRun>
+        get() = runsListLoader.listModel
     init {
+        Disposer.register(parentDisposable, dataLoader)
+        Disposer.register(parentDisposable, runsListLoader)
         runSelectionHolder.addSelectionChangeListener(parentDisposable) {
             LOG.debug("runSelectionHolder selection change listener")
             setNewJobsProvider()

@@ -15,6 +15,8 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.wm.ToolWindow
 import com.intellij.openapi.wm.ToolWindowFactory
+import com.intellij.ui.AnimatedIcon.ANIMATION_IN_RENDERER_ALLOWED
+import com.intellij.ui.ClientProperty
 import com.intellij.ui.SimpleTextAttributes
 import com.intellij.ui.components.JBPanelWithEmptyText
 import org.jetbrains.plugins.github.authentication.GithubAuthenticationManager
@@ -188,6 +190,7 @@ class GhActionsToolWindowFactory : ToolWindowFactory {
                         toolWindow.contentManager.addContent(
                             toolWindow.contentManager.factory.createContent(JPanel(null), repo.repositoryPath, false)
                                 .apply {
+                                    ClientProperty.put(this.component, ANIMATION_IN_RENDERER_ALLOWED, true)
                                     isCloseable = false
                                     setDisposer(Disposer.newDisposable("GitHubWorkflow tab disposable"))
 

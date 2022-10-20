@@ -63,8 +63,7 @@ class WorkflowToolWindowTabController(
     init {
         tab.displayName =
             repoSettings.customName.ifEmpty { repositoryMapping.repositoryPath }
-
-
+        Disposer.register(tab.disposer!!, disposable)
         val repository = repositoryMapping.ghRepositoryCoordinates
         val remote = repositoryMapping.gitRemoteUrlCoordinates
 
@@ -113,7 +112,20 @@ class WorkflowToolWindowTabController(
             add(panel, BorderLayout.CENTER)
             revalidate()
             repaint()
+            addFocusListener(object : FocusListener {
+                override fun focusGained(e: FocusEvent?) {
+                    if (loadingModel.resultAvailable) {
+                        loadingModel.result?.runsListLoader?.refreshRuns = true
+                    }
+                }
+
+                override fun focusLost(e: FocusEvent?) {
+                    loadingModel.result?.runsListLoader?.refreshRuns = false
+                }
+
+            })
         }
+        tab.isSelected
     }
 
     private fun createContent(

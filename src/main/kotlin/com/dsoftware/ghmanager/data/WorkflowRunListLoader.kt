@@ -7,10 +7,12 @@ import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.util.Disposer
+import com.intellij.ui.CollectionListModel
 import com.intellij.util.concurrency.AppExecutorUtil
 import com.intellij.vcs.log.runInEdt
 import org.jetbrains.plugins.github.api.GithubApiRequestExecutor
 import org.jetbrains.plugins.github.api.data.request.GithubRequestPagination
+import org.jetbrains.plugins.github.pullrequest.data.GHListLoader
 import org.jetbrains.plugins.github.pullrequest.data.GHListLoaderBase
 import java.util.concurrent.ScheduledFuture
 import java.util.concurrent.TimeUnit
@@ -25,7 +27,7 @@ class WorkflowRunListLoader(
     val frequency: Long = settingsService.state.frequency.toLong()
     private val pageSize = 30
     private val page: Int = 1
-
+    val listModel = CollectionListModel<GitHubWorkflowRun>()
     private val task: ScheduledFuture<*>
     var refreshRuns: Boolean = true
 
@@ -37,6 +39,19 @@ class WorkflowRunListLoader(
             if (refreshRuns)
                 runInEdt(checkedDisposable) { loadMore(update = true) }
         }, 1, frequency, TimeUnit.SECONDS)
+        LOG.debug("Create CollectionListModel<GitHubWorkflowRun>() and loader")
+        listModel.removeAll()
+        addDataListener(this, object : GHListLoader.ListDataListener {
+            override fun onDataAdded(startIdx: Int) {
+                val loadedData = this@WorkflowRunListLoader.loadedData
+                listModel.add(loadedData.subList(startIdx, loadedData.size))
+            }
+
+            override fun onDataUpdated(idx: Int) {
+                val loadedData = this@WorkflowRunListLoader.loadedData
+                listModel.setElementAt(loadedData[idx], idx)
+            }
+        })
     }
 
     override fun dispose() {

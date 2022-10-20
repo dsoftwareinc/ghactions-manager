@@ -45,48 +45,22 @@ class WorkflowDataContextRepository {
             ?: throw IllegalArgumentException(
                 "Invalid GitHub Repository URL - ${gitRemoteCoordinates.url} is not a GitHub repository"
             )
-
         val repositoryCoordinates = RepositoryCoordinates(account.server, fullPath)
-
         LOG.debug("Create WorkflowDataLoader")
-        val githubWorkflowDataLoader = WorkflowDataLoader(requestExecutor)
-        Disposer.register(disposable, githubWorkflowDataLoader)
-
-        requestExecutor.addListener(githubWorkflowDataLoader) {
-            githubWorkflowDataLoader.invalidateAllData()
+        val singleRunDataLoader = SingleRunDataLoader(requestExecutor)
+        requestExecutor.addListener(singleRunDataLoader) {
+            singleRunDataLoader.invalidateAllData()
         }
-
-        LOG.debug("Create CollectionListModel<GitHubWorkflowRun>() and loader")
-        val listModel = CollectionListModel<GitHubWorkflowRun>()
-        listModel.removeAll()
         val listLoader = WorkflowRunListLoader(
             ProgressManager.getInstance(),
             requestExecutor,
             repositoryCoordinates,
             settingsService
         )
-        Disposer.register(disposable, listLoader)
-        listLoader.addDataListener(disposable, object : GHListLoader.ListDataListener {
-            override fun onDataAdded(startIdx: Int) {
-                val loadedData = listLoader.loadedData
-                listModel.add(loadedData.subList(startIdx, loadedData.size))
-                listModel.sort(object : Comparator<GitHubWorkflowRun> {
-                    override fun compare(o1: GitHubWorkflowRun, o2: GitHubWorkflowRun): Int {
-                        return o2.created_at?.compareTo(o1.created_at) ?: 1
-                    }
-                })
-            }
-
-            override fun onDataUpdated(idx: Int) {
-                val loadedData = listLoader.loadedData
-                listModel.setElementAt(loadedData[idx], idx)
-            }
-        })
 
         return WorkflowRunSelectionContext(
             disposable,
-            listModel,
-            githubWorkflowDataLoader,
+            singleRunDataLoader,
             listLoader
         )
     }
