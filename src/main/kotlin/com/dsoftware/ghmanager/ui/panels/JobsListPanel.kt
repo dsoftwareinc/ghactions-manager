@@ -102,7 +102,7 @@ class JobList(model: ListModel<WorkflowRunJob>, private val infoInNewLine: Boole
                     val duration = Duration.between(job.startedAt.toInstant(), job.completedAt.toInstant())
                     "took ${duration.toMinutes()}:${duration.toSecondsPart()} mins"
                 }
-                val info = "Attempt #${job.runAttempt} at $startedAtLabel $took"
+                val info = "Attempt #${job.runAttempt} started $startedAtLabel $took"
                 text = "<html>$info</html>"
                 foreground = secondaryTextColor
             }

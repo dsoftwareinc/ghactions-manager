@@ -4,14 +4,12 @@ package com.dsoftware.ghmanager.ui.panels
 import com.dsoftware.ghmanager.actions.ActionKeys
 import com.dsoftware.ghmanager.api.model.GitHubWorkflowRun
 import com.dsoftware.ghmanager.data.WorkflowRunListLoader
-import com.dsoftware.ghmanager.data.WorkflowRunListSelectionHolder
 import com.dsoftware.ghmanager.data.WorkflowRunSelectionContext
 import com.dsoftware.ghmanager.ui.LoadingErrorHandler
 import com.dsoftware.ghmanager.ui.ToolbarUtil
 import com.intellij.ide.CopyProvider
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.actionSystem.*
-import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.progress.util.ProgressWindow
 import com.intellij.openapi.util.Disposer
@@ -31,13 +29,10 @@ import org.jetbrains.plugins.github.exceptions.GithubStatusCodeException
 import org.jetbrains.plugins.github.ui.HtmlInfoPanel
 import java.awt.BorderLayout
 import java.awt.Component
-import java.awt.event.FocusEvent
-import java.awt.event.FocusListener
 import java.awt.event.MouseEvent
 import javax.swing.*
 import javax.swing.event.ListDataEvent
 import javax.swing.event.ListDataListener
-import javax.swing.event.ListSelectionEvent
 
 class WorkflowRunList(model: ListModel<GitHubWorkflowRun>) : JBList<GitHubWorkflowRun>(model), DataProvider,
     CopyProvider {
@@ -111,8 +106,7 @@ class WorkflowRunList(model: ListModel<GitHubWorkflowRun>) : JBList<GitHubWorkfl
                     action = "created by"
                 }
                 text = "${ghWorkflowRun.name} #${ghWorkflowRun.run_number}: " +
-                    "$action ${ghWorkflowRun.head_commit.author.name} " +
-                    "on $updatedAtLabel"
+                    "$action ${ghWorkflowRun.head_commit.author.name} started $updatedAtLabel"
                 foreground = secondaryTextColor
             }
             labels.apply {

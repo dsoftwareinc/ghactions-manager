@@ -4,7 +4,6 @@ import com.dsoftware.ghmanager.data.ListSelectionHolder
 import com.intellij.icons.AllIcons
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.ui.AnimatedIcon
-import com.intellij.ui.SpinningProgressIcon
 import com.intellij.ui.components.JBList
 import com.intellij.util.text.DateFormatUtil
 import java.time.LocalDateTime
