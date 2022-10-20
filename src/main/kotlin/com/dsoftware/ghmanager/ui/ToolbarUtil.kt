@@ -2,6 +2,7 @@ package com.dsoftware.ghmanager.ui
 
 import com.intellij.icons.AllIcons
 import com.intellij.openapi.diagnostic.Logger
+import com.intellij.ui.AnimatedIcon
 import com.intellij.ui.SpinningProgressIcon
 import com.intellij.util.text.DateFormatUtil
 import java.time.LocalDateTime
@@ -37,7 +38,7 @@ object ToolbarUtil {
             }
 
             "queued" -> Icons.Watch
-            "in_progress" -> SpinningProgressIcon()
+            "in_progress" -> AnimatedIcon.Default.INSTANCE
             "neutral" -> Icons.PrimitiveDot
             "success" -> AllIcons.Actions.Commit
             "failure" -> Icons.X

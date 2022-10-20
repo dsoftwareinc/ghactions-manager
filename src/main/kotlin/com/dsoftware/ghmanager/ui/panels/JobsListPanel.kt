@@ -4,9 +4,9 @@ package com.dsoftware.ghmanager.ui.panels
 import WorkflowRunJob
 import WorkflowRunJobs
 import com.dsoftware.ghmanager.actions.ActionKeys
-import com.dsoftware.ghmanager.ui.ToolbarUtil
 import com.dsoftware.ghmanager.data.JobListSelectionHolder
 import com.dsoftware.ghmanager.data.WorkflowRunSelectionContext
+import com.dsoftware.ghmanager.ui.ToolbarUtil
 import com.intellij.collaboration.ui.SingleValueModel
 import com.intellij.ide.CopyProvider
 import com.intellij.openapi.actionSystem.*
@@ -22,6 +22,7 @@ import net.miginfocom.layout.CC
 import net.miginfocom.layout.LC
 import net.miginfocom.swing.MigLayout
 import java.awt.Component
+import java.awt.Window
 import java.awt.event.FocusEvent
 import java.awt.event.FocusListener
 import java.awt.event.MouseEvent
@@ -86,6 +87,10 @@ class JobList(model: ListModel<WorkflowRunJob>, private val infoInNewLine: Boole
             val secondaryTextColor = ListUiUtil.WithTallRow.secondaryForeground(list, isSelected)
 
             title.apply {
+                if (job.status == "in_progress") {
+                    val window = ClientProperty.findInHierarchy(this, AnimatedIcon.ANIMATION_IN_RENDERER_ALLOWED)
+                    ClientProperty.put(window as Window, AnimatedIcon.ANIMATION_IN_RENDERER_ALLOWED, true)
+                }
                 icon = ToolbarUtil.statusIcon(job.status, job.conclusion)
                 text = job.name
                 foreground = primaryTextColor

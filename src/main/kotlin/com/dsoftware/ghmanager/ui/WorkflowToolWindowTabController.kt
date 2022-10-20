@@ -25,6 +25,8 @@ import com.intellij.openapi.editor.impl.softwrap.SoftWrapAppliancePlaces
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.util.Key
+import com.intellij.ui.AnimatedIcon
+import com.intellij.ui.ClientProperty
 import com.intellij.ui.OnePixelSplitter
 import com.intellij.ui.components.JBPanelWithEmptyText
 import com.intellij.ui.content.Content
@@ -38,8 +40,6 @@ import org.jetbrains.plugins.github.pullrequest.ui.GHLoadingModel
 import org.jetbrains.plugins.github.pullrequest.ui.GHLoadingPanelFactory
 import org.jetbrains.plugins.github.util.GHGitRepositoryMapping
 import java.awt.BorderLayout
-import java.awt.event.FocusEvent
-import java.awt.event.FocusListener
 import javax.swing.JComponent
 import kotlin.properties.Delegates
 
@@ -82,6 +82,12 @@ class WorkflowToolWindowTabController(
                 settingsService
             )
         }
+        loadingModel.addStateChangeListener(object :GHLoadingModel.StateChangeListener{
+            override fun onLoadingCompleted() {
+                tab.putUserData(WorkflowRunListLoader.KEY, loadingModel.result?.runsListLoader)
+            }
+        })
+
 
         val errorHandler = GHApiLoadingErrorHandler(project, ghAccount) {
             val contextRepository = dataContextRepository
@@ -112,20 +118,9 @@ class WorkflowToolWindowTabController(
             add(panel, BorderLayout.CENTER)
             revalidate()
             repaint()
-            addFocusListener(object : FocusListener {
-                override fun focusGained(e: FocusEvent?) {
-                    if (loadingModel.resultAvailable) {
-                        loadingModel.result?.runsListLoader?.refreshRuns = true
-                    }
-                }
 
-                override fun focusLost(e: FocusEvent?) {
-                    loadingModel.result?.runsListLoader?.refreshRuns = false
-                }
-
-            })
+            ClientProperty.put(this, AnimatedIcon.ANIMATION_IN_RENDERER_ALLOWED, true)
         }
-        tab.isSelected
     }
 
     private fun createContent(

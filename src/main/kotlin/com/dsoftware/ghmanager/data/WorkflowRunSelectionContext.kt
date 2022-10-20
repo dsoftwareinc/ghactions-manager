@@ -21,7 +21,6 @@ import org.jetbrains.plugins.github.api.GithubServerPath
 import java.util.EventListener
 import java.util.concurrent.ScheduledFuture
 import java.util.concurrent.TimeUnit
-import javax.swing.ListModel
 import kotlin.properties.Delegates
 
 
@@ -153,19 +152,21 @@ class WorkflowRunSelectionContext internal constructor(
     }
 
     private fun setNewJobsProvider() {
-        val oldJobDataProviderModelValue = jobDataProviderLoadModel.value
-        if (oldJobDataProviderModelValue != null && jobsDataProvider != null && oldJobDataProviderModelValue.url() != jobsDataProvider?.url()) {
+        val oldValue = jobDataProviderLoadModel.value
+        val newValue = jobsDataProvider
+        if (newValue != null && oldValue?.url() != newValue.url()) {
             jobDataProviderLoadModel.value = null
+            jobDataProviderLoadModel.value = newValue
         }
-        jobDataProviderLoadModel.value = jobsDataProvider
     }
 
     private fun setNewLogProvider() {
         val oldValue = logDataProviderLoadModel.value
-        if (oldValue != null && logsDataProvider != null && oldValue.url() != logsDataProvider?.url()) {
-            logDataProviderLoadModel.value = null
+        val newValue = logsDataProvider
+        if (newValue != null && oldValue?.url() != newValue.url()) {
+
+            logDataProviderLoadModel.value = newValue
         }
-        logDataProviderLoadModel.value = logsDataProvider
     }
 
     fun resetAllData() {

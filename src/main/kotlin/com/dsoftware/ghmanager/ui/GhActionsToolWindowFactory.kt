@@ -1,6 +1,7 @@
 package com.dsoftware.ghmanager.ui
 
 import com.dsoftware.ghmanager.data.WorkflowDataContextRepository
+import com.dsoftware.ghmanager.data.WorkflowRunListLoader
 import com.dsoftware.ghmanager.ui.settings.GhActionsManagerConfigurable
 import com.dsoftware.ghmanager.ui.settings.GhActionsSettingsService
 import com.dsoftware.ghmanager.ui.settings.GithubActionsManagerSettings
@@ -15,10 +16,10 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.wm.ToolWindow
 import com.intellij.openapi.wm.ToolWindowFactory
-import com.intellij.ui.AnimatedIcon.ANIMATION_IN_RENDERER_ALLOWED
-import com.intellij.ui.ClientProperty
 import com.intellij.ui.SimpleTextAttributes
 import com.intellij.ui.components.JBPanelWithEmptyText
+import com.intellij.ui.content.ContentManagerEvent
+import com.intellij.ui.content.ContentManagerListener
 import org.jetbrains.plugins.github.authentication.GithubAuthenticationManager
 import org.jetbrains.plugins.github.authentication.accounts.GithubAccount
 import org.jetbrains.plugins.github.pullrequest.data.provider.GHPRDataOperationsListener
@@ -181,6 +182,13 @@ class GhActionsToolWindowFactory : ToolWindowFactory {
             val actionManager = ActionManager.getInstance()
             toolWindow.setAdditionalGearActions(DefaultActionGroup(actionManager.getAction("Github.Actions.Manager.Settings.Open")))
             val dataContextRepository = WorkflowDataContextRepository.getInstance(project)
+            toolWindow.contentManager.addContentManagerListener(object : ContentManagerListener {
+                override fun selectionChanged(event: ContentManagerEvent) {
+                    val content = event.content
+                    val runListLoader = content.getUserData(WorkflowRunListLoader.KEY)
+                    runListLoader?.refreshRuns = content.isSelected
+                }
+            })
             knownRepositories
                 .filter { settingsService.state.customRepos[it.gitRemoteUrlCoordinates.url]?.included ?: false }
                 .forEach { repo ->
@@ -190,19 +198,19 @@ class GhActionsToolWindowFactory : ToolWindowFactory {
                         toolWindow.contentManager.addContent(
                             toolWindow.contentManager.factory.createContent(JPanel(null), repo.repositoryPath, false)
                                 .apply {
-                                    ClientProperty.put(this.component, ANIMATION_IN_RENDERER_ALLOWED, true)
                                     isCloseable = false
                                     setDisposer(Disposer.newDisposable("GitHubWorkflow tab disposable"))
-
+                                    val controller = WorkflowToolWindowTabController(
+                                        project,
+                                        settingsService.state.customRepos[repo.gitRemoteUrlCoordinates.url]!!,
+                                        repo,
+                                        ghAccount,
+                                        dataContextRepository,
+                                        this
+                                    )
                                     this.putUserData(
                                         WorkflowToolWindowTabController.KEY,
-                                        WorkflowToolWindowTabController(
-                                            project,
-                                            settingsService.state.customRepos[repo.gitRemoteUrlCoordinates.url]!!,
-                                            repo,
-                                            ghAccount,
-                                            dataContextRepository,
-                                            this)
+                                        controller
                                     )
                                 })
                     } else {
@@ -219,7 +227,8 @@ class GhActionsToolWindowFactory : ToolWindowFactory {
                                 )
                             )
                         toolWindow.contentManager.addContent(
-                            toolWindow.contentManager.factory.createContent(emptyTextPanel, repo.repositoryPath, false))
+                            toolWindow.contentManager.factory.createContent(emptyTextPanel, repo.repositoryPath, false)
+                        )
                     }
                 }
         }

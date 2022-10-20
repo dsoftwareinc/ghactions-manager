@@ -2,11 +2,13 @@ package com.dsoftware.ghmanager.data
 
 import com.dsoftware.ghmanager.api.Workflows
 import com.dsoftware.ghmanager.api.model.GitHubWorkflowRun
+import com.dsoftware.ghmanager.ui.WorkflowToolWindowTabController
 import com.dsoftware.ghmanager.ui.settings.GhActionsSettingsService
 import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.util.Disposer
+import com.intellij.openapi.util.Key
 import com.intellij.ui.CollectionListModel
 import com.intellij.util.concurrency.AppExecutorUtil
 import com.intellij.vcs.log.runInEdt
@@ -88,6 +90,7 @@ class WorkflowRunListLoader(
     }
 
     companion object {
+        val KEY = Key.create<WorkflowRunListLoader>("Github.Actions.ToolWindow.Tab.Controller")
         private val LOG = logger<WorkflowRunListLoader>()
     }
 }
