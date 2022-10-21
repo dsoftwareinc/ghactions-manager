@@ -268,7 +268,7 @@ class WorkflowToolWindowTabController(
 
         fun getJobName(): String? {
             val jobName = jobsSelectionHolder.selection?.name
-            val removeChars = setOf('<', '>', '/')
+            val removeChars = setOf('<', '>', '/', ':')
             return jobName?.filterNot {
                 removeChars.contains(it)
             }?.trim()
