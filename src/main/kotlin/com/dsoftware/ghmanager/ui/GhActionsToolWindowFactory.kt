@@ -5,6 +5,7 @@ import com.dsoftware.ghmanager.ui.settings.GhActionsManagerConfigurable
 import com.dsoftware.ghmanager.ui.settings.GhActionsSettingsService
 import com.dsoftware.ghmanager.ui.settings.GithubActionsManagerSettings
 import com.intellij.collaboration.auth.AccountsListener
+import com.intellij.openapi.Disposable
 import com.intellij.openapi.actionSystem.ActionManager
 import com.intellij.openapi.actionSystem.ActionPlaces
 import com.intellij.openapi.actionSystem.DefaultActionGroup
@@ -186,7 +187,7 @@ class GhActionsToolWindowFactory : ToolWindowFactory {
             toolWindow.setAdditionalGearActions(DefaultActionGroup(actionManager.getAction("Github.Actions.Manager.Settings.Open")))
             val dataContextRepository = WorkflowDataContextRepository.getInstance(project)
             knownRepositories
-                .filter { settingsService.state.customRepos[it.gitRemoteUrlCoordinates.url]?.included ?: false }
+                .filter { !settingsService.state.useCustomRepos || (settingsService.state.customRepos[it.gitRemoteUrlCoordinates.url]?.included ?: false) }
                 .forEach { repo ->
                     val ghAccount = guessAccountForRepository(repo)
                     if (ghAccount != null) {
@@ -196,7 +197,8 @@ class GhActionsToolWindowFactory : ToolWindowFactory {
                             JPanel(null), repo.repositoryPath, false
                         ).apply {
                             isCloseable = false
-                            setDisposer(toolWindow.disposable)
+                            val disposable = Disposer.newDisposable("gha-manager ${repo.repositoryPath} tab disposable")
+                            setDisposer(disposable)
                             displayName = repoSettings.customName.ifEmpty { repo.repositoryPath }
                         }
                         val controller = WorkflowToolWindowTabController(

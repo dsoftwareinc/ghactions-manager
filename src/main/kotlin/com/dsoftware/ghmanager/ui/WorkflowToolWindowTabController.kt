@@ -38,6 +38,7 @@ import org.jetbrains.plugins.github.pullrequest.ui.GHLoadingPanelFactory
 import org.jetbrains.plugins.github.util.GHGitRepositoryMapping
 import java.awt.BorderLayout
 import javax.swing.JComponent
+import kotlin.properties.Delegates
 
 class WorkflowToolWindowTabController(
     private val project: Project,
@@ -53,12 +54,19 @@ class WorkflowToolWindowTabController(
     private val ghRequestExecutor = GithubApiRequestExecutorManager.getInstance().getExecutor(ghAccount)
     private val disposable = Disposer.newDisposable()
     val panel: JComponent
+    private var contentDisposable by Delegates.observable<Disposable?>(null) { _, oldValue, newValue ->
+        if (oldValue != null) Disposer.dispose(oldValue)
+        if (newValue != null) Disposer.register(parentDisposable, newValue)
+    }
 
     init {
         Disposer.register(parentDisposable, disposable)
         val repository = repositoryMapping.ghRepositoryCoordinates
         val remote = repositoryMapping.gitRemoteUrlCoordinates
-
+        contentDisposable = Disposable {
+            Disposer.dispose(disposable)
+            dataContextRepository.clearContext(repository)
+        }
         loadingModel = GHCompletableFutureLoadingModel<WorkflowRunSelectionContext>(disposable).apply {
             future = dataContextRepository.acquireContext(
                 disposable,
@@ -265,8 +273,8 @@ class WorkflowToolWindowTabController(
 
         fun getJobName(): String? {
             val jobName = jobsSelectionHolder.selection?.name
-            val removeChars = setOf('<','>','/')
-            return jobName?.filterNot{
+            val removeChars = setOf('<', '>', '/')
+            return jobName?.filterNot {
                 removeChars.contains(it)
             }?.trim()
         }
