@@ -200,24 +200,25 @@ class GhActionsToolWindowFactory : ToolWindowFactory {
                             val disposable = Disposer.newDisposable("gha-manager ${repo.repositoryPath} tab disposable")
                             setDisposer(disposable)
                             displayName = repoSettings.customName.ifEmpty { repo.repositoryPath }
+                            val controller = WorkflowToolWindowTabController(
+                                project,
+                                repo,
+                                ghAccount,
+                                dataContextRepository,
+                                this.disposer!!,
+                                toolWindow
+                            )
+                            component.apply {
+                                layout = BorderLayout()
+                                background = UIUtil.getListBackground()
+                                removeAll()
+                                add(controller.panel, BorderLayout.CENTER)
+                                revalidate()
+                                repaint()
+                            }
+                            putUserData(WorkflowToolWindowTabController.KEY, controller)
                         }
-                        val controller = WorkflowToolWindowTabController(
-                            project,
-                            repo,
-                            ghAccount,
-                            dataContextRepository,
-                            tab.disposer!!,
-                            toolWindow
-                        )
-                        tab.component.apply {
-                            layout = BorderLayout()
-                            background = UIUtil.getListBackground()
-                            removeAll()
-                            add(controller.panel, BorderLayout.CENTER)
-                            revalidate()
-                            repaint()
-                        }
-                        tab.putUserData(WorkflowToolWindowTabController.KEY, controller)
+
                         toolWindow.contentManager.addContent(tab)
                     } else {
                         val emptyTextPanel = JBPanelWithEmptyText()
@@ -240,8 +241,10 @@ class GhActionsToolWindowFactory : ToolWindowFactory {
             toolWindow.contentManager.addContentManagerListener(object : ContentManagerListener {
                 override fun selectionChanged(event: ContentManagerEvent) {
                     val content = event.content
-                    content.getUserData(WorkflowToolWindowTabController.KEY)?.let {
-                        it.loadingModel.result?.runsListLoader?.refreshRuns = content.isSelected
+                    val controller = content.getUserData(WorkflowToolWindowTabController.KEY)
+                    LOG.debug("Got selectionChanged event: ${content.displayName}: controller=${controller != null}, isSelected=${content.isSelected}")
+                    controller?.apply {
+                        this.loadingModel.result?.runsListLoader?.refreshRuns = content.isSelected
                     }
                 }
             })
