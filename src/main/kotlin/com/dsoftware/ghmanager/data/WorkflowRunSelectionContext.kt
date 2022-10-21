@@ -18,7 +18,7 @@ import org.jetbrains.plugins.github.api.GHRepositoryPath
 import org.jetbrains.plugins.github.api.GithubApiRequest
 import org.jetbrains.plugins.github.api.GithubApiRequestExecutor
 import org.jetbrains.plugins.github.api.GithubServerPath
-import java.util.EventListener
+import java.util.*
 import java.util.concurrent.ScheduledFuture
 import java.util.concurrent.TimeUnit
 import kotlin.properties.Delegates

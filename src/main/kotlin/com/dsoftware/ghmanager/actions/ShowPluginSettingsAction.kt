@@ -7,7 +7,7 @@ import com.intellij.openapi.options.ShowSettingsUtil
 import com.intellij.openapi.project.DumbAwareAction
 
 class ShowPluginSettingsAction
-    : DumbAwareAction("Open GHActions-Manager Settings",null, AllIcons.General.Settings) {
+    : DumbAwareAction("Open GHActions-Manager Settings", null, AllIcons.General.Settings) {
     override fun actionPerformed(e: AnActionEvent) {
         ShowSettingsUtil.getInstance().showSettingsDialog(
             e.getProject(), ToolbarUtil.SETTINGS_DISPLAY_NAME

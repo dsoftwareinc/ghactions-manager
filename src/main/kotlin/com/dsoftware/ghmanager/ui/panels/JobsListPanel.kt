@@ -4,8 +4,6 @@ package com.dsoftware.ghmanager.ui.panels
 import WorkflowRunJob
 import WorkflowRunJobs
 import com.dsoftware.ghmanager.actions.ActionKeys
-import com.dsoftware.ghmanager.data.JobListSelectionHolder
-import com.dsoftware.ghmanager.data.ListSelectionHolder
 import com.dsoftware.ghmanager.data.WorkflowRunSelectionContext
 import com.dsoftware.ghmanager.ui.ToolbarUtil
 import com.intellij.collaboration.ui.SingleValueModel
@@ -23,12 +21,9 @@ import net.miginfocom.layout.LC
 import net.miginfocom.swing.MigLayout
 import java.awt.Component
 import java.awt.Window
-import java.awt.event.FocusEvent
-import java.awt.event.FocusListener
 import java.awt.event.MouseEvent
 import java.time.Duration
 import javax.swing.*
-import javax.swing.event.ListSelectionEvent
 
 
 class JobList(model: ListModel<WorkflowRunJob>, private val infoInNewLine: Boolean) : JBList<WorkflowRunJob>(model),

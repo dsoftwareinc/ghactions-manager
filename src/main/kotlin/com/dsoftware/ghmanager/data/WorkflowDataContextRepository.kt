@@ -1,6 +1,5 @@
 package com.dsoftware.ghmanager.data
 
-import com.dsoftware.ghmanager.api.model.GitHubWorkflowRun
 import com.dsoftware.ghmanager.ui.settings.GhActionsSettingsService
 import com.intellij.collaboration.async.CompletableFutureUtil.submitIOTask
 import com.intellij.collaboration.async.CompletableFutureUtil.successOnEdt
@@ -12,13 +11,13 @@ import com.intellij.openapi.progress.ProcessCanceledException
 import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Disposer
-import com.intellij.ui.CollectionListModel
+import com.intellij.openapi.wm.ToolWindow
 import com.intellij.util.concurrency.annotations.RequiresBackgroundThread
 import com.intellij.util.concurrency.annotations.RequiresEdt
 import org.jetbrains.plugins.github.api.GHRepositoryCoordinates
-import org.jetbrains.plugins.github.api.GithubApiRequestExecutor
+import org.jetbrains.plugins.github.api.GithubApiRequestExecutorManager
 import org.jetbrains.plugins.github.authentication.accounts.GithubAccount
-import org.jetbrains.plugins.github.pullrequest.data.GHListLoader
+import org.jetbrains.plugins.github.util.GHGitRepositoryMapping
 import org.jetbrains.plugins.github.util.GitRemoteUrlCoordinates
 import org.jetbrains.plugins.github.util.GithubUrlUtil
 import org.jetbrains.plugins.github.util.LazyCancellableBackgroundProcessValue
@@ -36,9 +35,8 @@ class WorkflowDataContextRepository {
     fun getContext(
         disposable: Disposable,
         account: GithubAccount,
-        requestExecutor: GithubApiRequestExecutor,
         gitRemoteCoordinates: GitRemoteUrlCoordinates,
-        settingsService: GhActionsSettingsService,
+        toolWindow: ToolWindow,
     ): WorkflowRunSelectionContext {
         LOG.debug("Get User and  repository")
         val fullPath = GithubUrlUtil.getUserAndRepositoryFromRemoteUrl(gitRemoteCoordinates.url)
@@ -47,6 +45,7 @@ class WorkflowDataContextRepository {
             )
         val repositoryCoordinates = RepositoryCoordinates(account.server, fullPath)
         LOG.debug("Create WorkflowDataLoader")
+        val requestExecutor = GithubApiRequestExecutorManager.getInstance().getExecutor(account)
         val singleRunDataLoader = SingleRunDataLoader(requestExecutor)
         requestExecutor.addListener(singleRunDataLoader) {
             singleRunDataLoader.invalidateAllData()
@@ -55,7 +54,7 @@ class WorkflowDataContextRepository {
             ProgressManager.getInstance(),
             requestExecutor,
             repositoryCoordinates,
-            settingsService
+            settingsService = GhActionsSettingsService.getInstance(toolWindow.project)
         )
 
         return WorkflowRunSelectionContext(
@@ -68,18 +67,18 @@ class WorkflowDataContextRepository {
     @RequiresEdt
     fun acquireContext(
         disposable: Disposable,
-        repository: GHRepositoryCoordinates, remote: GitRemoteUrlCoordinates,
-        account: GithubAccount, requestExecutor: GithubApiRequestExecutor,
-        settingsService: GhActionsSettingsService,
+        repositoryMapping: GHGitRepositoryMapping,
+        account: GithubAccount,
+        toolWindow: ToolWindow,
     ): CompletableFuture<WorkflowRunSelectionContext> {
-        return repositories.getOrPut(repository) {
+        return repositories.getOrPut(repositoryMapping.ghRepositoryCoordinates) {
             val contextDisposable = Disposer.newDisposable("contextDisposable")
             Disposer.register(disposable, contextDisposable)
 
             LazyCancellableBackgroundProcessValue.create { indicator ->
                 ProgressManager.getInstance().submitIOTask(indicator) {
                     try {
-                        getContext(contextDisposable, account, requestExecutor, remote, settingsService)
+                        getContext(contextDisposable, account, repositoryMapping.gitRemoteUrlCoordinates, toolWindow)
                     } catch (e: Exception) {
                         if (e !is ProcessCanceledException) LOG.warn("Error occurred while creating data context", e)
                         throw e

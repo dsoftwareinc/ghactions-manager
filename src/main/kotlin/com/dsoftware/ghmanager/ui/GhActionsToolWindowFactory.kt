@@ -5,7 +5,6 @@ import com.dsoftware.ghmanager.ui.settings.GhActionsManagerConfigurable
 import com.dsoftware.ghmanager.ui.settings.GhActionsSettingsService
 import com.dsoftware.ghmanager.ui.settings.GithubActionsManagerSettings
 import com.intellij.collaboration.auth.AccountsListener
-import com.intellij.openapi.Disposable
 import com.intellij.openapi.actionSystem.ActionManager
 import com.intellij.openapi.actionSystem.ActionPlaces
 import com.intellij.openapi.actionSystem.DefaultActionGroup
@@ -16,8 +15,6 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.wm.ToolWindow
 import com.intellij.openapi.wm.ToolWindowFactory
-import com.intellij.ui.AnimatedIcon
-import com.intellij.ui.ClientProperty
 import com.intellij.ui.SimpleTextAttributes
 import com.intellij.ui.components.JBPanelWithEmptyText
 import com.intellij.ui.content.ContentManagerEvent
@@ -187,8 +184,11 @@ class GhActionsToolWindowFactory : ToolWindowFactory {
             toolWindow.setAdditionalGearActions(DefaultActionGroup(actionManager.getAction("Github.Actions.Manager.Settings.Open")))
             val dataContextRepository = WorkflowDataContextRepository.getInstance(project)
             knownRepositories
-                .filter { !settingsService.state.useCustomRepos || (settingsService.state.customRepos[it.gitRemoteUrlCoordinates.url]?.included ?: false) }
-                .forEach { repo ->
+                .filter {
+                    !settingsService.state.useCustomRepos || (settingsService.state.customRepos[it.gitRemoteUrlCoordinates.url]?.included
+                        ?: false)
+                }
+                .forEach() { repo ->
                     val ghAccount = guessAccountForRepository(repo)
                     if (ghAccount != null) {
                         LOG.info("adding panel for repo: ${repo.repositoryPath}, ${ghAccount.name}")
@@ -203,11 +203,11 @@ class GhActionsToolWindowFactory : ToolWindowFactory {
                         }
                         val controller = WorkflowToolWindowTabController(
                             project,
-                            repoSettings,
                             repo,
                             ghAccount,
                             dataContextRepository,
-                            tab.disposer!!
+                            tab.disposer!!,
+                            toolWindow
                         )
                         tab.component.apply {
                             layout = BorderLayout()
@@ -216,8 +216,6 @@ class GhActionsToolWindowFactory : ToolWindowFactory {
                             add(controller.panel, BorderLayout.CENTER)
                             revalidate()
                             repaint()
-
-                            ClientProperty.put(this, AnimatedIcon.ANIMATION_IN_RENDERER_ALLOWED, true)
                         }
                         tab.putUserData(WorkflowToolWindowTabController.KEY, controller)
                         toolWindow.contentManager.addContent(tab)

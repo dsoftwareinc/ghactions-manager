@@ -9,6 +9,7 @@ object ActionKeys {
     @JvmStatic
     val SELECTED_WORKFLOW_RUN =
         DataKey.create<GitHubWorkflowRun>("com.dsoftware.githubactionstab.workflow.list.selected")
+
     @JvmStatic
     val SELECTED_JOB =
         DataKey.create<WorkflowRunJob>("com.dsoftware.githubactionstab.workflow.jobs.selected")

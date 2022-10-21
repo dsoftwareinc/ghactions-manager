@@ -3,7 +3,6 @@ package com.dsoftware.ghmanager.data
 import WorkflowRunJobs
 import com.dsoftware.ghmanager.api.Workflows
 import com.intellij.openapi.Disposable
-import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.diagnostic.thisLogger
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.progress.ProgressManager
@@ -13,7 +12,7 @@ import org.jetbrains.plugins.github.api.GithubApiRequest
 import org.jetbrains.plugins.github.api.GithubApiRequestExecutor
 import org.jetbrains.plugins.github.util.LazyCancellableBackgroundProcessValue
 import java.io.IOException
-import java.util.EventListener
+import java.util.*
 import java.util.concurrent.CompletableFuture
 import kotlin.properties.ReadOnlyProperty
 
