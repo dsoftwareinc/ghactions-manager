@@ -45,7 +45,8 @@ class WorkflowRunListLoader(
         addDataListener(this, object : GHListLoader.ListDataListener {
             override fun onDataAdded(startIdx: Int) {
                 val loadedData = this@WorkflowRunListLoader.loadedData
-                listModel.add(loadedData.subList(startIdx, loadedData.size))
+                loadedData.sortWith { o1, o2 -> o2.run_number.compareTo(o1.run_number) }
+                listModel.replaceAll(loadedData)
             }
 
             override fun onDataUpdated(idx: Int) {

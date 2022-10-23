@@ -37,6 +37,7 @@ class JobList(model: ListModel<WorkflowRunJob>, private val infoInNewLine: Boole
         cellRenderer = renderer
         putClientProperty(UIUtil.NOT_IN_HIERARCHY_COMPONENTS, listOf(renderer))
         ScrollingUtil.installActions(this)
+        ClientProperty.put(this, AnimatedIcon.ANIMATION_IN_RENDERER_ALLOWED, true)
     }
 
     override fun getToolTipText(event: MouseEvent): String? {
@@ -80,10 +81,6 @@ class JobList(model: ListModel<WorkflowRunJob>, private val infoInNewLine: Boole
             val secondaryTextColor = ListUiUtil.WithTallRow.secondaryForeground(list, isSelected)
 
             title.apply {
-                if (job.status == "in_progress") {
-                    val window = ClientProperty.findInHierarchy(this, AnimatedIcon.ANIMATION_IN_RENDERER_ALLOWED)
-                    ClientProperty.put(window as Window, AnimatedIcon.ANIMATION_IN_RENDERER_ALLOWED, true)
-                }
                 icon = ToolbarUtil.statusIcon(job.status, job.conclusion)
                 text = job.name
                 foreground = primaryTextColor
