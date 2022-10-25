@@ -14,10 +14,9 @@ import com.intellij.ui.CollectionListModel
 import com.intellij.util.EventDispatcher
 import com.intellij.util.concurrency.AppExecutorUtil
 import com.intellij.util.concurrency.annotations.RequiresEdt
-import org.jetbrains.plugins.github.api.GHRepositoryPath
 import org.jetbrains.plugins.github.api.GithubApiRequest
 import org.jetbrains.plugins.github.api.GithubApiRequestExecutor
-import org.jetbrains.plugins.github.api.GithubServerPath
+import org.jetbrains.plugins.github.util.GHGitRepositoryMapping
 import java.util.EventListener
 import java.util.concurrent.ScheduledFuture
 import java.util.concurrent.TimeUnit
@@ -84,13 +83,6 @@ class SingleRunDataLoader(
     }
 }
 
-data class RepositoryCoordinates(val serverPath: GithubServerPath, val repositoryPath: GHRepositoryPath) {
-
-    override fun toString(): String {
-        return "$serverPath/$repositoryPath"
-    }
-}
-
 open class ListSelectionHolder<T> {
 
     @get:RequiresEdt
@@ -114,6 +106,7 @@ class WorkflowRunSelectionContext internal constructor(
     parentDisposable: Disposable,
     val dataLoader: SingleRunDataLoader,
     val runsListLoader: WorkflowRunListLoader,
+    val repositoryMapping: GHGitRepositoryMapping,
     val runSelectionHolder: WorkflowRunListSelectionHolder = WorkflowRunListSelectionHolder(),
     val jobSelectionHolder: JobListSelectionHolder = JobListSelectionHolder(),
 ) : Disposable {

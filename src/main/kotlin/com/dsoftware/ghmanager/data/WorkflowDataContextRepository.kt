@@ -15,7 +15,9 @@ import com.intellij.openapi.wm.ToolWindow
 import com.intellij.util.concurrency.annotations.RequiresBackgroundThread
 import com.intellij.util.concurrency.annotations.RequiresEdt
 import org.jetbrains.plugins.github.api.GHRepositoryCoordinates
+import org.jetbrains.plugins.github.api.GHRepositoryPath
 import org.jetbrains.plugins.github.api.GithubApiRequestExecutorManager
+import org.jetbrains.plugins.github.api.GithubServerPath
 import org.jetbrains.plugins.github.authentication.accounts.GithubAccount
 import org.jetbrains.plugins.github.util.GHGitRepositoryMapping
 import org.jetbrains.plugins.github.util.GitRemoteUrlCoordinates
@@ -23,6 +25,14 @@ import org.jetbrains.plugins.github.util.GithubUrlUtil
 import org.jetbrains.plugins.github.util.LazyCancellableBackgroundProcessValue
 import java.io.IOException
 import java.util.concurrent.CompletableFuture
+
+data class RepositoryCoordinates(
+    val serverPath: GithubServerPath, val repositoryPath: GHRepositoryPath
+) {
+    override fun toString(): String {
+        return "$serverPath/$repositoryPath"
+    }
+}
 
 @Service
 class WorkflowDataContextRepository {
@@ -35,13 +45,13 @@ class WorkflowDataContextRepository {
     fun getContext(
         disposable: Disposable,
         account: GithubAccount,
-        gitRemoteCoordinates: GitRemoteUrlCoordinates,
+        repositoryMapping: GHGitRepositoryMapping,
         toolWindow: ToolWindow,
     ): WorkflowRunSelectionContext {
         LOG.debug("Get User and  repository")
-        val fullPath = GithubUrlUtil.getUserAndRepositoryFromRemoteUrl(gitRemoteCoordinates.url)
+        val fullPath = GithubUrlUtil.getUserAndRepositoryFromRemoteUrl(repositoryMapping.gitRemoteUrlCoordinates.url)
             ?: throw IllegalArgumentException(
-                "Invalid GitHub Repository URL - ${gitRemoteCoordinates.url} is not a GitHub repository"
+                "Invalid GitHub Repository URL - ${repositoryMapping.gitRemoteUrlCoordinates.url} is not a GitHub repository"
             )
         val repositoryCoordinates = RepositoryCoordinates(account.server, fullPath)
         LOG.debug("Create WorkflowDataLoader")
@@ -60,7 +70,8 @@ class WorkflowDataContextRepository {
         return WorkflowRunSelectionContext(
             disposable,
             singleRunDataLoader,
-            listLoader
+            listLoader,
+            repositoryMapping,
         )
     }
 
@@ -78,7 +89,7 @@ class WorkflowDataContextRepository {
             LazyCancellableBackgroundProcessValue.create { indicator ->
                 ProgressManager.getInstance().submitIOTask(indicator) {
                     try {
-                        getContext(contextDisposable, account, repositoryMapping.gitRemoteUrlCoordinates, toolWindow)
+                        getContext(contextDisposable, account, repositoryMapping, toolWindow)
                     } catch (e: Exception) {
                         if (e !is ProcessCanceledException) LOG.warn("Error occurred while creating data context", e)
                         throw e
