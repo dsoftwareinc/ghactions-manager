@@ -20,7 +20,7 @@
         <projectConfigurable
             parentId="tools"
             instance="com.dsoftware.ghmanager.ui.settings.GhActionsManagerConfigurable"
-            />
+        />
     </extensions>
     <actions>
         <action
@@ -49,10 +49,12 @@
                     class="com.dsoftware.ghmanager.actions.RerunWorkflowAction"/>
             <action id="Github.Workflow.Cancel"
                     class="com.dsoftware.ghmanager.actions.CancelWorkflowAction"/>
+            <action id="Github.Workflow.OpenFile"
+                    class="com.dsoftware.ghmanager.actions.OpenWorkflowFileAction"/>
             <reference id="Github.Workflow.List.Reload"/>
         </group>
         <group id="Github.ToolWindow.JobList.Popup">
-<!--            <reference id="Github.Workflow.JobList.Reload"/>-->
+            <!--            <reference id="Github.Workflow.JobList.Reload"/>-->
         </group>
 
         <group id="Github.ToolWindow.JobList.Popup.Selected">
@@ -60,7 +62,7 @@
                     class="com.dsoftware.ghmanager.actions.JobOpenInBrowserAction"/>
             <action id="Github.Workflow.Job.List.Reload"
                     class="com.dsoftware.ghmanager.actions.ReloadJobsAction"/>
-<!--            <reference id="Github.Workflow.Jobs.List.Reload"/>-->
+            <!--            <reference id="Github.Workflow.Jobs.List.Reload"/>-->
         </group>
 
         <group id="Github.Workflow.Log.ToolWindow.List.Popup">

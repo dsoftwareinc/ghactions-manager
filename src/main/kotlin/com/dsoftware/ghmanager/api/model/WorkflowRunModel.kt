@@ -10,7 +10,7 @@ data class GitHubWorkflowRuns(
 
 data class GitHubWorkflowRun(
     val id: Long,
-    val path: String,
+    val path: String?,
     val node_id: String,
     val head_branch: String?,
     val head_sha: String?,
