@@ -11,6 +11,10 @@ object ActionKeys {
         DataKey.create<GitHubWorkflowRun>("com.dsoftware.githubactionstab.workflow.list.selected")
 
     @JvmStatic
+    val SELECTED_WORKFLOW_RUN_FILEPATH =
+        DataKey.create<String>("com.dsoftware.githubactionstab.workflow.list.selected.path")
+
+    @JvmStatic
     val SELECTED_JOB =
         DataKey.create<WorkflowRunJob>("com.dsoftware.githubactionstab.workflow.jobs.selected")
 

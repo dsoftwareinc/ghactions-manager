@@ -57,6 +57,7 @@ class WorkflowRunList(model: ListModel<GitHubWorkflowRun>)
     override fun getData(dataId: String): Any? = when {
         PlatformDataKeys.COPY_PROVIDER.`is`(dataId) -> this
         ActionKeys.SELECTED_WORKFLOW_RUN.`is`(dataId) -> selectedValue
+        ActionKeys.SELECTED_WORKFLOW_RUN_FILEPATH.`is`(dataId) -> selectedValue?.path
         else -> null
     }
 

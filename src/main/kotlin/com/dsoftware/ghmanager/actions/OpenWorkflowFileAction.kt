@@ -10,17 +10,17 @@ import com.intellij.openapi.fileEditor.OpenFileDescriptor
 
 class OpenWorkflowFileAction : RefreshAction("Open Workflow File", null, AllIcons.General.OpenDisk) {
     override fun update(e: AnActionEvent) {
-        val selection = e.getData(ActionKeys.ACTION_DATA_CONTEXT)?.runSelectionHolder?.selection
-        e.presentation.isEnabled = selection != null
+        val path = e.getData(ActionKeys.SELECTED_WORKFLOW_RUN_FILEPATH)
+        e.presentation.isEnabled = path != null
     }
 
     override fun actionPerformed(e: AnActionEvent) {
         LOG.debug("GitHubWorkflowLogReloadAction action performed")
-        val selection = e.getRequiredData(ActionKeys.ACTION_DATA_CONTEXT).runSelectionHolder.selection
+        val path = e.getRequiredData(ActionKeys.SELECTED_WORKFLOW_RUN_FILEPATH)
         val rootDirectory = e.getRequiredData(ActionKeys.ACTION_DATA_CONTEXT).repositoryMapping.gitRepository.root
         val project = e.project ?: return
-        selection?.let {
-            val file = rootDirectory.findFileByRelativePath(it.path) ?: return
+        path?.let {
+            val file = rootDirectory.findFileByRelativePath(it) ?: return
             FileEditorManager.getInstance(project).openTextEditor(
                 OpenFileDescriptor(project, file),
                 true // request focus to editor
