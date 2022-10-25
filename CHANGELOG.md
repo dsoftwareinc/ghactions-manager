@@ -3,6 +3,12 @@
 # ghactions-manager Changelog
 
 ## [Unreleased]
+## [1.5.4]
+### Added
+* Open workflow file action
+### Fixed
+* Update workflow run state
+
 
 ## [1.5.1]
 ### Fixed
