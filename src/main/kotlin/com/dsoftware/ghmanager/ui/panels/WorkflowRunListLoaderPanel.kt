@@ -34,8 +34,8 @@ import javax.swing.*
 import javax.swing.event.ListDataEvent
 import javax.swing.event.ListDataListener
 
-class WorkflowRunList(model: ListModel<GitHubWorkflowRun>) : JBList<GitHubWorkflowRun>(model), DataProvider,
-    CopyProvider {
+class WorkflowRunList(model: ListModel<GitHubWorkflowRun>)
+    : JBList<GitHubWorkflowRun>(model), DataProvider, CopyProvider {
 
     init {
         selectionModel.selectionMode = ListSelectionModel.SINGLE_SELECTION
@@ -45,6 +45,7 @@ class WorkflowRunList(model: ListModel<GitHubWorkflowRun>) : JBList<GitHubWorkfl
         putClientProperty(UIUtil.NOT_IN_HIERARCHY_COMPONENTS, listOf(renderer))
 
         ScrollingUtil.installActions(this)
+        ClientProperty.put(this, AnimatedIcon.ANIMATION_IN_RENDERER_ALLOWED, true)
     }
 
     override fun getToolTipText(event: MouseEvent): String? {
@@ -127,9 +128,15 @@ class WorkflowRunList(model: ListModel<GitHubWorkflowRun>) : JBList<GitHubWorkfl
 
 internal class WorkflowRunListLoaderPanel(
     disposable: Disposable,
-    private val workflowRunsLoader: WorkflowRunListLoader,
-    private val runListComponent: WorkflowRunList
+    private val context: WorkflowRunSelectionContext,
 ) : BorderLayoutPanel(), Disposable {
+    private val runListComponent: WorkflowRunList = WorkflowRunList(context.runsListModel)
+        .apply {
+            emptyText.clear()
+        }.also {
+            installPopup(it)
+            ToolbarUtil.installSelectionHolder(it, context.runSelectionHolder)
+        }
     private val scrollPane = ScrollPaneFactory.createScrollPane(
         runListComponent,
         ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
@@ -141,6 +148,8 @@ internal class WorkflowRunListLoaderPanel(
     }
     private val progressStripe: ProgressStripe
     private val infoPanel = HtmlInfoPanel()
+    private val workflowRunsLoader: WorkflowRunListLoader
+        get() = context.runsListLoader
 
     var errorHandler: LoadingErrorHandler? = null
 
@@ -260,38 +269,11 @@ internal class WorkflowRunListLoaderPanel(
             })
         }
 
-//        private fun installWorkflowRunSelectionSaver(
-//            list: WorkflowRunList,
-//            listSelectionHolder: WorkflowRunListSelectionHolder,
-//        ) {
-//
-//            list.selectionModel.addListSelectionListener { e: ListSelectionEvent ->
-//                if (!e.valueIsAdjusting) {
-//                    val selectedIndex = list.selectedIndex
-//                    if (selectedIndex >= 0 && selectedIndex < list.model.size) {
-//                        val currSelection = list.model.getElementAt(selectedIndex)
-//                        if (listSelectionHolder.selection != currSelection)
-//                            listSelectionHolder.selection = currSelection
-//
-//                    }
-//                }
-//            }
-//
-//        }
-
         fun createWorkflowRunsListComponent(
             context: WorkflowRunSelectionContext,
             disposable: Disposable,
         ): JComponent {
-            val list = WorkflowRunList(context.runsListModel).apply {
-                emptyText.clear()
-            }.also {
-
-                installPopup(it)
-                ToolbarUtil.installSelectionHolder(it, context.runSelectionHolder)
-            }
-
-            return WorkflowRunListLoaderPanel(disposable, context.runsListLoader, list)
+            return WorkflowRunListLoaderPanel(disposable, context)
         }
 
         private fun getLoadingErrorText(error: Throwable, newLineSeparator: String = "\n"): String {

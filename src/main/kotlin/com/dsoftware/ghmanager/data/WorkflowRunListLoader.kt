@@ -14,7 +14,6 @@ import com.intellij.vcs.log.runInEdt
 import org.jetbrains.plugins.github.api.GithubApiRequestExecutor
 import org.jetbrains.plugins.github.api.data.request.GithubRequestPagination
 import org.jetbrains.plugins.github.pullrequest.data.GHListLoader
-import org.jetbrains.plugins.github.pullrequest.data.GHListLoaderBase
 import java.util.concurrent.ScheduledFuture
 import java.util.concurrent.TimeUnit
 
@@ -79,9 +78,13 @@ class WorkflowRunListLoader(
         totalCount = response.total_count
         val result = response.workflow_runs
         if (update) {
-            val existingRunIds = loadedData.map { it.id }.toSet()
-            result.filter { existingRunIds.contains(it.id) }.forEach { run ->
-                updateData(run)
+            val existingRunIds = loadedData.mapIndexed { idx, it -> it.id to idx }.toMap()
+            result.filter { existingRunIds.containsKey(it.id) }.forEach { run ->
+                val index = existingRunIds[run.id] ?: -1
+                if (index > -1) {
+                    loadedData[index] = run
+                    dataEventDispatcher.multicaster.onDataUpdated(index)
+                }
             }
             return result.filter { !existingRunIds.contains(it.id) }
         }

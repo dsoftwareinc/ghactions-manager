@@ -18,7 +18,7 @@ import org.jetbrains.plugins.github.api.GHRepositoryPath
 import org.jetbrains.plugins.github.api.GithubApiRequest
 import org.jetbrains.plugins.github.api.GithubApiRequestExecutor
 import org.jetbrains.plugins.github.api.GithubServerPath
-import java.util.*
+import java.util.EventListener
 import java.util.concurrent.ScheduledFuture
 import java.util.concurrent.TimeUnit
 import kotlin.properties.Delegates
@@ -28,7 +28,6 @@ class SingleRunDataLoader(
     private val requestExecutor: GithubApiRequestExecutor
 ) : Disposable {
 
-    private var isDisposed = false
     private val cache = CacheBuilder.newBuilder()
         .removalListener<String, DataProvider<*>> {
             runInEdt { invalidationEventDispatcher.multicaster.providerChanged(it.key!!) }
@@ -40,7 +39,6 @@ class SingleRunDataLoader(
     private val invalidationEventDispatcher = EventDispatcher.create(DataInvalidatedListener::class.java)
 
     fun getLogsDataProvider(workflowRun: GitHubWorkflowRun): WorkflowRunLogsDataProvider {
-        if (isDisposed) throw IllegalStateException("Already disposed")
 
         return cache.get(workflowRun.logs_url) {
             WorkflowRunLogsDataProvider(progressManager, requestExecutor, workflowRun.logs_url)
@@ -49,7 +47,6 @@ class SingleRunDataLoader(
     }
 
     fun getJobsDataProvider(workflowRun: GitHubWorkflowRun): WorkflowRunJobsDataProvider {
-        if (isDisposed) throw IllegalStateException("Already disposed")
 
         return cache.get(workflowRun.jobs_url) {
             WorkflowRunJobsDataProvider(progressManager, requestExecutor, workflowRun.jobs_url)
@@ -57,7 +54,6 @@ class SingleRunDataLoader(
     }
 
     fun <T> createDataProvider(request: GithubApiRequest<T>): DataProvider<T> {
-        if (isDisposed) throw IllegalStateException("Already disposed")
         return DefaultDataProvider(progressManager, requestExecutor, request)
     }
 
@@ -65,10 +61,6 @@ class SingleRunDataLoader(
     fun invalidateAllData() {
         LOG.debug("All cache invalidated")
         cache.invalidateAll()
-    }
-
-    private interface DataInvalidatedListener : EventListener {
-        fun providerChanged(url: String)
     }
 
     fun addInvalidationListener(disposable: Disposable, listener: (String) -> Unit) =
@@ -79,14 +71,16 @@ class SingleRunDataLoader(
         }, disposable)
 
     override fun dispose() {
-        LOG.debug("Disposing...")
         invalidateAllData()
-        isDisposed = true
     }
 
     companion object {
         private val LOG = logger<SingleRunDataLoader>()
         private val progressManager = ProgressManager.getInstance()
+    }
+
+    private interface DataInvalidatedListener : EventListener {
+        fun providerChanged(url: String)
     }
 }
 
@@ -123,12 +117,19 @@ class WorkflowRunSelectionContext internal constructor(
     val runSelectionHolder: WorkflowRunListSelectionHolder = WorkflowRunListSelectionHolder(),
     val jobSelectionHolder: JobListSelectionHolder = JobListSelectionHolder(),
 ) : Disposable {
-    val jobDataProviderLoadModel: SingleValueModel<WorkflowRunJobsDataProvider?> = SingleValueModel(null)
-    val logDataProviderLoadModel: SingleValueModel<WorkflowRunLogsDataProvider?> = SingleValueModel(null)
     private val frequency: Long = runsListLoader.frequency
     private val task: ScheduledFuture<*>
     val runsListModel: CollectionListModel<GitHubWorkflowRun>
         get() = runsListLoader.listModel
+    private val workflowRun: GitHubWorkflowRun?
+        get() = runSelectionHolder.selection
+    val jobDataProviderLoadModel: SingleValueModel<WorkflowRunJobsDataProvider?> = SingleValueModel(null)
+    val logDataProviderLoadModel: SingleValueModel<WorkflowRunLogsDataProvider?> = SingleValueModel(null)
+
+    val logsDataProvider: WorkflowRunLogsDataProvider?
+        get() = workflowRun?.let { dataLoader.getLogsDataProvider(it) }
+    val jobsDataProvider: WorkflowRunJobsDataProvider?
+        get() = workflowRun?.let { dataLoader.getJobsDataProvider(it) }
 
     init {
         Disposer.register(parentDisposable, dataLoader)
@@ -145,9 +146,12 @@ class WorkflowRunSelectionContext internal constructor(
         }
         val scheduler = AppExecutorUtil.getAppScheduledExecutorService()
         task = scheduler.scheduleWithFixedDelay({
-            if (workflowRun?.status == "in_progress") runInEdt {
-                jobsDataProvider?.reload()
-                logsDataProvider?.reload()
+            runInEdt {
+                val status = workflowRun?.status
+                if (status != "completed") {
+                    jobsDataProvider?.reload()
+                    logsDataProvider?.reload()
+                }
             }
         }, 1, frequency, TimeUnit.SECONDS)
     }
@@ -174,14 +178,6 @@ class WorkflowRunSelectionContext internal constructor(
         runsListLoader.loadMore()
         dataLoader.invalidateAllData()
     }
-
-    private val workflowRun: GitHubWorkflowRun?
-        get() = runSelectionHolder.selection
-
-    val logsDataProvider: WorkflowRunLogsDataProvider?
-        get() = workflowRun?.let { dataLoader.getLogsDataProvider(it) }
-    val jobsDataProvider: WorkflowRunJobsDataProvider?
-        get() = workflowRun?.let { dataLoader.getJobsDataProvider(it) }
 
     companion object {
         private val LOG = logger<WorkflowRunSelectionContext>()

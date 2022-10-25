@@ -26,8 +26,8 @@ import java.time.Duration
 import javax.swing.*
 
 
-class JobList(model: ListModel<WorkflowRunJob>, private val infoInNewLine: Boolean) : JBList<WorkflowRunJob>(model),
-    DataProvider, CopyProvider {
+class JobList(model: ListModel<WorkflowRunJob>, private val infoInNewLine: Boolean)
+    : JBList<WorkflowRunJob>(model), DataProvider, CopyProvider {
 
     init {
         isEnabled = true

@@ -61,7 +61,6 @@ object ToolbarUtil {
                     val currSelection = list.model.getElementAt(selectedIndex)
                     if (selectionHolder.selection != currSelection)
                         selectionHolder.selection = currSelection
-
                 }
             }
         }
