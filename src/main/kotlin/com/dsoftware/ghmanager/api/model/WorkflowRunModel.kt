@@ -3,19 +3,6 @@ package com.dsoftware.ghmanager.api.model
 import java.util.*
 
 
-//data class GitHubWorkflow(
-//    val id: Long,
-//    val node_id: String,
-//    val name: String,
-//    val path: String,
-//    val state: String,
-//    val completed_at: String?,
-//    val updated_at: String?,
-//    val url: String,
-//    val html_url: String,
-//    val badge_url: String
-//)
-
 data class GitHubWorkflowRuns(
     val total_count: Int,
     val workflow_runs: List<GitHubWorkflowRun> = emptyList()
@@ -23,6 +10,7 @@ data class GitHubWorkflowRuns(
 
 data class GitHubWorkflowRun(
     val id: Long,
+    val path: String,
     val node_id: String,
     val head_branch: String?,
     val head_sha: String?,
