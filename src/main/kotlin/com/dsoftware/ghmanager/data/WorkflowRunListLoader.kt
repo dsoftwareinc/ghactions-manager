@@ -23,6 +23,7 @@ class WorkflowRunListLoader(
     private val repositoryCoordinates: RepositoryCoordinates,
     settingsService: GhActionsSettingsService,
 ) : GHListLoaderBase<GitHubWorkflowRun>(progressManager) {
+    val url: String = Workflows.getWorkflowRuns(repositoryCoordinates).url
     var totalCount: Int = 1
     val frequency: Long = settingsService.state.frequency.toLong()
     private val pageSize = 30

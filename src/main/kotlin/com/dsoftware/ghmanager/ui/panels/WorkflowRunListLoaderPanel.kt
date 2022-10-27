@@ -34,8 +34,8 @@ import javax.swing.*
 import javax.swing.event.ListDataEvent
 import javax.swing.event.ListDataListener
 
-class WorkflowRunList(model: ListModel<GitHubWorkflowRun>)
-    : JBList<GitHubWorkflowRun>(model), DataProvider, CopyProvider {
+class WorkflowRunList(model: ListModel<GitHubWorkflowRun>) : JBList<GitHubWorkflowRun>(model), DataProvider,
+    CopyProvider {
 
     init {
         selectionModel.selectionMode = ListSelectionModel.SINGLE_SELECTION
@@ -204,18 +204,18 @@ internal class WorkflowRunListLoaderPanel(
     private fun updateEmptyText() {
         runListComponent.emptyText.clear()
         if (workflowRunsLoader.loading) {
-            runListComponent.emptyText.text = "Loading..."
+            runListComponent.emptyText.text = "Loading workflow runs..."
             return
         }
         val error = workflowRunsLoader.error
         if (error == null) {
-            runListComponent.emptyText.text = "Nothing loaded. "
+            runListComponent.emptyText.text = "No workflow run loaded. "
             runListComponent.emptyText.appendSecondaryText("Refresh", SimpleTextAttributes.LINK_PLAIN_ATTRIBUTES) {
                 workflowRunsLoader.reset()
             }
             infoPanel.setInfo(
                 when {
-                    workflowRunsLoader.loading -> "Loading..."
+                    workflowRunsLoader.loading -> "Loading workflow runs..."
                     workflowRunsLoader.loadedData.isEmpty() -> "No workflow runs"
                     else -> "${workflowRunsLoader.loadedData.size} workflow runs loaded out of ${workflowRunsLoader.totalCount}"
                 }
@@ -224,8 +224,11 @@ internal class WorkflowRunListLoaderPanel(
             runListComponent.emptyText.appendText(
                 getErrorPrefix(workflowRunsLoader.loadedData.isEmpty()),
                 SimpleTextAttributes.ERROR_ATTRIBUTES
+            ).appendSecondaryText(
+                getLoadingErrorText(workflowRunsLoader.url, error),
+                SimpleTextAttributes.ERROR_ATTRIBUTES,
+                null
             )
-                .appendSecondaryText(getLoadingErrorText(error), SimpleTextAttributes.ERROR_ATTRIBUTES, null)
 
             errorHandler?.getActionForError()?.let {
                 runListComponent.emptyText.appendSecondaryText(
@@ -238,7 +241,8 @@ internal class WorkflowRunListLoaderPanel(
 
     }
 
-    private fun getErrorPrefix(listEmpty: Boolean) = if (listEmpty) "Can't load list" else "Can't load full list"
+    private fun getErrorPrefix(listEmpty: Boolean) =
+        if (listEmpty) "Can't load workflow runs" else "Can't load all workflow runs"
 
     override fun dispose() {}
 
@@ -277,10 +281,11 @@ internal class WorkflowRunListLoaderPanel(
             return WorkflowRunListLoaderPanel(disposable, context)
         }
 
-        private fun getLoadingErrorText(error: Throwable, newLineSeparator: String = "\n"): String {
+        private fun getLoadingErrorText(url: String, error: Throwable, newLineSeparator: String = "\n"): String {
             if (error is GithubStatusCodeException && error.error != null) {
                 val githubError = error.error!!
-                val builder = StringBuilder(error.message).append(newLineSeparator)
+                val builder = StringBuilder("url: $url").append(newLineSeparator)
+                    .append(error.message).append(newLineSeparator)
                 if (githubError.errors?.isNotEmpty()!!) {
                     builder.append(": ").append(newLineSeparator)
                     for (e in githubError.errors!!) {
