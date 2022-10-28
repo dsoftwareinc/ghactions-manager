@@ -75,7 +75,6 @@ class WorkflowToolWindowTabController(
             )
         }
 
-
         val errorHandler = GHApiLoadingErrorHandler(project, ghAccount) {
             val contextRepository = dataContextRepository
             contextRepository.clearContext(repository)
@@ -147,16 +146,16 @@ class WorkflowToolWindowTabController(
 
 
     private fun createLogPanel(selectedRunContext: WorkflowRunSelectionContext): JComponent {
-        val (logLoadingModel, logModel) = createLogLoadingModel(
+        val model = LogLoadingModelListener(disposable,
             selectedRunContext.logDataProviderLoadModel,
             selectedRunContext.jobSelectionHolder
         )
         LOG.debug("Create log panel")
-        val console = LogConsolePanel(project, logModel, disposable)
+        val console = LogConsolePanel(project, model.logModel, disposable)
         val errorHandler = GHApiLoadingErrorHandler(project, ghAccount) {
         }
         val panel = GHLoadingPanelFactory(
-            logLoadingModel,
+            model.logsLoadingModel,
             "Select a job to show logs",
             GithubBundle.message("cannot.load.data.from.github"),
             errorHandler
@@ -259,65 +258,6 @@ class WorkflowToolWindowTabController(
         return loadingModel to valueModel
     }
 
-    private fun createLogLoadingModel(
-        dataProviderModel: SingleValueModel<WorkflowRunLogsDataProvider?>,
-        jobsSelectionHolder: JobListSelectionHolder,
-    ): Pair<GHCompletableFutureLoadingModel<Map<String, String>>, SingleValueModel<String?>> {
-        LOG.debug("Create log loading model")
-        val valueModel = SingleValueModel<String?>(null)
-
-        fun setLogValue(loadingModel: GHCompletableFutureLoadingModel<Map<String, String>>) {
-            val removeChars = setOf('<', '>', '/', ':')
-            val jobName = jobsSelectionHolder.selection?.name?.filterNot {
-                removeChars.contains(it)
-            }?.trim()
-            val logs = loadingModel.result?.get(jobName)
-            valueModel.value = when {
-                loadingModel.resultAvailable && jobName != null && logs != null -> logs
-                loadingModel.resultAvailable && jobName != null && logs == null -> "Job ${jobsSelectionHolder.selection?.name} logs missing"
-                jobName == null -> "Pick a job to view logs"
-                else -> "Loading logs..."
-            }
-        }
-
-        val loadingModel = GHCompletableFutureLoadingModel<Map<String, String>>(disposable).also {
-            it.addStateChangeListener(object : GHLoadingModel.StateChangeListener {
-                override fun onLoadingCompleted() = setLogValue(it)
-                override fun onReset() = setLogValue(it)
-            })
-        }
-        jobsSelectionHolder.addSelectionChangeListener(disposable) {
-            setLogValue(loadingModel)
-        }
-        var listenerDisposable: Disposable? = null
-
-        dataProviderModel.addListener {
-            LOG.debug("log loading model Value changed")
-            val provider = dataProviderModel.value
-            loadingModel.future = provider?.request
-
-            listenerDisposable = listenerDisposable?.let {
-                Disposer.dispose(it)
-                null
-            }
-
-            if (provider != null) {
-                val disposable = Disposer.newDisposable().apply {
-                    Disposer.register(disposable, this)
-                }
-                provider.addRunChangesListener(disposable,
-                    object : DataProvider.DataProviderChangeListener {
-                        override fun changed() {
-                            LOG.debug("Log changed ${provider.request}")
-                            loadingModel.future = provider.request
-                        }
-                    })
-
-                listenerDisposable = disposable
-            }
-        }
-        return loadingModel to valueModel
-    }
 
     companion object {
         private const val NO_LOGS_MSG =

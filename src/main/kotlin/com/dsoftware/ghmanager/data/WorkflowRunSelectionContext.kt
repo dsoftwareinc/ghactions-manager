@@ -131,6 +131,7 @@ class WorkflowRunSelectionContext internal constructor(
             LOG.debug("runSelectionHolder selection change listener")
             setNewJobsProvider()
             setNewLogProvider()
+            jobSelectionHolder.selection = null
         }
         dataLoader.addInvalidationListener(parentDisposable) {
             LOG.debug("invalidation listener")
