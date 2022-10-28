@@ -22,7 +22,7 @@ abstract class PostUrlAction(
         LOG.debug("CancelWorkflowAction action")
         e.dataContext.getData(CommonDataKeys.PROJECT) ?: return
         getUrl(e.dataContext)?.let {
-            LOG.debug("Triggering rerun ${it}")
+            LOG.debug("Triggering rerun $it")
             val request = Workflows.postRerunWorkflow(it)
             val context = e.getRequiredData(ActionKeys.ACTION_DATA_CONTEXT)
             val future = context.dataLoader.createDataProvider(request).request

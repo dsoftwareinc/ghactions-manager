@@ -5,7 +5,6 @@ import com.dsoftware.ghmanager.actions.ActionKeys
 import com.dsoftware.ghmanager.api.model.GitHubWorkflowRun
 import com.dsoftware.ghmanager.data.WorkflowRunListLoader
 import com.dsoftware.ghmanager.data.WorkflowRunSelectionContext
-import com.dsoftware.ghmanager.ui.LoadingErrorHandler
 import com.dsoftware.ghmanager.ui.ToolbarUtil
 import com.intellij.ide.CopyProvider
 import com.intellij.openapi.Disposable
@@ -29,10 +28,21 @@ import org.jetbrains.plugins.github.exceptions.GithubStatusCodeException
 import org.jetbrains.plugins.github.ui.HtmlInfoPanel
 import java.awt.BorderLayout
 import java.awt.Component
+import java.awt.event.ActionEvent
 import java.awt.event.MouseEvent
 import javax.swing.*
 import javax.swing.event.ListDataEvent
 import javax.swing.event.ListDataListener
+
+class LoadingErrorHandler(private val resetRunnable: () -> Unit) {
+    fun getActionForError(): Action {
+        return RetryAction()
+    }
+
+    private inner class RetryAction : AbstractAction("Retry") {
+        override fun actionPerformed(e: ActionEvent?) = resetRunnable()
+    }
+}
 
 class WorkflowRunList(model: ListModel<GitHubWorkflowRun>) : JBList<GitHubWorkflowRun>(model), DataProvider,
     CopyProvider {
@@ -152,7 +162,10 @@ internal class WorkflowRunListLoaderPanel(
     private val workflowRunsLoader: WorkflowRunListLoader
         get() = context.runsListLoader
 
-    var errorHandler: LoadingErrorHandler? = null
+    private val errorHandler = LoadingErrorHandler {
+        LOG.warn("Error on GitHub Workflow Run list loading, resetting the loader")
+        workflowRunsLoader.reset()
+    }
 
     init {
         LOG.debug("Initialize WorkflowRunListLoaderPanel")
@@ -174,10 +187,6 @@ internal class WorkflowRunListLoaderPanel(
 
         setLoading(workflowRunsLoader.loading)
         updateEmptyText()
-        errorHandler = LoadingErrorHandler {
-            LOG.warn("Error on GitHub Workflow Run list loading, resetting the loader")
-            workflowRunsLoader.reset()
-        }
         val actionsManager = ActionManager.getInstance()
         val actionsGroup = actionsManager.getAction("GHWorkflows.ActionGroup") as ActionGroup
         val actionToolbar = actionsManager
@@ -230,7 +239,7 @@ internal class WorkflowRunListLoaderPanel(
                 null
             )
 
-            errorHandler?.getActionForError()?.let {
+            errorHandler.getActionForError().let {
                 runListComponent.emptyText.appendSecondaryText(
                     " ${it.getValue("Name")}",
                     SimpleTextAttributes.LINK_PLAIN_ATTRIBUTES,

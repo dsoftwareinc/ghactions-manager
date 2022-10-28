@@ -19,7 +19,7 @@ class OpenWorkflowFileAction : RefreshAction("Open Workflow File", null, AllIcon
         val path = e.getRequiredData(ActionKeys.SELECTED_WORKFLOW_RUN_FILEPATH)
         val rootDirectory = e.getRequiredData(ActionKeys.ACTION_DATA_CONTEXT).repositoryMapping.gitRepository.root
         val project = e.project ?: return
-        path?.let {
+        path.let {
             val file = rootDirectory.findFileByRelativePath(it) ?: return
             FileEditorManager.getInstance(project).openTextEditor(
                 OpenFileDescriptor(project, file),

@@ -16,7 +16,7 @@ import java.util.concurrent.CompletableFuture
 import kotlin.properties.Delegates
 
 abstract class GHListLoaderBase<T>(
-    protected val progressManager: ProgressManager
+    private val progressManager: ProgressManager
 ) : Disposable {
 
 
@@ -33,7 +33,7 @@ abstract class GHListLoaderBase<T>(
     private val errorChangeEventDispatcher = EventDispatcher.create(SimpleEventListener::class.java)
 
     @get:RequiresEdt
-    var error: Throwable? by Delegates.observable<Throwable?>(null) { _, _, _ ->
+    var error: Throwable? by Delegates.observable(null) { _, _, _ ->
         errorChangeEventDispatcher.multicaster.eventOccurred()
     }
 
@@ -75,26 +75,11 @@ abstract class GHListLoaderBase<T>(
 
     protected abstract fun doLoadMore(indicator: ProgressIndicator, update: Boolean): List<T>?
 
-    fun updateData(item: T) {
-        val index = loadedData.indexOfFirst { it == item }
-        if (index >= 0) {
-            loadedData[index] = item
-            dataEventDispatcher.multicaster.onDataUpdated(index)
-        }
-    }
-
-    fun removeData(predicate: (T) -> Boolean) {
-        val (index, data) = loadedData.withIndex().find { predicate(it.value) } ?: return
-        if (index >= 0) {
-            loadedData.removeAt(index)
-            dataEventDispatcher.multicaster.onDataRemoved(data as Any)
-        }
-    }
 
     @RequiresEdt
     open fun reset() {
         lastFuture = lastFuture.handle { _, _ ->
-            listOf<T>()
+            listOf()
         }
         progressIndicator.cancel()
         progressIndicator = NonReusableEmptyProgressIndicator()

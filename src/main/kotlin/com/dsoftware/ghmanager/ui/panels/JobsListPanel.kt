@@ -1,8 +1,8 @@
 package com.dsoftware.ghmanager.ui.panels
 
 
-import WorkflowRunJob
-import WorkflowRunJobs
+import com.dsoftware.ghmanager.api.model.Job
+import com.dsoftware.ghmanager.api.model.JobsList
 import com.dsoftware.ghmanager.actions.ActionKeys
 import com.dsoftware.ghmanager.data.WorkflowRunSelectionContext
 import com.dsoftware.ghmanager.ui.ToolbarUtil
@@ -20,14 +20,13 @@ import net.miginfocom.layout.CC
 import net.miginfocom.layout.LC
 import net.miginfocom.swing.MigLayout
 import java.awt.Component
-import java.awt.Window
 import java.awt.event.MouseEvent
 import java.time.Duration
 import javax.swing.*
 
 
-class JobList(model: ListModel<WorkflowRunJob>, private val infoInNewLine: Boolean)
-    : JBList<WorkflowRunJob>(model), DataProvider, CopyProvider {
+class JobListComponent(model: ListModel<Job>, private val infoInNewLine: Boolean)
+    : JBList<Job>(model), DataProvider, CopyProvider {
 
     init {
         isEnabled = true
@@ -53,7 +52,7 @@ class JobList(model: ListModel<WorkflowRunJob>, private val infoInNewLine: Boole
     }
 
     private inner class JobsListCellRenderer
-        : ListCellRenderer<WorkflowRunJob>, JBPanel<JobsListCellRenderer>(
+        : ListCellRenderer<Job>, JBPanel<JobsListCellRenderer>(
         MigLayout(
             LC().gridGap("0", "0")
                 .insets("0", "0", "0", "0")
@@ -70,8 +69,8 @@ class JobList(model: ListModel<WorkflowRunJob>, private val infoInNewLine: Boole
         }
 
         override fun getListCellRendererComponent(
-            list: JList<out WorkflowRunJob>,
-            job: WorkflowRunJob,
+            list: JList<out Job>,
+            job: Job,
             index: Int,
             isSelected: Boolean,
             cellHasFocus: Boolean
@@ -113,11 +112,11 @@ class JobList(model: ListModel<WorkflowRunJob>, private val infoInNewLine: Boole
         private val actionManager = ActionManager.getInstance()
 
         fun createJobsListComponent(
-            jobModel: SingleValueModel<WorkflowRunJobs?>,
+            jobModel: SingleValueModel<JobsList?>,
             runSelectionContext: WorkflowRunSelectionContext,
             infoInNewLine: Boolean,
         ): JComponent {
-            val list = CollectionListModel<WorkflowRunJob>()
+            val list = CollectionListModel<Job>()
             if (jobModel.value != null) {
                 list.add(jobModel.value!!.jobs)
             }
@@ -127,7 +126,7 @@ class JobList(model: ListModel<WorkflowRunJob>, private val infoInNewLine: Boole
                     list.add(jobModel.value!!.jobs)
                 }
             }
-            val listComponent = JobList(list, infoInNewLine).apply {
+            val listComponent = JobListComponent(list, infoInNewLine).apply {
                 emptyText.clear()
             }.also {
 
@@ -147,14 +146,14 @@ class JobList(model: ListModel<WorkflowRunJob>, private val infoInNewLine: Boole
 
         }
 
-        private fun installPopup(list: JobList) {
+        private fun installPopup(list: JobListComponent) {
             list.addMouseListener(object : PopupHandler() {
                 override fun invokePopup(comp: Component, x: Int, y: Int) {
 
                     val (place, groupId) = if (ListUtil.isPointOnSelection(list, x, y)) {
-                        Pair("JobListPopupSelected", "Github.ToolWindow.JobList.Popup.Selected")
+                        Pair("JobListPopupSelected", "Github.ToolWindow.JobsList.Popup.Selected")
                     } else {
-                        Pair("JobListPopup", "Github.ToolWindow.JobList.Popup")
+                        Pair("JobListPopup", "Github.ToolWindow.JobsList.Popup")
                     }
                     val popupMenu: ActionPopupMenu =
                         actionManager.createActionPopupMenu(

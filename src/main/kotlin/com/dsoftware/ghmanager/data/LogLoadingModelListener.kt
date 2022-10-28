@@ -1,7 +1,7 @@
 package com.dsoftware.ghmanager.data
 
-import WorkflowRunJob
-import WorkflowRunJobSteps
+import com.dsoftware.ghmanager.api.model.Job
+import com.dsoftware.ghmanager.api.model.WorkflowRunJobSteps
 import com.intellij.collaboration.ui.SingleValueModel
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.diagnostic.logger
@@ -34,34 +34,32 @@ class LogLoadingModelListener(
                 null
             }
             if (provider != null) {
-                val disposable = Disposer.newDisposable().apply {
+                val disposable2 = Disposer.newDisposable("Log listener disposable").apply {
                     Disposer.register(disposable, this)
                 }
-                provider.addRunChangesListener(disposable,
+                provider.addRunChangesListener(disposable2,
                     object : DataProvider.DataProviderChangeListener {
                         override fun changed() {
                             LOG.debug("Log changed ${provider.request}")
                             logsLoadingModel.future = provider.request
                         }
                     })
-                listenerDisposable = disposable
+                listenerDisposable = disposable2
             }
         }
     }
 
-    private fun stepsAsLog(stepLogs: Map<Int, String>, selection: WorkflowRunJob): String {
+    private fun stepsAsLog(stepLogs: Map<Int, String>, selection: Job): String {
         val stepsResult: Map<Int, WorkflowRunJobSteps> = if (selection.steps == null) {
             emptyMap()
         } else {
-            selection.steps.associate { it.number to it }
+            selection.steps.associateBy { it.number }
         }
-        return stepLogs.entries
-            .map { (index, logs) ->
-                val stepInfo = stepsResult[index]
-                val color = if (stepInfo?.conclusion == "failure") "\u001b[31m" else "\u001B[1;97m"
-                "$color---- Step: ${index}_${stepInfo?.name} ----\u001b[0m\n${logs}"
-            }
-            .joinToString("\n")
+        return stepLogs.entries.joinToString("\n") { (index, logs) ->
+            val stepInfo = stepsResult[index]
+            val color = if (stepInfo?.conclusion == "failure") "\u001b[31m" else "\u001B[1;97m"
+            "$color---- Step: ${index}_${stepInfo?.name} ----\u001b[0m\n${logs}"
+        }
     }
 
     private fun setLogValue() {
@@ -74,7 +72,7 @@ class LogLoadingModelListener(
         logModel.value = when {
             logsLoadingModel.result == null -> null
             jobName == null ->  "Pick a job to view logs"
-            logs == null -> "Job ${jobSelection?.name} logs missing"
+            logs == null -> "Job ${jobSelection.name} logs missing"
             else -> stepsAsLog(logs, jobSelection)
         }
     }

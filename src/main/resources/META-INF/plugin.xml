@@ -54,7 +54,7 @@
             <reference id="Github.Workflow.List.Reload"/>
         </group>
         <group id="Github.ToolWindow.JobList.Popup">
-            <!--            <reference id="Github.Workflow.JobList.Reload"/>-->
+            <!--            <reference id="Github.Workflow.JobsList.Reload"/>-->
         </group>
 
         <group id="Github.ToolWindow.JobList.Popup.Selected">

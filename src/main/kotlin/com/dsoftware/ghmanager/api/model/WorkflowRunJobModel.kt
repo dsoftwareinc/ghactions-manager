@@ -1,9 +1,11 @@
-import com.fasterxml.jackson.annotation.JsonFormat
-import java.util.*
+package com.dsoftware.ghmanager.api.model
 
-data class WorkflowRunJobs(
+import com.fasterxml.jackson.annotation.JsonFormat
+import java.util.Date
+
+data class JobsList(
     val total_count: Int,
-    val jobs: List<WorkflowRunJob>
+    val jobs: List<Job>
 )
 
 /**
@@ -29,7 +31,7 @@ data class WorkflowRunJobs(
  * @param runnerGroupId The ID of the runner group to which this job has been assigned. (If a runner hasn't yet been assigned, this will be null.)
  * @param runnerGroupName The name of the runner group to which this job has been assigned. (If a runner hasn't yet been assigned, this will be null.)
  */
-data class WorkflowRunJob(
+data class Job(
 
     /* The id of the job. */
     val id: Long,
@@ -68,7 +70,10 @@ data class WorkflowRunJob(
     val runnerGroupId: Long?,
     /* The name of the runner group to which this job has been assigned. (If a runner hasn't yet been assigned, this will be null.) */
     val runnerGroupName: String?
-)
+) {
+    override fun equals(other: Any?): Boolean = (other != null) && (other is Job) && (other.id == this.id)
+    override fun hashCode(): Int = this.id.hashCode()
+}
 
 /**
  *

@@ -1,6 +1,6 @@
 package com.dsoftware.ghmanager.data
 
-import WorkflowRunJob
+import com.dsoftware.ghmanager.api.model.Job
 import com.dsoftware.ghmanager.api.model.GitHubWorkflowRun
 import com.google.common.cache.CacheBuilder
 import com.intellij.collaboration.ui.SimpleEventListener
@@ -99,7 +99,7 @@ open class ListSelectionHolder<T> {
 }
 
 class WorkflowRunListSelectionHolder : ListSelectionHolder<GitHubWorkflowRun>()
-class JobListSelectionHolder : ListSelectionHolder<WorkflowRunJob>()
+class JobListSelectionHolder : ListSelectionHolder<Job>()
 
 
 class WorkflowRunSelectionContext internal constructor(

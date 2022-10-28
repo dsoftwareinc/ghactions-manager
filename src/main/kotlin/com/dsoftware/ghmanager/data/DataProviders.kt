@@ -1,6 +1,6 @@
 package com.dsoftware.ghmanager.data
 
-import WorkflowRunJobs
+import com.dsoftware.ghmanager.api.model.JobsList
 import com.dsoftware.ghmanager.api.Workflows
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.diagnostic.thisLogger
@@ -24,7 +24,7 @@ abstract class DataProvider<T>(
 ) {
     private val runChangesEventDispatcher = EventDispatcher.create(DataProviderChangeListener::class.java)
 
-    protected val value: LazyCancellableBackgroundProcessValue<T> = backingValue {
+    private val value: LazyCancellableBackgroundProcessValue<T> = backingValue {
         try {
             LOG.info("Executing ${githubApiRequest.url}")
             val request = githubApiRequest
@@ -90,9 +90,9 @@ class WorkflowRunJobsDataProvider(
     progressManager: ProgressManager,
     requestExecutor: GithubApiRequestExecutor,
     jobsUrl: String
-) : DataProvider<WorkflowRunJobs>(
+) : DataProvider<JobsList>(
     progressManager,
     requestExecutor,
     Workflows.getWorkflowRunJobs(jobsUrl),
-    WorkflowRunJobs(0, emptyList())
+    JobsList(0, emptyList())
 )

@@ -48,7 +48,7 @@ Alternatively, you can buy me coffee using this link: [!["Buy Me A Coffee"](http
 # Contributions
 Contributions are welcome. Please see the
 [contributing guide](https://github.com/cunla/ghactions-manager//blob/master/.github/CONTRIBUTING.md) for more details.
-The maintainer generally has very little time to work on ghactions-toolbar, so the
+The maintainer generally has very little time to work on ghactions-manager, so the
 best way to get a bug fixed is to contribute a pull request.
 
 If you'd like to help out, you can start with any of the issues

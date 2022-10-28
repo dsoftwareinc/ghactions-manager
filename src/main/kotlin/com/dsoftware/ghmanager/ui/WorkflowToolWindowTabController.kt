@@ -1,10 +1,9 @@
 package com.dsoftware.ghmanager.ui
 
 
-import WorkflowRunJobs
 import com.dsoftware.ghmanager.actions.ActionKeys
 import com.dsoftware.ghmanager.data.*
-import com.dsoftware.ghmanager.ui.panels.JobList
+import com.dsoftware.ghmanager.ui.panels.JobListComponent
 import com.dsoftware.ghmanager.ui.panels.LogConsolePanel
 import com.dsoftware.ghmanager.ui.panels.WorkflowRunListLoaderPanel
 import com.dsoftware.ghmanager.ui.settings.GhActionsSettingsService
@@ -192,7 +191,7 @@ class WorkflowToolWindowTabController(
             GithubBundle.message("cannot.load.data.from.github"),
             errorHandler
         ).create { _, _ ->
-            val jobListPanel = JobList.createJobsListComponent(
+            val jobListPanel = JobListComponent.createJobsListComponent(
                 jobModel, selectedRunContext,
                 infoInNewLine = !settingsService.state.jobListAboveLogs,
             )
@@ -208,11 +207,11 @@ class WorkflowToolWindowTabController(
 
     private fun createJobsLoadingModel(
         dataProviderModel: SingleValueModel<WorkflowRunJobsDataProvider?>,
-    ): Pair<GHCompletableFutureLoadingModel<WorkflowRunJobs>, SingleValueModel<WorkflowRunJobs?>> {
+    ): Pair<GHCompletableFutureLoadingModel<com.dsoftware.ghmanager.api.model.JobsList>, SingleValueModel<com.dsoftware.ghmanager.api.model.JobsList?>> {
         LOG.debug("createJobsDataProviderModel Create jobs loading model")
-        val valueModel = SingleValueModel<WorkflowRunJobs?>(null)
+        val valueModel = SingleValueModel<com.dsoftware.ghmanager.api.model.JobsList?>(null)
 
-        val loadingModel = GHCompletableFutureLoadingModel<WorkflowRunJobs>(disposable).also {
+        val loadingModel = GHCompletableFutureLoadingModel<com.dsoftware.ghmanager.api.model.JobsList>(disposable).also {
             it.addStateChangeListener(object : GHLoadingModel.StateChangeListener {
                 override fun onLoadingCompleted() {
                     if (it.resultAvailable) {
@@ -259,8 +258,6 @@ class WorkflowToolWindowTabController(
 
 
     companion object {
-        private const val NO_LOGS_MSG =
-            "Can not fetch logs when workflow in progress, please try again when workflow is completed"
         val KEY = Key.create<WorkflowToolWindowTabController>("Github.Actions.ToolWindow.Tab.Controller")
         private val LOG = logger<WorkflowToolWindowTabController>()
     }

@@ -2,20 +2,17 @@ package com.dsoftware.ghmanager.ui
 
 import com.dsoftware.ghmanager.data.ListSelectionHolder
 import com.intellij.icons.AllIcons
-import com.intellij.openapi.diagnostic.Logger
 import com.intellij.ui.AnimatedIcon
 import com.intellij.ui.components.JBList
 import com.intellij.util.text.DateFormatUtil
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.ZoneOffset
-import java.util.*
+import java.util.Date
 import javax.swing.Icon
 import javax.swing.event.ListSelectionEvent
 
 object ToolbarUtil {
-    @JvmField
-    val LOG: Logger = Logger.getInstance("ghActionsManager")
 
     const val SETTINGS_DISPLAY_NAME = "GitHub Workflows Manager"
     fun makeTimePretty(date: Date?): String {

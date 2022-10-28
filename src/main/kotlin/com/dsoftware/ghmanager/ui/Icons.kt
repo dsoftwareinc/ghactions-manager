@@ -1,16 +1,12 @@
 package com.dsoftware.ghmanager.ui
 
 import com.intellij.openapi.util.IconLoader
-import com.intellij.util.ui.AsyncProcessIcon
 import javax.swing.Icon
 
 object Icons {
     private fun load(path: String): Icon {
         return IconLoader.getIcon(path, Icons::class.java)
     }
-
-    @JvmField
-    val InProgress = AsyncProcessIcon("")
 
     @JvmField
     val PrimitiveDot = load("/icons/primitive-dot.svg")

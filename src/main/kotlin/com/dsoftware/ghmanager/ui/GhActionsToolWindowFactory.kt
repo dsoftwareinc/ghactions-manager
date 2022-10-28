@@ -185,61 +185,59 @@ class GhActionsToolWindowFactory : ToolWindowFactory {
             val actionManager = ActionManager.getInstance()
             toolWindow.setAdditionalGearActions(DefaultActionGroup(actionManager.getAction("Github.Actions.Manager.Settings.Open")))
             val dataContextRepository = WorkflowDataContextRepository.getInstance(project)
-            knownRepositories
-                .filter {
-                    !settingsService.state.useCustomRepos || (settingsService.state.customRepos[it.gitRemoteUrlCoordinates.url]?.included
-                        ?: false)
-                }
-                .forEach() { repo ->
-                    val ghAccount = guessAccountForRepository(repo)
-                    if (ghAccount != null) {
-                        LOG.info("adding panel for repo: ${repo.repositoryPath}, ${ghAccount.name}")
-                        val repoSettings = settingsService.state.customRepos[repo.gitRemoteUrlCoordinates.url]!!
-                        val tab = toolWindow.contentManager.factory.createContent(
-                            JPanel(null), repo.repositoryPath, false
-                        ).apply {
-                            isCloseable = false
-                            val disposable = Disposer.newDisposable("gha-manager ${repo.repositoryPath} tab disposable")
-                            setDisposer(disposable)
-                            displayName = repoSettings.customName.ifEmpty { repo.repositoryPath }
-                            val controller = WorkflowToolWindowTabController(
-                                project,
-                                repo,
-                                ghAccount,
-                                dataContextRepository,
-                                this.disposer!!,
-                                toolWindow
-                            )
-                            component.apply {
-                                layout = BorderLayout()
-                                background = UIUtil.getListBackground()
-                                removeAll()
-                                add(controller.panel, BorderLayout.CENTER)
-                                revalidate()
-                                repaint()
-                            }
-                            putUserData(WorkflowToolWindowTabController.KEY, controller)
-                        }
-
-                        toolWindow.contentManager.addContent(tab)
-                    } else {
-                        val emptyTextPanel = JBPanelWithEmptyText()
-                        emptyTextPanel.emptyText
-                            .appendText("GitHub account not configured for $repo, go to settings to fix")
-                            .appendSecondaryText(
-                                "Go to Settings",
-                                SimpleTextAttributes.LINK_ATTRIBUTES,
-                                ActionUtil.createActionListener(
-                                    "ShowGithubSettings",
-                                    emptyTextPanel,
-                                    ActionPlaces.UNKNOWN
-                                )
-                            )
-                        toolWindow.contentManager.addContent(
-                            toolWindow.contentManager.factory.createContent(emptyTextPanel, repo.repositoryPath, false)
+            knownRepositories.filter {
+                !settingsService.state.useCustomRepos || (settingsService.state.customRepos[it.gitRemoteUrlCoordinates.url]?.included
+                    ?: false)
+            }.forEach { repo ->
+                val ghAccount = guessAccountForRepository(repo)
+                if (ghAccount != null) {
+                    LOG.info("adding panel for repo: ${repo.repositoryPath}, ${ghAccount.name}")
+                    val repoSettings = settingsService.state.customRepos[repo.gitRemoteUrlCoordinates.url]!!
+                    val tab = toolWindow.contentManager.factory.createContent(
+                        JPanel(null), repo.repositoryPath, false
+                    ).apply {
+                        isCloseable = false
+                        val disposable = Disposer.newDisposable("gha-manager ${repo.repositoryPath} tab disposable")
+                        setDisposer(disposable)
+                        displayName = repoSettings.customName.ifEmpty { repo.repositoryPath }
+                        val controller = WorkflowToolWindowTabController(
+                            project,
+                            repo,
+                            ghAccount,
+                            dataContextRepository,
+                            this.disposer!!,
+                            toolWindow
                         )
+                        component.apply {
+                            layout = BorderLayout()
+                            background = UIUtil.getListBackground()
+                            removeAll()
+                            add(controller.panel, BorderLayout.CENTER)
+                            revalidate()
+                            repaint()
+                        }
+                        putUserData(WorkflowToolWindowTabController.KEY, controller)
                     }
+
+                    toolWindow.contentManager.addContent(tab)
+                } else {
+                    val emptyTextPanel = JBPanelWithEmptyText()
+                    emptyTextPanel.emptyText
+                        .appendText("GitHub account not configured for $repo, go to settings to fix")
+                        .appendSecondaryText(
+                            "Go to Settings",
+                            SimpleTextAttributes.LINK_ATTRIBUTES,
+                            ActionUtil.createActionListener(
+                                "ShowGithubSettings",
+                                emptyTextPanel,
+                                ActionPlaces.UNKNOWN
+                            )
+                        )
+                    toolWindow.contentManager.addContent(
+                        toolWindow.contentManager.factory.createContent(emptyTextPanel, repo.repositoryPath, false)
+                    )
                 }
+            }
             toolWindow.contentManager.addContentManagerListener(object : ContentManagerListener {
                 override fun selectionChanged(event: ContentManagerEvent) {
                     val content = event.content

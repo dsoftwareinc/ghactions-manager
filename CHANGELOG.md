@@ -1,14 +1,15 @@
 <!-- Keep a Changelog guide -> https://keepachangelog.com -->
 
-# ghactions-manager Changelog
+# GitHub-Actions-Manager Changelog
 
 ## [Unreleased]
 ## [1.6.0]
 ### Added
 * Step logs - Showing failed step title in red
 * Refresh of runs only for active tab
-### Fixed
+### Changed
 * Better github REST API error handling
+### Fixed
 * Update jobs panel and log panel to loading state when a new run is selected
 * Clean up more code
 
@@ -42,7 +43,7 @@
 * Refresh jobs + rerun workflow run by @cunla in https://github.com/cunla/ghactions-manager/pull/40
 * Update cancelled icon by @cunla in https://github.com/cunla/ghactions-manager/pull/44
 * Add cancel workflow action #43 by @cunla in https://github.com/cunla/ghactions-manager/pull/46
-* Guess github account per repo when there are multiple GitHub accounts by @cunla in https://github.com/cunla/ghactions-manager/pull/48
+* Guess GitHub account per repo when there are multiple GitHub accounts by @cunla in https://github.com/cunla/ghactions-manager/pull/48
 
 **Full Changelog**: https://github.com/cunla/ghactions-manager/compare/v1.2.0...v1.3.0
 
@@ -103,7 +104,7 @@
 ### Added
 - Contribution guide.
 - Documentation: Screenshots on README, contribution guide, etc.
-- Message when there is no github account configured.
+- Message when there is no GitHub account configured.
 - Message when there is no repository in the project.
 
 ### Changed
