@@ -19,6 +19,7 @@ import com.intellij.ui.SimpleTextAttributes
 import com.intellij.ui.components.JBPanelWithEmptyText
 import com.intellij.ui.content.ContentManagerEvent
 import com.intellij.ui.content.ContentManagerListener
+import com.intellij.util.concurrency.AppExecutorUtil
 import com.intellij.util.ui.UIUtil
 import org.jetbrains.plugins.github.authentication.GithubAuthenticationManager
 import org.jetbrains.plugins.github.authentication.accounts.GithubAccount
@@ -26,6 +27,7 @@ import org.jetbrains.plugins.github.pullrequest.data.provider.GHPRDataOperations
 import org.jetbrains.plugins.github.util.GHGitRepositoryMapping
 import org.jetbrains.plugins.github.util.GHProjectRepositoriesManager
 import java.awt.BorderLayout
+import java.util.concurrent.TimeUnit
 import javax.swing.JPanel
 
 internal class ProjectRepositories(
@@ -248,6 +250,16 @@ class GhActionsToolWindowFactory : ToolWindowFactory {
                     }
                 }
             })
+            val scheduler = AppExecutorUtil.getAppScheduledExecutorService()
+            scheduler.schedule({
+                toolWindow.contentManager.contents.forEach {
+                    val controller = it.getUserData(WorkflowToolWindowTabController.KEY)
+                    controller?.apply {
+                        this.loadingModel.result?.runsListLoader?.refreshRuns = it.isSelected
+                    }
+                }
+            }, 5, TimeUnit.SECONDS)
+
         }
 
     companion object {
