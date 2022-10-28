@@ -88,7 +88,7 @@ class WorkflowToolWindowTabController(
         }
         panel = GHLoadingPanelFactory(
             loadingModel,
-            "Not loading content",
+            "Not loading workflow runs",
             GithubBundle.message("cannot.load.data.from.github"),
             errorHandler,
         ).create { _, result ->
@@ -121,10 +121,7 @@ class WorkflowToolWindowTabController(
             secondComponent = logLoadingPanel
                 .also {
                     (actionManager.getAction("Github.Workflow.Log.List.Reload") as RefreshAction)
-                        .registerCustomShortcutSet(
-                            it,
-                            disposable
-                        )
+                        .registerCustomShortcutSet(it, disposable)
                 }
         }
 
@@ -146,7 +143,8 @@ class WorkflowToolWindowTabController(
 
 
     private fun createLogPanel(selectedRunContext: WorkflowRunSelectionContext): JComponent {
-        val model = LogLoadingModelListener(disposable,
+        val model = LogLoadingModelListener(
+            disposable,
             selectedRunContext.logDataProviderLoadModel,
             selectedRunContext.jobSelectionHolder
         )
@@ -234,6 +232,7 @@ class WorkflowToolWindowTabController(
         dataProviderModel.addListener {
             LOG.debug("Jobs loading model Value changed")
             val provider = dataProviderModel.value
+            loadingModel.future = null
             loadingModel.future = provider?.request
 
             listenerDisposable = listenerDisposable?.let {

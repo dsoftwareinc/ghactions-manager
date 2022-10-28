@@ -2,7 +2,6 @@ package com.dsoftware.ghmanager.data
 
 import WorkflowRunJob
 import WorkflowRunJobSteps
-import com.dsoftware.ghmanager.ui.WorkflowToolWindowTabController
 import com.intellij.collaboration.ui.SingleValueModel
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.diagnostic.logger
@@ -28,6 +27,7 @@ class LogLoadingModelListener(
 
         dataProviderModel.addListener {
             val provider = dataProviderModel.value
+            logsLoadingModel.future = null
             logsLoadingModel.future = provider?.request
             listenerDisposable = listenerDisposable?.let {
                 Disposer.dispose(it)
@@ -42,7 +42,6 @@ class LogLoadingModelListener(
                         override fun changed() {
                             LOG.debug("Log changed ${provider.request}")
                             logsLoadingModel.future = provider.request
-                            logModel.value = null
                         }
                     })
                 listenerDisposable = disposable
@@ -74,7 +73,7 @@ class LogLoadingModelListener(
         val logs = if (jobName == null) null else logsLoadingModel.result?.get(jobName)
         logModel.value = when {
             logsLoadingModel.result == null -> null
-            jobName == null -> "Pick a job to view logs"
+            jobName == null -> null
             logs == null -> "Job ${jobSelection?.name} logs missing"
             else -> stepsAsLog(logs, jobSelection)
         }
@@ -83,7 +82,8 @@ class LogLoadingModelListener(
     override fun onLoadingCompleted() = setLogValue()
     override fun onLoadingStarted() = setLogValue()
     override fun onReset() = setLogValue()
-    companion object{
+
+    companion object {
         private val LOG = logger<LogLoadingModelListener>()
     }
 }

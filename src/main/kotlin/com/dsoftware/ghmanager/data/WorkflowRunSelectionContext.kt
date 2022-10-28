@@ -131,7 +131,6 @@ class WorkflowRunSelectionContext internal constructor(
             LOG.debug("runSelectionHolder selection change listener")
             setNewJobsProvider()
             setNewLogProvider()
-            jobSelectionHolder.selection = null
         }
         dataLoader.addInvalidationListener(parentDisposable) {
             LOG.debug("invalidation listener")
@@ -155,6 +154,7 @@ class WorkflowRunSelectionContext internal constructor(
         val newValue = jobsDataProvider
         if (oldValue != newValue && newValue != null && oldValue?.url() != newValue.url()) {
             jobDataProviderLoadModel.value = newValue
+            jobSelectionHolder.selection = null
         }
     }
 
