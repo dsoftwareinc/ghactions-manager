@@ -73,7 +73,7 @@ class LogLoadingModelListener(
         val logs = if (jobName == null) null else logsLoadingModel.result?.get(jobName)
         logModel.value = when {
             logsLoadingModel.result == null -> null
-            jobName == null -> null
+            jobName == null ->  "Pick a job to view logs"
             logs == null -> "Job ${jobSelection?.name} logs missing"
             else -> stepsAsLog(logs, jobSelection)
         }
