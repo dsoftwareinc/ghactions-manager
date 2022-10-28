@@ -266,43 +266,28 @@ class WorkflowToolWindowTabController(
         LOG.debug("Create log loading model")
         val valueModel = SingleValueModel<String?>(null)
 
-        fun getJobName(): String? {
-            val jobName = jobsSelectionHolder.selection?.name
+        fun setLogValue(loadingModel: GHCompletableFutureLoadingModel<Map<String, String>>) {
             val removeChars = setOf('<', '>', '/', ':')
-            return jobName?.filterNot {
+            val jobName = jobsSelectionHolder.selection?.name?.filterNot {
                 removeChars.contains(it)
             }?.trim()
+            val logs = loadingModel.result?.get(jobName)
+            valueModel.value = when {
+                loadingModel.resultAvailable && jobName != null && logs != null -> logs
+                loadingModel.resultAvailable && jobName != null && logs == null -> "Job ${jobsSelectionHolder.selection?.name} logs missing"
+                jobName == null -> "Pick a job to view logs"
+                else -> "Loading logs..."
+            }
         }
 
         val loadingModel = GHCompletableFutureLoadingModel<Map<String, String>>(disposable).also {
             it.addStateChangeListener(object : GHLoadingModel.StateChangeListener {
-                override fun onLoadingCompleted() {
-                    if (it.resultAvailable) {
-                        val jobName = getJobName()
-                        valueModel.value = if (jobName == null) {
-                            "Pick a job to view logs"
-                        } else {
-                            it.result?.get(jobName) ?: "Job ${jobsSelectionHolder.selection?.name} logs missing"
-                        }
-                    }
-                }
-
-                override fun onReset() {
-                    LOG.debug("onReset")
-                    valueModel.value = if (it.result?.isEmpty() == true) {
-                        NO_LOGS_MSG
-                    } else {
-                        it.result?.get(getJobName()) ?: "Job ${jobsSelectionHolder.selection?.name} logs missing"
-                    }
-                }
+                override fun onLoadingCompleted() = setLogValue(it)
+                override fun onReset() = setLogValue(it)
             })
         }
         jobsSelectionHolder.addSelectionChangeListener(disposable) {
-            valueModel.value = if (loadingModel.result?.isEmpty() == true) {
-                NO_LOGS_MSG
-            } else {
-                loadingModel.result?.get(getJobName()) ?: "Job ${jobsSelectionHolder.selection?.name} logs missing"
-            }
+            setLogValue(loadingModel)
         }
         var listenerDisposable: Disposable? = null
 
