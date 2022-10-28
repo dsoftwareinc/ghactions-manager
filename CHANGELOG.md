@@ -3,6 +3,15 @@
 # ghactions-manager Changelog
 
 ## [Unreleased]
+## [1.6.0]
+### Added
+* Step logs - Showing failed step title in red
+* Refresh of runs only for active tab
+### Fixed
+* Better github REST API error handling
+* Update jobs panel and log panel to loading state when a new run is selected
+* Clean up more code
+
 ## [1.5.4]
 ### Added
 * Open workflow file action
