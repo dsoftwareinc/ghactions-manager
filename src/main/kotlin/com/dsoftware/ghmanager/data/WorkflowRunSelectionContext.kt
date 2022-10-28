@@ -154,6 +154,7 @@ class WorkflowRunSelectionContext internal constructor(
         val newValue = jobsDataProvider
         if (oldValue != newValue && newValue != null && oldValue?.url() != newValue.url()) {
             jobDataProviderLoadModel.value = newValue
+            jobSelectionHolder.selection = null
         }
     }
 

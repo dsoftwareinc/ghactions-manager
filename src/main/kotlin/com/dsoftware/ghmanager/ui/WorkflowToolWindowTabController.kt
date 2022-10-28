@@ -75,7 +75,6 @@ class WorkflowToolWindowTabController(
             )
         }
 
-
         val errorHandler = GHApiLoadingErrorHandler(project, ghAccount) {
             val contextRepository = dataContextRepository
             contextRepository.clearContext(repository)
@@ -89,7 +88,7 @@ class WorkflowToolWindowTabController(
         }
         panel = GHLoadingPanelFactory(
             loadingModel,
-            "Not loading content",
+            "Not loading workflow runs",
             GithubBundle.message("cannot.load.data.from.github"),
             errorHandler,
         ).create { _, result ->
@@ -122,10 +121,7 @@ class WorkflowToolWindowTabController(
             secondComponent = logLoadingPanel
                 .also {
                     (actionManager.getAction("Github.Workflow.Log.List.Reload") as RefreshAction)
-                        .registerCustomShortcutSet(
-                            it,
-                            disposable
-                        )
+                        .registerCustomShortcutSet(it, disposable)
                 }
         }
 
@@ -147,16 +143,17 @@ class WorkflowToolWindowTabController(
 
 
     private fun createLogPanel(selectedRunContext: WorkflowRunSelectionContext): JComponent {
-        val (logLoadingModel, logModel) = createLogLoadingModel(
+        val model = LogLoadingModelListener(
+            disposable,
             selectedRunContext.logDataProviderLoadModel,
             selectedRunContext.jobSelectionHolder
         )
         LOG.debug("Create log panel")
-        val console = LogConsolePanel(project, logModel, disposable)
+        val console = LogConsolePanel(project, model.logModel, disposable)
         val errorHandler = GHApiLoadingErrorHandler(project, ghAccount) {
         }
         val panel = GHLoadingPanelFactory(
-            logLoadingModel,
+            model.logsLoadingModel,
             "Select a job to show logs",
             GithubBundle.message("cannot.load.data.from.github"),
             errorHandler
@@ -235,6 +232,7 @@ class WorkflowToolWindowTabController(
         dataProviderModel.addListener {
             LOG.debug("Jobs loading model Value changed")
             val provider = dataProviderModel.value
+            loadingModel.future = null
             loadingModel.future = provider?.request
 
             listenerDisposable = listenerDisposable?.let {
@@ -259,80 +257,6 @@ class WorkflowToolWindowTabController(
         return loadingModel to valueModel
     }
 
-    private fun createLogLoadingModel(
-        dataProviderModel: SingleValueModel<WorkflowRunLogsDataProvider?>,
-        jobsSelectionHolder: JobListSelectionHolder,
-    ): Pair<GHCompletableFutureLoadingModel<Map<String, String>>, SingleValueModel<String?>> {
-        LOG.debug("Create log loading model")
-        val valueModel = SingleValueModel<String?>(null)
-
-        fun getJobName(): String? {
-            val jobName = jobsSelectionHolder.selection?.name
-            val removeChars = setOf('<', '>', '/', ':')
-            return jobName?.filterNot {
-                removeChars.contains(it)
-            }?.trim()
-        }
-
-        val loadingModel = GHCompletableFutureLoadingModel<Map<String, String>>(disposable).also {
-            it.addStateChangeListener(object : GHLoadingModel.StateChangeListener {
-                override fun onLoadingCompleted() {
-                    if (it.resultAvailable) {
-                        val jobName = getJobName()
-                        valueModel.value = if (jobName == null) {
-                            "Pick a job to view logs"
-                        } else {
-                            it.result?.get(jobName) ?: "Job ${jobsSelectionHolder.selection?.name} logs missing"
-                        }
-                    }
-                }
-
-                override fun onReset() {
-                    LOG.debug("onReset")
-                    valueModel.value = if (it.result?.isEmpty() == true) {
-                        NO_LOGS_MSG
-                    } else {
-                        it.result?.get(getJobName()) ?: "Job ${jobsSelectionHolder.selection?.name} logs missing"
-                    }
-                }
-            })
-        }
-        jobsSelectionHolder.addSelectionChangeListener(disposable) {
-            valueModel.value = if (loadingModel.result?.isEmpty() == true) {
-                NO_LOGS_MSG
-            } else {
-                loadingModel.result?.get(getJobName()) ?: "Job ${jobsSelectionHolder.selection?.name} logs missing"
-            }
-        }
-        var listenerDisposable: Disposable? = null
-
-        dataProviderModel.addListener {
-            LOG.debug("log loading model Value changed")
-            val provider = dataProviderModel.value
-            loadingModel.future = provider?.request
-
-            listenerDisposable = listenerDisposable?.let {
-                Disposer.dispose(it)
-                null
-            }
-
-            if (provider != null) {
-                val disposable = Disposer.newDisposable().apply {
-                    Disposer.register(disposable, this)
-                }
-                provider.addRunChangesListener(disposable,
-                    object : DataProvider.DataProviderChangeListener {
-                        override fun changed() {
-                            LOG.debug("Log changed ${provider.request}")
-                            loadingModel.future = provider.request
-                        }
-                    })
-
-                listenerDisposable = disposable
-            }
-        }
-        return loadingModel to valueModel
-    }
 
     companion object {
         private const val NO_LOGS_MSG =

@@ -78,7 +78,7 @@ class WorkflowRunLogsDataProvider(
     progressManager: ProgressManager,
     requestExecutor: GithubApiRequestExecutor,
     logsUrl: String,
-) : DataProvider<Map<String, String>>(
+) : DataProvider<Map<String, Map<Int, String>>>(
     progressManager,
     requestExecutor,
     Workflows.getDownloadUrlForWorkflowLog(logsUrl),
