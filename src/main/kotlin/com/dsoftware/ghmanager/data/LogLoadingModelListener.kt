@@ -1,7 +1,7 @@
 package com.dsoftware.ghmanager.data
 
 import com.dsoftware.ghmanager.api.model.Job
-import com.dsoftware.ghmanager.api.model.WorkflowRunJobSteps
+import com.dsoftware.ghmanager.api.model.JobStep
 import com.intellij.collaboration.ui.SingleValueModel
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.diagnostic.logger
@@ -50,7 +50,7 @@ class LogLoadingModelListener(
     }
 
     private fun stepsAsLog(stepLogs: Map<Int, String>, selection: Job): String {
-        val stepsResult: Map<Int, WorkflowRunJobSteps> = if (selection.steps == null) {
+        val stepsResult: Map<Int, JobStep> = if (selection.steps == null) {
             emptyMap()
         } else {
             selection.steps.associateBy { it.number }
@@ -71,7 +71,7 @@ class LogLoadingModelListener(
         val logs = if (jobName == null) null else logsLoadingModel.result?.get(jobName)
         logModel.value = when {
             logsLoadingModel.result == null -> null
-            jobName == null ->  "Pick a job to view logs"
+            jobName == null -> "Pick a job to view logs"
             logs == null -> "Job ${jobSelection.name} logs missing"
             else -> stepsAsLog(logs, jobSelection)
         }

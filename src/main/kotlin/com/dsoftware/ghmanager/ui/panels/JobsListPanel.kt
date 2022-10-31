@@ -151,9 +151,9 @@ class JobListComponent(model: ListModel<Job>, private val infoInNewLine: Boolean
                 override fun invokePopup(comp: Component, x: Int, y: Int) {
 
                     val (place, groupId) = if (ListUtil.isPointOnSelection(list, x, y)) {
-                        Pair("JobListPopupSelected", "Github.ToolWindow.JobsList.Popup.Selected")
+                        Pair("JobListPopupSelected", "Github.ToolWindow.JobList.Popup.Selected")
                     } else {
-                        Pair("JobListPopup", "Github.ToolWindow.JobsList.Popup")
+                        Pair("JobListPopup", "Github.ToolWindow.JobList.Popup")
                     }
                     val popupMenu: ActionPopupMenu =
                         actionManager.createActionPopupMenu(

@@ -3,12 +3,18 @@ package com.dsoftware.ghmanager.api.model
 import java.util.*
 
 
-data class GitHubWorkflowRuns(
+data class WorkflowRuns(
     val total_count: Int,
-    val workflow_runs: List<GitHubWorkflowRun> = emptyList()
+    val workflow_runs: List<WorkflowRun> = emptyList()
 )
 
-data class GitHubWorkflowRun(
+data class PullRequest(
+    val id: Int,
+    val number: Int,
+    val url: String,
+)
+
+data class WorkflowRun(
     val id: Long,
     val path: String?,
     val node_id: String,
@@ -30,7 +36,8 @@ data class GitHubWorkflowRun(
     val rerun_url: String,
     val workflow_url: String,
     val name: String,
-    val head_commit: GitHubHeadCommit
+    val head_commit: GitHubHeadCommit,
+    val pull_requests: List<PullRequest>? = emptyList(),
 )
 
 data class GitHubHeadCommit(

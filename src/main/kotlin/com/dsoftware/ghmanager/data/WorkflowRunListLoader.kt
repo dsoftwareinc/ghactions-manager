@@ -1,7 +1,7 @@
 package com.dsoftware.ghmanager.data
 
 import com.dsoftware.ghmanager.api.Workflows
-import com.dsoftware.ghmanager.api.model.GitHubWorkflowRun
+import com.dsoftware.ghmanager.api.model.WorkflowRun
 import com.dsoftware.ghmanager.ui.settings.GhActionsSettingsService
 import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.progress.ProgressIndicator
@@ -21,13 +21,13 @@ class WorkflowRunListLoader(
     private val requestExecutor: GithubApiRequestExecutor,
     private val repositoryCoordinates: RepositoryCoordinates,
     settingsService: GhActionsSettingsService,
-) : GHListLoaderBase<GitHubWorkflowRun>(progressManager) {
+) : GHListLoaderBase<WorkflowRun>(progressManager) {
     val url: String = Workflows.getWorkflowRuns(repositoryCoordinates).url
     var totalCount: Int = 1
     val frequency: Long = settingsService.state.frequency.toLong()
     private val pageSize = 30
     private val page: Int = 1
-    val listModel = CollectionListModel<GitHubWorkflowRun>()
+    val listModel = CollectionListModel<WorkflowRun>()
     private val task: ScheduledFuture<*>
     var refreshRuns: Boolean = true
 
@@ -39,7 +39,7 @@ class WorkflowRunListLoader(
             if (refreshRuns)
                 runInEdt(checkedDisposable) { loadMore(update = true) }
         }, 1, frequency, TimeUnit.SECONDS)
-        LOG.debug("Create CollectionListModel<GitHubWorkflowRun>() and loader")
+        LOG.debug("Create CollectionListModel<WorkflowRun>() and loader")
         listModel.removeAll()
         addDataListener(this, object : GHListLoader.ListDataListener {
             override fun onDataAdded(startIdx: Int) {
@@ -67,7 +67,7 @@ class WorkflowRunListLoader(
 
     override fun canLoadMore() = !loading && (page * pageSize < totalCount)
 
-    override fun doLoadMore(indicator: ProgressIndicator, update: Boolean): List<GitHubWorkflowRun> {
+    override fun doLoadMore(indicator: ProgressIndicator, update: Boolean): List<WorkflowRun> {
         LOG.debug("Do load more update: $update, indicator: $indicator")
 
         val request = Workflows.getWorkflowRuns(

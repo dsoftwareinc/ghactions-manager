@@ -51,10 +51,13 @@
                     class="com.dsoftware.ghmanager.actions.CancelWorkflowAction"/>
             <action id="Github.Workflow.OpenFile"
                     class="com.dsoftware.ghmanager.actions.OpenWorkflowFileAction"/>
+            <action id="Github.Workflow.Open.PullRequest"
+                    class="com.dsoftware.ghmanager.actions.PullRequestOpenInBrowserAction"/>
             <reference id="Github.Workflow.List.Reload"/>
         </group>
         <group id="Github.ToolWindow.JobList.Popup">
-            <!--            <reference id="Github.Workflow.JobsList.Reload"/>-->
+            <action id="Github.Job.Open.In.Browser"
+                    class="com.dsoftware.ghmanager.actions.JobOpenInBrowserAction"/>
         </group>
 
         <group id="Github.ToolWindow.JobList.Popup.Selected">

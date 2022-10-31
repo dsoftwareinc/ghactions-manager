@@ -1,7 +1,7 @@
 package com.dsoftware.ghmanager.data
 
 import com.dsoftware.ghmanager.api.model.Job
-import com.dsoftware.ghmanager.api.model.GitHubWorkflowRun
+import com.dsoftware.ghmanager.api.model.WorkflowRun
 import com.google.common.cache.CacheBuilder
 import com.intellij.collaboration.ui.SimpleEventListener
 import com.intellij.collaboration.ui.SingleValueModel
@@ -37,7 +37,7 @@ class SingleRunDataLoader(
 
     private val invalidationEventDispatcher = EventDispatcher.create(DataInvalidatedListener::class.java)
 
-    fun getLogsDataProvider(workflowRun: GitHubWorkflowRun): WorkflowRunLogsDataProvider {
+    fun getLogsDataProvider(workflowRun: WorkflowRun): WorkflowRunLogsDataProvider {
 
         return cache.get(workflowRun.logs_url) {
             WorkflowRunLogsDataProvider(progressManager, requestExecutor, workflowRun.logs_url)
@@ -45,7 +45,7 @@ class SingleRunDataLoader(
 
     }
 
-    fun getJobsDataProvider(workflowRun: GitHubWorkflowRun): WorkflowRunJobsDataProvider {
+    fun getJobsDataProvider(workflowRun: WorkflowRun): WorkflowRunJobsDataProvider {
 
         return cache.get(workflowRun.jobs_url) {
             WorkflowRunJobsDataProvider(progressManager, requestExecutor, workflowRun.jobs_url)
@@ -98,7 +98,7 @@ open class ListSelectionHolder<T> {
         SimpleEventListener.addDisposableListener(selectionChangeEventDispatcher, disposable, listener)
 }
 
-class WorkflowRunListSelectionHolder : ListSelectionHolder<GitHubWorkflowRun>()
+class WorkflowRunListSelectionHolder : ListSelectionHolder<WorkflowRun>()
 class JobListSelectionHolder : ListSelectionHolder<Job>()
 
 
@@ -112,9 +112,9 @@ class WorkflowRunSelectionContext internal constructor(
 ) : Disposable {
     private val frequency: Long = runsListLoader.frequency
     private val task: ScheduledFuture<*>
-    val runsListModel: CollectionListModel<GitHubWorkflowRun>
+    val runsListModel: CollectionListModel<WorkflowRun>
         get() = runsListLoader.listModel
-    private val workflowRun: GitHubWorkflowRun?
+    private val workflowRun: WorkflowRun?
         get() = runSelectionHolder.selection
     val jobDataProviderLoadModel: SingleValueModel<WorkflowRunJobsDataProvider?> = SingleValueModel(null)
     val logDataProviderLoadModel: SingleValueModel<WorkflowRunLogsDataProvider?> = SingleValueModel(null)

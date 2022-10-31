@@ -58,7 +58,7 @@ data class Job(
     /* The name of the job. */
     val name: String,
     /* Steps in this job. */
-    val steps: Array<WorkflowRunJobSteps>? = null,
+    val steps: List<JobStep>? = emptyList(),
     val checkRunUrl: String,
     /* Labels for the workflow job. Specified by the \"runs_on\" attribute in the action's workflow file. */
     val labels: Array<String>,
@@ -84,7 +84,7 @@ data class Job(
  * @param startedAt The time that the step started, in ISO 8601 format.
  * @param completedAt The time that the job finished, in ISO 8601 format.
  */
-data class WorkflowRunJobSteps(
+data class JobStep(
     /* The phase of the lifecycle that the job is currently in. */
     val status: String,
     /* The outcome of the job. */

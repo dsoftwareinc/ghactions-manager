@@ -1,7 +1,7 @@
 package com.dsoftware.ghmanager.api
 
 import com.dsoftware.ghmanager.api.model.JobsList
-import com.dsoftware.ghmanager.api.model.GitHubWorkflowRuns
+import com.dsoftware.ghmanager.api.model.WorkflowRuns
 import com.dsoftware.ghmanager.data.RepositoryCoordinates
 import com.intellij.openapi.diagnostic.logger
 import org.jetbrains.plugins.github.api.GithubApiRequest
@@ -28,7 +28,7 @@ object Workflows : GithubApiRequests.Entity("/repos") {
         branch: String? = null,
         actor: String? = null,
         pagination: GithubRequestPagination? = null
-    ): GithubApiRequest<GitHubWorkflowRuns> {
+    ): GithubApiRequest<WorkflowRuns> {
         val url = GithubApiRequests.getUrl(coordinates.serverPath,
             urlSuffix,
             "/${coordinates.repositoryPath}",
@@ -50,7 +50,7 @@ object Workflows : GithubApiRequests.Entity("/repos") {
     fun getWorkflowRunJobs(url: String) = json<JobsList>(url)
         .withOperationName("Get workflow-run jobs")
 
-    fun get(url: String) = json<GitHubWorkflowRuns>(url)
+    fun get(url: String) = json<WorkflowRuns>(url)
         .withOperationName("search workflow runs")
 
 

@@ -2,7 +2,7 @@ package com.dsoftware.ghmanager.ui.panels
 
 
 import com.dsoftware.ghmanager.actions.ActionKeys
-import com.dsoftware.ghmanager.api.model.GitHubWorkflowRun
+import com.dsoftware.ghmanager.api.model.WorkflowRun
 import com.dsoftware.ghmanager.data.WorkflowRunListLoader
 import com.dsoftware.ghmanager.data.WorkflowRunSelectionContext
 import com.dsoftware.ghmanager.ui.ToolbarUtil
@@ -44,7 +44,7 @@ class LoadingErrorHandler(private val resetRunnable: () -> Unit) {
     }
 }
 
-class WorkflowRunList(model: ListModel<GitHubWorkflowRun>) : JBList<GitHubWorkflowRun>(model), DataProvider,
+class WorkflowRunList(model: ListModel<WorkflowRun>) : JBList<WorkflowRun>(model), DataProvider,
     CopyProvider {
 
     init {
@@ -71,7 +71,7 @@ class WorkflowRunList(model: ListModel<GitHubWorkflowRun>) : JBList<GitHubWorkfl
         else -> null
     }
 
-    private inner class WorkflowRunsListCellRenderer : ListCellRenderer<GitHubWorkflowRun>, JPanel() {
+    private inner class WorkflowRunsListCellRenderer : ListCellRenderer<WorkflowRun>, JPanel() {
 
         private val stateIcon = JLabel()
         private val title = JLabel()
@@ -95,8 +95,8 @@ class WorkflowRunList(model: ListModel<GitHubWorkflowRun>) : JBList<GitHubWorkfl
         }
 
         override fun getListCellRendererComponent(
-            list: JList<out GitHubWorkflowRun>,
-            ghWorkflowRun: GitHubWorkflowRun,
+            list: JList<out WorkflowRun>,
+            ghWorkflowRun: WorkflowRun,
             index: Int,
             isSelected: Boolean,
             cellHasFocus: Boolean
