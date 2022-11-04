@@ -230,8 +230,9 @@ internal class WorkflowRunListLoaderPanel(
                 }
             )
         } else {
+            LOG.warn("Got error when getting workflow-runs: $error")
             runListComponent.emptyText.appendText(
-                getErrorPrefix(workflowRunsLoader.loadedData.isEmpty()),
+                "Can't load workflow runs - check that the token you set in GitHub settings have sufficient permissions",
                 SimpleTextAttributes.ERROR_ATTRIBUTES
             ).appendSecondaryText(
                 getLoadingErrorText(workflowRunsLoader.url, error),
@@ -241,7 +242,7 @@ internal class WorkflowRunListLoaderPanel(
 
             errorHandler.getActionForError().let {
                 runListComponent.emptyText.appendSecondaryText(
-                    " ${it.getValue("Name")}",
+                    "\n${it.getValue("Name")}\n",
                     SimpleTextAttributes.LINK_PLAIN_ATTRIBUTES,
                     it
                 )
@@ -250,8 +251,6 @@ internal class WorkflowRunListLoaderPanel(
 
     }
 
-    private fun getErrorPrefix(listEmpty: Boolean) =
-        if (listEmpty) "Can't load workflow runs" else "Can't load all workflow runs"
 
     override fun dispose() {}
 
@@ -304,7 +303,9 @@ internal class WorkflowRunListLoaderPanel(
                         ).append(newLineSeparator)
                     }
                 }
-                return builder.toString()
+                val res = builder.toString()
+                LOG.warn("Error: $res when getting URL: $url")
+                return res
             }
 
             return error.message?.let { addDotIfNeeded(it) } ?: "Unknown loading error."
