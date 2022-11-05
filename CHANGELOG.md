@@ -3,6 +3,12 @@
 # GitHub-Actions-Manager Changelog
 
 ## [Unreleased]
+## [1.6.1]
+### Fixed
+* Link to pull-request
+* Reset log when workflow-run unselected
+* Keep workflow-run selected after refresh
+
 ## [1.6.0]
 ### Added
 * Step logs - Showing failed step title in red
