@@ -1,6 +1,5 @@
 package com.dsoftware.ghmanager.actions
 
-import com.dsoftware.ghmanager.data.SingleRunDataLoader
 import com.intellij.icons.AllIcons
 import com.intellij.ide.BrowserUtil
 import com.intellij.openapi.actionSystem.AnActionEvent
@@ -26,7 +25,8 @@ abstract class OpenInBrowserAction(
     }
 
     abstract fun getData(dataContext: DataContext): String?
-    companion object{
+
+    companion object {
         @JvmStatic
         protected val LOG = logger<OpenInBrowserAction>()
     }
@@ -53,9 +53,8 @@ class PullRequestOpenInBrowserAction : OpenInBrowserAction("Open Pull-Request in
     override fun getData(dataContext: DataContext): String? {
         dataContext.getData(CommonDataKeys.PROJECT) ?: return null
         LOG.info("${dataContext.getData(ActionKeys.SELECTED_WORKFLOW_RUN)?.url}")
-        return dataContext.getData(ActionKeys.SELECTED_WORKFLOW_RUN)
-            ?.pull_requests
-            ?.firstOrNull()
-            ?.url
+        val run = dataContext.getData(ActionKeys.SELECTED_WORKFLOW_RUN) ?: return null
+        val pullRequestNumber = run.pull_requests?.firstOrNull()?.number ?: return null
+        return "${run.repository.html_url}/pull/$pullRequestNumber"
     }
 }

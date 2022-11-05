@@ -30,6 +30,7 @@ object ToolbarUtil {
                 when (conclusion) {
                     "success" -> AllIcons.Actions.Commit
                     "failure" -> Icons.X
+                    "startup_failure" -> Icons.X
                     "cancelled" -> AllIcons.Actions.Cancel
                     "skipped" -> Icons.Skipped
                     else -> Icons.PrimitiveDot

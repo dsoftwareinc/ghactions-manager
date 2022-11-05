@@ -37,9 +37,14 @@ data class WorkflowRun(
     val workflow_url: String,
     val name: String,
     val head_commit: GitHubHeadCommit,
+    val repository: GitHubRepository,
     val pull_requests: List<PullRequest>? = emptyList(),
 )
-
+data class GitHubRepository(
+    val id:Int,
+    val pulls_url: String,
+    val html_url: String,
+)
 data class GitHubHeadCommit(
     val id: String,
     val message: String,
