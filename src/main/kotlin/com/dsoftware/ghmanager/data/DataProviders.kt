@@ -46,7 +46,7 @@ abstract class DataProvider<T>(
 
     @RequiresEdt
     fun reload() {
-        LOG.debug("reloadLog()")
+        LOG.debug("reload DataProvider()")
         value.drop()
         runChangesEventDispatcher.multicaster.changed()
     }

@@ -81,7 +81,7 @@ class WorkflowRunListLoader(
             val existingRunIds = loadedData.mapIndexed { idx, it -> it.id to idx }.toMap()
             result.filter { existingRunIds.containsKey(it.id) }.forEach { run ->
                 val index = existingRunIds[run.id] ?: -1
-                if (index > -1) {
+                if (index > -1 && loadedData[index] != run) {
                     loadedData[index] = run
                     dataEventDispatcher.multicaster.onDataUpdated(index)
                 }
