@@ -39,9 +39,21 @@ data class WorkflowRun(
     val head_commit: GitHubHeadCommit,
     val repository: GitHubRepository,
     val pull_requests: List<PullRequest>? = emptyList(),
-)
+) : Comparable<WorkflowRun> {
+
+    /**
+     * Compare workflows by their updated_at, or created_at (the newest first), or by id run_number both dates are null
+     * @param other The other workflow to compare to
+     */
+    override fun compareTo(other: WorkflowRun): Int {
+        return other.updated_at?.compareTo(this.updated_at)
+            ?: other.created_at?.compareTo(this.created_at)
+            ?: other.run_number.compareTo(this.run_number)
+    }
+}
+
 data class GitHubRepository(
-    val id:Int,
+    val id: Int,
     val pulls_url: String,
     val html_url: String,
 )
