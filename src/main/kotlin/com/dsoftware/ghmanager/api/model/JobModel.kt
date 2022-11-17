@@ -1,17 +1,12 @@
 package com.dsoftware.ghmanager.api.model
 
 import com.fasterxml.jackson.annotation.JsonFormat
-import com.intellij.util.containers.SortedList
-import java.util.*
+import java.util.Date
 
 data class JobsList(
     val total_count: Int,
-    val jobs: SortedList<Job>
-) {
-    constructor(total_count: Int, jobs: Iterable<Job>) : this(
-        total_count,
-        SortedList(Job::compareTo).apply { addAll(jobs) })
-}
+    val jobs: List<Job>
+)
 
 /**
  * Information of a job execution in a workflow run
@@ -75,19 +70,7 @@ data class Job(
     val runnerGroupId: Long?,
     /* The name of the runner group to which this job has been assigned. (If a runner hasn't yet been assigned, this will be null.) */
     val runnerGroupName: String?
-) : Comparable<Job> {
-    override fun equals(other: Any?): Boolean = (other != null) && (other is Job) && (other.id == this.id)
-    override fun hashCode(): Int = this.id.hashCode()
-
-    /**
-     * Compare jobs by their completedAt, or startedAt (the newest first), or by id runId both dates are null
-     * @param other The other job to compare to
-     */
-    override fun compareTo(other: Job): Int =
-        other.completedAt?.compareTo(this.completedAt)
-            ?: other.startedAt?.compareTo(this.startedAt)
-            ?: other.runId.compareTo(this.runId)
-}
+)
 
 /**
  *
