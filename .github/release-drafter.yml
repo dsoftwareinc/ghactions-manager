@@ -12,6 +12,11 @@ categories:
       - 'bug'
   - title: '🧰 Maintenance'
     label: 'chore'
+autolabeler:
+  - label: 'chore'
+    files:
+      - '*.yml'
+      - '*.md'
 change-template: '- $TITLE @$AUTHOR (#$NUMBER)'
 change-title-escapes: '\<*_&' # You can add # and @ to disable mentions, and add ` to disable code blocks.
 version-resolver:
@@ -35,3 +40,5 @@ template: |
   ## Changes
 
   $CHANGES
+  
+  **Full Changelog**: https://github.com/$OWNER/$REPOSITORY/compare/$PREVIOUS_TAG...v$RESOLVED_VERSION

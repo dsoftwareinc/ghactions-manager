@@ -140,7 +140,6 @@ jobs:
   # If accepted and published, release workflow would be triggered
   update_release_draft:
     name: Release Draft
-    if: github.event_name != 'pull_request'
     permissions:
       # write permission is required to create a GitHub release
       contents: write
