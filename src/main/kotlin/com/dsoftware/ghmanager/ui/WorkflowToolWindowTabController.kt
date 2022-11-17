@@ -2,7 +2,11 @@ package com.dsoftware.ghmanager.ui
 
 
 import com.dsoftware.ghmanager.actions.ActionKeys
-import com.dsoftware.ghmanager.data.*
+import com.dsoftware.ghmanager.data.DataProvider
+import com.dsoftware.ghmanager.data.LogLoadingModelListener
+import com.dsoftware.ghmanager.data.WorkflowDataContextRepository
+import com.dsoftware.ghmanager.data.WorkflowRunJobsDataProvider
+import com.dsoftware.ghmanager.data.WorkflowRunSelectionContext
 import com.dsoftware.ghmanager.ui.panels.JobListComponent
 import com.dsoftware.ghmanager.ui.panels.LogConsolePanel
 import com.dsoftware.ghmanager.ui.panels.WorkflowRunListLoaderPanel
@@ -211,20 +215,21 @@ class WorkflowToolWindowTabController(
         LOG.debug("createJobsDataProviderModel Create jobs loading model")
         val valueModel = SingleValueModel<com.dsoftware.ghmanager.api.model.JobsList?>(null)
 
-        val loadingModel = GHCompletableFutureLoadingModel<com.dsoftware.ghmanager.api.model.JobsList>(disposable).also {
-            it.addStateChangeListener(object : GHLoadingModel.StateChangeListener {
-                override fun onLoadingCompleted() {
-                    if (it.resultAvailable) {
+        val loadingModel =
+            GHCompletableFutureLoadingModel<com.dsoftware.ghmanager.api.model.JobsList>(disposable).also {
+                it.addStateChangeListener(object : GHLoadingModel.StateChangeListener {
+                    override fun onLoadingCompleted() {
+                        if (it.resultAvailable) {
+                            valueModel.value = it.result
+                        }
+                    }
+
+                    override fun onReset() {
+                        LOG.debug("onReset")
                         valueModel.value = it.result
                     }
-                }
-
-                override fun onReset() {
-                    LOG.debug("onReset")
-                    valueModel.value = it.result
-                }
-            })
-        }
+                })
+            }
 
         var listenerDisposable: Disposable? = null
 

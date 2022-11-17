@@ -1,6 +1,6 @@
 package com.dsoftware.ghmanager.api.model
 
-import java.util.*
+import java.util.Date
 
 
 data class WorkflowRuns(
@@ -57,6 +57,7 @@ data class GitHubRepository(
     val pulls_url: String,
     val html_url: String,
 )
+
 data class GitHubHeadCommit(
     val id: String,
     val message: String,

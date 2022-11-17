@@ -11,3 +11,6 @@ tab_width = 4
 
 [{*.yaml, *.yml}]
 indent_size = 2
+
+[*.{kt,kts}]
+wildcard_import_limit = 999

@@ -25,7 +25,7 @@ class GhActionConsoleFolding : ConsoleFolding() {
 
     override fun shouldFoldLine(project: Project, line: String): Boolean {
         return !(line.startsWith("====")
-            || line.startsWith("---- Step"))
+                || line.startsWith("---- Step"))
     }
 
     override fun isEnabledForConsole(consoleView: ConsoleView): Boolean {
