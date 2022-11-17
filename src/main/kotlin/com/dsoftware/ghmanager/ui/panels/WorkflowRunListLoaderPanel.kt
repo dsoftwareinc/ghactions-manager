@@ -143,7 +143,7 @@ class WorkflowRunList(model: ListModel<WorkflowRun>) : JBList<WorkflowRun>(model
                     action = "created by"
                 }
                 text = "${ghWorkflowRun.name} #${ghWorkflowRun.run_number}: " +
-                        "$action ${ghWorkflowRun.head_commit.author.name} started $updatedAtLabel"
+                    "$action ${ghWorkflowRun.head_commit.author.name} started $updatedAtLabel"
                 foreground = secondaryTextColor
             }
             labels.apply {
