@@ -11,6 +11,7 @@ import com.intellij.openapi.actionSystem.DefaultActionGroup
 import com.intellij.openapi.actionSystem.ex.ActionUtil
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.diagnostic.logger
+import com.intellij.openapi.project.DumbAware
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.wm.ToolWindow
@@ -36,7 +37,7 @@ internal class ProjectRepositories(
     var knownRepositories: Set<GHGitRepositoryMapping> = emptySet()
 }
 
-class GhActionsToolWindowFactory : ToolWindowFactory {
+class GhActionsToolWindowFactory : ToolWindowFactory, DumbAware {
     private lateinit var settingsService: GhActionsSettingsService
     private val authManager = GithubAuthenticationManager.getInstance()
     private val projectReposMap = mutableMapOf<Project, ProjectRepositories>()

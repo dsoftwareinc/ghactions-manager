@@ -39,7 +39,7 @@ abstract class DataProvider<T>(
     val request by backgroundProcessValue(value)
 
     private fun <T> backgroundProcessValue(backingValue: LazyCancellableBackgroundProcessValue<T>)
-            : ReadOnlyProperty<Any?, CompletableFuture<T>> =
+        : ReadOnlyProperty<Any?, CompletableFuture<T>> =
         ReadOnlyProperty { _, _ -> backingValue.value }
 
     fun url(): String = githubApiRequest.url
