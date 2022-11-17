@@ -144,7 +144,7 @@ class JobListComponent(model: ListModel<Job>, private val infoInNewLine: Boolean
                 }
             }
             val listComponent = JobListComponent(list, infoInNewLine).apply {
-                emptyText.clear()
+                emptyText.text = "No jobs in workflow run"
             }.also {
 
                 installPopup(it)

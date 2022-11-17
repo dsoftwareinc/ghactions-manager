@@ -38,15 +38,12 @@ class SingleRunDataLoader(
     private val invalidationEventDispatcher = EventDispatcher.create(DataInvalidatedListener::class.java)
 
     fun getLogsDataProvider(workflowRun: WorkflowRun): WorkflowRunLogsDataProvider {
-
         return cache.get(workflowRun.logs_url) {
             WorkflowRunLogsDataProvider(progressManager, requestExecutor, workflowRun.logs_url)
         } as WorkflowRunLogsDataProvider
-
     }
 
     fun getJobsDataProvider(workflowRun: WorkflowRun): WorkflowRunJobsDataProvider {
-
         return cache.get(workflowRun.jobs_url) {
             WorkflowRunJobsDataProvider(progressManager, requestExecutor, workflowRun.jobs_url)
         } as WorkflowRunJobsDataProvider
@@ -132,10 +129,10 @@ class WorkflowRunSelectionContext internal constructor(
             setNewJobsProvider()
             setNewLogProvider()
         }
-        dataLoader.addInvalidationListener(parentDisposable) {
+        dataLoader.addInvalidationListener(this) {
             LOG.debug("invalidation listener")
-            setNewJobsProvider()
-            setNewLogProvider()
+            jobDataProviderLoadModel.value = null
+            logDataProviderLoadModel.value = null
         }
         val scheduler = AppExecutorUtil.getAppScheduledExecutorService()
         task = scheduler.scheduleWithFixedDelay({
