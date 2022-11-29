@@ -1,3 +1,4 @@
+---
 name-template: 'v$RESOLVED_VERSION 🌈'
 tag-template: 'v$RESOLVED_VERSION'
 categories:
@@ -12,33 +13,43 @@ categories:
       - 'bug'
   - title: '🧰 Maintenance'
     label: 'chore'
+  - title: '⬆️ Dependency Updates'
+    label: 'dependencies'
+change-template: '- $TITLE (#$NUMBER)'
+change-title-escapes: '\<*_&'
 autolabeler:
   - label: 'chore'
     files:
-      - '*.yml'
       - '*.md'
-change-template: '- $TITLE @$AUTHOR (#$NUMBER)'
-change-title-escapes: '\<*_&' # You can add # and @ to disable mentions, and add ` to disable code blocks.
+      - '.github/*'
+  - label: 'bug'
+    title:
+      - '/fix/i'
+  - label: 'dependencies'
+    files:
+      - 'poetry.lock'
 version-resolver:
   major:
     labels:
-      - 'major'
       - 'breaking'
   minor:
     labels:
-      - 'minor'
       - 'feature'
       - 'enhancement'
   patch:
     labels:
-      - 'fix'
-      - 'bugfix'
+      - 'chore'
+      - 'dependencies'
       - 'bug'
-      - 'patch'
   default: patch
 template: |
-  ## Changes
+  # Changes
 
   $CHANGES
-  
+
+  ## Contributors
+  We'd like to thank all the contributors who worked on this release!
+
+  $CONTRIBUTORS
+
   **Full Changelog**: https://github.com/$OWNER/$REPOSITORY/compare/$PREVIOUS_TAG...v$RESOLVED_VERSION
