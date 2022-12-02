@@ -84,6 +84,7 @@ class GhActionsToolWindowFactory : ToolWindowFactory, DumbAware {
             }
         )
 
+        // todo: Find a way to listen to github settings changes.
 //        authManager.addListener(toolWindow.disposable, object : AccountsListener<GithubAccount> {
 //            override fun onAccountListChanged(old: Collection<GithubAccount>, new: Collection<GithubAccount>) =
 //                scheduleUpdate()
@@ -96,7 +97,7 @@ class GhActionsToolWindowFactory : ToolWindowFactory, DumbAware {
     }
 
     override fun shouldBeAvailable(project: Project): Boolean {
-        return true;
+        return true
     }
 
     override fun createToolWindowContent(project: Project, toolWindow: ToolWindow) {
@@ -196,7 +197,8 @@ class GhActionsToolWindowFactory : ToolWindowFactory, DumbAware {
             toolWindow.setAdditionalGearActions(DefaultActionGroup(actionManager.getAction("Github.Actions.Manager.Settings.Open")))
             val dataContextRepository = WorkflowDataContextRepository.getInstance(project)
             knownRepositories.filter {
-                !settingsService.state.useCustomRepos || (settingsService.state.customRepos[it.gitRemoteUrlCoordinates.url]?.included
+                !settingsService.state.useCustomRepos
+                    || (settingsService.state.customRepos[it.remote.url]?.included
                     ?: false)
             }.forEach { repo ->
                 val ghAccount = guessAccountForRepository(repo)
