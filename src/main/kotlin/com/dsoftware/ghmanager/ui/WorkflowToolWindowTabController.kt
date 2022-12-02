@@ -64,10 +64,9 @@ class WorkflowToolWindowTabController(
 
     init {
         Disposer.register(parentDisposable, disposable)
-        val repository = repositoryMapping.ghRepositoryCoordinates
         contentDisposable = Disposable {
             Disposer.dispose(disposable)
-            dataContextRepository.clearContext(repository)
+            dataContextRepository.clearContext(repositoryMapping)
         }
         loadingModel = GHCompletableFutureLoadingModel<WorkflowRunSelectionContext>(disposable).apply {
             future = dataContextRepository.acquireContext(
@@ -80,7 +79,7 @@ class WorkflowToolWindowTabController(
 
         val errorHandler = GHApiLoadingErrorHandler(project, ghAccount) {
             val contextRepository = dataContextRepository
-            contextRepository.clearContext(repository)
+            contextRepository.clearContext(repositoryMapping)
             loadingModel.future =
                 contextRepository.acquireContext(
                     disposable,

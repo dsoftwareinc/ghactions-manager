@@ -60,7 +60,7 @@ internal class GhActionsManagerConfigurable internal constructor(
                     label("Tab name")
                 }.layout(RowLayout.PARENT_GRID)
                 knownRepositories
-                    .map { it.gitRemoteUrlCoordinates.url }
+                    .map { it.remote.url }
                     .forEach {
                         val settingsValue = state.customRepos.getOrPut(it) { RepoSettings() }
                         row(it) {

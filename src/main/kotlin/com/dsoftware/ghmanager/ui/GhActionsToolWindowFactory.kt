@@ -4,7 +4,6 @@ import com.dsoftware.ghmanager.data.WorkflowDataContextRepository
 import com.dsoftware.ghmanager.ui.settings.GhActionsManagerConfigurable
 import com.dsoftware.ghmanager.ui.settings.GhActionsSettingsService
 import com.dsoftware.ghmanager.ui.settings.GithubActionsManagerSettings
-import com.intellij.collaboration.auth.AccountsListener
 import com.intellij.openapi.actionSystem.ActionManager
 import com.intellij.openapi.actionSystem.ActionPlaces
 import com.intellij.openapi.actionSystem.DefaultActionGroup
@@ -22,27 +21,31 @@ import com.intellij.ui.content.ContentManagerEvent
 import com.intellij.ui.content.ContentManagerListener
 import com.intellij.util.concurrency.AppExecutorUtil
 import com.intellij.util.ui.UIUtil
-import org.jetbrains.plugins.github.authentication.GithubAuthenticationManager
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
+import org.jetbrains.plugins.github.authentication.GHAccountsUtil
 import org.jetbrains.plugins.github.authentication.accounts.GithubAccount
 import org.jetbrains.plugins.github.pullrequest.data.provider.GHPRDataOperationsListener
 import org.jetbrains.plugins.github.util.GHGitRepositoryMapping
-import org.jetbrains.plugins.github.util.GHProjectRepositoriesManager
+import org.jetbrains.plugins.github.util.GHHostedRepositoriesManager
 import java.awt.BorderLayout
 import java.util.concurrent.TimeUnit
 import javax.swing.JPanel
 
-internal class ProjectRepositories(
-    val toolWindow: ToolWindow,
-) {
+internal class ProjectRepositories(val toolWindow: ToolWindow) {
     var knownRepositories: Set<GHGitRepositoryMapping> = emptySet()
 }
 
 class GhActionsToolWindowFactory : ToolWindowFactory, DumbAware {
     private lateinit var settingsService: GhActionsSettingsService
-    private val authManager = GithubAuthenticationManager.getInstance()
+
+    //    private val authManager = GithubAuthenticationManager.getInstance()
     private val projectReposMap = mutableMapOf<Project, ProjectRepositories>()
+    private val scope = CoroutineScope(SupervisorJob())
 
     override fun init(toolWindow: ToolWindow) {
+        val project = toolWindow.project
         if (!projectReposMap.containsKey(toolWindow.project)) {
             projectReposMap[toolWindow.project] = ProjectRepositories(toolWindow)
         }
@@ -55,60 +58,66 @@ class GhActionsToolWindowFactory : ToolWindowFactory, DumbAware {
                     createToolWindowContent(toolWindow.project, toolWindow)
                 }
             })
-        bus.subscribe(
-            GHProjectRepositoriesManager.LIST_CHANGES_TOPIC,
-            object : GHProjectRepositoriesManager.ListChangeListener {
-                override fun repositoryListChanged(newList: Set<GHGitRepositoryMapping>, project: Project) {
-                    LOG.debug("Repos updated, new list has ${newList.size} repos")
-                    val ghActionToolWindow = projectReposMap[project] ?: return
-                    ghActionToolWindow.toolWindow.isAvailable = newList.isNotEmpty()
-                    ghActionToolWindow.knownRepositories = newList
+
+        val repositoriesManager = GHHostedRepositoriesManager(toolWindow.project)
+        scope.launch {
+            repositoriesManager.knownRepositoriesState.collect {
+                LOG.debug("Repos updated, new list has ${it.size} repos")
+                val ghActionToolWindow = projectReposMap[project]
+                if (ghActionToolWindow != null) {
+                    ghActionToolWindow.knownRepositories = it
                     ghActionToolWindow.knownRepositories.forEach { repo ->
                         settingsService.state.customRepos.putIfAbsent(
-                            repo.gitRemoteUrlCoordinates.url,
+                            repo.remote.url,
                             GithubActionsManagerSettings.RepoSettings()
                         )
                     }
                     createToolWindowContent(project, toolWindow)
                 }
-            })
+            }
+        }
+
         bus.subscribe(
             GHPRDataOperationsListener.TOPIC,
             object : GHPRDataOperationsListener {
 
             }
         )
-        authManager.addListener(toolWindow.disposable, object : AccountsListener<GithubAccount> {
-            override fun onAccountListChanged(old: Collection<GithubAccount>, new: Collection<GithubAccount>) =
-                scheduleUpdate()
 
-            override fun onAccountCredentialsChanged(account: GithubAccount) = scheduleUpdate()
-
-            private fun scheduleUpdate() = createToolWindowContent(toolWindow.project, toolWindow)
-
-        })
+//        authManager.addListener(toolWindow.disposable, object : AccountsListener<GithubAccount> {
+//            override fun onAccountListChanged(old: Collection<GithubAccount>, new: Collection<GithubAccount>) =
+//                scheduleUpdate()
+//
+//            override fun onAccountCredentialsChanged(account: GithubAccount) = scheduleUpdate()
+//
+//            private fun scheduleUpdate() = createToolWindowContent(toolWindow.project, toolWindow)
+//
+//        })
     }
 
+    override fun shouldBeAvailable(project: Project): Boolean {
+        return true;
+    }
 
     override fun createToolWindowContent(project: Project, toolWindow: ToolWindow) {
         val projectRepos = projectReposMap[toolWindow.project] ?: return
-        toolWindow.contentManager.removeAllContents(true)
-        if (!authManager.hasAccounts()) {
-            noGitHubAccountPanel(projectRepos)
-            return
+        ApplicationManager.getApplication().invokeLater {
+            toolWindow.contentManager.removeAllContents(true)
+            if (GHAccountsUtil.accounts.isEmpty()) {
+                noGitHubAccountPanel(projectRepos)
+            } else if (projectRepos.knownRepositories.isEmpty()) {
+                noRepositories(projectRepos)
+            } else {
+                val countRepos = projectRepos.knownRepositories.count {
+                    settingsService.state.customRepos[it.remote.url]?.included ?: false
+                }
+                if (settingsService.state.useCustomRepos && countRepos == 0) {
+                    noActiveRepositories(projectRepos)
+                } else {
+                    ghAccountAndReposConfigured(project, projectRepos)
+                }
+            }
         }
-        if (projectRepos.knownRepositories.isEmpty()) {
-            noRepositories(projectRepos)
-            return
-        }
-        val countRepos = projectRepos.knownRepositories.count {
-            settingsService.state.customRepos[it.gitRemoteUrlCoordinates.url]?.included ?: false
-        }
-        if (settingsService.state.useCustomRepos && countRepos == 0) {
-            noActiveRepositories(projectRepos)
-            return
-        }
-        ghAccountAndReposConfigured(project, projectRepos)
     }
 
     private fun noActiveRepositories(projectRepositories: ProjectRepositories) =
@@ -174,8 +183,8 @@ class GhActionsToolWindowFactory : ToolWindowFactory, DumbAware {
         }
 
     private fun guessAccountForRepository(repo: GHGitRepositoryMapping): GithubAccount? {
-        val accounts = authManager.getAccounts()
-        return accounts.firstOrNull { it.server.equals(repo.ghRepositoryCoordinates.serverPath, true) }
+        val accounts = GHAccountsUtil.accounts
+        return accounts.firstOrNull { it.server.equals(repo.repository.serverPath, true) }
     }
 
     private fun ghAccountAndReposConfigured(
@@ -193,7 +202,7 @@ class GhActionsToolWindowFactory : ToolWindowFactory, DumbAware {
                 val ghAccount = guessAccountForRepository(repo)
                 if (ghAccount != null) {
                     LOG.info("adding panel for repo: ${repo.repositoryPath}, ${ghAccount.name}")
-                    val repoSettings = settingsService.state.customRepos[repo.gitRemoteUrlCoordinates.url]!!
+                    val repoSettings = settingsService.state.customRepos[repo.remote.url]!!
                     val tab = toolWindow.contentManager.factory.createContent(
                         JPanel(null), repo.repositoryPath, false
                     ).apply {

@@ -14,9 +14,8 @@ import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.wm.ToolWindow
 import com.intellij.util.concurrency.annotations.RequiresBackgroundThread
 import com.intellij.util.concurrency.annotations.RequiresEdt
-import org.jetbrains.plugins.github.api.GHRepositoryCoordinates
+import git4idea.remote.GitRemoteUrlCoordinates
 import org.jetbrains.plugins.github.api.GHRepositoryPath
-import org.jetbrains.plugins.github.api.GithubApiRequestExecutorManager
 import org.jetbrains.plugins.github.api.GithubServerPath
 import org.jetbrains.plugins.github.authentication.accounts.GithubAccount
 import org.jetbrains.plugins.github.util.GHGitRepositoryMapping
@@ -37,7 +36,7 @@ data class RepositoryCoordinates(
 class WorkflowDataContextRepository {
 
     private val repositories =
-        mutableMapOf<GHRepositoryCoordinates, LazyCancellableBackgroundProcessValue<WorkflowRunSelectionContext>>()
+        mutableMapOf<GitRemoteUrlCoordinates, LazyCancellableBackgroundProcessValue<WorkflowRunSelectionContext>>()
 
     @RequiresBackgroundThread
     @Throws(IOException::class)
@@ -48,13 +47,14 @@ class WorkflowDataContextRepository {
         toolWindow: ToolWindow,
     ): WorkflowRunSelectionContext {
         LOG.debug("Get User and  repository")
-        val fullPath = GithubUrlUtil.getUserAndRepositoryFromRemoteUrl(repositoryMapping.gitRemoteUrlCoordinates.url)
+        val fullPath = GithubUrlUtil.getUserAndRepositoryFromRemoteUrl(repositoryMapping.remote.url)
             ?: throw IllegalArgumentException(
-                "Invalid GitHub Repository URL - ${repositoryMapping.gitRemoteUrlCoordinates.url} is not a GitHub repository"
+                "Invalid GitHub Repository URL - ${repositoryMapping.remote.url} is not a GitHub repository"
             )
         val repositoryCoordinates = RepositoryCoordinates(account.server, fullPath)
         LOG.debug("Create WorkflowDataLoader")
-        val requestExecutor = GithubApiRequestExecutorManager.getInstance().getExecutor(account)
+        val requestExecutor =
+            org.jetbrains.plugins.github.api.GithubApiRequestExecutor.Factory.Companion.getInstance().create()
         val singleRunDataLoader = SingleRunDataLoader(requestExecutor)
         requestExecutor.addListener(singleRunDataLoader) {
             singleRunDataLoader.invalidateAllData()
@@ -81,7 +81,7 @@ class WorkflowDataContextRepository {
         account: GithubAccount,
         toolWindow: ToolWindow,
     ): CompletableFuture<WorkflowRunSelectionContext> {
-        return repositories.getOrPut(repositoryMapping.ghRepositoryCoordinates) {
+        return repositories.getOrPut(repositoryMapping.remote) {
             val contextDisposable = Disposer.newDisposable("contextDisposable")
             Disposer.register(disposable, contextDisposable)
 
@@ -102,8 +102,8 @@ class WorkflowDataContextRepository {
     }
 
     @RequiresEdt
-    fun clearContext(repository: GHRepositoryCoordinates) {
-        repositories.remove(repository)?.drop()
+    fun clearContext(repositoryMapping: GHGitRepositoryMapping) {
+        repositories.remove(repositoryMapping.remote)?.drop()
     }
 
     companion object {
