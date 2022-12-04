@@ -8,22 +8,15 @@ import com.dsoftware.ghmanager.data.WorkflowDataContextRepository
 import com.dsoftware.ghmanager.data.WorkflowRunJobsDataProvider
 import com.dsoftware.ghmanager.data.WorkflowRunSelectionContext
 import com.dsoftware.ghmanager.ui.panels.JobListComponent
-import com.dsoftware.ghmanager.ui.panels.LogConsolePanel
 import com.dsoftware.ghmanager.ui.panels.WorkflowRunListLoaderPanel
+import com.dsoftware.ghmanager.ui.panels.createLogConsolePanel
 import com.dsoftware.ghmanager.ui.settings.GhActionsSettingsService
 import com.intellij.collaboration.ui.SingleValueModel
 import com.intellij.ide.DataManager
 import com.intellij.ide.actions.RefreshAction
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.actionSystem.ActionManager
-import com.intellij.openapi.actionSystem.AnActionEvent
-import com.intellij.openapi.actionSystem.DefaultActionGroup
 import com.intellij.openapi.diagnostic.logger
-import com.intellij.openapi.editor.Editor
-import com.intellij.openapi.editor.actions.ToggleUseSoftWrapsToolbarAction
-import com.intellij.openapi.editor.ex.EditorEx
-import com.intellij.openapi.editor.impl.ContextMenuPopupHandler
-import com.intellij.openapi.editor.impl.softwrap.SoftWrapAppliancePlaces
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.util.Key
@@ -151,7 +144,7 @@ class WorkflowToolWindowTabController(
             selectedRunContext.jobSelectionHolder
         )
         LOG.debug("Create log panel")
-        val console = LogConsolePanel(project, model.logModel, disposable)
+
         val errorHandler = GHApiLoadingErrorHandler(project, ghAccount) {
         }
         val panel = GHLoadingPanelFactory(
@@ -160,25 +153,8 @@ class WorkflowToolWindowTabController(
             GithubBundle.message("cannot.load.data.from.github"),
             errorHandler
         ).create { _, _ ->
-            val panel = JBPanelWithEmptyText(BorderLayout()).apply {
-                isOpaque = false
-                add(console.component, BorderLayout.CENTER)
-            }
-            LOG.debug("Adding popup actions")
-            val actionGroup = DefaultActionGroup().apply {
-                removeAll()
-                add(actionManager.getAction("Github.Workflow.Log.List.Reload"))
-                add(
-                    object : ToggleUseSoftWrapsToolbarAction(SoftWrapAppliancePlaces.CONSOLE) {
-                        override fun getEditor(e: AnActionEvent): Editor? {
-                            return console.editor
-                        }
-                    }
-                )
-            }
-            val contextMenuPopupHandler = ContextMenuPopupHandler.Simple(actionGroup)
-            (console.editor as EditorEx).installPopupHandler(contextMenuPopupHandler)
-            panel
+
+            createLogConsolePanel(project, model.logModel, disposable)
         }
         return panel
     }

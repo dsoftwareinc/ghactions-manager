@@ -1,5 +1,7 @@
 package com.dsoftware.ghmanager.data
 
+import com.dsoftware.ghmanager.Constants.LOG_MSG_MISSING
+import com.dsoftware.ghmanager.Constants.LOG_MSG_PICK_JOB
 import com.dsoftware.ghmanager.api.model.Job
 import com.dsoftware.ghmanager.api.model.JobStep
 import com.intellij.collaboration.ui.SingleValueModel
@@ -71,8 +73,8 @@ class LogLoadingModelListener(
         val logs = if (jobName == null) null else logsLoadingModel.result?.get(jobName)
         logModel.value = when {
             logsLoadingModel.result == null -> null
-            jobName == null -> "Pick a job to view logs"
-            logs == null -> "Job ${jobSelection.name} logs missing"
+            jobName == null -> LOG_MSG_PICK_JOB
+            logs == null -> LOG_MSG_MISSING+jobSelection.name
             else -> stepsAsLog(logs, jobSelection)
         }
     }
