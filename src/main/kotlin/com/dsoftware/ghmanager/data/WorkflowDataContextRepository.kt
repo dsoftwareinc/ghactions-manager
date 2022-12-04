@@ -16,8 +16,11 @@ import com.intellij.util.concurrency.annotations.RequiresBackgroundThread
 import com.intellij.util.concurrency.annotations.RequiresEdt
 import git4idea.remote.GitRemoteUrlCoordinates
 import org.jetbrains.plugins.github.api.GHRepositoryPath
+import org.jetbrains.plugins.github.api.GithubApiRequestExecutor
 import org.jetbrains.plugins.github.api.GithubServerPath
 import org.jetbrains.plugins.github.authentication.accounts.GithubAccount
+import org.jetbrains.plugins.github.exceptions.GithubMissingTokenException
+import org.jetbrains.plugins.github.util.GHCompatibilityUtil
 import org.jetbrains.plugins.github.util.GHGitRepositoryMapping
 import org.jetbrains.plugins.github.util.GithubUrlUtil
 import org.jetbrains.plugins.github.util.LazyCancellableBackgroundProcessValue
@@ -53,8 +56,11 @@ class WorkflowDataContextRepository {
             )
         val repositoryCoordinates = RepositoryCoordinates(account.server, fullPath)
         LOG.debug("Create WorkflowDataLoader")
+        val token = GHCompatibilityUtil.getOrRequestToken(account, toolWindow.project)
+            ?: throw GithubMissingTokenException(account)
+
         val requestExecutor =
-            org.jetbrains.plugins.github.api.GithubApiRequestExecutor.Factory.Companion.getInstance().create()
+            GithubApiRequestExecutor.Factory.Companion.getInstance().create(token)
         val singleRunDataLoader = SingleRunDataLoader(requestExecutor)
         requestExecutor.addListener(singleRunDataLoader) {
             singleRunDataLoader.invalidateAllData()

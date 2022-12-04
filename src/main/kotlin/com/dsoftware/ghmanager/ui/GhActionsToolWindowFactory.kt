@@ -4,6 +4,7 @@ import com.dsoftware.ghmanager.data.WorkflowDataContextRepository
 import com.dsoftware.ghmanager.ui.settings.GhActionsManagerConfigurable
 import com.dsoftware.ghmanager.ui.settings.GhActionsSettingsService
 import com.dsoftware.ghmanager.ui.settings.GithubActionsManagerSettings
+import com.intellij.collaboration.auth.AccountsListener
 import com.intellij.openapi.actionSystem.ActionManager
 import com.intellij.openapi.actionSystem.ActionPlaces
 import com.intellij.openapi.actionSystem.DefaultActionGroup
@@ -25,6 +26,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import org.jetbrains.plugins.github.authentication.GHAccountsUtil
+import org.jetbrains.plugins.github.authentication.GithubAuthenticationManager
 import org.jetbrains.plugins.github.authentication.accounts.GithubAccount
 import org.jetbrains.plugins.github.pullrequest.data.provider.GHPRDataOperationsListener
 import org.jetbrains.plugins.github.util.GHGitRepositoryMapping
@@ -40,7 +42,7 @@ internal class ProjectRepositories(val toolWindow: ToolWindow) {
 class GhActionsToolWindowFactory : ToolWindowFactory, DumbAware {
     private lateinit var settingsService: GhActionsSettingsService
 
-    //    private val authManager = GithubAuthenticationManager.getInstance()
+    private val authManager = GithubAuthenticationManager.getInstance()
     private val projectReposMap = mutableMapOf<Project, ProjectRepositories>()
     private val scope = CoroutineScope(SupervisorJob())
 
@@ -85,15 +87,15 @@ class GhActionsToolWindowFactory : ToolWindowFactory, DumbAware {
         )
 
         // todo: Find a way to listen to github settings changes.
-//        authManager.addListener(toolWindow.disposable, object : AccountsListener<GithubAccount> {
-//            override fun onAccountListChanged(old: Collection<GithubAccount>, new: Collection<GithubAccount>) =
-//                scheduleUpdate()
-//
-//            override fun onAccountCredentialsChanged(account: GithubAccount) = scheduleUpdate()
-//
-//            private fun scheduleUpdate() = createToolWindowContent(toolWindow.project, toolWindow)
-//
-//        })
+        authManager.addListener(toolWindow.disposable, object : AccountsListener<GithubAccount> {
+            override fun onAccountListChanged(old: Collection<GithubAccount>, new: Collection<GithubAccount>) =
+                scheduleUpdate()
+
+            override fun onAccountCredentialsChanged(account: GithubAccount) = scheduleUpdate()
+
+            private fun scheduleUpdate() = createToolWindowContent(toolWindow.project, toolWindow)
+
+        })
     }
 
     override fun shouldBeAvailable(project: Project): Boolean {
