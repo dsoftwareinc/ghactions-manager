@@ -94,7 +94,7 @@ class JobListComponent(model: ListModel<Job>, private val infoInNewLine: Boolean
         ): Component {
             UIUtil.setBackgroundRecursively(this, ListUiUtil.WithTallRow.background(list, isSelected, list.hasFocus()))
             val primaryTextColor = ListUiUtil.WithTallRow.foreground(isSelected, list.hasFocus())
-            val secondaryTextColor = ListUiUtil.WithTallRow.secondaryForeground(list, isSelected)
+            val secondaryTextColor = ListUiUtil.WithTallRow.secondaryForeground(isSelected, list.hasFocus())
 
             title.apply {
                 icon = ToolbarUtil.statusIcon(job.status, job.conclusion)

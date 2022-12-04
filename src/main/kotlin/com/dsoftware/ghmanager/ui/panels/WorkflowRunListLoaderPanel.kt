@@ -128,7 +128,7 @@ class WorkflowRunList(model: ListModel<WorkflowRun>) : JBList<WorkflowRun>(model
         ): Component {
             UIUtil.setBackgroundRecursively(this, ListUiUtil.WithTallRow.background(list, isSelected, list.hasFocus()))
             val primaryTextColor = ListUiUtil.WithTallRow.foreground(isSelected, list.hasFocus())
-            val secondaryTextColor = ListUiUtil.WithTallRow.secondaryForeground(list, isSelected)
+            val secondaryTextColor = ListUiUtil.WithTallRow.secondaryForeground(isSelected, list.hasFocus())
 
             stateIcon.icon = ToolbarUtil.statusIcon(ghWorkflowRun.status, ghWorkflowRun.conclusion)
             title.apply {
