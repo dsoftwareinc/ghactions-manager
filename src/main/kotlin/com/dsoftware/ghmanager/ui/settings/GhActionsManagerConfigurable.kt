@@ -17,17 +17,14 @@ import com.intellij.ui.dsl.builder.bindText
 import com.intellij.ui.dsl.builder.panel
 import com.intellij.ui.dsl.builder.selected
 import com.intellij.util.messages.Topic
-import org.jetbrains.plugins.github.util.GHProjectRepositoriesManager
+import org.jetbrains.plugins.github.util.GHHostedRepositoriesManager
 
 
-internal class GhActionsManagerConfigurable internal constructor(
-    project: Project
-) : BoundConfigurable(ToolbarUtil.SETTINGS_DISPLAY_NAME, "settings.ghactions-manager") {
+internal class GhActionsManagerConfigurable internal constructor(project: Project) :
+    BoundConfigurable(ToolbarUtil.SETTINGS_DISPLAY_NAME, "settings.ghactions-manager") {
     private val ghActionsSettingsService = GhActionsSettingsService.getInstance(project)
-
     private val state = ghActionsSettingsService.state
-
-    private val repoManager = project.service<GHProjectRepositoriesManager>()
+    private val repoManager = project.service<GHHostedRepositoriesManager>()
 
     override fun apply() {
         super.apply()
@@ -35,7 +32,7 @@ internal class GhActionsManagerConfigurable internal constructor(
     }
 
     override fun createPanel(): DialogPanel {
-        val knownRepositories = repoManager.knownRepositories
+        val knownRepositories = repoManager.knownRepositoriesState.value
         return panel {
             row {
                 intTextField(0..100).bindIntText(state::frequency, state::frequency::set)
@@ -83,7 +80,6 @@ internal class GhActionsManagerConfigurable internal constructor(
         @JvmField
         @Topic.AppLevel
         val SETTINGS_CHANGED = Topic(SettingsChangedListener::class.java, Topic.BroadcastDirection.NONE)
-
     }
 }
 
