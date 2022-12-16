@@ -21,6 +21,13 @@ object Workflows : GithubApiRequests.Entity("/repos") {
     fun postRerunWorkflow(url: String) = GithubApiRequest.Post.Json(url, Object(), Object::class.java, null)
         .withOperationName("Rerun workflow")
 
+    fun getBranches(coordinates: RepositoryCoordinates) =
+        GithubApiRequests.Repos.Branches.get(
+            coordinates.serverPath,
+            coordinates.repositoryPath.owner,
+            coordinates.repositoryPath.repository,
+        )
+
     fun getWorkflowRuns(
         coordinates: RepositoryCoordinates,
         event: String? = null,

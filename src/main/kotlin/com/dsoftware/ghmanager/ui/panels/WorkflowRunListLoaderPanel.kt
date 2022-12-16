@@ -254,26 +254,26 @@ internal class WorkflowRunListLoaderPanel(
                     else -> "${workflowRunsLoader.loadedData.size} workflow runs loaded out of ${workflowRunsLoader.totalCount}"
                 }
             )
-        } else {
-            LOG.warn("Got error when getting workflow-runs: $error")
-            runListComponent.emptyText.appendText(
-                "Can't load workflow runs - check that the token you set in GitHub settings have sufficient permissions",
-                SimpleTextAttributes.ERROR_ATTRIBUTES
-            ).appendSecondaryText(
-                getLoadingErrorText(workflowRunsLoader.url, error),
-                SimpleTextAttributes.ERROR_ATTRIBUTES,
-                null
-            )
-
-            errorHandler.getActionForError().let {
-                runListComponent.emptyText.appendSecondaryText(
-                    "\n${it.getValue("Name")}\n",
-                    SimpleTextAttributes.LINK_PLAIN_ATTRIBUTES,
-                    it
-                )
-            }
+            return
         }
+        LOG.warn("Got error when getting workflow-runs: $workflowRunsLoader.error")
+        runListComponent.emptyText.appendText(
+            "Can't load workflow runs - check that the token you set in GitHub settings have sufficient permissions",
+            SimpleTextAttributes.ERROR_ATTRIBUTES
+        ).appendSecondaryText(
+            getLoadingErrorText(workflowRunsLoader.url, error),
+            SimpleTextAttributes.ERROR_ATTRIBUTES,
+            null
+        )
 
+        errorHandler.getActionForError().let {
+            runListComponent.emptyText.appendSecondaryText(
+                "\n${it.getValue("Name")}\n",
+                SimpleTextAttributes.LINK_PLAIN_ATTRIBUTES,
+                it
+            )
+        }
+        runListComponent.emptyText.attachTo(runListComponent)
     }
 
 

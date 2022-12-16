@@ -9,7 +9,7 @@ import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.util.Disposer
 import com.intellij.ui.CollectionListModel
 import com.intellij.util.concurrency.AppExecutorUtil
-import com.intellij.vcs.log.runInEdt
+import com.intellij.openapi.application.runInEdt
 import org.jetbrains.plugins.github.api.GithubApiRequestExecutor
 import org.jetbrains.plugins.github.api.data.request.GithubRequestPagination
 import org.jetbrains.plugins.github.pullrequest.data.GHListLoader
@@ -37,7 +37,9 @@ class WorkflowRunListLoader(
         val scheduler = AppExecutorUtil.getAppScheduledExecutorService()
         task = scheduler.scheduleWithFixedDelay({
             if (refreshRuns)
-                runInEdt(checkedDisposable) { loadMore(update = true) }
+                runInEdt {
+                    loadMore(update = true)
+                }
         }, 1, frequency, TimeUnit.SECONDS)
         LOG.debug("Create CollectionListModel<WorkflowRun>() and loader")
         listModel.removeAll()
@@ -86,7 +88,7 @@ class WorkflowRunListLoader(
                     val index = existingRunIds[run.id] ?: -1
                     if (index > -1 && loadedData[index] != run) {
                         loadedData[index] = run
-                        if(newRuns.isEmpty()) // No point in updating if anyway we will send replaceAll
+                        if (newRuns.isEmpty()) // No point in updating if anyway we will send replaceAll
                             dataEventDispatcher.multicaster.onDataUpdated(index)
                     }
                 }
