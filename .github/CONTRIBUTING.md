@@ -21,7 +21,7 @@ All types of contributions are encouraged and valued. See the [Table of Contents
   - [Suggesting Enhancements](#suggesting-enhancements)
   - [Your First Code Contribution](#your-first-code-contribution)
   - [Improving The Documentation](#improving-the-documentation)
-- [Style guides](#styleguides)
+- [Style guides](#style-guides)
   - [Commit Messages](#commit-messages)
 - [Join The Project Team](#join-the-project-team)
 
@@ -142,7 +142,7 @@ and it will start the plugin.
 ### Improving The Documentation
 Feel free to create pull requests with new documentation under `docs/` directory or in existing `.md` files.
 
-## Styleguides
+## Style guides
 ### Commit Messages
 Adopted from [How to write a commit message](https://cbea.ms/git-commit/)
 1. Separate subject from body with a blank line

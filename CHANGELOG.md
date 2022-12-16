@@ -13,7 +13,7 @@
 
 ### 🐛 Bug Fixes
 
-- Fix deadlock when refershing workflow runs (#64)
+- Fix deadlock when refreshing workflow runs (#64)
 
 ## [1.6.1]
 

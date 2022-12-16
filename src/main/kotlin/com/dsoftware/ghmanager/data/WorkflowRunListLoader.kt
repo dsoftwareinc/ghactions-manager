@@ -75,20 +75,26 @@ class WorkflowRunListLoader(
         )
         val response = requestExecutor.execute(indicator, request)
         totalCount = response.total_count
-        val result = response.workflow_runs
+        val workflowRuns = response.workflow_runs
         if (update) {
             val existingRunIds = loadedData.mapIndexed { idx, it -> it.id to idx }.toMap()
-            result.filter { existingRunIds.containsKey(it.id) }.forEach { run ->
-                val index = existingRunIds[run.id] ?: -1
-                if (index > -1 && loadedData[index] != run) {
-                    loadedData[index] = run
-                    dataEventDispatcher.multicaster.onDataUpdated(index)
+            val newRuns = workflowRuns.filter { !existingRunIds.contains(it.id) }
+            // Update existing runs
+            workflowRuns
+                .filter { existingRunIds.containsKey(it.id) }
+                .forEach { run -> // Update
+                    val index = existingRunIds[run.id] ?: -1
+                    if (index > -1 && loadedData[index] != run) {
+                        loadedData[index] = run
+                        if(newRuns.isEmpty()) // No point in updating if anyway we will send replaceAll
+                            dataEventDispatcher.multicaster.onDataUpdated(index)
+                    }
                 }
-            }
-            return result.filter { !existingRunIds.contains(it.id) }
+            // Add new runs.
+            return newRuns
         }
-        LOG.debug("Got ${result.size} in page $page workflows (totalCount=$totalCount)")
-        return result
+        LOG.debug("Got ${workflowRuns.size} in page $page workflows (totalCount=$totalCount)")
+        return workflowRuns
     }
 
     companion object {
