@@ -11,6 +11,12 @@ import org.jetbrains.plugins.github.api.data.request.GithubRequestPagination
 import org.jetbrains.plugins.github.api.util.GithubApiSearchQueryBuilder
 import org.jetbrains.plugins.github.api.util.GithubApiUrlQueryBuilder
 
+data class WorkflowRunFilter(
+    val branch: String? = null,
+    val status: String? = null,
+    val actor: String? = null,
+    val event: String? = null,
+)
 
 object Workflows : GithubApiRequests.Entity("/repos") {
     private val LOG = logger<Workflows>()
@@ -30,10 +36,7 @@ object Workflows : GithubApiRequests.Entity("/repos") {
 
     fun getWorkflowRuns(
         coordinates: RepositoryCoordinates,
-        event: String? = null,
-        status: String? = null,
-        branch: String? = null,
-        actor: String? = null,
+        filter: WorkflowRunFilter,
         pagination: GithubRequestPagination? = null
     ): GithubApiRequest<WorkflowRuns> {
         val url = GithubApiRequests.getUrl(coordinates.serverPath,
@@ -43,10 +46,10 @@ object Workflows : GithubApiRequests.Entity("/repos") {
             "/runs",
             GithubApiUrlQueryBuilder.urlQuery {
                 param("q", GithubApiSearchQueryBuilder.searchQuery {
-                    qualifier("event", event)
-                    qualifier("status", status)
-                    qualifier("branch", branch)
-                    qualifier("actor", actor)
+                    qualifier("event", filter.event)
+                    qualifier("status", filter.status)
+                    qualifier("branch", filter.branch)
+                    qualifier("actor", filter.actor)
                 })
                 param(pagination)
             })

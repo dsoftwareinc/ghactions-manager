@@ -1,5 +1,6 @@
 package com.dsoftware.ghmanager.data
 
+import com.dsoftware.ghmanager.api.WorkflowRunFilter
 import com.dsoftware.ghmanager.ui.settings.GhActionsSettingsService
 import com.intellij.collaboration.async.CompletableFutureUtil.submitIOTask
 import com.intellij.collaboration.async.CompletableFutureUtil.successOnEdt
@@ -69,7 +70,8 @@ class WorkflowDataContextRepository {
             ProgressManager.getInstance(),
             requestExecutor,
             repositoryCoordinates,
-            settingsService = GhActionsSettingsService.getInstance(toolWindow.project)
+            settingsService = GhActionsSettingsService.getInstance(toolWindow.project),
+            WorkflowRunFilter(),
         )
 
         return WorkflowRunSelectionContext(

@@ -85,9 +85,7 @@ fun createLogConsolePanel(
     }
 
     fun setData(logValue: String) {
-        if (logValue.startsWith(Constants.LOG_MSG_MISSING) ||
-            logValue.startsWith(Constants.LOG_MSG_PICK_JOB)
-        ) {
+        if (Constants.emptyTextMessage(logValue)) {
             panel.emptyText.text = logValue
         } else {
             val console = LogConsolePanel(project, logValue, disposable)

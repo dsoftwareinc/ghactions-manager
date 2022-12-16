@@ -1,15 +1,16 @@
 package com.dsoftware.ghmanager.data
 
+import com.dsoftware.ghmanager.api.WorkflowRunFilter
 import com.dsoftware.ghmanager.api.Workflows
 import com.dsoftware.ghmanager.api.model.WorkflowRun
 import com.dsoftware.ghmanager.ui.settings.GhActionsSettingsService
+import com.intellij.openapi.application.runInEdt
 import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.util.Disposer
 import com.intellij.ui.CollectionListModel
 import com.intellij.util.concurrency.AppExecutorUtil
-import com.intellij.openapi.application.runInEdt
 import org.jetbrains.plugins.github.api.GithubApiRequestExecutor
 import org.jetbrains.plugins.github.api.data.request.GithubRequestPagination
 import org.jetbrains.plugins.github.pullrequest.data.GHListLoader
@@ -21,8 +22,9 @@ class WorkflowRunListLoader(
     private val requestExecutor: GithubApiRequestExecutor,
     private val repositoryCoordinates: RepositoryCoordinates,
     settingsService: GhActionsSettingsService,
+    private val filter: WorkflowRunFilter,
 ) : GHListLoaderBase<WorkflowRun>(progressManager) {
-    val url: String = Workflows.getWorkflowRuns(repositoryCoordinates).url
+    val url: String = Workflows.getWorkflowRuns(repositoryCoordinates, filter).url
     var totalCount: Int = 1
     val frequency: Long = settingsService.state.frequency.toLong()
     private val pageSize = 30
@@ -36,17 +38,14 @@ class WorkflowRunListLoader(
         Disposer.register(this, checkedDisposable)
         val scheduler = AppExecutorUtil.getAppScheduledExecutorService()
         task = scheduler.scheduleWithFixedDelay({
-            if (refreshRuns)
-                runInEdt {
-                    loadMore(update = true)
-                }
+            if (refreshRuns) runInEdt { loadMore(update = true) }
         }, 1, frequency, TimeUnit.SECONDS)
         LOG.debug("Create CollectionListModel<WorkflowRun>() and loader")
         listModel.removeAll()
         addDataListener(this, object : GHListLoader.ListDataListener {
             override fun onDataAdded(startIdx: Int) {
                 val loadedData = this@WorkflowRunListLoader.loadedData
-                listModel.replaceAll(loadedData)
+                listModel.replaceAll(loadedData.sorted())
             }
 
             override fun onDataUpdated(idx: Int) {
@@ -73,7 +72,8 @@ class WorkflowRunListLoader(
 
         val request = Workflows.getWorkflowRuns(
             repositoryCoordinates,
-            pagination = GithubRequestPagination(page, pageSize)
+            filter,
+            pagination = GithubRequestPagination(page, pageSize),
         )
         val response = requestExecutor.execute(indicator, request)
         totalCount = response.total_count
@@ -82,16 +82,18 @@ class WorkflowRunListLoader(
             val existingRunIds = loadedData.mapIndexed { idx, it -> it.id to idx }.toMap()
             val newRuns = workflowRuns.filter { !existingRunIds.contains(it.id) }
             // Update existing runs
+
             workflowRuns
-                .filter { existingRunIds.containsKey(it.id) }
+                .filter { existingRunIds.contains(it.id) }
                 .forEach { run -> // Update
-                    val index = existingRunIds[run.id] ?: -1
-                    if (index > -1 && loadedData[index] != run) {
+                    val index = existingRunIds.getOrDefault(run.id, null)
+                    if (index != null && loadedData[index] != run) {
                         loadedData[index] = run
                         if (newRuns.isEmpty()) // No point in updating if anyway we will send replaceAll
                             dataEventDispatcher.multicaster.onDataUpdated(index)
                     }
                 }
+
             // Add new runs.
             return newRuns
         }

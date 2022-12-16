@@ -10,7 +10,6 @@ import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.progress.ProgressManager
 import com.intellij.util.EventDispatcher
 import com.intellij.util.concurrency.annotations.RequiresEdt
-import com.intellij.util.containers.SortedList
 import org.jetbrains.plugins.github.pullrequest.data.GHListLoader
 import org.jetbrains.plugins.github.util.NonReusableEmptyProgressIndicator
 import java.util.concurrent.CompletableFuture
@@ -41,7 +40,7 @@ abstract class GHListLoaderBase<T : Comparable<T>>(
     protected val dataEventDispatcher = EventDispatcher.create(GHListLoader.ListDataListener::class.java)
 
     @get:RequiresEdt
-    val loadedData = SortedList<T> { a, b -> a.compareTo(b) }
+    val loadedData = ArrayList<T>()
 
     @RequiresEdt
     open fun canLoadMore() = !loading && (error != null)
