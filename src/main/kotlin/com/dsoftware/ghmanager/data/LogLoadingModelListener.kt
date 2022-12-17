@@ -75,8 +75,8 @@ class LogLoadingModelListener(
         logModel.value = when {
             logsLoadingModel.result == null -> null
             jobName == null -> LOG_MSG_PICK_JOB
-            logs == null && jobSelection.status == "in_progress"-> LOG_MSG_JOB_IN_PROGRESS
-            logs == null -> LOG_MSG_MISSING+jobSelection.name
+            logs == null && jobSelection.status == "in_progress" -> LOG_MSG_JOB_IN_PROGRESS
+            logs == null -> LOG_MSG_MISSING + jobSelection.name
             else -> stepsAsLog(logs, jobSelection)
         }
     }

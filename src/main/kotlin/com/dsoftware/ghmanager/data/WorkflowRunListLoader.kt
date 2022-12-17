@@ -4,7 +4,6 @@ import com.dsoftware.ghmanager.api.WorkflowRunFilter
 import com.dsoftware.ghmanager.api.Workflows
 import com.dsoftware.ghmanager.api.model.WorkflowRun
 import com.dsoftware.ghmanager.ui.settings.GhActionsSettingsService
-import com.intellij.openapi.application.runInEdt
 import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.progress.ProgressManager
@@ -38,7 +37,7 @@ class WorkflowRunListLoader(
         Disposer.register(this, checkedDisposable)
         val scheduler = AppExecutorUtil.getAppScheduledExecutorService()
         task = scheduler.scheduleWithFixedDelay({
-            if (refreshRuns)  loadMore(update = true)
+            if (refreshRuns) loadMore(update = true)
         }, 1, frequency, TimeUnit.SECONDS)
         LOG.debug("Create CollectionListModel<WorkflowRun>() and loader")
         listModel.removeAll()
