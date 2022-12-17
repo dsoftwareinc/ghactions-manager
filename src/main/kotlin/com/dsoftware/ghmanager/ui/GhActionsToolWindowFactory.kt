@@ -79,13 +79,6 @@ class GhActionsToolWindowFactory : ToolWindowFactory, DumbAware {
             }
         }
 
-        bus.subscribe(
-            GHPRDataOperationsListener.TOPIC,
-            object : GHPRDataOperationsListener {
-
-            }
-        )
-
         // todo: Find a way to listen to github settings changes.
         authManager.addListener(toolWindow.disposable, object : AccountsListener<GithubAccount> {
             override fun onAccountListChanged(old: Collection<GithubAccount>, new: Collection<GithubAccount>) =

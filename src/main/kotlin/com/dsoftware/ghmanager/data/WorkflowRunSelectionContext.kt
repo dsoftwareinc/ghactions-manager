@@ -6,7 +6,6 @@ import com.google.common.cache.CacheBuilder
 import com.intellij.collaboration.ui.SimpleEventListener
 import com.intellij.collaboration.ui.SingleValueModel
 import com.intellij.openapi.Disposable
-import com.intellij.openapi.application.runInEdt
 import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.util.Disposer
@@ -29,7 +28,7 @@ class SingleRunDataLoader(
 
     private val cache = CacheBuilder.newBuilder()
         .removalListener<String, DataProvider<*>> {
-            runInEdt { invalidationEventDispatcher.multicaster.providerChanged(it.key!!) }
+            invalidationEventDispatcher.multicaster.providerChanged(it.key!!)
         }
         .maximumSize(200)
         .build<String, DataProvider<*>>()
@@ -136,12 +135,10 @@ class WorkflowRunSelectionContext internal constructor(
         }
         val scheduler = AppExecutorUtil.getAppScheduledExecutorService()
         task = scheduler.scheduleWithFixedDelay({
-            runInEdt {
-                val status = workflowRun?.status
-                if (status != "completed") {
-                    jobsDataProvider?.reload()
-                    logsDataProvider?.reload()
-                }
+            val status = workflowRun?.status
+            if (status != "completed") {
+                jobsDataProvider?.reload()
+                logsDataProvider?.reload()
             }
         }, 1, frequency, TimeUnit.SECONDS)
     }

@@ -209,7 +209,7 @@ internal class WorkflowRunListLoaderPanel(
         workflowRunsLoader.addErrorChangeListener(this) {
             updateEmptyText()
         }
-
+//        val filters = createFilters(viewScope)
         setLoading(workflowRunsLoader.loading)
         updateEmptyText()
         val actionsManager = ActionManager.getInstance()

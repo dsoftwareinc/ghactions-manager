@@ -38,7 +38,7 @@ class WorkflowRunListLoader(
         Disposer.register(this, checkedDisposable)
         val scheduler = AppExecutorUtil.getAppScheduledExecutorService()
         task = scheduler.scheduleWithFixedDelay({
-            if (refreshRuns) runInEdt { loadMore(update = true) }
+            if (refreshRuns)  loadMore(update = true)
         }, 1, frequency, TimeUnit.SECONDS)
         LOG.debug("Create CollectionListModel<WorkflowRun>() and loader")
         listModel.removeAll()
