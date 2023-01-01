@@ -4,53 +4,46 @@
 
 ## [Unreleased]
 ## [1.9.1]
-### 🚀 Features
+### Changed
 - Upgrade gradle to `7.6`
-- 
+- Upgrade `org.jetbrains.kotlin.jvm` from 1.7.22 to 1.8.0
+
+## [1.9.0]
+### Changed
+* Clean up code on `GhActionsManagerConfigurable` by @cunla in https://github.com/cunla/ghactions-manager/pull/71
+* Logpanel wrap by @cunla in https://github.com/cunla/ghactions-manager/pull/72
 
 ## [1.7.0]
-
 ### 🚀 Features
-
 - Make ghactions-manager available during indexing (#66)
 - Sorting jobs by completed date, or started date, else run id (#61)
 
 ### 🐛 Bug Fixes
-
 - Fix deadlock when refreshing workflow runs (#64)
 
 ## [1.6.1]
-
 ### Fixed
-
 * Link to pull-request
 * Reset log when workflow-run unselected
 * Keep workflow-run selected after refresh
 
 ## [1.6.0]
-
 ### Added
-
 * Step logs - Showing failed step title in red
 * Refresh of runs only for active tab
 
 ### Changed
-
 * Better github REST API error handling
 
 ### Fixed
-
 * Update jobs panel and log panel to loading state when a new run is selected
 * Clean up more code
 
 ## [1.5.4]
-
 ### Added
-
 * Open workflow file action
 
 ### Fixed
-
 * Update workflow run state
 
 ## [1.5.1]
