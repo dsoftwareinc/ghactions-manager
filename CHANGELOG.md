@@ -3,6 +3,10 @@
 # GitHub-Actions-Manager Changelog
 
 ## [Unreleased]
+## [1.9.1]
+### 🚀 Features
+- Upgrade gradle to `7.6`
+- 
 
 ## [1.7.0]
 
