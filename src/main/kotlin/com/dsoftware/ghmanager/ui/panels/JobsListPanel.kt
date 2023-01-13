@@ -134,10 +134,7 @@ class JobListComponent(model: ListModel<Job>, private val infoInNewLine: Boolean
             infoInNewLine: Boolean,
         ): JComponent {
             val list = CollectionListModel<Job>()
-            if (jobModel.value != null) {
-                list.add(jobModel.value!!.jobs)
-            }
-            jobModel.addListener {
+            jobModel.addAndInvokeListener {
                 list.removeAll()
                 if (jobModel.value != null) {
                     list.add(jobModel.value!!.jobs)

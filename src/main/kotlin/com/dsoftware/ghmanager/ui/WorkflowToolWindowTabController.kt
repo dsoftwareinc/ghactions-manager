@@ -154,7 +154,7 @@ class WorkflowToolWindowTabController(
             errorHandler
         ).create { _, _ ->
 
-            createLogConsolePanel(project, model.logModel, disposable)
+            createLogConsolePanel(project, model, disposable)
         }
         return panel
     }

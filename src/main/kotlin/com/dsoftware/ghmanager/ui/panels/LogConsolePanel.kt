@@ -1,7 +1,7 @@
 package com.dsoftware.ghmanager.ui.panels
 
 import com.dsoftware.ghmanager.Constants
-import com.intellij.collaboration.ui.SingleValueModel
+import com.dsoftware.ghmanager.data.LogLoadingModelListener
 import com.intellij.execution.ConsoleFolding
 import com.intellij.execution.impl.ConsoleViewImpl
 import com.intellij.execution.process.AnsiEscapeDecoder
@@ -76,7 +76,7 @@ class LogConsolePanel(
 private val actionManager = ActionManager.getInstance()
 fun createLogConsolePanel(
     project: Project,
-    logModel: SingleValueModel<String?>,
+    model: LogLoadingModelListener,
     disposable: Disposable,
 ): JBPanelWithEmptyText {
 
@@ -105,10 +105,9 @@ fun createLogConsolePanel(
             (console.editor as EditorEx).installPopupHandler(contextMenuPopupHandler)
         }
     }
-    setData(logModel.value!!)
-    logModel.addListener {
-        if (!logModel.value.isNullOrBlank()) {
-            setData(logModel.value!!)
+    model.logModel.addAndInvokeListener {
+        if (!model.logModel.value.isNullOrBlank()) {
+            setData(model.logModel.value!!)
         }
     }
 
