@@ -153,7 +153,6 @@ class WorkflowToolWindowTabController(
             GithubBundle.message("cannot.load.data.from.github"),
             errorHandler
         ).create { _, _ ->
-
             createLogConsolePanel(project, model, disposable)
         }
         return panel

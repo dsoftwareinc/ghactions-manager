@@ -25,10 +25,9 @@ class LogLoadingModelListener(
         jobsSelectionHolder.addSelectionChangeListener(disposable) {
             setLogValue()
         }
-        logsLoadingModel.addStateChangeListener(this)
         var listenerDisposable: Disposable? = null
 
-        dataProviderModel.addListener {
+        dataProviderModel.addAndInvokeListener {
             val provider = dataProviderModel.value
             logsLoadingModel.future = null
             logsLoadingModel.future = provider?.request
@@ -37,13 +36,13 @@ class LogLoadingModelListener(
                 null
             }
             if (provider != null) {
-                val disposable2 = Disposer.newDisposable("Log listener disposable").apply {
-                    Disposer.register(disposable, this)
-                }
+                val disposable2 = Disposer.newDisposable("Log listener disposable")
+                    .apply {
+                        Disposer.register(disposable, this)
+                    }
                 provider.addRunChangesListener(disposable2,
                     object : DataProvider.DataProviderChangeListener {
                         override fun changed() {
-                            LOG.debug("Log changed ${provider.request}")
                             logsLoadingModel.future = provider.request
                         }
                     })
@@ -71,7 +70,11 @@ class LogLoadingModelListener(
         val jobName = jobSelection?.name?.filterNot {
             removeChars.contains(it)
         }?.trim()
-        val logs = if (jobName == null) null else logsLoadingModel.result?.get(jobName)
+        val logs =
+            if (jobName == null || !logsLoadingModel.resultAvailable)
+                null
+            else
+                logsLoadingModel.result?.get(jobName)
         logModel.value = when {
             logsLoadingModel.result == null -> null
             jobName == null -> LOG_MSG_PICK_JOB
