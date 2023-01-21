@@ -5,7 +5,8 @@
 ## [Unreleased]
 ## [1.9.2]
 ### Changed
-- Fix bugs refreshing workflow runs.
+- Fix bugs refreshing workflow runs #81
+- Fix bugs calling getComponent from non dispatch thread #78
 - Add icon for action_required conclusion.
 
 ## [1.9.1]
