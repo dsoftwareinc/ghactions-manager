@@ -121,8 +121,7 @@ class WorkflowRunSelectionContext internal constructor(
         get() = workflowRun?.let { dataLoader.getJobsDataProvider(it) }
 
     init {
-        Disposer.register(parentDisposable, dataLoader)
-        Disposer.register(parentDisposable, runsListLoader)
+        Disposer.register(parentDisposable, this)
         runSelectionHolder.addSelectionChangeListener(parentDisposable) {
             LOG.debug("runSelectionHolder selection change listener")
             setNewJobsProvider()
@@ -135,7 +134,9 @@ class WorkflowRunSelectionContext internal constructor(
         }
         val scheduler = AppExecutorUtil.getAppScheduledExecutorService()
         task = scheduler.scheduleWithFixedDelay({
-            if (workflowRun?.status != "completed") {
+            LOG.info("Checking updated status for ${workflowRun}")
+            val status = workflowRun?.status
+            if (workflowRun != null && status != "completed") {
                 jobsDataProvider?.reload()
                 logsDataProvider?.reload()
             }

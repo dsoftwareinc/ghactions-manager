@@ -44,7 +44,7 @@ class WorkflowDataContextRepository {
 
     @RequiresBackgroundThread
     @Throws(IOException::class)
-    fun getContext(
+    private fun getContext(
         disposable: Disposable,
         account: GithubAccount,
         repositoryMapping: GHGitRepositoryMapping,
@@ -90,19 +90,17 @@ class WorkflowDataContextRepository {
         toolWindow: ToolWindow,
     ): CompletableFuture<WorkflowRunSelectionContext> {
         return repositories.getOrPut(repositoryMapping.remote) {
-            val contextDisposable = Disposer.newDisposable("contextDisposable")
-            Disposer.register(disposable, contextDisposable)
 
             LazyCancellableBackgroundProcessValue.create { indicator ->
                 ProgressManager.getInstance().submitIOTask(indicator) {
                     try {
-                        getContext(contextDisposable, account, repositoryMapping, toolWindow)
+                        getContext(disposable, account, repositoryMapping, toolWindow)
                     } catch (e: Exception) {
                         if (e !is ProcessCanceledException) LOG.warn("Error occurred while creating data context", e)
                         throw e
                     }
                 }.successOnEdt { ctx ->
-                    Disposer.register(contextDisposable, ctx)
+                    Disposer.register(disposable, ctx)
                     ctx
                 }
             }
