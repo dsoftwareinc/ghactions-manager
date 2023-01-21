@@ -31,6 +31,7 @@ object ToolbarUtil {
                     "success" -> AllIcons.Actions.Commit
                     "failure" -> Icons.X
                     "startup_failure" -> Icons.X
+                    "action_required" -> AllIcons.General.Warning
                     "cancelled" -> AllIcons.Actions.Cancel
                     "skipped" -> Icons.Skipped
                     else -> Icons.PrimitiveDot
