@@ -3,6 +3,11 @@
 # GitHub-Actions-Manager Changelog
 
 ## [Unreleased]
+## [1.10.0]
+### 🚀 Features
+- Add ability to configure number of workflow runs on list
+
+
 ## [1.9.2]
 ### Changed
 - Fix bugs refreshing workflow runs #81
