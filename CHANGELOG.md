@@ -3,6 +3,11 @@
 # GitHub-Actions-Manager Changelog
 
 ## [Unreleased]
+## [1.9.2]
+### Changed
+- Fix bugs refreshing workflow runs.
+- Add icon for action_required conclusion.
+
 ## [1.9.1]
 ### Changed
 - Upgrade gradle to `7.6`

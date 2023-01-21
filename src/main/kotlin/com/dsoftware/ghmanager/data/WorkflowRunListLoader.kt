@@ -16,10 +16,8 @@ import com.intellij.openapi.util.Disposer
 import com.intellij.ui.CollectionListModel
 import com.intellij.util.EventDispatcher
 import com.intellij.util.concurrency.AppExecutorUtil
-import com.intellij.util.concurrency.annotations.RequiresEdt
 import org.jetbrains.plugins.github.api.GithubApiRequestExecutor
 import org.jetbrains.plugins.github.api.data.request.GithubRequestPagination
-import org.jetbrains.plugins.github.pullrequest.data.GHListLoader
 import org.jetbrains.plugins.github.util.NonReusableEmptyProgressIndicator
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ScheduledFuture
@@ -45,8 +43,6 @@ class WorkflowRunListLoader(
     private val task: ScheduledFuture<*>
     var refreshRuns: Boolean = true
     private var progressIndicator = NonReusableEmptyProgressIndicator()
-    private val dataEventDispatcher = EventDispatcher.create(GHListLoader.ListDataListener::class.java)
-    val loadedData = ArrayList<WorkflowRun>()
     var error: Throwable? by Delegates.observable(null) { _, _, _ ->
         errorChangeEventDispatcher.multicaster.eventOccurred()
     }
@@ -64,17 +60,6 @@ class WorkflowRunListLoader(
         }, 1, frequency, TimeUnit.SECONDS)
         LOG.debug("Create CollectionListModel<WorkflowRun>() and loader")
         listModel.removeAll()
-        addDataListener(this, object : GHListLoader.ListDataListener {
-            override fun onDataAdded(startIdx: Int) {
-                val loadedData = this@WorkflowRunListLoader.loadedData
-                listModel.replaceAll(loadedData.sorted())
-            }
-
-            override fun onDataUpdated(idx: Int) {
-                val loadedData = this@WorkflowRunListLoader.loadedData
-                listModel.setElementAt(loadedData[idx], idx)
-            }
-        })
     }
 
     fun loadMore(update: Boolean = false) {
@@ -87,9 +72,7 @@ class WorkflowRunListLoader(
                 if (error != null) {
                     if (!CompletableFutureUtil.isCancellation(error)) this.error = error
                 } else if (!list.isNullOrEmpty()) {
-                    val startIdx = loadedData.size
-                    loadedData.addAll(list)
-                    dataEventDispatcher.multicaster.onDataAdded(startIdx)
+                    listModel.addAll(0, list.sorted())
                 }
             }
         }
@@ -118,13 +101,12 @@ class WorkflowRunListLoader(
         progressIndicator = NonReusableEmptyProgressIndicator()
         error = null
         loading = false
-        loadedData.clear()
-        dataEventDispatcher.multicaster.onAllDataRemoved()
+        listModel.removeAll()
     }
 
-    fun canLoadMore() = !loading && (page * pageSize < totalCount)
+    private fun canLoadMore() = !loading && (page * pageSize < totalCount)
 
-    fun doLoadMore(indicator: ProgressIndicator, update: Boolean): List<WorkflowRun> {
+    private fun doLoadMore(indicator: ProgressIndicator, update: Boolean): List<WorkflowRun> {
         LOG.debug("Do load more update: $update, indicator: $indicator")
 
         val request = Workflows.getWorkflowRuns(
@@ -136,18 +118,15 @@ class WorkflowRunListLoader(
         totalCount = response.total_count
         val workflowRuns = response.workflow_runs
         if (update) {
-            val existingRunIds = loadedData.mapIndexed { idx, it -> it.id to idx }.toMap()
+            val existingRunIds = listModel.items.mapIndexed { idx, it -> it.id to idx }.toMap()
             val newRuns = workflowRuns.filter { !existingRunIds.contains(it.id) }
-            // Update existing runs
 
             workflowRuns
                 .filter { existingRunIds.contains(it.id) }
-                .forEach { run -> // Update
-                    val index = existingRunIds.getOrDefault(run.id, null)
-                    if (index != null && loadedData[index] != run) {
-                        loadedData[index] = run
-                        if (newRuns.isEmpty()) // No point in updating if anyway we will send replaceAll
-                            dataEventDispatcher.multicaster.onDataUpdated(index)
+                .forEach { it -> // Update
+                    val index = existingRunIds.getOrDefault(it.id, null)
+                    if (index != null && listModel.getElementAt(index) != it) {
+                        listModel.setElementAt(it, index)
                     }
                 }
 
@@ -157,9 +136,6 @@ class WorkflowRunListLoader(
         LOG.debug("Got ${workflowRuns.size} in page $page workflows (totalCount=$totalCount)")
         return workflowRuns
     }
-
-    fun addDataListener(disposable: Disposable, listener: GHListLoader.ListDataListener) =
-        dataEventDispatcher.addListener(listener, disposable)
 
     fun addLoadingStateChangeListener(disposable: Disposable, listener: () -> Unit) =
         SimpleEventListener.addDisposableListener(loadingStateChangeEventDispatcher, disposable, listener)

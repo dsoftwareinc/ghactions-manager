@@ -250,8 +250,8 @@ internal class WorkflowRunListLoaderPanel(
             infoPanel.setInfo(
                 when {
                     workflowRunsLoader.loading -> "Loading workflow runs..."
-                    workflowRunsLoader.loadedData.isEmpty() -> "No workflow runs"
-                    else -> "${workflowRunsLoader.loadedData.size} workflow runs loaded out of ${workflowRunsLoader.totalCount}"
+                    workflowRunsLoader.listModel.isEmpty -> "No workflow runs"
+                    else -> "${workflowRunsLoader.listModel.size} workflow runs loaded out of ${workflowRunsLoader.totalCount}"
                 }
             )
             return
