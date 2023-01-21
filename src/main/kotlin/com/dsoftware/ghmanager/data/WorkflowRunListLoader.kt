@@ -28,7 +28,7 @@ class WorkflowRunListLoader(
     private val progressManager: ProgressManager,
     private val requestExecutor: GithubApiRequestExecutor,
     private val repositoryCoordinates: RepositoryCoordinates,
-    settingsService: GhActionsSettingsService,
+    private val settingsService: GhActionsSettingsService,
     private val filter: WorkflowRunFilter,
 ) : Disposable {
     private var lastFuture = CompletableFuture.completedFuture(emptyList<WorkflowRun>())
@@ -36,8 +36,6 @@ class WorkflowRunListLoader(
     private val errorChangeEventDispatcher = EventDispatcher.create(SimpleEventListener::class.java)
     val url: String = Workflows.getWorkflowRuns(repositoryCoordinates, filter).url
     var totalCount: Int = 1
-    val frequency: Long = settingsService.state.frequency.toLong()
-    private val pageSize = 30
     private val page: Int = 1
     val listModel = CollectionListModel<WorkflowRun>()
     private val task: ScheduledFuture<*>
@@ -51,13 +49,15 @@ class WorkflowRunListLoader(
         loadingStateChangeEventDispatcher.multicaster.eventOccurred()
     }
 
+    fun frequency() = settingsService.state.frequency.toLong()
+
     init {
         val checkedDisposable = Disposer.newCheckedDisposable()
         Disposer.register(this, checkedDisposable)
         val scheduler = AppExecutorUtil.getAppScheduledExecutorService()
         task = scheduler.scheduleWithFixedDelay({
             if (refreshRuns) loadMore(update = true)
-        }, 1, frequency, TimeUnit.SECONDS)
+        }, 1, frequency(), TimeUnit.SECONDS)
         LOG.debug("Create CollectionListModel<WorkflowRun>() and loader")
         listModel.removeAll()
     }
@@ -104,7 +104,7 @@ class WorkflowRunListLoader(
         listModel.removeAll()
     }
 
-    private fun canLoadMore() = !loading && (page * pageSize < totalCount)
+    private fun canLoadMore() = !loading && (page * settingsService.state.pageSize < totalCount)
 
     private fun doLoadMore(indicator: ProgressIndicator, update: Boolean): List<WorkflowRun> {
         LOG.debug("Do load more update: $update, indicator: $indicator")
@@ -112,7 +112,7 @@ class WorkflowRunListLoader(
         val request = Workflows.getWorkflowRuns(
             repositoryCoordinates,
             filter,
-            pagination = GithubRequestPagination(page, pageSize),
+            pagination = GithubRequestPagination(page, settingsService.state.pageSize),
         )
         val response = requestExecutor.execute(indicator, request)
         totalCount = response.total_count

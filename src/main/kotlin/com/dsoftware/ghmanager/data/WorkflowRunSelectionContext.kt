@@ -2,100 +2,20 @@ package com.dsoftware.ghmanager.data
 
 import com.dsoftware.ghmanager.api.model.Job
 import com.dsoftware.ghmanager.api.model.WorkflowRun
-import com.google.common.cache.CacheBuilder
 import com.intellij.collaboration.ui.SimpleEventListener
 import com.intellij.collaboration.ui.SingleValueModel
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.diagnostic.logger
-import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.util.Disposer
 import com.intellij.ui.CollectionListModel
 import com.intellij.util.EventDispatcher
 import com.intellij.util.concurrency.AppExecutorUtil
 import com.intellij.util.concurrency.annotations.RequiresEdt
-import org.jetbrains.plugins.github.api.GithubApiRequest
-import org.jetbrains.plugins.github.api.GithubApiRequestExecutor
 import org.jetbrains.plugins.github.util.GHGitRepositoryMapping
-import java.util.EventListener
 import java.util.concurrent.ScheduledFuture
 import java.util.concurrent.TimeUnit
 import kotlin.properties.Delegates
 
-
-class SingleRunDataLoader(
-    private val requestExecutor: GithubApiRequestExecutor
-) : Disposable {
-
-    private val cache = CacheBuilder.newBuilder()
-        .removalListener<String, DataProvider<*>> {
-            invalidationEventDispatcher.multicaster.providerChanged(it.key!!)
-        }
-        .maximumSize(200)
-        .build<String, DataProvider<*>>()
-
-
-    private val invalidationEventDispatcher = EventDispatcher.create(DataInvalidatedListener::class.java)
-
-    fun getLogsDataProvider(workflowRun: WorkflowRun): WorkflowRunLogsDataProvider {
-        return cache.get(workflowRun.logs_url) {
-            WorkflowRunLogsDataProvider(progressManager, requestExecutor, workflowRun.logs_url)
-        } as WorkflowRunLogsDataProvider
-    }
-
-    fun getJobsDataProvider(workflowRun: WorkflowRun): WorkflowRunJobsDataProvider {
-        return cache.get(workflowRun.jobs_url) {
-            WorkflowRunJobsDataProvider(progressManager, requestExecutor, workflowRun.jobs_url)
-        } as WorkflowRunJobsDataProvider
-    }
-
-    fun <T> createDataProvider(request: GithubApiRequest<T>): DataProvider<T> {
-        return DefaultDataProvider(progressManager, requestExecutor, request)
-    }
-
-    @RequiresEdt
-    fun invalidateAllData() {
-        LOG.debug("All cache invalidated")
-        cache.invalidateAll()
-    }
-
-    fun addInvalidationListener(disposable: Disposable, listener: (String) -> Unit) =
-        invalidationEventDispatcher.addListener(object : DataInvalidatedListener {
-            override fun providerChanged(url: String) {
-                listener(url)
-            }
-        }, disposable)
-
-    override fun dispose() {
-        invalidateAllData()
-    }
-
-    companion object {
-        private val LOG = logger<SingleRunDataLoader>()
-        private val progressManager = ProgressManager.getInstance()
-    }
-
-    private interface DataInvalidatedListener : EventListener {
-        fun providerChanged(url: String)
-    }
-}
-
-open class ListSelectionHolder<T> {
-
-    @get:RequiresEdt
-    @set:RequiresEdt
-    var selection: T? by Delegates.observable(null) { _, _, _ ->
-        selectionChangeEventDispatcher.multicaster.eventOccurred()
-    }
-
-    private val selectionChangeEventDispatcher = EventDispatcher.create(SimpleEventListener::class.java)
-
-    @RequiresEdt
-    fun addSelectionChangeListener(disposable: Disposable, listener: () -> Unit) =
-        SimpleEventListener.addDisposableListener(selectionChangeEventDispatcher, disposable, listener)
-}
-
-class WorkflowRunListSelectionHolder : ListSelectionHolder<WorkflowRun>()
-class JobListSelectionHolder : ListSelectionHolder<Job>()
 
 
 class WorkflowRunSelectionContext internal constructor(
@@ -106,7 +26,7 @@ class WorkflowRunSelectionContext internal constructor(
     val runSelectionHolder: WorkflowRunListSelectionHolder = WorkflowRunListSelectionHolder(),
     val jobSelectionHolder: JobListSelectionHolder = JobListSelectionHolder(),
 ) : Disposable {
-    private val frequency: Long = runsListLoader.frequency
+    private val frequency: Long = runsListLoader.frequency()
     private val task: ScheduledFuture<*>
     val runsListModel: CollectionListModel<WorkflowRun>
         get() = runsListLoader.listModel

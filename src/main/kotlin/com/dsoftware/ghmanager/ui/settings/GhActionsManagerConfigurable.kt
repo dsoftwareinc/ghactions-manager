@@ -38,6 +38,8 @@ internal class GhActionsManagerConfigurable internal constructor(project: Projec
                 intTextField(0..100).bindIntText(state::frequency, state::frequency::set)
                     .label("How often Should the list of workflows be updated")
                     .comment("In secs")
+                intTextField(0..100).bindIntText(state::pageSize, state::pageSize::set)
+                    .label("How many workflow runs to present")
             }
             row {
                 checkBox("Show jobs list above logs?")
