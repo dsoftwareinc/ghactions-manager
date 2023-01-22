@@ -48,7 +48,7 @@ class WorkflowToolWindowTabController(
     val loadingModel: GHCompletableFutureLoadingModel<WorkflowRunSelectionContext>
     private val settingsService = GhActionsSettingsService.getInstance(project)
     private val actionManager = ActionManager.getInstance()
-    private val disposable = Disposer.newDisposable("")
+    private val disposable = Disposer.newCheckedDisposable("WorkflowToolWindowTabController")
     val panel: JComponent
     private var contentDisposable by Delegates.observable<Disposable?>(null) { _, oldValue, newValue ->
         if (oldValue != null) Disposer.dispose(oldValue)

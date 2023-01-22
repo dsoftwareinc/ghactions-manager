@@ -14,6 +14,8 @@ data class GithubActionsManagerSettings(
     var jobListAboveLogs: Boolean = true,
     var frequency: Int = 30,
     var pageSize: Int = 30,
+    var useGitHubSettings: Boolean = true,
+    var apiToken: String = "",
 ) {
     data class RepoSettings(
         var included: Boolean = true,

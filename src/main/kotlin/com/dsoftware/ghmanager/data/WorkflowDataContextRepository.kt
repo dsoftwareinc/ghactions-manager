@@ -4,13 +4,13 @@ import com.dsoftware.ghmanager.api.WorkflowRunFilter
 import com.dsoftware.ghmanager.ui.settings.GhActionsSettingsService
 import com.intellij.collaboration.async.CompletableFutureUtil.submitIOTask
 import com.intellij.collaboration.async.CompletableFutureUtil.successOnEdt
-import com.intellij.openapi.Disposable
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.components.service
 import com.intellij.openapi.diagnostic.thisLogger
 import com.intellij.openapi.progress.ProcessCanceledException
 import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.util.CheckedDisposable
 import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.wm.ToolWindow
 import com.intellij.util.concurrency.annotations.RequiresBackgroundThread
@@ -37,28 +37,32 @@ data class RepositoryCoordinates(
 }
 
 @Service
-class WorkflowDataContextRepository {
-
+class WorkflowDataContextRepository(
+    private val project: Project
+) {
+    private val settingsService = GhActionsSettingsService.getInstance(project)
     private val repositories =
         mutableMapOf<GitRemoteUrlCoordinates, LazyCancellableBackgroundProcessValue<WorkflowRunSelectionContext>>()
 
     @RequiresBackgroundThread
     @Throws(IOException::class)
     private fun getContext(
-        disposable: Disposable,
+        disposable: CheckedDisposable,
         account: GithubAccount,
         repositoryMapping: GHGitRepositoryMapping,
         toolWindow: ToolWindow,
     ): WorkflowRunSelectionContext {
-        LOG.debug("Get User and  repository")
         val fullPath = GithubUrlUtil.getUserAndRepositoryFromRemoteUrl(repositoryMapping.remote.url)
             ?: throw IllegalArgumentException(
                 "Invalid GitHub Repository URL - ${repositoryMapping.remote.url} is not a GitHub repository"
             )
         val repositoryCoordinates = RepositoryCoordinates(account.server, fullPath)
-        LOG.debug("Create WorkflowDataLoader")
-        val token = GHCompatibilityUtil.getOrRequestToken(account, toolWindow.project)
-            ?: throw GithubMissingTokenException(account)
+        val token = if (settingsService.state.useGitHubSettings) {
+            GHCompatibilityUtil.getOrRequestToken(account, toolWindow.project)
+                ?: throw GithubMissingTokenException(account)
+        } else {
+            settingsService.state.apiToken
+        }
 
         val requestExecutor =
             GithubApiRequestExecutor.Factory.Companion.getInstance().create(token)
@@ -84,7 +88,7 @@ class WorkflowDataContextRepository {
 
     @RequiresEdt
     fun acquireContext(
-        disposable: Disposable,
+        disposable: CheckedDisposable,
         repositoryMapping: GHGitRepositoryMapping,
         account: GithubAccount,
         toolWindow: ToolWindow,

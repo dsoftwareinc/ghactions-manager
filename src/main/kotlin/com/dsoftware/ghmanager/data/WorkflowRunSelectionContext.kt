@@ -6,6 +6,7 @@ import com.intellij.collaboration.ui.SimpleEventListener
 import com.intellij.collaboration.ui.SingleValueModel
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.diagnostic.logger
+import com.intellij.openapi.util.CheckedDisposable
 import com.intellij.openapi.util.Disposer
 import com.intellij.ui.CollectionListModel
 import com.intellij.util.EventDispatcher
@@ -19,7 +20,7 @@ import kotlin.properties.Delegates
 
 
 class WorkflowRunSelectionContext internal constructor(
-    parentDisposable: Disposable,
+    parentDisposable: CheckedDisposable,
     val dataLoader: SingleRunDataLoader,
     val runsListLoader: WorkflowRunListLoader,
     val repositoryMapping: GHGitRepositoryMapping,
@@ -41,7 +42,9 @@ class WorkflowRunSelectionContext internal constructor(
         get() = workflowRun?.let { dataLoader.getJobsDataProvider(it) }
 
     init {
-        Disposer.register(parentDisposable, this)
+        if(!parentDisposable.isDisposed) {
+            Disposer.register(parentDisposable, this)
+        }
         runSelectionHolder.addSelectionChangeListener(parentDisposable) {
             LOG.debug("runSelectionHolder selection change listener")
             setNewJobsProvider()

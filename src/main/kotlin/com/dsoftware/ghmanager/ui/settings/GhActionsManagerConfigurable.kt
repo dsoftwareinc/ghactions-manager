@@ -16,6 +16,7 @@ import com.intellij.ui.dsl.builder.bindSelected
 import com.intellij.ui.dsl.builder.bindText
 import com.intellij.ui.dsl.builder.panel
 import com.intellij.ui.dsl.builder.selected
+import com.intellij.ui.layout.not
 import com.intellij.util.messages.Topic
 import org.jetbrains.plugins.github.util.GHHostedRepositoriesManager
 
@@ -34,25 +35,43 @@ internal class GhActionsManagerConfigurable internal constructor(project: Projec
     override fun createPanel(): DialogPanel {
         val knownRepositories = repoManager.knownRepositoriesState.value
         return panel {
-            row {
-                intTextField(0..100).bindIntText(state::frequency, state::frequency::set)
-                    .label("How often Should the list of workflows be updated")
-                    .comment("In secs")
-                intTextField(0..100).bindIntText(state::pageSize, state::pageSize::set)
-                    .label("How many workflow runs to present")
+            group("API Usage") {
+                row {
+                    intTextField(0..100).bindIntText(state::frequency, state::frequency::set)
+                        .label("How often Should the list of workflows be updated")
+                        .comment("In seconds")
+                }
+                lateinit var checkbox: Cell<JBCheckBox>
+                row {
+                    checkbox = checkBox("Use GitHub accounts settings?")
+                        .comment("GHActions-Manager can use either the GitHub-Settings or a custom token")
+                        .bindSelected(state::useGitHubSettings, state::useGitHubSettings::set)
+                }
+                row {
+                    label("GitHub API token")
+                    passwordField().bindText(state::apiToken, state::apiToken::set)
+                }.enabledIf(checkbox.selected.not())
             }
-            row {
-                checkBox("Show jobs list above logs?")
-                    .comment("If this is unchecked, it will show side by side")
-                    .bindSelected(state::jobListAboveLogs, state::jobListAboveLogs::set)
+
+            group("Visual Settings") {
+                row {
+                    checkBox("Show jobs list above logs?")
+                        .comment("If this is unchecked, it will show side by side")
+                        .bindSelected(state::jobListAboveLogs, state::jobListAboveLogs::set)
+                }
+
+                row {
+                    intTextField(0..100).bindIntText(state::pageSize, state::pageSize::set)
+                        .label("How many workflow runs to present")
+                }
             }
             lateinit var projectRepos: Cell<JBCheckBox>
-            row {
-                projectRepos = checkBox("Use custom repositories")
-                    .comment("Do not use all repositories in the project")
-                    .bindSelected(state::useCustomRepos, state::useCustomRepos::set)
-            }
             group("Repositories") {
+                row {
+                    projectRepos = checkBox("Use custom repositories")
+                        .comment("Select which repositories will be shown on GHActions-Manager")
+                        .bindSelected(state::useCustomRepos, state::useCustomRepos::set)
+                }
                 row {
                     label("Repository")
                     label("Show").comment("Show tab for repository")
@@ -71,7 +90,6 @@ internal class GhActionsManagerConfigurable internal constructor(project: Projec
                     }
             }.enabledIf(projectRepos.selected)
         }
-
     }
 
     interface SettingsChangedListener {
