@@ -101,7 +101,9 @@ class GhActionsToolWindowFactory : ToolWindowFactory, DumbAware {
         Disposer.register(toolWindow.disposable, disposable)
         ApplicationManager.getApplication().invokeLater {
             toolWindow.contentManager.removeAllContents(true)
-            if (GHAccountsUtil.accounts.isEmpty()) {
+            if ((GHAccountsUtil.accounts.isEmpty() && settingsService.state.useGitHubSettings)
+                || (!settingsService.state.useGitHubSettings && settingsService.state.apiToken == "")
+            ) {
                 noGitHubAccountPanel(disposable, projectRepos)
             } else if (projectRepos.knownRepositories.isEmpty()) {
                 noRepositories(disposable, projectRepos)
@@ -153,9 +155,9 @@ class GhActionsToolWindowFactory : ToolWindowFactory, DumbAware {
         LOG.debug("No GitHub account configured")
         val emptyTextPanel = JBPanelWithEmptyText()
         emptyTextPanel.emptyText
-            .appendText("GitHub account not configured, go to settings to fix")
-            .appendSecondaryText(
-                "Go to Settings",
+            .appendText("GitHub account not configured and no API Token")
+            .appendLine(
+                "Go to github Settings",
                 SimpleTextAttributes.LINK_ATTRIBUTES,
                 ActionUtil.createActionListener(
                     "ShowGithubSettings",
@@ -163,6 +165,16 @@ class GhActionsToolWindowFactory : ToolWindowFactory, DumbAware {
                     ActionPlaces.UNKNOWN
                 )
             )
+            .appendLine(
+                "Go to ghactions-manager Settings",
+                SimpleTextAttributes.LINK_ATTRIBUTES,
+                ActionUtil.createActionListener(
+                    "Github.Actions.Manager.Settings.Open",
+                    emptyTextPanel,
+                    ActionPlaces.UNKNOWN
+                )
+            )
+
 
         addContent(factory.createContent(emptyTextPanel, "Workflows", false)
             .apply {
@@ -242,12 +254,21 @@ class GhActionsToolWindowFactory : ToolWindowFactory, DumbAware {
                 } else {
                     val emptyTextPanel = JBPanelWithEmptyText()
                     emptyTextPanel.emptyText
-                        .appendText("GitHub account not configured for $repo, go to settings to fix")
-                        .appendSecondaryText(
-                            "Go to Settings",
+                        .appendText("GitHub account not configured for ${repo.repository}, go to settings to fix")
+                        .appendLine(
+                            "Go to github accounts Settings",
                             SimpleTextAttributes.LINK_ATTRIBUTES,
                             ActionUtil.createActionListener(
                                 "ShowGithubSettings",
+                                emptyTextPanel,
+                                ActionPlaces.UNKNOWN
+                            )
+                        )
+                        .appendLine(
+                            "Go to ghactions-manager Settings",
+                            SimpleTextAttributes.LINK_ATTRIBUTES,
+                            ActionUtil.createActionListener(
+                                "Github.Actions.Manager.Settings.Open",
                                 emptyTextPanel,
                                 ActionPlaces.UNKNOWN
                             )
