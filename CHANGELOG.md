@@ -8,6 +8,8 @@
 - Add ability to configure number of workflow runs on list.
 - Add ability to configure GitHub token instead of using IDE GitHub settings.
 
+### Changed
+- Support 2023.1 EAP release
 
 ## [1.9.2]
 ### Changed
