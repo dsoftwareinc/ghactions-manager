@@ -3,6 +3,11 @@
 # GitHub-Actions-Manager Changelog
 
 ## [Unreleased]
+
+## [1.10.1]
+### 🐛 Bug Fixes
+- Fix bug requiring to pick job after logs are loaded.
+
 ## [1.10.0]
 ### 🚀 Features
 - Add ability to configure number of workflow runs on list.

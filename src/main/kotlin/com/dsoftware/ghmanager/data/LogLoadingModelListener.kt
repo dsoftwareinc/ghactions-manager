@@ -7,7 +7,6 @@ import com.dsoftware.ghmanager.api.model.Job
 import com.dsoftware.ghmanager.api.model.JobStep
 import com.intellij.collaboration.ui.SingleValueModel
 import com.intellij.openapi.Disposable
-import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.util.Disposer
 import org.jetbrains.plugins.github.pullrequest.ui.GHCompletableFutureLoadingModel
 import org.jetbrains.plugins.github.pullrequest.ui.GHLoadingModel
@@ -22,11 +21,9 @@ class LogLoadingModelListener(
     val logsLoadingModel = GHCompletableFutureLoadingModel<Map<String, Map<Int, String>>>(disposable)
 
     init {
-        jobsSelectionHolder.addSelectionChangeListener(disposable) {
-            setLogValue()
-        }
+        jobsSelectionHolder.addSelectionChangeListener(disposable, this::setLogValue)
+        logsLoadingModel.addStateChangeListener(this)
         var listenerDisposable: Disposable? = null
-
         dataProviderModel.addAndInvokeListener {
             val provider = dataProviderModel.value
             logsLoadingModel.future = null
@@ -88,7 +85,4 @@ class LogLoadingModelListener(
     override fun onLoadingStarted() = setLogValue()
     override fun onReset() = setLogValue()
 
-    companion object {
-        private val LOG = logger<LogLoadingModelListener>()
-    }
 }
