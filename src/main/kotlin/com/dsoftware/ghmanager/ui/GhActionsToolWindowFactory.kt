@@ -4,13 +4,14 @@ import com.dsoftware.ghmanager.data.WorkflowDataContextRepository
 import com.dsoftware.ghmanager.ui.settings.GhActionsManagerConfigurable
 import com.dsoftware.ghmanager.ui.settings.GhActionsSettingsService
 import com.dsoftware.ghmanager.ui.settings.GithubActionsManagerSettings
-import com.intellij.collaboration.auth.AccountsListener
+import com.intellij.collaboration.async.collectWithPrevious
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.actionSystem.ActionManager
 import com.intellij.openapi.actionSystem.ActionPlaces
 import com.intellij.openapi.actionSystem.DefaultActionGroup
 import com.intellij.openapi.actionSystem.ex.ActionUtil
 import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.components.service
 import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.project.DumbAware
 import com.intellij.openapi.project.Project
@@ -27,7 +28,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import org.jetbrains.plugins.github.authentication.GHAccountsUtil
-import org.jetbrains.plugins.github.authentication.GithubAuthenticationManager
+import org.jetbrains.plugins.github.authentication.accounts.GHAccountManager
 import org.jetbrains.plugins.github.authentication.accounts.GithubAccount
 import org.jetbrains.plugins.github.util.GHGitRepositoryMapping
 import org.jetbrains.plugins.github.util.GHHostedRepositoriesManager
@@ -41,8 +42,7 @@ internal class ProjectRepositories(val toolWindow: ToolWindow) {
 
 class GhActionsToolWindowFactory : ToolWindowFactory, DumbAware {
     private lateinit var settingsService: GhActionsSettingsService
-
-    private val authManager = GithubAuthenticationManager.getInstance()
+    private val accountManager = service<GHAccountManager>()
     private val projectReposMap = mutableMapOf<Project, ProjectRepositories>()
     private val scope = CoroutineScope(SupervisorJob())
 
@@ -61,7 +61,7 @@ class GhActionsToolWindowFactory : ToolWindowFactory, DumbAware {
                 }
             })
 
-        val repositoriesManager = GHHostedRepositoriesManager(toolWindow.project)
+        val repositoriesManager = project.service<GHHostedRepositoriesManager>()
         scope.launch {
             repositoriesManager.knownRepositoriesState.collect {
                 LOG.debug("Repos updated, new list has ${it.size} repos")
@@ -77,18 +77,11 @@ class GhActionsToolWindowFactory : ToolWindowFactory, DumbAware {
                     createToolWindowContent(project, toolWindow)
                 }
             }
+            accountManager.accountsState.collectWithPrevious(setOf()) { prev, current ->
+                createToolWindowContent(toolWindow.project, toolWindow)
+            }
         }
 
-        // todo: Find a way to listen to github settings changes.
-        authManager.addListener(toolWindow.disposable, object : AccountsListener<GithubAccount> {
-            override fun onAccountListChanged(old: Collection<GithubAccount>, new: Collection<GithubAccount>) =
-                scheduleUpdate()
-
-            override fun onAccountCredentialsChanged(account: GithubAccount) = scheduleUpdate()
-
-            private fun scheduleUpdate() = createToolWindowContent(toolWindow.project, toolWindow)
-
-        })
     }
 
     override fun shouldBeAvailable(project: Project): Boolean {

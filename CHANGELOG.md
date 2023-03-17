@@ -4,6 +4,11 @@
 
 ## [Unreleased]
 
+## [1.10.2]
+### 🐛 Bug Fixes
+- Fix error when using IntelliJ 2023.1.RC #83
+- Using GHAccountManager instead of deprecated GithubAuthenticationManager
+
 ## [1.10.1]
 ### 🐛 Bug Fixes
 - Fix bug requiring to pick job after logs are loaded.
