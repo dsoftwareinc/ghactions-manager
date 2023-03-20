@@ -6,9 +6,9 @@ GitHub Actions Manager for JetBrains IDEs
 [![Downloads](https://img.shields.io/jetbrains/plugin/d/com.dsoftware.ghtoolbar.svg)](https://plugins.jetbrains.com/plugin/19347-github-actions-toolbar)
 
 # Screenshots
-![](docs/snapshot2022-10-21.png)
+![](docs/screenshot-new-ui-dark.png)
 
-![](docs/snapshot2.png)
+![](docs/screenshot-new-ui-light.png)
 
 
 <!-- Plugin description -->
