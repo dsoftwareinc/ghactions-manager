@@ -28,11 +28,11 @@ object ToolbarUtil {
         return when (status) {
             "completed" -> {
                 when (conclusion) {
-                    "success" -> AllIcons.Actions.Commit
+                    "success" -> Icons.Checkmark
                     "failure" -> Icons.X
                     "startup_failure" -> Icons.X
                     "action_required" -> AllIcons.General.Warning
-                    "cancelled" -> AllIcons.Actions.Cancel
+                    "cancelled" -> Icons.Skipped
                     "skipped" -> Icons.Skipped
                     else -> Icons.PrimitiveDot
                 }
