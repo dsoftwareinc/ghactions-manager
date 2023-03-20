@@ -4,6 +4,10 @@
 
 ## [Unreleased]
 
+## [1.10.3]
+### 🐛 Bug Fixes
+- Fix icons for new UI look
+
 ## [1.10.2]
 ### 🐛 Bug Fixes
 - Fix error when using IntelliJ 2023.1.RC #83
