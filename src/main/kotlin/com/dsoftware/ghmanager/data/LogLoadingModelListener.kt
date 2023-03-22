@@ -69,12 +69,12 @@ class LogLoadingModelListener(
             res.append(
                 when (stepInfo.conclusion) {
                     "skipped" -> "\u001B[37m---- Step: ${index}_${stepInfo.name} (skipped) ----\u001b[0m\n"
-                    "failure" -> "\u001B[31m---- Step: ${index}_${stepInfo?.name} (failed) ----\u001b[0m\n${logs}"
-                    else -> "\u001B[32m---- Step: ${index}_${stepInfo?.name} ${stepInfo.conclusion}----\u001b[0m\n${logs}"
+                    "failure" -> "\u001B[31m---- Step: ${index}_${stepInfo.name} (failed) ----\u001b[0m\n${logs}"
+                    else -> "\u001B[32m---- Step: ${index}_${stepInfo.name} ----\u001b[0m\n${logs}"
                 }
             )
         }
-        return res.toString();
+        return res.toString()
     }
 
     private fun setLogValue() {
