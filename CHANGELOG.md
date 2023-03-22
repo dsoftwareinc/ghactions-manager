@@ -4,6 +4,10 @@
 
 ## [Unreleased]
 
+## [1.10.4]
+### 🐛 Bug Fixes
+- Fix bug when step does not have logs #83 
+
 ## [1.10.3]
 ### 🐛 Bug Fixes
 - Fix icons for new UI look
