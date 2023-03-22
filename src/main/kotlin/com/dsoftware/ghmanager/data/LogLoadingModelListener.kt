@@ -7,6 +7,7 @@ import com.dsoftware.ghmanager.api.model.Job
 import com.dsoftware.ghmanager.api.model.JobStep
 import com.intellij.collaboration.ui.SingleValueModel
 import com.intellij.openapi.Disposable
+import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.util.Disposer
 import org.jetbrains.plugins.github.pullrequest.ui.GHCompletableFutureLoadingModel
 import org.jetbrains.plugins.github.pullrequest.ui.GHLoadingModel
@@ -54,11 +55,26 @@ class LogLoadingModelListener(
         } else {
             selection.steps.associateBy { it.number }
         }
-        return stepLogs.entries.joinToString("\n") { (index, logs) ->
-            val stepInfo = stepsResult[index]
-            val color = if (stepInfo?.conclusion == "failure") "\u001b[31m" else "\u001B[1;97m"
-            "$color---- Step: ${index}_${stepInfo?.name} ----\u001b[0m\n${logs}"
+        val stepNumbers = stepsResult.keys.sorted()
+        if (!stepNumbers.containsAll(stepLogs.keys)) {
+            LOG.warn(
+                "Some logs do not have a step-result associated " +
+                    "[steps in results=$stepNumbers, step with logs=${stepLogs.keys}] "
+            )
         }
+        val res = StringBuilder()
+        for (index in stepNumbers) {
+            val stepInfo = stepsResult[index]!!
+            val logs = if (stepLogs.containsKey(index)) stepLogs[index] else ""
+            res.append(
+                when (stepInfo.conclusion) {
+                    "skipped" -> "\u001B[37m---- Step: ${index}_${stepInfo.name} (skipped) ----\u001b[0m\n"
+                    "failure" -> "\u001B[31m---- Step: ${index}_${stepInfo?.name} (failed) ----\u001b[0m\n${logs}"
+                    else -> "\u001B[32m---- Step: ${index}_${stepInfo?.name} ${stepInfo.conclusion}----\u001b[0m\n${logs}"
+                }
+            )
+        }
+        return res.toString();
     }
 
     private fun setLogValue() {
@@ -85,4 +101,7 @@ class LogLoadingModelListener(
     override fun onLoadingStarted() = setLogValue()
     override fun onReset() = setLogValue()
 
+    companion object {
+        private val LOG = logger<LogLoadingModelListener>()
+    }
 }
