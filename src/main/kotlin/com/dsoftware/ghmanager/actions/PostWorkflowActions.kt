@@ -2,6 +2,7 @@ package com.dsoftware.ghmanager.actions
 
 import com.dsoftware.ghmanager.api.Workflows
 import com.intellij.icons.AllIcons
+import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.CommonDataKeys
 import com.intellij.openapi.actionSystem.DataContext
@@ -12,6 +13,9 @@ import javax.swing.Icon
 abstract class PostUrlAction(
     text: String, description: String?, icon: Icon
 ) : DumbAwareAction(text, description, icon) {
+    override fun getActionUpdateThread(): ActionUpdateThread {
+        return ActionUpdateThread.BGT
+    }
 
     override fun update(e: AnActionEvent) {
         val url = getUrl(e.dataContext)
