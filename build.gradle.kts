@@ -3,18 +3,17 @@ import org.jetbrains.changelog.markdownToHTML
 fun properties(key: String) = project.findProperty(key).toString()
 
 plugins {
-    // Java support
-    id("java")
-    // Kotlin support
-    id("org.jetbrains.kotlin.jvm") version "1.8.0"
-    // Gradle IntelliJ Plugin
-    id("org.jetbrains.intellij") version "1.13.0"
-    // Gradle Changelog Plugin
-    id("org.jetbrains.changelog") version "2.0.0"
-    // Gradle Qodana Plugin
-    id("org.jetbrains.qodana") version "0.1.13"
-    // Gradle Kover Plugin
-    id("org.jetbrains.kotlinx.kover") version "0.6.1"
+    id("java") // Java support
+    alias(libs.plugins.kotlin) // Kotlin support
+    alias(libs.plugins.gradleIntelliJPlugin) // Gradle IntelliJ Plugin
+    alias(libs.plugins.changelog) // Gradle Changelog Plugin
+    alias(libs.plugins.qodana) // Gradle Qodana Plugin
+    alias(libs.plugins.kover) // Gradle Kover Plugin
+}
+
+// Dependencies are managed with Gradle version catalog - read more: https://docs.gradle.org/current/userguide/platforms.html#sub:version-catalog
+dependencies {
+//    implementation(libs.annotations)
 }
 
 group = properties("pluginGroup")
