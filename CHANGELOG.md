@@ -5,77 +5,107 @@
 ## [Unreleased]
 
 ## [1.10.4]
+
 ### 🐛 Bug Fixes
-- Fix bug when step does not have logs #83 
+
+- Fix bug when step does not have logs #83
+- Support for 2023.2-EAP
 
 ## [1.10.3]
+
 ### 🐛 Bug Fixes
+
 - Fix icons for new UI look
 
 ## [1.10.2]
+
 ### 🐛 Bug Fixes
+
 - Fix error when using IntelliJ 2023.1.RC #83
 - Using GHAccountManager instead of deprecated GithubAuthenticationManager
 
 ## [1.10.1]
+
 ### 🐛 Bug Fixes
+
 - Fix bug requiring to pick job after logs are loaded.
 
 ## [1.10.0]
+
 ### 🚀 Features
+
 - Add ability to configure number of workflow runs on list.
 - Add ability to configure GitHub token instead of using IDE GitHub settings.
 
 ### Changed
+
 - Support 2023.1 EAP release
 
 ## [1.9.2]
+
 ### Changed
+
 - Fix bugs refreshing workflow runs #81
 - Fix bugs calling getComponent from non dispatch thread #78
 - Add icon for action_required conclusion.
 
 ## [1.9.1]
+
 ### Changed
+
 - Upgrade gradle to `7.6`
 - Upgrade `org.jetbrains.kotlin.jvm` from 1.7.22 to 1.8.0
 
 ## [1.9.0]
+
 ### Changed
+
 * Clean up code on `GhActionsManagerConfigurable` by @cunla in https://github.com/cunla/ghactions-manager/pull/71
 * Logpanel wrap by @cunla in https://github.com/cunla/ghactions-manager/pull/72
 
 ## [1.7.0]
+
 ### 🚀 Features
+
 - Make ghactions-manager available during indexing (#66)
 - Sorting jobs by completed date, or started date, else run id (#61)
 
 ### 🐛 Bug Fixes
+
 - Fix deadlock when refreshing workflow runs (#64)
 
 ## [1.6.1]
+
 ### Fixed
+
 * Link to pull-request
 * Reset log when workflow-run unselected
 * Keep workflow-run selected after refresh
 
 ## [1.6.0]
+
 ### Added
+
 * Step logs - Showing failed step title in red
 * Refresh of runs only for active tab
 
 ### Changed
+
 * Better github REST API error handling
 
 ### Fixed
+
 * Update jobs panel and log panel to loading state when a new run is selected
 * Clean up more code
 
 ## [1.5.4]
+
 ### Added
+
 * Open workflow file action
 
 ### Fixed
+
 * Update workflow run state
 
 ## [1.5.1]

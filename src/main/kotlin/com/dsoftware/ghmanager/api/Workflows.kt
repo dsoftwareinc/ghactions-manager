@@ -8,7 +8,7 @@ import org.jetbrains.plugins.github.api.GithubApiRequest
 import org.jetbrains.plugins.github.api.GithubApiRequest.Get.Companion.json
 import org.jetbrains.plugins.github.api.GithubApiRequests
 import org.jetbrains.plugins.github.api.data.request.GithubRequestPagination
-import org.jetbrains.plugins.github.api.util.GithubApiSearchQueryBuilder
+
 import org.jetbrains.plugins.github.api.util.GithubApiUrlQueryBuilder
 
 data class WorkflowRunFilter(
@@ -45,12 +45,10 @@ object Workflows : GithubApiRequests.Entity("/repos") {
             "/actions",
             "/runs",
             GithubApiUrlQueryBuilder.urlQuery {
-                param("q", GithubApiSearchQueryBuilder.searchQuery {
-                    qualifier("event", filter.event)
-                    qualifier("status", filter.status)
-                    qualifier("branch", filter.branch)
-                    qualifier("actor", filter.actor)
-                })
+                param("event", filter.event)
+                param("status", filter.status)
+                param("actor", filter.actor)
+                param("branch", filter.branch)
                 param(pagination)
             })
         LOG.info("Executing url $url")
