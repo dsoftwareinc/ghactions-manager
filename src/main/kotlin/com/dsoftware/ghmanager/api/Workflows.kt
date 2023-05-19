@@ -3,12 +3,11 @@ package com.dsoftware.ghmanager.api
 import com.dsoftware.ghmanager.api.model.JobsList
 import com.dsoftware.ghmanager.api.model.WorkflowRuns
 import com.dsoftware.ghmanager.data.RepositoryCoordinates
-import com.intellij.openapi.diagnostic.logger
+import com.intellij.openapi.diagnostic.thisLogger
 import org.jetbrains.plugins.github.api.GithubApiRequest
 import org.jetbrains.plugins.github.api.GithubApiRequest.Get.Companion.json
 import org.jetbrains.plugins.github.api.GithubApiRequests
 import org.jetbrains.plugins.github.api.data.request.GithubRequestPagination
-
 import org.jetbrains.plugins.github.api.util.GithubApiUrlQueryBuilder
 
 data class WorkflowRunFilter(
@@ -19,8 +18,7 @@ data class WorkflowRunFilter(
 )
 
 object Workflows : GithubApiRequests.Entity("/repos") {
-    private val LOG = logger<Workflows>()
-
+    private val LOG = thisLogger()
     fun getDownloadUrlForWorkflowLog(url: String) = GetRunLogRequest(url)
         .withOperationName("Download Workflow log")
 
@@ -39,7 +37,8 @@ object Workflows : GithubApiRequests.Entity("/repos") {
         filter: WorkflowRunFilter,
         pagination: GithubRequestPagination? = null
     ): GithubApiRequest<WorkflowRuns> {
-        val url = GithubApiRequests.getUrl(coordinates.serverPath,
+        val url = GithubApiRequests.getUrl(
+            coordinates.serverPath,
             urlSuffix,
             "/${coordinates.repositoryPath}",
             "/actions",
@@ -51,15 +50,21 @@ object Workflows : GithubApiRequests.Entity("/repos") {
                 param("branch", filter.branch)
                 param(pagination)
             })
-        LOG.info("Executing url $url")
-        return get(url)
+        return get<WorkflowRuns>(url, "search workflow runs", pagination)
     }
 
-    fun getWorkflowRunJobs(url: String) = json<JobsList>(url)
-        .withOperationName("Get workflow-run jobs")
-
-    fun get(url: String) = json<WorkflowRuns>(url)
-        .withOperationName("search workflow runs")
+    fun getWorkflowRunJobs(url: String) = get<JobsList>(
+        url, "Get workflow-run jobs", pagination = GithubRequestPagination(1))
 
 
+    private inline fun <reified T> get(
+        url: String, opName: String,
+        pagination: GithubRequestPagination? = null
+    ): GithubApiRequest<T> {
+        val urlWithPagination = url + GithubApiUrlQueryBuilder.urlQuery {
+            param(pagination)
+        }
+        LOG.debug("Creating op: $opName, url $urlWithPagination")
+        return json<T>(urlWithPagination).withOperationName(opName)
+    }
 }
