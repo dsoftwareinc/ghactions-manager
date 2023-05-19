@@ -4,6 +4,17 @@
 
 ## [Unreleased]
 
+## [1.11.0]
+
+### 🚀 Features
+
+- Add info bar with number of jobs loaded
+
+### 🐛 Bug Fixes
+
+- Fix bug showing seconds without padding #88
+- Fix jobs request pagination, now pagesize=100 #89
+
 ## [1.10.4]
 
 ### 🐛 Bug Fixes
