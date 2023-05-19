@@ -12,7 +12,6 @@ import com.intellij.openapi.Disposable
 import com.intellij.openapi.actionSystem.ActionManager
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.DefaultActionGroup
-import com.intellij.openapi.application.runInEdt
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.actions.ToggleUseSoftWrapsToolbarAction
 import com.intellij.openapi.editor.ex.EditorEx
@@ -80,35 +79,33 @@ fun createLogConsolePanel(
     model: LogLoadingModelListener,
     disposable: Disposable,
 ): JBPanelWithEmptyText {
-
     val panel = JBPanelWithEmptyText(BorderLayout()).apply {
         isOpaque = false
     }
 
     model.logModel.addAndInvokeListener {
-        val logValue = model.logModel.value
-        if (!logValue.isNullOrBlank()) {
-            runInEdt {
-                if (Constants.emptyTextMessage(logValue)) {
-                    panel.emptyText.text = logValue
-                } else {
-                    val console = LogConsolePanel(project, logValue, disposable)
-                    panel.add(console.component, BorderLayout.CENTER)
-                    val actionGroup = DefaultActionGroup().apply {
-                        removeAll()
-                        add(actionManager.getAction("Github.Workflow.Log.List.Reload"))
-                        add(
-                            object : ToggleUseSoftWrapsToolbarAction(SoftWrapAppliancePlaces.CONSOLE) {
-                                override fun getEditor(e: AnActionEvent): Editor? {
-                                    return console.editor
-                                }
-                            }
-                        )
+        if (it.isNullOrBlank()) {
+            return@addAndInvokeListener
+        }
+        val logValue: String = it
+        if (Constants.emptyTextMessage(logValue)) {
+            panel.emptyText.text = logValue
+        } else {
+            val console = LogConsolePanel(project, logValue, disposable)
+            panel.add(console.component, BorderLayout.CENTER)
+            val actionGroup = DefaultActionGroup().apply {
+                removeAll()
+                add(actionManager.getAction("Github.Workflow.Log.List.Reload"))
+                add(
+                    object : ToggleUseSoftWrapsToolbarAction(SoftWrapAppliancePlaces.CONSOLE) {
+                        override fun getEditor(e: AnActionEvent): Editor? {
+                            return console.editor
+                        }
                     }
-                    val contextMenuPopupHandler = ContextMenuPopupHandler.Simple(actionGroup)
-                    (console.editor as EditorEx).installPopupHandler(contextMenuPopupHandler)
-                }
+                )
             }
+            val contextMenuPopupHandler = ContextMenuPopupHandler.Simple(actionGroup)
+            (console.editor as EditorEx).installPopupHandler(contextMenuPopupHandler)
         }
     }
 
