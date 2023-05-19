@@ -1,22 +1,16 @@
 package com.dsoftware.ghmanager.data
 
-import com.dsoftware.ghmanager.api.model.Job
 import com.dsoftware.ghmanager.api.model.WorkflowRun
-import com.intellij.collaboration.ui.SimpleEventListener
 import com.intellij.collaboration.ui.SingleValueModel
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.util.CheckedDisposable
 import com.intellij.openapi.util.Disposer
 import com.intellij.ui.CollectionListModel
-import com.intellij.util.EventDispatcher
 import com.intellij.util.concurrency.AppExecutorUtil
-import com.intellij.util.concurrency.annotations.RequiresEdt
 import org.jetbrains.plugins.github.util.GHGitRepositoryMapping
 import java.util.concurrent.ScheduledFuture
 import java.util.concurrent.TimeUnit
-import kotlin.properties.Delegates
-
 
 
 class WorkflowRunSelectionContext internal constructor(
@@ -42,7 +36,7 @@ class WorkflowRunSelectionContext internal constructor(
         get() = workflowRun?.let { dataLoader.getJobsDataProvider(it) }
 
     init {
-        if(!parentDisposable.isDisposed) {
+        if (!parentDisposable.isDisposed) {
             Disposer.register(parentDisposable, this)
         }
         runSelectionHolder.addSelectionChangeListener(parentDisposable) {
@@ -57,7 +51,7 @@ class WorkflowRunSelectionContext internal constructor(
         }
         val scheduler = AppExecutorUtil.getAppScheduledExecutorService()
         task = scheduler.scheduleWithFixedDelay({
-            if(workflowRun==null){
+            if (workflowRun == null) {
                 return@scheduleWithFixedDelay
             }
             LOG.info("Checking updated status for $workflowRun")
