@@ -57,7 +57,10 @@ class WorkflowRunSelectionContext internal constructor(
         }
         val scheduler = AppExecutorUtil.getAppScheduledExecutorService()
         task = scheduler.scheduleWithFixedDelay({
-            LOG.info("Checking updated status for ${workflowRun}")
+            if(workflowRun==null){
+                return@scheduleWithFixedDelay
+            }
+            LOG.info("Checking updated status for $workflowRun")
             val status = workflowRun?.status
             if (workflowRun != null && status != "completed") {
                 jobsDataProvider?.reload()

@@ -169,15 +169,17 @@ class WorkflowToolWindowTabController(
             GithubBundle.message("cannot.load.data.from.github"),
             errorHandler
         ).create { _, _ ->
-            val jobListPanel = JobListComponent.createJobsListComponent(
+            val (topInfoPanel,jobListPanel) = JobListComponent.createJobsListComponent(
                 jobModel, selectedRunContext,
                 infoInNewLine = !settingsService.state.jobListAboveLogs,
             )
 
             val panel = JBPanelWithEmptyText(BorderLayout()).apply {
                 isOpaque = false
+                add(topInfoPanel, BorderLayout.NORTH)
                 add(jobListPanel, BorderLayout.CENTER)
             }
+
             panel
         }
         return jobLoadingPanel

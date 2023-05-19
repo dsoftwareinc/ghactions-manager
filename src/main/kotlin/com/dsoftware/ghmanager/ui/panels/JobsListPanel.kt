@@ -30,6 +30,7 @@ import com.intellij.util.ui.UIUtil
 import net.miginfocom.layout.CC
 import net.miginfocom.layout.LC
 import net.miginfocom.swing.MigLayout
+import org.jetbrains.plugins.github.ui.HtmlInfoPanel
 import java.awt.Component
 import java.awt.event.MouseEvent
 import java.time.Duration
@@ -42,8 +43,9 @@ import javax.swing.ListSelectionModel
 import javax.swing.ScrollPaneConstants
 
 
-class JobListComponent(model: ListModel<Job>, private val infoInNewLine: Boolean) : JBList<Job>(model), DataProvider,
-    CopyProvider {
+class JobListComponent(
+    model: ListModel<Job>, private val infoInNewLine: Boolean,
+) : JBList<Job>(model), DataProvider, CopyProvider {
 
     init {
         isEnabled = true
@@ -132,23 +134,27 @@ class JobListComponent(model: ListModel<Job>, private val infoInNewLine: Boolean
             jobModel: SingleValueModel<JobsList?>,
             runSelectionContext: WorkflowRunSelectionContext,
             infoInNewLine: Boolean,
-        ): JComponent {
+        ): Pair<HtmlInfoPanel, JComponent> {
+            val infoPanel = HtmlInfoPanel()
             val list = CollectionListModel<Job>()
             jobModel.addAndInvokeListener {
                 list.removeAll()
-                if (jobModel.value != null) {
-                    list.add(jobModel.value!!.jobs)
+                if (it != null) {
+                    list.add(it.jobs)
+                    infoPanel.setInfo(
+                        if (list.size == it.total_count) "All ${list.size} jobs in workflow run loaded"
+                        else "${list.size} jobs loaded out of ${it.total_count}"
+                    )
                 }
             }
             val listComponent = JobListComponent(list, infoInNewLine).apply {
                 emptyText.text = "No jobs in workflow run"
             }.also {
-
                 installPopup(it)
                 ToolbarUtil.installSelectionHolder(it, runSelectionContext.jobSelectionHolder)
             }
 
-            return ScrollPaneFactory.createScrollPane(
+            return Pair(infoPanel, ScrollPaneFactory.createScrollPane(
                 listComponent,
                 ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
                 ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER
@@ -156,24 +162,20 @@ class JobListComponent(model: ListModel<Job>, private val infoInNewLine: Boolean
                 isOpaque = false
                 viewport.isOpaque = false
                 border = JBUI.Borders.empty()
-            }
-
+            })
         }
 
         private fun installPopup(list: JobListComponent) {
             list.addMouseListener(object : PopupHandler() {
                 override fun invokePopup(comp: Component, x: Int, y: Int) {
-
                     val (place, groupId) = if (ListUtil.isPointOnSelection(list, x, y)) {
                         Pair("JobListPopupSelected", "Github.ToolWindow.JobList.Popup.Selected")
                     } else {
                         Pair("JobListPopup", "Github.ToolWindow.JobList.Popup")
                     }
-                    val popupMenu: ActionPopupMenu =
-                        actionManager.createActionPopupMenu(
-                            place,
-                            actionManager.getAction(groupId) as ActionGroup
-                        )
+                    val popupMenu: ActionPopupMenu = actionManager.createActionPopupMenu(
+                        place, actionManager.getAction(groupId) as ActionGroup,
+                    )
 
                     popupMenu.setTargetComponent(list)
                     popupMenu.component.show(comp, x, y)
