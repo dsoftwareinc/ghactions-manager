@@ -12,8 +12,11 @@ import com.intellij.openapi.Disposable
 import com.intellij.openapi.actionSystem.ActionManager
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.DefaultActionGroup
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.actions.ToggleUseSoftWrapsToolbarAction
+import com.intellij.openapi.editor.colors.EditorColorsListener
+import com.intellij.openapi.editor.colors.EditorColorsManager
 import com.intellij.openapi.editor.ex.EditorEx
 import com.intellij.openapi.editor.impl.ContextMenuPopupHandler
 import com.intellij.openapi.editor.impl.EditorImpl
@@ -45,9 +48,7 @@ class GhActionConsoleFolding : ConsoleFolding() {
 }
 
 class LogConsolePanel(
-    project: Project,
-    logValue: String,
-    disposable: Disposable,
+    project: Project, logValue: String, disposable: Disposable,
 ) : ConsoleViewImpl(project, true), AnsiEscapeDecoder.ColoredTextAcceptor {
     private val ansiEscapeDecoder = AnsiEscapeDecoder()
 
@@ -59,7 +60,6 @@ class LogConsolePanel(
         this.clear()
         ansiEscapeDecoder.escapeText(logValue, ProcessOutputType.STDOUT, this)
     }
-
 
     override fun coloredTextAvailable(text: String, attributes: Key<*>) {
         this.print(text, ConsoleViewContentType.getConsoleViewType(attributes))
@@ -83,15 +83,15 @@ fun createLogConsolePanel(
         isOpaque = false
     }
 
-    model.logModel.addAndInvokeListener {
-        if (it.isNullOrBlank()) {
-            return@addAndInvokeListener
+    fun addConsole(logValue: String?) {
+        if (logValue.isNullOrBlank()) {
+            return
         }
-        val logValue: String = it
         if (Constants.emptyTextMessage(logValue)) {
             panel.emptyText.text = logValue
         } else {
             val console = LogConsolePanel(project, logValue, disposable)
+            panel.removeAll()
             panel.add(console.component, BorderLayout.CENTER)
             val actionGroup = DefaultActionGroup().apply {
                 removeAll()
@@ -108,6 +108,12 @@ fun createLogConsolePanel(
             (console.editor as EditorEx).installPopupHandler(contextMenuPopupHandler)
         }
     }
-
+    model.logModel.addAndInvokeListener {
+        addConsole(it)
+    }
+    ApplicationManager.getApplication().messageBus.connect(disposable)
+        .subscribe(EditorColorsManager.TOPIC, EditorColorsListener {
+            addConsole(model.logModel.value)
+        })
     return panel
 }

@@ -29,7 +29,7 @@ class WorkflowRunSelectionContext internal constructor(
         get() = runSelectionHolder.selection
     val jobDataProviderLoadModel: SingleValueModel<WorkflowRunJobsDataProvider?> = SingleValueModel(null)
     val logDataProviderLoadModel: SingleValueModel<WorkflowRunLogsDataProvider?> = SingleValueModel(null)
-
+    var selectedRunDisposable = Disposer.newDisposable("Selected run disposable")
     val logsDataProvider: WorkflowRunLogsDataProvider?
         get() = workflowRun?.let { dataLoader.getLogsDataProvider(it) }
     val jobsDataProvider: WorkflowRunJobsDataProvider?
@@ -43,11 +43,14 @@ class WorkflowRunSelectionContext internal constructor(
             LOG.debug("runSelectionHolder selection change listener")
             setNewJobsProvider()
             setNewLogProvider()
+            selectedRunDisposable.dispose()
+            selectedRunDisposable = Disposer.newDisposable("Selected run disposable")
         }
         dataLoader.addInvalidationListener(this) {
             LOG.debug("invalidation listener")
             jobDataProviderLoadModel.value = null
             logDataProviderLoadModel.value = null
+            selectedRunDisposable.dispose()
         }
         val scheduler = AppExecutorUtil.getAppScheduledExecutorService()
         task = scheduler.scheduleWithFixedDelay({

@@ -134,7 +134,7 @@ class WorkflowToolWindowTabController(
     private fun createLogPanel(selectedRunContext: WorkflowRunSelectionContext): JComponent {
         LOG.debug("Create log panel")
         val model = LogLoadingModelListener(
-            disposable,
+            selectedRunContext.selectedRunDisposable,
             selectedRunContext.logDataProviderLoadModel,
             selectedRunContext.jobSelectionHolder
         )
@@ -144,7 +144,7 @@ class WorkflowToolWindowTabController(
             "Can't load logs from GitHub for run ${selectedRunContext.runSelectionHolder.selection?.name ?: ""}",
             GHApiLoadingErrorHandler(project, ghAccount) {}
         ).create { _, _ ->
-            createLogConsolePanel(project, model, disposable)
+            createLogConsolePanel(project, model, selectedRunContext.selectedRunDisposable)
         }
         return panel
     }

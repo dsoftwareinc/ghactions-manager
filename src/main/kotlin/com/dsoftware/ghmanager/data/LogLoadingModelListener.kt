@@ -68,9 +68,9 @@ class LogLoadingModelListener(
             val logs = if (stepLogs.containsKey(index)) stepLogs[index] else ""
             res.append(
                 when (stepInfo.conclusion) {
-                    "skipped" -> "\u001B[37m---- Step: ${index}_${stepInfo.name} (skipped) ----\u001b[0m\n"
-                    "failure" -> "\u001B[31m---- Step: ${index}_${stepInfo.name} (failed) ----\u001b[0m\n${logs}"
-                    else -> "\u001B[32m---- Step: ${index}_${stepInfo.name} ----\u001b[0m\n${logs}"
+                    "skipped" -> "\u001B[0m\u001B[37m---- Step: ${index}_${stepInfo.name} (skipped) ----\u001b[0m\n"
+                    "failure" -> "\u001B[0m\u001B[31m---- Step: ${index}_${stepInfo.name} (failed) ----\u001b[0m\n${logs}"
+                    else -> "\u001B[0m\u001B[32m---- Step: ${index}_${stepInfo.name} ----\u001b[0m\n${logs}"
                 }
             )
         }
