@@ -7,7 +7,6 @@ import com.dsoftware.ghmanager.data.LogLoadingModelListener
 import com.dsoftware.ghmanager.data.WorkflowDataContextRepository
 import com.dsoftware.ghmanager.data.WorkflowRunJobsDataProvider
 import com.dsoftware.ghmanager.data.WorkflowRunSelectionContext
-import com.dsoftware.ghmanager.i18n.MessagesBundle
 import com.dsoftware.ghmanager.ui.panels.JobListComponent
 import com.dsoftware.ghmanager.ui.panels.WorkflowRunListLoaderPanel
 import com.dsoftware.ghmanager.ui.panels.createLogConsolePanel
@@ -37,27 +36,13 @@ import java.awt.BorderLayout
 import javax.swing.JComponent
 import kotlin.properties.Delegates
 
-class GhActionsMgrErrorHandler(
-    controller: WorkflowToolWindowTabController,
-    dataContextRepository: WorkflowDataContextRepository,
-    loadingModel: GHCompletableFutureLoadingModel<WorkflowRunSelectionContext>
-) : GHApiLoadingErrorHandler(controller.project, controller.ghAccount, {
-    dataContextRepository.clearContext(controller.repositoryMapping)
-    loadingModel.future = dataContextRepository.acquireContext(
-        controller.disposable,
-        controller.repositoryMapping,
-        controller.ghAccount,
-        controller.toolWindow
-    )
-})
-
 class WorkflowToolWindowTabController(
-    val project: Project,
-    val repositoryMapping: GHGitRepositoryMapping,
-    val ghAccount: GithubAccount,
-    val dataContextRepository: WorkflowDataContextRepository,
+    private val project: Project,
+    repositoryMapping: GHGitRepositoryMapping,
+    private val ghAccount: GithubAccount,
+    private val dataContextRepository: WorkflowDataContextRepository,
     parentDisposable: Disposable,
-    val toolWindow: ToolWindow,
+    toolWindow: ToolWindow,
 ) {
     val loadingModel: GHCompletableFutureLoadingModel<WorkflowRunSelectionContext>
     private val settingsService = GhActionsSettingsService.getInstance(project)
@@ -84,11 +69,19 @@ class WorkflowToolWindowTabController(
             )
         }
 
-        val errorHandler = GhActionsMgrErrorHandler(this, dataContextRepository, loadingModel)
+        val errorHandler = GHApiLoadingErrorHandler(project, ghAccount) {
+            dataContextRepository.clearContext(repositoryMapping)
+            loadingModel.future = dataContextRepository.acquireContext(
+                disposable,
+                repositoryMapping,
+                ghAccount,
+                toolWindow
+            )
+        }
         panel = GHLoadingPanelFactory(
             loadingModel,
-            MessagesBundle.message("not.loading.workflow.runs"),
-            MessagesBundle.message("cannot.load.wfruns.from.github"),
+            "Not loading workflow runs",
+            "Can't load workflow runs from GitHub",
             errorHandler,
         ).create { _, result ->
             val content = createContent(result)
@@ -98,7 +91,6 @@ class WorkflowToolWindowTabController(
     }
 
     private fun createContent(selectedRunContext: WorkflowRunSelectionContext): JComponent {
-
         val workflowRunsList = WorkflowRunListLoaderPanel
             .createWorkflowRunsListComponent(selectedRunContext, disposable)
 
@@ -146,16 +138,11 @@ class WorkflowToolWindowTabController(
             selectedRunContext.logDataProviderLoadModel,
             selectedRunContext.jobSelectionHolder
         )
-        val errorHandler = GHApiLoadingErrorHandler(project, ghAccount) {
-        }
         val panel = GHLoadingPanelFactory(
             model.logsLoadingModel,
-            MessagesBundle.message("select.job.to.show.logs"),
-            MessagesBundle.message(
-                "cannot.load.logs.from.github",
-                selectedRunContext.runSelectionHolder.selection?.name ?: ""
-            ),
-            errorHandler
+            "Select a job to show logs",
+            "Can't load logs from GitHub for run ${selectedRunContext.runSelectionHolder.selection?.name ?: ""}",
+            GHApiLoadingErrorHandler(project, ghAccount) {}
         ).create { _, _ ->
             createLogConsolePanel(project, model, disposable)
         }
@@ -164,16 +151,12 @@ class WorkflowToolWindowTabController(
 
     private fun createJobsPanel(selectedRunContext: WorkflowRunSelectionContext): JComponent {
         val (jobLoadingModel, jobModel) = createJobsLoadingModel(selectedRunContext.jobDataProviderLoadModel)
-        val errorHandler = GHApiLoadingErrorHandler(project, ghAccount) {
-        }
+
         val jobLoadingPanel = GHLoadingPanelFactory(
             jobLoadingModel,
-            MessagesBundle.message("select.workflow.to.show.list.of.jobs"),
-            MessagesBundle.message(
-                "cannot.load.jobs.from.github",
-                selectedRunContext.runSelectionHolder.selection?.name ?: ""
-            ),
-            errorHandler
+            "Select a workflow to show list of jobs",
+            "Can't load jobs list from GitHub for run ${selectedRunContext.runSelectionHolder.selection?.name ?: ""}",
+            GHApiLoadingErrorHandler(project, ghAccount) {}
         ).create { _, _ ->
             val (topInfoPanel, jobListPanel) = JobListComponent.createJobsListComponent(
                 jobModel, selectedRunContext,

@@ -6,7 +6,6 @@
 
     <depends>com.intellij.modules.platform</depends>
     <depends>org.jetbrains.plugins.github</depends>
-
     <idea-version since-build="223.7571.182"/>
 
     <extensions defaultExtensionNs="com.intellij">
@@ -19,8 +18,7 @@
             implementation="com.dsoftware.ghmanager.ui.panels.GhActionConsoleFolding"/>
         <projectConfigurable
             parentId="tools"
-            instance="com.dsoftware.ghmanager.ui.settings.GhActionsManagerConfigurable"
-        />
+            instance="com.dsoftware.ghmanager.ui.settings.GhActionsManagerConfigurable"/>
     </extensions>
     <actions>
         <action
@@ -34,8 +32,7 @@
             <action
                 id="Github.Actions.Manager.Settings.Open"
                 class="com.dsoftware.ghmanager.actions.ShowPluginSettingsAction"
-                icon="AllIcons.General.Settings"
-            />
+                icon="AllIcons.General.Settings"/>
         </group>
 
         <group id="Github.Workflow.ToolWindow.List.Popup">
