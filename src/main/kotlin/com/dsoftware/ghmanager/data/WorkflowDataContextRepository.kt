@@ -6,7 +6,7 @@ import com.intellij.collaboration.async.CompletableFutureUtil.submitIOTask
 import com.intellij.collaboration.async.CompletableFutureUtil.successOnEdt
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.components.service
-import com.intellij.openapi.diagnostic.thisLogger
+import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.progress.ProcessCanceledException
 import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.project.Project
@@ -37,9 +37,7 @@ data class RepositoryCoordinates(
 }
 
 @Service
-class WorkflowDataContextRepository(
-    private val project: Project
-) {
+class WorkflowDataContextRepository(project: Project) {
     private val settingsService = GhActionsSettingsService.getInstance(project)
     private val repositories =
         mutableMapOf<GitRemoteUrlCoordinates, LazyCancellableBackgroundProcessValue<WorkflowRunSelectionContext>>()
@@ -117,8 +115,7 @@ class WorkflowDataContextRepository(
     }
 
     companion object {
-        private val LOG = thisLogger()
-
+        private val LOG = logger<WorkflowDataContextRepository>()
         fun getInstance(project: Project) = project.service<WorkflowDataContextRepository>()
     }
 }

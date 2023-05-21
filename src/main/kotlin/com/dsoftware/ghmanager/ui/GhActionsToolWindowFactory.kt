@@ -4,7 +4,6 @@ import com.dsoftware.ghmanager.data.WorkflowDataContextRepository
 import com.dsoftware.ghmanager.ui.settings.GhActionsManagerConfigurable
 import com.dsoftware.ghmanager.ui.settings.GhActionsSettingsService
 import com.dsoftware.ghmanager.ui.settings.GithubActionsManagerSettings
-import com.intellij.collaboration.async.collectWithPrevious
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.actionSystem.ActionManager
 import com.intellij.openapi.actionSystem.ActionPlaces
@@ -24,6 +23,7 @@ import com.intellij.ui.content.ContentManagerEvent
 import com.intellij.ui.content.ContentManagerListener
 import com.intellij.util.concurrency.AppExecutorUtil
 import com.intellij.util.ui.UIUtil
+import git4idea.remote.hosting.knownRepositories
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
@@ -35,6 +35,7 @@ import org.jetbrains.plugins.github.util.GHHostedRepositoriesManager
 import java.awt.BorderLayout
 import java.util.concurrent.TimeUnit
 import javax.swing.JPanel
+
 
 internal class ProjectRepositories(val toolWindow: ToolWindow) {
     var knownRepositories: Set<GHGitRepositoryMapping> = emptySet()
@@ -64,24 +65,30 @@ class GhActionsToolWindowFactory : ToolWindowFactory, DumbAware {
         val repositoriesManager = project.service<GHHostedRepositoriesManager>()
         scope.launch {
             repositoriesManager.knownRepositoriesState.collect {
-                LOG.debug("Repos updated, new list has ${it.size} repos")
-                val ghActionToolWindow = projectReposMap[project]
-                if (ghActionToolWindow != null) {
-                    ghActionToolWindow.knownRepositories = it
-                    ghActionToolWindow.knownRepositories.forEach { repo ->
-                        settingsService.state.customRepos.putIfAbsent(
-                            repo.remote.url,
-                            GithubActionsManagerSettings.RepoSettings()
-                        )
-                    }
-                    createToolWindowContent(project, toolWindow)
-                }
-            }
-            accountManager.accountsState.collectWithPrevious(setOf()) { prev, current ->
-                createToolWindowContent(toolWindow.project, toolWindow)
+                updateRepos(toolWindow, it)
             }
         }
+        scope.launch {
+            accountManager.accountsState.collect {
+                updateRepos(toolWindow, repositoriesManager.knownRepositories)
+            }
+        }
+    }
 
+    private fun updateRepos(toolWindow: ToolWindow, repoSet: Set<GHGitRepositoryMapping>) {
+        LOG.debug("Repos updated, new list has ${repoSet.size} repos")
+
+        val ghActionToolWindow = projectReposMap[toolWindow.project]
+        if (ghActionToolWindow != null) {
+            ghActionToolWindow.knownRepositories = repoSet
+            ghActionToolWindow.knownRepositories.forEach { repo ->
+                settingsService.state.customRepos.putIfAbsent(
+                    repo.remote.url,
+                    GithubActionsManagerSettings.RepoSettings()
+                )
+            }
+            createToolWindowContent(toolWindow.project, toolWindow)
+        }
     }
 
     override fun shouldBeAvailable(project: Project): Boolean {
@@ -107,7 +114,7 @@ class GhActionsToolWindowFactory : ToolWindowFactory, DumbAware {
                 if (settingsService.state.useCustomRepos && countRepos == 0) {
                     noActiveRepositories(disposable, projectRepos)
                 } else {
-                    ghAccountAndReposConfigured(disposable, project, projectRepos)
+                    ghAccountAndReposConfigured(disposable, projectRepos)
                 }
             }
         }
@@ -167,8 +174,6 @@ class GhActionsToolWindowFactory : ToolWindowFactory, DumbAware {
                     ActionPlaces.UNKNOWN
                 )
             )
-
-
         addContent(factory.createContent(emptyTextPanel, "Workflows", false)
             .apply {
                 isCloseable = false
@@ -200,13 +205,12 @@ class GhActionsToolWindowFactory : ToolWindowFactory, DumbAware {
 
     private fun ghAccountAndReposConfigured(
         parentDisposable: Disposable,
-        project: Project,
         projectRepositories: ProjectRepositories
     ) =
         with(projectRepositories) {
             val actionManager = ActionManager.getInstance()
             toolWindow.setAdditionalGearActions(DefaultActionGroup(actionManager.getAction("Github.Actions.Manager.Settings.Open")))
-            val dataContextRepository = WorkflowDataContextRepository.getInstance(project)
+            val dataContextRepository = WorkflowDataContextRepository.getInstance(toolWindow.project)
             knownRepositories.filter {
                 !settingsService.state.useCustomRepos
                     || (settingsService.state.customRepos[it.remote.url]?.included
@@ -225,12 +229,7 @@ class GhActionsToolWindowFactory : ToolWindowFactory, DumbAware {
                         setDisposer(disposable)
                         displayName = repoSettings.customName.ifEmpty { repo.repositoryPath }
                         val controller = WorkflowToolWindowTabController(
-                            project,
-                            repo,
-                            ghAccount,
-                            dataContextRepository,
-                            this.disposer!!,
-                            toolWindow
+                            repo, ghAccount, dataContextRepository, this.disposer!!, toolWindow,
                         )
                         component.apply {
                             layout = BorderLayout()
@@ -242,7 +241,6 @@ class GhActionsToolWindowFactory : ToolWindowFactory, DumbAware {
                         }
                         putUserData(WorkflowToolWindowTabController.KEY, controller)
                     }
-
                     toolWindow.contentManager.addContent(tab)
                 } else {
                     val emptyTextPanel = JBPanelWithEmptyText()

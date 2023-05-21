@@ -3,7 +3,7 @@ package com.dsoftware.ghmanager.api
 import com.dsoftware.ghmanager.api.model.JobsList
 import com.dsoftware.ghmanager.api.model.WorkflowRuns
 import com.dsoftware.ghmanager.data.RepositoryCoordinates
-import com.intellij.openapi.diagnostic.thisLogger
+import com.intellij.openapi.diagnostic.logger
 import org.jetbrains.plugins.github.api.GithubApiRequest
 import org.jetbrains.plugins.github.api.GithubApiRequest.Get.Companion.json
 import org.jetbrains.plugins.github.api.GithubApiRequests
@@ -18,7 +18,7 @@ data class WorkflowRunFilter(
 )
 
 object Workflows : GithubApiRequests.Entity("/repos") {
-    private val LOG = thisLogger()
+    private val LOG = logger<Workflows>()
     fun getDownloadUrlForWorkflowLog(url: String) = GetRunLogRequest(url)
         .withOperationName("Download Workflow log")
 
@@ -54,7 +54,8 @@ object Workflows : GithubApiRequests.Entity("/repos") {
     }
 
     fun getWorkflowRunJobs(url: String) = get<JobsList>(
-        url, "Get workflow-run jobs", pagination = GithubRequestPagination(1))
+        url, "Get workflow-run jobs", pagination = GithubRequestPagination(1)
+    )
 
 
     private inline fun <reified T> get(

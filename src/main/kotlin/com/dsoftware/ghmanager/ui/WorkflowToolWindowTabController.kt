@@ -17,7 +17,6 @@ import com.intellij.ide.actions.RefreshAction
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.actionSystem.ActionManager
 import com.intellij.openapi.diagnostic.logger
-import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.util.Key
 import com.intellij.openapi.wm.ToolWindow
@@ -37,15 +36,14 @@ import javax.swing.JComponent
 import kotlin.properties.Delegates
 
 class WorkflowToolWindowTabController(
-    private val project: Project,
     repositoryMapping: GHGitRepositoryMapping,
     private val ghAccount: GithubAccount,
     private val dataContextRepository: WorkflowDataContextRepository,
     parentDisposable: Disposable,
-    toolWindow: ToolWindow,
+    private val toolWindow: ToolWindow,
 ) {
     val loadingModel: GHCompletableFutureLoadingModel<WorkflowRunSelectionContext>
-    private val settingsService = GhActionsSettingsService.getInstance(project)
+    private val settingsService = GhActionsSettingsService.getInstance(toolWindow.project)
     private val actionManager = ActionManager.getInstance()
     val disposable = Disposer.newCheckedDisposable("WorkflowToolWindowTabController")
     val panel: JComponent
@@ -69,7 +67,7 @@ class WorkflowToolWindowTabController(
             )
         }
 
-        val errorHandler = GHApiLoadingErrorHandler(project, ghAccount) {
+        val errorHandler = GHApiLoadingErrorHandler(toolWindow.project, ghAccount) {
             dataContextRepository.clearContext(repositoryMapping)
             loadingModel.future = dataContextRepository.acquireContext(
                 disposable,
@@ -142,9 +140,9 @@ class WorkflowToolWindowTabController(
             model.logsLoadingModel,
             "Select a job to show logs",
             "Can't load logs from GitHub for run ${selectedRunContext.runSelectionHolder.selection?.name ?: ""}",
-            GHApiLoadingErrorHandler(project, ghAccount) {}
+            GHApiLoadingErrorHandler(toolWindow.project, ghAccount) {}
         ).create { _, _ ->
-            createLogConsolePanel(project, model, selectedRunContext.selectedRunDisposable)
+            createLogConsolePanel(toolWindow.project, model, selectedRunContext.selectedRunDisposable)
         }
         return panel
     }
@@ -156,7 +154,7 @@ class WorkflowToolWindowTabController(
             jobLoadingModel,
             "Select a workflow to show list of jobs",
             "Can't load jobs list from GitHub for run ${selectedRunContext.runSelectionHolder.selection?.name ?: ""}",
-            GHApiLoadingErrorHandler(project, ghAccount) {}
+            GHApiLoadingErrorHandler(toolWindow.project, ghAccount) {}
         ).create { _, _ ->
             val (topInfoPanel, jobListPanel) = JobListComponent.createJobsListComponent(
                 jobModel, selectedRunContext,
