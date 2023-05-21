@@ -14,6 +14,7 @@
 
 - Fix bug showing seconds without padding #88
 - Fix jobs request pagination, now pagesize=100 #89
+- Fix updating job logs during theme change #85
 
 ## [1.10.4]
 
