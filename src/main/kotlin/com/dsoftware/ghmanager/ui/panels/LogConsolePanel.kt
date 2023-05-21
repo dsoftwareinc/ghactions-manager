@@ -48,7 +48,7 @@ class GhActionConsoleFolding : ConsoleFolding() {
 }
 
 class LogConsolePanel(
-    project: Project, logValue: String, disposable: Disposable,
+    project: Project, logValue: String, parentDisposable: Disposable,
 ) : ConsoleViewImpl(project, true), AnsiEscapeDecoder.ColoredTextAcceptor {
     private val ansiEscapeDecoder = AnsiEscapeDecoder()
 
@@ -56,7 +56,7 @@ class LogConsolePanel(
     private val objectInitialized = true
 
     init {
-        Disposer.register(disposable, this)
+        Disposer.register(parentDisposable, this)
         this.clear()
         ansiEscapeDecoder.escapeText(logValue, ProcessOutputType.STDOUT, this)
     }
@@ -75,9 +75,7 @@ class LogConsolePanel(
 
 private val actionManager = ActionManager.getInstance()
 fun createLogConsolePanel(
-    project: Project,
-    model: LogLoadingModelListener,
-    disposable: Disposable,
+    project: Project, model: LogLoadingModelListener, parentDisposable: Disposable,
 ): JBPanelWithEmptyText {
     val panel = JBPanelWithEmptyText(BorderLayout()).apply {
         isOpaque = false
@@ -90,28 +88,29 @@ fun createLogConsolePanel(
         if (Constants.emptyTextMessage(logValue)) {
             panel.emptyText.text = logValue
         } else {
-            val console = LogConsolePanel(project, logValue, disposable)
             panel.removeAll()
+            val console = LogConsolePanel(project, logValue, parentDisposable)
             panel.add(console.component, BorderLayout.CENTER)
-            val actionGroup = DefaultActionGroup().apply {
-                removeAll()
-                add(actionManager.getAction("Github.Workflow.Log.List.Reload"))
-                add(
-                    object : ToggleUseSoftWrapsToolbarAction(SoftWrapAppliancePlaces.CONSOLE) {
-                        override fun getEditor(e: AnActionEvent): Editor? {
-                            return console.editor
-                        }
-                    }
-                )
-            }
-            val contextMenuPopupHandler = ContextMenuPopupHandler.Simple(actionGroup)
-            (console.editor as EditorEx).installPopupHandler(contextMenuPopupHandler)
+            (console.editor as EditorEx).installPopupHandler(
+                ContextMenuPopupHandler.Simple(
+                    DefaultActionGroup().apply {
+                        removeAll()
+                        add(actionManager.getAction("Github.Workflow.Log.List.Reload"))
+                        add(
+                            object : ToggleUseSoftWrapsToolbarAction(SoftWrapAppliancePlaces.CONSOLE) {
+                                override fun getEditor(e: AnActionEvent): Editor? {
+                                    return console.editor
+                                }
+                            }
+                        )
+                    })
+            )
         }
     }
     model.logModel.addAndInvokeListener {
         addConsole(it)
     }
-    ApplicationManager.getApplication().messageBus.connect(disposable)
+    ApplicationManager.getApplication().messageBus.connect(parentDisposable)
         .subscribe(EditorColorsManager.TOPIC, EditorColorsListener {
             addConsole(model.logModel.value)
         })
