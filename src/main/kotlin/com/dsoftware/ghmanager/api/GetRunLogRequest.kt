@@ -10,10 +10,10 @@ import java.nio.charset.StandardCharsets
 import java.util.TreeMap
 import java.util.zip.ZipInputStream
 
-class GetRunLogRequest(url: String) : GithubApiRequest.Get<Map<String, Map<Int, String>>>(url) {
-    private lateinit var workflowInfo: Map<String, Map<Int, String>>
+class GetRunLogRequest(url: String) : GithubApiRequest.Get<GitHubLog>(url) {
+    private lateinit var workflowInfo: GitHubLog
 
-    override fun extractResult(response: GithubApiResponse): Map<String, Map<Int, String>> {
+    override fun extractResult(response: GithubApiResponse): GitHubLog {
         LOG.debug("extracting result for $url")
         return response.handleBody {
             workflowInfo = extractFromStream(it)
@@ -23,7 +23,7 @@ class GetRunLogRequest(url: String) : GithubApiRequest.Get<Map<String, Map<Int, 
 
     companion object {
         private val LOG = logger<GetRunLogRequest>()
-        fun extractFromStream(inputStream: InputStream): Map<String, Map<Int, String>> {
+        fun extractFromStream(inputStream: InputStream): GitHubLog {
             val content = HashMap<String, TreeMap<Int, String>>()
             try {
                 ZipInputStream(inputStream).use {

@@ -1,5 +1,6 @@
 package com.dsoftware.ghmanager.data
 
+import com.dsoftware.ghmanager.api.GitHubLog
 import com.dsoftware.ghmanager.api.GithubApi
 import com.dsoftware.ghmanager.api.model.JobsList
 import com.intellij.openapi.Disposable
@@ -67,11 +68,12 @@ open class DataProvider<T>(
     }
 }
 
+
 class WorkflowRunLogsDataProvider(
     progressManager: ProgressManager,
     requestExecutor: GithubApiRequestExecutor,
     logsUrl: String,
-) : DataProvider<Map<String, Map<Int, String>>>(
+) : DataProvider<GitHubLog>(
     progressManager,
     requestExecutor,
     GithubApi.getDownloadUrlForWorkflowLog(logsUrl),

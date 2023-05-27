@@ -18,6 +18,7 @@ data class WorkflowRunFilter(
     val actor: String? = null,
     val event: String? = null,
 )
+typealias GitHubLog = Map<String, Map<Int, String>>
 
 object GithubApi : GithubApiRequests.Entity("/repos") {
     private val LOG = logger<GithubApi>()

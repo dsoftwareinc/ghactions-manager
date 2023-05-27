@@ -3,6 +3,7 @@ package com.dsoftware.ghmanager.data
 import com.dsoftware.ghmanager.Constants.LOG_MSG_JOB_IN_PROGRESS
 import com.dsoftware.ghmanager.Constants.LOG_MSG_MISSING
 import com.dsoftware.ghmanager.Constants.LOG_MSG_PICK_JOB
+import com.dsoftware.ghmanager.api.GitHubLog
 import com.dsoftware.ghmanager.api.model.Job
 import com.dsoftware.ghmanager.api.model.JobStep
 import com.intellij.collaboration.ui.SingleValueModel
@@ -19,7 +20,7 @@ class LogLoadingModelListener(
     private val jobsSelectionHolder: JobListSelectionHolder,
 ) : GHLoadingModel.StateChangeListener {
     val logModel = SingleValueModel<String?>(null)
-    val logsLoadingModel = GHCompletableFutureLoadingModel<Map<String, Map<Int, String>>>(disposable)
+    val logsLoadingModel = GHCompletableFutureLoadingModel<GitHubLog>(disposable)
 
     init {
         jobsSelectionHolder.addSelectionChangeListener(disposable, this::setLogValue)
