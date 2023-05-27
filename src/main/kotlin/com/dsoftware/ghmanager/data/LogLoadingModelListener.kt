@@ -27,20 +27,25 @@ class LogLoadingModelListener(
         logsLoadingModel.addStateChangeListener(this)
         var listenerDisposable: Disposable? = null
         dataProviderModel.addAndInvokeListener { provider ->
+            logsLoadingModel.future = null
             logsLoadingModel.future = provider?.request
-            listenerDisposable?.let { Disposer.dispose(it) }
-            listenerDisposable = null
-            val tmp = Disposer.newDisposable("Log listener disposable")
-                .apply {
-                    Disposer.register(workflowRunDisposable, this)
-                }
-            provider?.addRunChangesListener(tmp,
-                object : DataProvider.DataProviderChangeListener {
-                    override fun changed() {
-                        logsLoadingModel.future = provider.request
+            listenerDisposable = listenerDisposable?.let {
+                Disposer.dispose(it)
+                null
+            }
+            provider?.let {
+                val disposable2 = Disposer.newDisposable("Log listener disposable")
+                    .apply {
+                        Disposer.register(workflowRunDisposable, this)
                     }
-                })
-            listenerDisposable = tmp
+                it.addRunChangesListener(disposable2,
+                    object : DataProvider.DataProviderChangeListener {
+                        override fun changed() {
+                            logsLoadingModel.future = it.request
+                        }
+                    })
+                listenerDisposable = disposable2
+            }
         }
 
     }

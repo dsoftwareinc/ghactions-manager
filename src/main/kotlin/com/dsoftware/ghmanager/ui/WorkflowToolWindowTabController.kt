@@ -2,6 +2,7 @@ package com.dsoftware.ghmanager.ui
 
 
 import com.dsoftware.ghmanager.actions.ActionKeys
+import com.dsoftware.ghmanager.api.model.WorkflowRunJobsList
 import com.dsoftware.ghmanager.data.DataProvider
 import com.dsoftware.ghmanager.data.LogLoadingModelListener
 import com.dsoftware.ghmanager.data.WorkflowDataContextRepository
@@ -172,12 +173,11 @@ class WorkflowToolWindowTabController(
 
     private fun createJobsLoadingModel(
         dataProviderModel: SingleValueModel<WorkflowRunJobsDataProvider?>,
-    ): Pair<GHCompletableFutureLoadingModel<com.dsoftware.ghmanager.api.model.JobsList>, SingleValueModel<com.dsoftware.ghmanager.api.model.JobsList?>> {
+    ): Pair<GHCompletableFutureLoadingModel<WorkflowRunJobsList>, SingleValueModel<WorkflowRunJobsList?>> {
         LOG.debug("createJobsDataProviderModel Create jobs loading model")
-        val valueModel = SingleValueModel<com.dsoftware.ghmanager.api.model.JobsList?>(null)
-
+        val valueModel = SingleValueModel<WorkflowRunJobsList?>(null)
         val loadingModel =
-            GHCompletableFutureLoadingModel<com.dsoftware.ghmanager.api.model.JobsList>(disposable).also {
+            GHCompletableFutureLoadingModel<WorkflowRunJobsList>(disposable).also {
                 it.addStateChangeListener(object : GHLoadingModel.StateChangeListener {
                     override fun onLoadingCompleted() {
                         if (it.resultAvailable) {
@@ -193,25 +193,21 @@ class WorkflowToolWindowTabController(
 
         var listenerDisposable: Disposable? = null
 
-        dataProviderModel.addListener {
+        dataProviderModel.addListener { provider ->
             LOG.debug("Jobs loading model Value changed")
-            val provider = dataProviderModel.value
             loadingModel.future = null
-            loadingModel.future = provider?.request
+            listenerDisposable?.let { Disposer.dispose(it) }
+            listenerDisposable = null
 
-            listenerDisposable = listenerDisposable?.let {
-                Disposer.dispose(it)
-                null
-            }
-
-            if (provider != null) {
+            provider?.let {
+                loadingModel.future = it.request
                 val disposable = Disposer.newDisposable().apply {
                     Disposer.register(disposable, this)
                 }
-                provider.addRunChangesListener(disposable,
+                it.addRunChangesListener(disposable,
                     object : DataProvider.DataProviderChangeListener {
                         override fun changed() {
-                            loadingModel.future = provider.request
+                            loadingModel.future = it.request
                         }
                     })
                 listenerDisposable = disposable

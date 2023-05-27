@@ -2,7 +2,7 @@ package com.dsoftware.ghmanager.data
 
 import com.dsoftware.ghmanager.api.GitHubLog
 import com.dsoftware.ghmanager.api.GithubApi
-import com.dsoftware.ghmanager.api.model.JobsList
+import com.dsoftware.ghmanager.api.model.WorkflowRunJobsList
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.diagnostic.thisLogger
 import com.intellij.openapi.progress.ProgressManager
@@ -13,8 +13,6 @@ import org.jetbrains.plugins.github.api.GithubApiRequestExecutor
 import org.jetbrains.plugins.github.util.LazyCancellableBackgroundProcessValue
 import java.io.IOException
 import java.util.EventListener
-import java.util.concurrent.CompletableFuture
-import kotlin.properties.ReadOnlyProperty
 
 open class DataProvider<T>(
     private val progressManager: ProgressManager,
@@ -24,7 +22,7 @@ open class DataProvider<T>(
 ) {
     private val runChangesEventDispatcher = EventDispatcher.create(DataProviderChangeListener::class.java)
 
-    private val value: LazyCancellableBackgroundProcessValue<T> =
+    val processValue: LazyCancellableBackgroundProcessValue<T> =
         LazyCancellableBackgroundProcessValue.create(progressManager) {
             try {
                 LOG.info("Executing ${githubApiRequest.url}")
@@ -37,17 +35,18 @@ open class DataProvider<T>(
             }
         }
 
-    val request by backgroundProcessValue(value)
+    val request = processValue.value
+//    val request by backgroundProcessValue(processValue)
 
-    private fun <T> backgroundProcessValue(backingValue: LazyCancellableBackgroundProcessValue<T>)
-        : ReadOnlyProperty<Any?, CompletableFuture<T>> =
-        ReadOnlyProperty { _, _ -> backingValue.value }
+//    private fun <T> backgroundProcessValue(backingValue: LazyCancellableBackgroundProcessValue<T>)
+//        : ReadOnlyProperty<Any?, CompletableFuture<T>> =
+//        ReadOnlyProperty { _, _ -> backingValue.value }
 
     fun url(): String = githubApiRequest.url
 
     @RequiresEdt
     fun reload() {
-        value.drop()
+        processValue.drop()
         runChangesEventDispatcher.multicaster.changed()
     }
 
@@ -80,9 +79,9 @@ class WorkflowRunJobsDataProvider(
     progressManager: ProgressManager,
     requestExecutor: GithubApiRequestExecutor,
     jobsUrl: String
-) : DataProvider<JobsList>(
+) : DataProvider<WorkflowRunJobsList>(
     progressManager,
     requestExecutor,
     GithubApi.getWorkflowRunJobs(jobsUrl),
-    JobsList(0, emptyList())
+    WorkflowRunJobsList(0, emptyList())
 )

@@ -56,7 +56,7 @@ class WorkflowRunSelectionContext internal constructor(
             if (workflowRun == null) {
                 return@scheduleWithFixedDelay
             }
-            LOG.info("Checking updated status for $workflowRun")
+            LOG.info("Checking updated status for $workflowRun.id")
             val status = workflowRun?.status
             if (workflowRun != null && status != "completed") {
                 jobsDataProvider?.reload()

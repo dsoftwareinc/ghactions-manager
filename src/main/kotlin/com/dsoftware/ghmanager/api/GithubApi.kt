@@ -1,6 +1,6 @@
 package com.dsoftware.ghmanager.api
 
-import com.dsoftware.ghmanager.api.model.JobsList
+import com.dsoftware.ghmanager.api.model.WorkflowRunJobsList
 import com.dsoftware.ghmanager.api.model.WorkflowRuns
 import com.dsoftware.ghmanager.data.RepositoryCoordinates
 import com.intellij.openapi.diagnostic.logger
@@ -57,7 +57,7 @@ object GithubApi : GithubApiRequests.Entity("/repos") {
         return get<WorkflowRuns>(url, "search workflow runs", pagination)
     }
 
-    fun getWorkflowRunJobs(url: String) = get<JobsList>(
+    fun getWorkflowRunJobs(url: String) = get<WorkflowRunJobsList>(
         url, "Get workflow-run jobs", pagination = GithubRequestPagination(1)
     )
 
