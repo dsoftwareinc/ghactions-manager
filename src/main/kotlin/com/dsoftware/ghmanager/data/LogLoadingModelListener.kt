@@ -15,39 +15,34 @@ import org.jetbrains.plugins.github.pullrequest.ui.GHLoadingModel
 
 
 class LogLoadingModelListener(
-    disposable: Disposable,
+    workflowRunDisposable: Disposable,
     dataProviderModel: SingleValueModel<WorkflowRunLogsDataProvider?>,
     private val jobsSelectionHolder: JobListSelectionHolder,
 ) : GHLoadingModel.StateChangeListener {
     val logModel = SingleValueModel<String?>(null)
-    val logsLoadingModel = GHCompletableFutureLoadingModel<GitHubLog>(disposable)
+    val logsLoadingModel = GHCompletableFutureLoadingModel<GitHubLog>(workflowRunDisposable)
 
     init {
-        jobsSelectionHolder.addSelectionChangeListener(disposable, this::setLogValue)
+        jobsSelectionHolder.addSelectionChangeListener(workflowRunDisposable, this::setLogValue)
         logsLoadingModel.addStateChangeListener(this)
         var listenerDisposable: Disposable? = null
-        dataProviderModel.addAndInvokeListener {
-            val provider = dataProviderModel.value
-            logsLoadingModel.future = null
+        dataProviderModel.addAndInvokeListener { provider ->
             logsLoadingModel.future = provider?.request
-            listenerDisposable = listenerDisposable?.let {
-                Disposer.dispose(it)
-                null
-            }
-            if (provider != null) {
-                val disposable2 = Disposer.newDisposable("Log listener disposable")
-                    .apply {
-                        Disposer.register(disposable, this)
+            listenerDisposable?.let { Disposer.dispose(it) }
+            listenerDisposable = null
+            val tmp = Disposer.newDisposable("Log listener disposable")
+                .apply {
+                    Disposer.register(workflowRunDisposable, this)
+                }
+            provider?.addRunChangesListener(tmp,
+                object : DataProvider.DataProviderChangeListener {
+                    override fun changed() {
+                        logsLoadingModel.future = provider.request
                     }
-                provider.addRunChangesListener(disposable2,
-                    object : DataProvider.DataProviderChangeListener {
-                        override fun changed() {
-                            logsLoadingModel.future = provider.request
-                        }
-                    })
-                listenerDisposable = disposable2
-            }
+                })
+            listenerDisposable = tmp
         }
+
     }
 
     private fun stepsAsLog(stepLogs: Map<Int, String>, selection: Job): String {

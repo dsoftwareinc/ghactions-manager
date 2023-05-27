@@ -5,7 +5,6 @@ import com.dsoftware.ghmanager.api.GithubApi
 import com.dsoftware.ghmanager.api.model.JobsList
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.diagnostic.thisLogger
-import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.progress.ProgressManager
 import com.intellij.util.EventDispatcher
 import com.intellij.util.concurrency.annotations.RequiresEdt
@@ -25,17 +24,18 @@ open class DataProvider<T>(
 ) {
     private val runChangesEventDispatcher = EventDispatcher.create(DataProviderChangeListener::class.java)
 
-    private val value: LazyCancellableBackgroundProcessValue<T> = backingValue {
-        try {
-            LOG.info("Executing ${githubApiRequest.url}")
-            val request = githubApiRequest
-            val response = requestExecutor.execute(it, request)
-            response
-        } catch (ioe: IOException) {
-            LOG.warn("Error when getting $githubApiRequest.url: $ioe")
-            errorValue ?: throw ioe
+    private val value: LazyCancellableBackgroundProcessValue<T> =
+        LazyCancellableBackgroundProcessValue.create(progressManager) {
+            try {
+                LOG.info("Executing ${githubApiRequest.url}")
+                val request = githubApiRequest
+                val response = requestExecutor.execute(it, request)
+                response
+            } catch (ioe: IOException) {
+                LOG.warn("Error when getting $githubApiRequest.url: $ioe")
+                errorValue ?: throw ioe
+            }
         }
-    }
 
     val request by backgroundProcessValue(value)
 
@@ -50,11 +50,6 @@ open class DataProvider<T>(
         value.drop()
         runChangesEventDispatcher.multicaster.changed()
     }
-
-    private fun <T> backingValue(supplier: (ProgressIndicator) -> T) =
-        LazyCancellableBackgroundProcessValue.create(progressManager) {
-            supplier(it)
-        }
 
     fun addRunChangesListener(disposable: Disposable, listener: DataProviderChangeListener) =
         runChangesEventDispatcher.addListener(listener, disposable)
