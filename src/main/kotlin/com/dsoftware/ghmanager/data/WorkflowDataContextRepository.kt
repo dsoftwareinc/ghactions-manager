@@ -42,6 +42,36 @@ class WorkflowDataContextRepository(project: Project) {
     private val repositories =
         mutableMapOf<GitRemoteUrlCoordinates, LazyCancellableBackgroundProcessValue<WorkflowRunSelectionContext>>()
 
+    @RequiresEdt
+    fun clearContext(repositoryMapping: GHGitRepositoryMapping) {
+        repositories.remove(repositoryMapping.remote)?.drop()
+    }
+
+    @RequiresEdt
+    fun acquireContext(
+        disposable: CheckedDisposable,
+        repositoryMapping: GHGitRepositoryMapping,
+        account: GithubAccount,
+        toolWindow: ToolWindow,
+    ): CompletableFuture<WorkflowRunSelectionContext> {
+        return repositories.getOrPut(repositoryMapping.remote) {
+            LazyCancellableBackgroundProcessValue.create { indicator ->
+                ProgressManager.getInstance().submitIOTask(indicator) {
+                    try {
+                        getContext(disposable, account, repositoryMapping, toolWindow)
+                    } catch (e: Exception) {
+                        if (e !is ProcessCanceledException)
+                            LOG.warn("Error occurred while creating data context", e)
+                        throw e
+                    }
+                }.successOnEdt { ctx ->
+                    Disposer.register(disposable, ctx)
+                    ctx
+                }
+            }
+        }.value
+    }
+
     @RequiresBackgroundThread
     @Throws(IOException::class)
     private fun getContext(
@@ -62,56 +92,19 @@ class WorkflowDataContextRepository(project: Project) {
             settingsService.state.apiToken
         }
 
-        val requestExecutor =
-            GithubApiRequestExecutor.Factory.Companion.getInstance().create(token)
+        val requestExecutor = GithubApiRequestExecutor.Factory.Companion.getInstance().create(token)
         val singleRunDataLoader = SingleRunDataLoader(requestExecutor)
         requestExecutor.addListener(singleRunDataLoader) {
             singleRunDataLoader.invalidateAllData()
         }
         val listLoader = WorkflowRunListLoader(
-            ProgressManager.getInstance(),
             requestExecutor,
             repositoryCoordinates,
             settingsService = GhActionsSettingsService.getInstance(toolWindow.project),
             WorkflowRunFilter(),
         )
 
-        return WorkflowRunSelectionContext(
-            disposable,
-            singleRunDataLoader,
-            listLoader,
-            repositoryMapping,
-        )
-    }
-
-    @RequiresEdt
-    fun acquireContext(
-        disposable: CheckedDisposable,
-        repositoryMapping: GHGitRepositoryMapping,
-        account: GithubAccount,
-        toolWindow: ToolWindow,
-    ): CompletableFuture<WorkflowRunSelectionContext> {
-        return repositories.getOrPut(repositoryMapping.remote) {
-
-            LazyCancellableBackgroundProcessValue.create { indicator ->
-                ProgressManager.getInstance().submitIOTask(indicator) {
-                    try {
-                        getContext(disposable, account, repositoryMapping, toolWindow)
-                    } catch (e: Exception) {
-                        if (e !is ProcessCanceledException) LOG.warn("Error occurred while creating data context", e)
-                        throw e
-                    }
-                }.successOnEdt { ctx ->
-                    Disposer.register(disposable, ctx)
-                    ctx
-                }
-            }
-        }.value
-    }
-
-    @RequiresEdt
-    fun clearContext(repositoryMapping: GHGitRepositoryMapping) {
-        repositories.remove(repositoryMapping.remote)?.drop()
+        return WorkflowRunSelectionContext(disposable, singleRunDataLoader, listLoader, repositoryMapping,)
     }
 
     companion object {

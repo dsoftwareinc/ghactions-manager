@@ -1,12 +1,11 @@
 package com.dsoftware.ghmanager.actions
 
-import com.dsoftware.ghmanager.api.Workflows
+import com.dsoftware.ghmanager.api.GithubApi
 import com.intellij.icons.AllIcons
 import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.CommonDataKeys
 import com.intellij.openapi.actionSystem.DataContext
-import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.project.DumbAwareAction
 import javax.swing.Icon
 
@@ -23,11 +22,9 @@ abstract class PostUrlAction(
     }
 
     override fun actionPerformed(e: AnActionEvent) {
-        LOG.debug("CancelWorkflowAction action")
         e.dataContext.getData(CommonDataKeys.PROJECT) ?: return
         getUrl(e.dataContext)?.let {
-            LOG.debug("Triggering rerun $it")
-            val request = Workflows.postRerunWorkflow(it)
+            val request = GithubApi.postRerunWorkflow(it)
             val context = e.getRequiredData(ActionKeys.ACTION_DATA_CONTEXT)
             val future = context.dataLoader.createDataProvider(request).request
             future.thenApply {
@@ -37,10 +34,6 @@ abstract class PostUrlAction(
     }
 
     abstract fun getUrl(dataContext: DataContext): String?
-
-    companion object {
-        private val LOG = logger<CancelWorkflowAction>()
-    }
 }
 
 class CancelWorkflowAction : PostUrlAction("Cancel Workflow", null, AllIcons.Actions.Cancel) {
@@ -55,7 +48,6 @@ class CancelWorkflowAction : PostUrlAction("Cancel Workflow", null, AllIcons.Act
         dataContext.getData(CommonDataKeys.PROJECT) ?: return null
         return dataContext.getData(ActionKeys.SELECTED_WORKFLOW_RUN)?.cancel_url
     }
-
 }
 
 class RerunWorkflowAction : PostUrlAction("Rerun Workflow", null, AllIcons.Actions.Rerun) {

@@ -14,6 +14,7 @@ import java.util.EventListener
 class SingleRunDataLoader(
     private val requestExecutor: GithubApiRequestExecutor
 ) : Disposable {
+    private val invalidationEventDispatcher = EventDispatcher.create(DataInvalidatedListener::class.java)
 
     private val cache = CacheBuilder.newBuilder()
         .removalListener<String, DataProvider<*>> {
@@ -22,8 +23,6 @@ class SingleRunDataLoader(
         .maximumSize(200)
         .build<String, DataProvider<*>>()
 
-
-    private val invalidationEventDispatcher = EventDispatcher.create(DataInvalidatedListener::class.java)
 
     fun getLogsDataProvider(workflowRun: WorkflowRun): WorkflowRunLogsDataProvider {
         return cache.get(workflowRun.logs_url) {
@@ -38,7 +37,7 @@ class SingleRunDataLoader(
     }
 
     fun <T> createDataProvider(request: GithubApiRequest<T>): DataProvider<T> {
-        return DefaultDataProvider(progressManager, requestExecutor, request)
+        return DataProvider<T>(progressManager, requestExecutor, request, null)
     }
 
     @RequiresEdt

@@ -1,7 +1,7 @@
 package com.dsoftware.ghmanager.data
 
+import com.dsoftware.ghmanager.api.GithubApi
 import com.dsoftware.ghmanager.api.WorkflowRunFilter
-import com.dsoftware.ghmanager.api.Workflows
 import com.dsoftware.ghmanager.api.model.WorkflowRun
 import com.dsoftware.ghmanager.ui.settings.GhActionsSettingsService
 import com.intellij.collaboration.async.CompletableFutureUtil
@@ -25,16 +25,16 @@ import java.util.concurrent.TimeUnit
 import kotlin.properties.Delegates
 
 class WorkflowRunListLoader(
-    private val progressManager: ProgressManager,
     private val requestExecutor: GithubApiRequestExecutor,
     private val repositoryCoordinates: RepositoryCoordinates,
     private val settingsService: GhActionsSettingsService,
     private val filter: WorkflowRunFilter,
 ) : Disposable {
+    private val progressManager = ProgressManager.getInstance();
     private var lastFuture = CompletableFuture.completedFuture(emptyList<WorkflowRun>())
     private val loadingStateChangeEventDispatcher = EventDispatcher.create(SimpleEventListener::class.java)
     private val errorChangeEventDispatcher = EventDispatcher.create(SimpleEventListener::class.java)
-    val url: String = Workflows.getWorkflowRuns(repositoryCoordinates, filter).url
+    val url: String = GithubApi.getWorkflowRuns(repositoryCoordinates, filter).url
     var totalCount: Int = 1
     private val page: Int = 1
     val listModel = CollectionListModel<WorkflowRun>()
@@ -109,7 +109,7 @@ class WorkflowRunListLoader(
     private fun doLoadMore(indicator: ProgressIndicator, update: Boolean): List<WorkflowRun> {
         LOG.debug("Do load more update: $update, indicator: $indicator")
 
-        val request = Workflows.getWorkflowRuns(
+        val request = GithubApi.getWorkflowRuns(
             repositoryCoordinates,
             filter,
             pagination = GithubRequestPagination(page, settingsService.state.pageSize),

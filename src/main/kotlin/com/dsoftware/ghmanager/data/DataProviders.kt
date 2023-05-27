@@ -1,6 +1,6 @@
 package com.dsoftware.ghmanager.data
 
-import com.dsoftware.ghmanager.api.Workflows
+import com.dsoftware.ghmanager.api.GithubApi
 import com.dsoftware.ghmanager.api.model.JobsList
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.diagnostic.thisLogger
@@ -16,7 +16,7 @@ import java.util.EventListener
 import java.util.concurrent.CompletableFuture
 import kotlin.properties.ReadOnlyProperty
 
-abstract class DataProvider<T>(
+open class DataProvider<T>(
     private val progressManager: ProgressManager,
     private val requestExecutor: GithubApiRequestExecutor,
     private val githubApiRequest: GithubApiRequest<T>,
@@ -67,12 +67,6 @@ abstract class DataProvider<T>(
     }
 }
 
-class DefaultDataProvider<T>(
-    progressManager: ProgressManager,
-    requestExecutor: GithubApiRequestExecutor,
-    githubApiRequest: GithubApiRequest<T>
-) : DataProvider<T>(progressManager, requestExecutor, githubApiRequest, null)
-
 class WorkflowRunLogsDataProvider(
     progressManager: ProgressManager,
     requestExecutor: GithubApiRequestExecutor,
@@ -80,7 +74,7 @@ class WorkflowRunLogsDataProvider(
 ) : DataProvider<Map<String, Map<Int, String>>>(
     progressManager,
     requestExecutor,
-    Workflows.getDownloadUrlForWorkflowLog(logsUrl),
+    GithubApi.getDownloadUrlForWorkflowLog(logsUrl),
     emptyMap()
 )
 
@@ -92,6 +86,6 @@ class WorkflowRunJobsDataProvider(
 ) : DataProvider<JobsList>(
     progressManager,
     requestExecutor,
-    Workflows.getWorkflowRunJobs(jobsUrl),
+    GithubApi.getWorkflowRunJobs(jobsUrl),
     JobsList(0, emptyList())
 )

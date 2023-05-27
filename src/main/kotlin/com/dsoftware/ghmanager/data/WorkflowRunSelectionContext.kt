@@ -20,7 +20,7 @@ class WorkflowRunSelectionContext internal constructor(
     val repositoryMapping: GHGitRepositoryMapping,
     val runSelectionHolder: WorkflowRunListSelectionHolder = WorkflowRunListSelectionHolder(),
     val jobSelectionHolder: JobListSelectionHolder = JobListSelectionHolder(),
-) : Disposable {
+) : Disposable.Parent {
     private val frequency: Long = runsListLoader.frequency()
     private val task: ScheduledFuture<*>
     val runsListModel: CollectionListModel<WorkflowRun>
@@ -52,8 +52,7 @@ class WorkflowRunSelectionContext internal constructor(
             logDataProviderLoadModel.value = null
             selectedRunDisposable.dispose()
         }
-        val scheduler = AppExecutorUtil.getAppScheduledExecutorService()
-        task = scheduler.scheduleWithFixedDelay({
+        task = AppExecutorUtil.getAppScheduledExecutorService().scheduleWithFixedDelay({
             if (workflowRun == null) {
                 return@scheduleWithFixedDelay
             }
@@ -86,7 +85,6 @@ class WorkflowRunSelectionContext internal constructor(
     }
 
     fun resetAllData() {
-        LOG.debug("resetAllData")
         runsListLoader.reset()
         runsListLoader.loadMore()
         dataLoader.invalidateAllData()
@@ -97,6 +95,9 @@ class WorkflowRunSelectionContext internal constructor(
     }
 
     override fun dispose() {
+
+    }
+    override fun beforeTreeDispose(){
         task.cancel(true)
     }
 }
