@@ -6,6 +6,8 @@ import com.dsoftware.ghmanager.api.model.WorkflowRun
 import com.dsoftware.ghmanager.data.WorkflowRunListLoader
 import com.dsoftware.ghmanager.data.WorkflowRunSelectionContext
 import com.dsoftware.ghmanager.ui.ToolbarUtil
+import com.dsoftware.ghmanager.ui.panels.filters.WfRunsFiltersFactory
+import com.dsoftware.ghmanager.ui.panels.filters.WfRunsSearchPanelViewModel
 import com.intellij.ide.CopyProvider
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.actionSystem.ActionGroup
@@ -35,6 +37,10 @@ import com.intellij.util.ui.ListUiUtil
 import com.intellij.util.ui.UIUtil
 import com.intellij.util.ui.components.BorderLayoutPanel
 import com.intellij.vcs.log.ui.frame.ProgressStripe
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 import net.miginfocom.layout.CC
 import net.miginfocom.layout.LC
 import net.miginfocom.swing.MigLayout
@@ -163,9 +169,10 @@ class WorkflowRunList(model: ListModel<WorkflowRun>) : JBList<WorkflowRun>(model
 }
 
 internal class WorkflowRunListLoaderPanel(
-    parent: Disposable,
+    parentDisposable: Disposable,
     private val context: WorkflowRunSelectionContext,
 ) : BorderLayoutPanel(), Disposable {
+    private val scope = MainScope().also { Disposer.register(parentDisposable) { it.cancel() } }
     private val runListComponent: WorkflowRunList = WorkflowRunList(context.runsListModel)
         .apply {
             emptyText.clear()
@@ -192,9 +199,19 @@ internal class WorkflowRunListLoaderPanel(
     }
 
     init {
-        Disposer.register(parent, this)
+        Disposer.register(parentDisposable, this)
+
+        val searchVm = WfRunsSearchPanelViewModel(scope, context)
+        scope.launch {
+            searchVm.searchState.collectLatest {
+                //TODO
+            }
+        }
+
+        val searchPanel = WfRunsFiltersFactory(searchVm).create(scope)
+
         progressStripe = ProgressStripe(
-            JBUI.Panels.simplePanel(scrollPane).addToTop(infoPanel).apply {
+            JBUI.Panels.simplePanel(scrollPane).addToTop(infoPanel).addToTop(searchPanel).apply {
                 isOpaque = false
             }, this, ProgressWindow.DEFAULT_PROGRESS_DIALOG_POSTPONE_TIME_MILLIS
         )
@@ -202,15 +219,15 @@ internal class WorkflowRunListLoaderPanel(
 
         workflowRunsLoader.addLoadingStateChangeListener(this) {
             setLoading(workflowRunsLoader.loading)
-            updateEmptyText()
+            updateInfoPanelAndEmptyText()
         }
 
         workflowRunsLoader.addErrorChangeListener(this) {
-            updateEmptyText()
+            updateInfoPanelAndEmptyText()
         }
 //        val filters = createFilters(viewScope)
         setLoading(workflowRunsLoader.loading)
-        updateEmptyText()
+        updateInfoPanelAndEmptyText()
         val actionsManager = ActionManager.getInstance()
         val actionsGroup = actionsManager.getAction("GHWorkflows.ActionGroup") as ActionGroup
         val actionToolbar = actionsManager
@@ -221,17 +238,17 @@ internal class WorkflowRunListLoaderPanel(
 
         runListComponent.model.addListDataListener(object : ListDataListener {
             override fun intervalAdded(e: ListDataEvent) {
-                if (e.type == ListDataEvent.INTERVAL_ADDED) updateEmptyText()
+                if (e.type == ListDataEvent.INTERVAL_ADDED) updateInfoPanelAndEmptyText()
             }
 
             override fun contentsChanged(e: ListDataEvent) {}
             override fun intervalRemoved(e: ListDataEvent) {
-                if (e.type == ListDataEvent.INTERVAL_REMOVED) updateEmptyText()
+                if (e.type == ListDataEvent.INTERVAL_REMOVED) updateInfoPanelAndEmptyText()
             }
         })
     }
 
-    private fun updateEmptyText() {
+    private fun updateInfoPanelAndEmptyText() {
         runListComponent.emptyText.clear()
         if (workflowRunsLoader.loading) {
             runListComponent.emptyText.text = "Loading workflow runs..."

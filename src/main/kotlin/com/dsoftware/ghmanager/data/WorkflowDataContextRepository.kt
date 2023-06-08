@@ -104,7 +104,9 @@ class WorkflowDataContextRepository(project: Project) {
             WorkflowRunFilter(),
         )
 
-        return WorkflowRunSelectionContext(disposable, singleRunDataLoader, listLoader, repositoryMapping,)
+        return WorkflowRunSelectionContext(
+            disposable, toolWindow.project, account, singleRunDataLoader, listLoader, repositoryMapping,
+        )
     }
 
     companion object {

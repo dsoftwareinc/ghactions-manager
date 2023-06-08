@@ -4,10 +4,12 @@ import com.dsoftware.ghmanager.api.model.WorkflowRun
 import com.intellij.collaboration.ui.SingleValueModel
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.diagnostic.logger
+import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.CheckedDisposable
 import com.intellij.openapi.util.Disposer
 import com.intellij.ui.CollectionListModel
 import com.intellij.util.concurrency.AppExecutorUtil
+import org.jetbrains.plugins.github.authentication.accounts.GithubAccount
 import org.jetbrains.plugins.github.util.GHGitRepositoryMapping
 import java.util.concurrent.ScheduledFuture
 import java.util.concurrent.TimeUnit
@@ -15,6 +17,8 @@ import java.util.concurrent.TimeUnit
 
 class WorkflowRunSelectionContext internal constructor(
     parentDisposable: CheckedDisposable,
+    val project: Project,
+    val account: GithubAccount,
     val dataLoader: SingleRunDataLoader,
     val runsListLoader: WorkflowRunListLoader,
     val repositoryMapping: GHGitRepositoryMapping,
@@ -97,7 +101,8 @@ class WorkflowRunSelectionContext internal constructor(
     override fun dispose() {
 
     }
-    override fun beforeTreeDispose(){
+
+    override fun beforeTreeDispose() {
         task.cancel(true)
     }
 }
