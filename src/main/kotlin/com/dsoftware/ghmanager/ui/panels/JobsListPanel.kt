@@ -131,22 +131,14 @@ class JobListComponent(
         private val actionManager = ActionManager.getInstance()
 
         fun createJobsListComponent(
-            jobModel: SingleValueModel<WorkflowRunJobsList?>,
+            jobModel: WorkflowRunJobsList,
             runSelectionContext: WorkflowRunSelectionContext,
             infoInNewLine: Boolean,
         ): Pair<HtmlInfoPanel, JComponent> {
             val infoPanel = HtmlInfoPanel()
             val list = CollectionListModel<Job>()
-            jobModel.addAndInvokeListener {
-                list.removeAll()
-                if (it != null) {
-                    list.add(it.jobs)
-                    infoPanel.setInfo(
-                        if (list.size == it.total_count) "All ${list.size} jobs in workflow run loaded"
-                        else "${list.size} jobs loaded out of ${it.total_count}"
-                    )
-                }
-            }
+            list.removeAll()
+            list.add(jobModel.jobs)
             val listComponent = JobListComponent(list, infoInNewLine).apply {
                 emptyText.text = "No jobs in workflow run"
             }.also {

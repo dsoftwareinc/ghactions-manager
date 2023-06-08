@@ -3,3 +3,6 @@
 .qodana
 build
 notes.txt
+.fleet
+.DS_Store
+.run

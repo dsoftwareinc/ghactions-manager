@@ -163,15 +163,14 @@ class WorkflowRunList(model: ListModel<WorkflowRun>) : JBList<WorkflowRun>(model
 }
 
 internal class WorkflowRunListLoaderPanel(
-    disposable: Disposable,
+    parent: Disposable,
     private val context: WorkflowRunSelectionContext,
 ) : BorderLayoutPanel(), Disposable {
     private val runListComponent: WorkflowRunList = WorkflowRunList(context.runsListModel)
         .apply {
             emptyText.clear()
-        }.also {
-            installPopup(it)
-            ToolbarUtil.installSelectionHolder(it, context.runSelectionHolder)
+            installPopup(this)
+            ToolbarUtil.installSelectionHolder(this, context.runSelectionHolder)
         }
     private val scrollPane = ScrollPaneFactory.createScrollPane(
         runListComponent,
@@ -193,7 +192,7 @@ internal class WorkflowRunListLoaderPanel(
     }
 
     init {
-        LOG.debug("Initialize WorkflowRunListLoaderPanel")
+        Disposer.register(parent, this)
         progressStripe = ProgressStripe(
             JBUI.Panels.simplePanel(scrollPane).addToTop(infoPanel).apply {
                 isOpaque = false
@@ -220,9 +219,6 @@ internal class WorkflowRunListLoaderPanel(
 
         add(actionToolbar.component, BorderLayout.WEST)
 
-        Disposer.register(disposable) {
-            Disposer.dispose(this)
-        }
         runListComponent.model.addListDataListener(object : ListDataListener {
             override fun intervalAdded(e: ListDataEvent) {
                 if (e.type == ListDataEvent.INTERVAL_ADDED) updateEmptyText()
@@ -289,7 +285,6 @@ internal class WorkflowRunListLoaderPanel(
         private fun installPopup(list: WorkflowRunList) {
             list.addMouseListener(object : PopupHandler() {
                 override fun invokePopup(comp: Component, x: Int, y: Int) {
-
                     val (place, groupId) = if (ListUtil.isPointOnSelection(list, x, y)) {
                         Pair("GithubWorkflowListPopupSelected", "Github.Workflow.ToolWindow.List.Popup.Selected")
                     } else {
@@ -305,13 +300,6 @@ internal class WorkflowRunListLoaderPanel(
                     popupMenu.component.show(comp, x, y)
                 }
             })
-        }
-
-        fun createWorkflowRunsListComponent(
-            context: WorkflowRunSelectionContext,
-            disposable: Disposable,
-        ): JComponent {
-            return WorkflowRunListLoaderPanel(disposable, context)
         }
 
         private fun getLoadingErrorText(url: String, error: Throwable, newLineSeparator: String = "\n"): String {

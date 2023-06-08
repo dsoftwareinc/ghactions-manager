@@ -4,6 +4,12 @@
 
 ## [Unreleased]
 
+## [1.12.0]
+
+### 🚀 Features
+
+- Simplified Jobs panel logic
+
 ## [1.11.0]
 
 ### 🚀 Features
