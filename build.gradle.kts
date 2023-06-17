@@ -54,6 +54,15 @@ qodana {
     saveReport.set(true)
     showReport.set(System.getenv("QODANA_SHOW_REPORT")?.toBoolean() ?: false)
 }
+
+koverReport {
+    defaults {
+        xml {
+            onCheck = true
+        }
+    }
+}
+
 tasks {
 //    withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
 //        kotlinOptions {
