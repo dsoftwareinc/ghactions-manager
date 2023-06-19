@@ -9,6 +9,7 @@ import com.intellij.openapi.util.CheckedDisposable
 import com.intellij.openapi.util.Disposer
 import com.intellij.ui.CollectionListModel
 import com.intellij.util.concurrency.AppExecutorUtil
+import org.jetbrains.plugins.github.api.GithubApiRequestExecutor
 import org.jetbrains.plugins.github.authentication.accounts.GithubAccount
 import org.jetbrains.plugins.github.util.GHGitRepositoryMapping
 import java.util.concurrent.ScheduledFuture
@@ -22,6 +23,7 @@ class WorkflowRunSelectionContext internal constructor(
     val dataLoader: SingleRunDataLoader,
     val runsListLoader: WorkflowRunListLoader,
     val repositoryMapping: GHGitRepositoryMapping,
+    val requestExecutor: GithubApiRequestExecutor,
     val runSelectionHolder: WorkflowRunListSelectionHolder = WorkflowRunListSelectionHolder(),
     val jobSelectionHolder: JobListSelectionHolder = JobListSelectionHolder(),
 ) : Disposable.Parent {
