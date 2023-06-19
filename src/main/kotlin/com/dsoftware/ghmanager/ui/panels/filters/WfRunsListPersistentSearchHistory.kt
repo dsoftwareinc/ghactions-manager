@@ -4,7 +4,7 @@ import com.intellij.openapi.components.*
 import kotlinx.serialization.Serializable
 
 @Service(Service.Level.PROJECT)
-@State(name = "GitHubPullRequestSearchHistory", storages = [Storage(StoragePathMacros.WORKSPACE_FILE)], reportStatistic = false)
+@State(name = "WfRunsListSearchHistory", storages = [Storage(StoragePathMacros.WORKSPACE_FILE)], reportStatistic = false)
 internal class WfRunsListPersistentSearchHistory : SerializablePersistentStateComponent<WfRunsListPersistentSearchHistory.HistoryState>(
   HistoryState()) {
 

@@ -25,6 +25,7 @@ import java.util.concurrent.TimeUnit
 import kotlin.properties.Delegates
 
 class WorkflowRunListLoader(
+    parentDisposable: Disposable,
     private val requestExecutor: GithubApiRequestExecutor,
     private val repositoryCoordinates: RepositoryCoordinates,
     private val settingsService: GhActionsSettingsService,
@@ -52,8 +53,7 @@ class WorkflowRunListLoader(
     fun frequency() = settingsService.state.frequency.toLong()
 
     init {
-        val checkedDisposable = Disposer.newCheckedDisposable()
-        Disposer.register(this, checkedDisposable)
+        Disposer.register(parentDisposable, this)
         val scheduler = AppExecutorUtil.getAppScheduledExecutorService()
         task = scheduler.scheduleWithFixedDelay({
             if (refreshRuns) loadMore(update = true)

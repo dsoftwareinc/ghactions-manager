@@ -1,10 +1,12 @@
 import org.jetbrains.changelog.markdownToHTML
 
 fun properties(key: String) = project.findProperty(key).toString()
+fun environment(key: String) = providers.environmentVariable(key)
 
 plugins {
     id("java") // Java support
     alias(libs.plugins.kotlin) // Kotlin support
+    alias(libs.plugins.serialization) // Kotlin support
     alias(libs.plugins.gradleIntelliJPlugin) // Gradle IntelliJ Plugin
     alias(libs.plugins.changelog) // Gradle Changelog Plugin
     alias(libs.plugins.qodana) // Gradle Qodana Plugin
@@ -13,7 +15,8 @@ plugins {
 
 // Dependencies are managed with Gradle version catalog - read more: https://docs.gradle.org/current/userguide/platforms.html#sub:version-catalog
 dependencies {
-//    implementation(libs.annotations)
+    implementation(libs.annotations)
+    implementation(libs.serialization) // Kotlin support
 }
 
 group = properties("pluginGroup")

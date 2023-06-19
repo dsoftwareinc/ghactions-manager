@@ -98,6 +98,7 @@ class WorkflowDataContextRepository(project: Project) {
             singleRunDataLoader.invalidateAllData()
         }
         val listLoader = WorkflowRunListLoader(
+            disposable,
             requestExecutor,
             repositoryCoordinates,
             settingsService = GhActionsSettingsService.getInstance(toolWindow.project),
