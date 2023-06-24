@@ -32,12 +32,13 @@ data class WfRunsListSearchValue(
 
     enum class Status {
         COMPLETED,
-        FAILURE,
-        SKIPPED,
-        STALE,
-        SUCCESS,
-        TIMED_OUT,
-        IN_PROGRESS,
         QUEUED,
+        CANCELLED,
+        SKIPPED,
+        SUCCESS,
+        IN_PROGRESS,
+        FAILURE,
+        STALE,
+        TIMED_OUT,
     }
 }

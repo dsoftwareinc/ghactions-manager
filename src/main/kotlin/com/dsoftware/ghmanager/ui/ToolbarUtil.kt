@@ -32,8 +32,9 @@ object ToolbarUtil {
                     "failure" -> Icons.X
                     "startup_failure" -> Icons.X
                     "action_required" -> AllIcons.General.Warning
-                    "cancelled" -> Icons.Skipped
+                    "cancelled" -> AllIcons.Actions.Cancel
                     "skipped" -> Icons.Skipped
+                    null -> Icons.Checkmark
                     else -> Icons.PrimitiveDot
                 }
             }
@@ -41,13 +42,13 @@ object ToolbarUtil {
             "queued" -> Icons.Watch
             "in_progress" -> AnimatedIcon.Default.INSTANCE
             "neutral" -> Icons.PrimitiveDot
-            "success" -> AllIcons.Actions.Commit
+            "success" -> Icons.Checkmark
             "failure" -> Icons.X
             "cancelled" -> AllIcons.Actions.Cancel
             "action required" -> Icons.Watch
-            "timed out" -> Icons.Watch
-            "skipped" -> Icons.X
-            "stale" -> Icons.Watch
+            "timed_out" -> AllIcons.General.Warning
+            "skipped" -> Icons.Skipped
+            "stale" -> AllIcons.General.Warning
             else -> Icons.PrimitiveDot
         }
     }

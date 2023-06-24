@@ -200,16 +200,13 @@ internal class WorkflowRunListLoaderPanel(
 
     init {
         Disposer.register(parentDisposable, this)
-
         val searchVm = WfRunsSearchPanelViewModel(scope, context)
         scope.launch {
             searchVm.searchState.collectLatest {
                 context.updateFilter( it.toWorkflowRunFilter())
             }
         }
-
         val searchPanel = WfRunsFiltersFactory(searchVm).create(scope)
-//        val searchPanel = Panel()//WfRunsFiltersFactory(searchVm).create(scope)
 
         progressStripe = ProgressStripe(
             JBUI.Panels.simplePanel(scrollPane).addToTop(infoPanel).addToTop(searchPanel).apply {

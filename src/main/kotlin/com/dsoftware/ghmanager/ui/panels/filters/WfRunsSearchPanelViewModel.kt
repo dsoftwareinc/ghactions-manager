@@ -45,7 +45,7 @@ internal class WfRunsSearchPanelViewModel(
     val userFilterState = searchState.partialState(WfRunsListSearchValue::user) {
         copy(user = it)
     }
-    val reviewStatusState = searchState.partialState(WfRunsListSearchValue::status) {
+    val statusState = searchState.partialState(WfRunsListSearchValue::status) {
         copy(status = it)
     }
 

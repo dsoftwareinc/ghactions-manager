@@ -1,5 +1,6 @@
 package com.dsoftware.ghmanager.ui.panels.filters
 
+import com.dsoftware.ghmanager.ui.ToolbarUtil
 import com.intellij.collaboration.ui.codereview.list.search.ChooserPopupUtil
 import com.intellij.collaboration.ui.codereview.list.search.DropDownComponentFactory
 import com.intellij.collaboration.ui.codereview.list.search.ReviewListSearchPanelFactory
@@ -12,9 +13,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.future.await
 import org.jetbrains.annotations.Nls
 import org.jetbrains.plugins.github.api.GithubApiRequestExecutor
-import org.jetbrains.plugins.github.api.data.GHUser
 import org.jetbrains.plugins.github.i18n.GithubBundle
-import org.jetbrains.plugins.github.ui.util.GHUIUtil
 import org.jetbrains.plugins.github.util.CachingGHUserAvatarLoader
 import java.awt.Image
 import javax.swing.Icon
@@ -46,16 +45,25 @@ internal class WfRunsFiltersFactory(vm: WfRunsSearchPanelViewModel) :
             DropDownComponentFactory(vm.userFilterState)
                 .create(viewScope, "User") { point, popupState ->
                     ChooserPopupUtil.showAsyncChooserPopup(point, popupState, { vm.getCollaborators() }) {
-                        ChooserPopupUtil.PopupItemPresentation.Simple(it.shortName, avatarIconsProvider.getIcon(it.avatarUrl, GHUIUtil.AVATAR_SIZE), it.name)
+                        ChooserPopupUtil.PopupItemPresentation.Simple(
+                            it.shortName,
+                            avatarIconsProvider.getIcon(it.avatarUrl, AVATAR_SIZE),
+                            it.name
+                        )
                     }?.login
                 },
-            DropDownComponentFactory(vm.reviewStatusState)
+            DropDownComponentFactory(vm.statusState)
                 .create(viewScope,
                     filterName = GithubBundle.message("pull.request.list.filter.review"),
                     items = WfRunsListSearchValue.Status.values().asList(),
                     onSelect = {},
                     valuePresenter = Companion::getText,
-                    popupItemPresenter = { ChooserPopupUtil.PopupItemPresentation.Simple(getText(it)) }),
+                    popupItemPresenter = {
+                        ChooserPopupUtil.PopupItemPresentation.Simple(
+                            getText(it),
+                            ToolbarUtil.statusIcon(it.name.lowercase(), null)
+                        )
+                    }),
             DropDownComponentFactory(vm.branchFilterState)
                 .create(viewScope, "Branch") { point, popupState ->
                     ChooserPopupUtil.showAsyncChooserPopup(point, popupState, { vm.getBranches() }) {
@@ -84,6 +92,7 @@ internal class WfRunsFiltersFactory(vm: WfRunsSearchPanelViewModel) :
             WfRunsListSearchValue.Status.TIMED_OUT -> "Timed out"
             WfRunsListSearchValue.Status.IN_PROGRESS -> "In progress"
             WfRunsListSearchValue.Status.QUEUED -> "Queued"
+            WfRunsListSearchValue.Status.CANCELLED -> "Cancelled"
         }
     }
 }
