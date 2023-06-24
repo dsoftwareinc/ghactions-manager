@@ -1,5 +1,6 @@
 package com.dsoftware.ghmanager.data
 
+import com.dsoftware.ghmanager.api.WorkflowRunFilter
 import com.dsoftware.ghmanager.api.model.WorkflowRun
 import com.intellij.collaboration.ui.SingleValueModel
 import com.intellij.openapi.Disposable
@@ -31,15 +32,15 @@ class WorkflowRunSelectionContext internal constructor(
     private val task: ScheduledFuture<*>
     val runsListModel: CollectionListModel<WorkflowRun>
         get() = runsListLoader.listModel
-    private val workflowRun: WorkflowRun?
+    private val selectedWfRun: WorkflowRun?
         get() = runSelectionHolder.selection
     val jobDataProviderLoadModel: SingleValueModel<WorkflowRunJobsDataProvider?> = SingleValueModel(null)
     val logDataProviderLoadModel: SingleValueModel<WorkflowRunLogsDataProvider?> = SingleValueModel(null)
     var selectedRunDisposable = Disposer.newDisposable("Selected run disposable")
     val logsDataProvider: WorkflowRunLogsDataProvider?
-        get() = workflowRun?.let { dataLoader.getLogsDataProvider(it) }
+        get() = selectedWfRun?.let { dataLoader.getLogsDataProvider(it) }
     val jobsDataProvider: WorkflowRunJobsDataProvider?
-        get() = workflowRun?.let { dataLoader.getJobsDataProvider(it) }
+        get() = selectedWfRun?.let { dataLoader.getJobsDataProvider(it) }
 
     init {
         if (!parentDisposable.isDisposed) {
@@ -59,12 +60,12 @@ class WorkflowRunSelectionContext internal constructor(
             selectedRunDisposable.dispose()
         }
         task = AppExecutorUtil.getAppScheduledExecutorService().scheduleWithFixedDelay({
-            if (workflowRun == null) {
+            if (selectedWfRun == null) {
                 return@scheduleWithFixedDelay
             }
-            LOG.info("Checking updated status for $workflowRun.id")
-            val status = workflowRun?.status
-            if (workflowRun != null && status != "completed") {
+            LOG.info("Checking updated status for $selectedWfRun.id")
+            val status = selectedWfRun?.status
+            if (selectedWfRun != null && status != "completed") {
                 jobsDataProvider?.reload()
                 logsDataProvider?.reload()
             }
@@ -100,11 +101,14 @@ class WorkflowRunSelectionContext internal constructor(
         private val LOG = logger<WorkflowRunSelectionContext>()
     }
 
-    override fun dispose() {
-
-    }
+    override fun dispose() {}
 
     override fun beforeTreeDispose() {
         task.cancel(true)
+    }
+
+    fun updateFilter(filter: WorkflowRunFilter) {
+        runsListLoader.setFilter(filter)
+        resetAllData()
     }
 }

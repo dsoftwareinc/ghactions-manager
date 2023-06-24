@@ -204,7 +204,7 @@ internal class WorkflowRunListLoaderPanel(
         val searchVm = WfRunsSearchPanelViewModel(scope, context)
         scope.launch {
             searchVm.searchState.collectLatest {
-                //TODO
+                context.updateFilter( it.toWorkflowRunFilter())
             }
         }
 

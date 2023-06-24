@@ -3,6 +3,7 @@ package com.dsoftware.ghmanager.data
 import com.dsoftware.ghmanager.api.GithubApi
 import com.dsoftware.ghmanager.api.WorkflowRunFilter
 import com.dsoftware.ghmanager.api.model.WorkflowRun
+import com.dsoftware.ghmanager.ui.panels.filters.WfRunsListSearchValue
 import com.dsoftware.ghmanager.ui.settings.GhActionsSettingsService
 import com.intellij.collaboration.async.CompletableFutureUtil
 import com.intellij.collaboration.async.CompletableFutureUtil.handleOnEdt
@@ -29,7 +30,7 @@ class WorkflowRunListLoader(
     private val requestExecutor: GithubApiRequestExecutor,
     private val repositoryCoordinates: RepositoryCoordinates,
     private val settingsService: GhActionsSettingsService,
-    private val filter: WorkflowRunFilter,
+    private var filter: WorkflowRunFilter,
 ) : Disposable {
     private val progressManager = ProgressManager.getInstance();
     private var lastFuture = CompletableFuture.completedFuture(emptyList<WorkflowRun>())
@@ -142,6 +143,10 @@ class WorkflowRunListLoader(
 
     fun addErrorChangeListener(disposable: Disposable, listener: () -> Unit) =
         SimpleEventListener.addDisposableListener(errorChangeEventDispatcher, disposable, listener)
+
+    fun setFilter(value: WorkflowRunFilter) {
+        this.filter = value
+    }
 
     companion object {
         private val LOG = logger<WorkflowRunListLoader>()
