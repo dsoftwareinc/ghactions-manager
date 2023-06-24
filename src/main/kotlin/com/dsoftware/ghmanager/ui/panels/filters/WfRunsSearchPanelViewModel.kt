@@ -1,7 +1,6 @@
 package com.dsoftware.ghmanager.ui.panels.filters
 
 
-import com.dsoftware.ghmanager.api.model.Branch
 import com.dsoftware.ghmanager.data.RepositoryCoordinates
 import com.dsoftware.ghmanager.data.WorkflowRunSelectionContext
 import com.intellij.collaboration.ui.codereview.list.search.ReviewListQuickFilter
@@ -22,14 +21,14 @@ internal class WfRunsSearchPanelViewModel(
     scope: CoroutineScope,
     val context: WorkflowRunSelectionContext,
 ) : ReviewListSearchPanelViewModelBase<WfRunsListSearchValue, WorkflowRunListQuickFilter>(
-    scope, WfRunsSearchHistoryModel(context.project.service<WfRunsListPersistentSearchHistory>()),
+    scope,
+    WfRunsSearchHistoryModel(context.project.service<WfRunsListPersistentSearchHistory>()),
     emptySearch = WfRunsListSearchValue.EMPTY,
     defaultQuickFilter = WorkflowRunListQuickFilter.StartedByYou(context.account)
 ) {
 
     private val repoCoordinates = RepositoryCoordinates(
-        context.repositoryMapping.repository.serverPath,
-        context.repositoryMapping.repository.repositoryPath
+        context.repositoryMapping.repository.serverPath, context.repositoryMapping.repository.repositoryPath
     )
 
 
@@ -54,8 +53,7 @@ internal class WfRunsSearchPanelViewModel(
     private val collaborators: CompletableFuture<List<GHUser>>
         get() = LazyCancellableBackgroundProcessValue.create(ProgressManager.getInstance()) { indicator ->
             GithubApiPagesLoader.loadAll(
-                context.requestExecutor, indicator,
-                GithubApiRequests.Repos.Collaborators.pages(
+                context.requestExecutor, indicator, GithubApiRequests.Repos.Collaborators.pages(
                     repoCoordinates.serverPath,
                     repoCoordinates.repositoryPath.owner,
                     repoCoordinates.repositoryPath.repository
@@ -65,20 +63,20 @@ internal class WfRunsSearchPanelViewModel(
             list.map { GHUser(it.nodeId, it.login, it.htmlUrl, it.avatarUrl ?: "", null) }
         }
 
-    private val branches: CompletableFuture<List<Branch>>
+    suspend fun getCollaborators(): List<GHUser> = collaborators.await()
+
+    private val branches: CompletableFuture<List<String>>
         get() = LazyCancellableBackgroundProcessValue.create(ProgressManager.getInstance()) { indicator ->
             GithubApiPagesLoader.loadAll(
-                context.requestExecutor, indicator,
-                GithubApiRequests.Repos.Branches.pages(
+                context.requestExecutor, indicator, GithubApiRequests.Repos.Branches.pages(
                     repoCoordinates.serverPath,
                     repoCoordinates.repositoryPath.owner,
                     repoCoordinates.repositoryPath.repository
                 )
-            ).map { it -> Branch(it.name) }.toList()
+            ).map { it -> it.name }
         }.value
 
-    suspend fun getCollaborators(): List<GHUser> = collaborators.await()
-    suspend fun getBranches(): List<Branch> = branches.await()
+    suspend fun getBranches(): List<String> = branches.await()
 
 }
 

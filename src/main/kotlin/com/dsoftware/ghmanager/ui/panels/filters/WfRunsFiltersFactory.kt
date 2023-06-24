@@ -12,6 +12,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.future.await
 import org.jetbrains.annotations.Nls
 import org.jetbrains.plugins.github.api.GithubApiRequestExecutor
+import org.jetbrains.plugins.github.api.data.GHUser
 import org.jetbrains.plugins.github.i18n.GithubBundle
 import org.jetbrains.plugins.github.ui.util.GHUIUtil
 import org.jetbrains.plugins.github.util.CachingGHUserAvatarLoader
@@ -58,8 +59,8 @@ internal class WfRunsFiltersFactory(vm: WfRunsSearchPanelViewModel) :
             DropDownComponentFactory(vm.branchFilterState)
                 .create(viewScope, "Branch") { point, popupState ->
                     ChooserPopupUtil.showAsyncChooserPopup(point, popupState, { vm.getBranches() }) {
-                        ChooserPopupUtil.PopupItemPresentation.Simple(it.name)
-                    }?.name
+                        ChooserPopupUtil.PopupItemPresentation.Simple(it)
+                    }
                 },
         )
     }
@@ -73,6 +74,7 @@ internal class WfRunsFiltersFactory(vm: WfRunsSearchPanelViewModel) :
     }
 
     companion object {
+        const val AVATAR_SIZE = 20
         private fun getText(status: WfRunsListSearchValue.Status): @Nls String = when (status) {
             WfRunsListSearchValue.Status.COMPLETED -> "Completed"
             WfRunsListSearchValue.Status.FAILURE -> "Failed"

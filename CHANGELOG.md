@@ -9,6 +9,7 @@
 ### 🚀 Features
 
 - Simplified Jobs panel logic
+- Add ability to filter workflow runs by actor, branch and status.
 
 ## [1.11.0]
 
