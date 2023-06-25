@@ -8,6 +8,7 @@
 
 ### 🐛 Bug Fixes
 
+- Fix times for workflow-runs #91
 - Showing right status for jobs that haven't started
 - Improved filters behavior
 
