@@ -27,10 +27,10 @@ internal class WfRunsSearchPanelViewModel(
     defaultQuickFilter = WorkflowRunListQuickFilter.StartedByYou(context.account)
 ) {
 
-    private val repoCoordinates = RepositoryCoordinates(
-        context.repositoryMapping.repository.serverPath, context.repositoryMapping.repository.repositoryPath
-    )
-
+    val branches
+        get() = context.runsListLoader.repoBranches
+    val collaborators
+        get() = context.runsListLoader.repoCollaborators
 
     override fun WfRunsListSearchValue.withQuery(query: String?) = copy(searchQuery = query)
 
@@ -48,35 +48,6 @@ internal class WfRunsSearchPanelViewModel(
     val statusState = searchState.partialState(WfRunsListSearchValue::status) {
         copy(status = it)
     }
-
-
-    private val collaborators: CompletableFuture<List<GHUser>>
-        get() = LazyCancellableBackgroundProcessValue.create(ProgressManager.getInstance()) { indicator ->
-            GithubApiPagesLoader.loadAll(
-                context.requestExecutor, indicator, GithubApiRequests.Repos.Collaborators.pages(
-                    repoCoordinates.serverPath,
-                    repoCoordinates.repositoryPath.owner,
-                    repoCoordinates.repositoryPath.repository
-                )
-            )
-        }.value.thenApply { list ->
-            list.map { GHUser(it.nodeId, it.login, it.htmlUrl, it.avatarUrl ?: "", null) }
-        }
-
-    suspend fun getCollaborators(): List<GHUser> = collaborators.await()
-
-    private val branches: CompletableFuture<List<String>>
-        get() = LazyCancellableBackgroundProcessValue.create(ProgressManager.getInstance()) { indicator ->
-            GithubApiPagesLoader.loadAll(
-                context.requestExecutor, indicator, GithubApiRequests.Repos.Branches.pages(
-                    repoCoordinates.serverPath,
-                    repoCoordinates.repositoryPath.owner,
-                    repoCoordinates.repositoryPath.repository
-                )
-            ).map { it -> it.name }
-        }.value
-
-    suspend fun getBranches(): List<String> = branches.await()
 
 }
 

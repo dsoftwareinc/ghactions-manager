@@ -13,6 +13,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.future.await
 import org.jetbrains.annotations.Nls
 import org.jetbrains.plugins.github.api.GithubApiRequestExecutor
+import org.jetbrains.plugins.github.api.data.GHUser
 import org.jetbrains.plugins.github.i18n.GithubBundle
 import org.jetbrains.plugins.github.util.CachingGHUserAvatarLoader
 import java.awt.Image
@@ -44,7 +45,7 @@ internal class WfRunsFiltersFactory(vm: WfRunsSearchPanelViewModel) :
         return listOf(
             DropDownComponentFactory(vm.userFilterState)
                 .create(viewScope, "User") { point, popupState ->
-                    ChooserPopupUtil.showAsyncChooserPopup(point, popupState, { vm.getCollaborators() }) {
+                    ChooserPopupUtil.showAsyncChooserPopup(point, popupState, { vm.collaborators }) {
                         ChooserPopupUtil.PopupItemPresentation.Simple(
                             it.shortName,
                             avatarIconsProvider.getIcon(it.avatarUrl, AVATAR_SIZE),
@@ -65,11 +66,13 @@ internal class WfRunsFiltersFactory(vm: WfRunsSearchPanelViewModel) :
                         )
                     }),
             DropDownComponentFactory(vm.branchFilterState)
-                .create(viewScope, "Branch") { point, popupState ->
-                    ChooserPopupUtil.showAsyncChooserPopup(point, popupState, { vm.getBranches() }) {
+                .create(viewScope,
+                    filterName = "Branch",
+                    items = vm.branches,
+                    onSelect = {},
+                    popupItemPresenter = {
                         ChooserPopupUtil.PopupItemPresentation.Simple(it)
-                    }
-                },
+                    }),
         )
     }
 
