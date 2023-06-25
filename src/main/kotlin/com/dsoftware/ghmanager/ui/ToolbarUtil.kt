@@ -20,7 +20,7 @@ object ToolbarUtil {
             return "Unknown"
         }
         val localDateTime = LocalDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault())
-        val zonedDateTime = localDateTime.atZone(ZoneOffset.UTC)
+        val zonedDateTime = localDateTime.atZone(ZoneId.systemDefault())
         return DateFormatUtil.formatPrettyDateTime(zonedDateTime.toInstant().toEpochMilli())
     }
 

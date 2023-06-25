@@ -119,10 +119,8 @@ class WorkflowRunList(model: ListModel<WorkflowRun>) : JBList<WorkflowRun>(model
 
             info.apply {
                 val updatedAtLabel = ToolbarUtil.makeTimePretty(ghWorkflowRun.updated_at)
-                var action = "pushed by"
-                if (ghWorkflowRun.event == "release") {
-                    action = "created by"
-                }
+                val action = if (ghWorkflowRun.event == "release") "created by" else "pushed by"
+
                 text = "${ghWorkflowRun.name} #${ghWorkflowRun.run_number}: " +
                     "$action ${ghWorkflowRun.head_commit.author.name} started $updatedAtLabel"
                 foreground = secondaryTextColor

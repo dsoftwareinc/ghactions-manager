@@ -1,5 +1,6 @@
 package com.dsoftware.ghmanager.api.model
 
+import com.fasterxml.jackson.annotation.JsonFormat
 import java.util.*
 
 
@@ -26,7 +27,9 @@ data class WorkflowRun(
     val conclusion: String?,
     val url: String,
     val html_url: String,
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'")
     val created_at: Date?,
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'")
     val updated_at: Date?,
     val jobs_url: String,
     val logs_url: String,
