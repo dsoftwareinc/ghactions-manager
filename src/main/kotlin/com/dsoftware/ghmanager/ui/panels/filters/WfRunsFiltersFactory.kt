@@ -13,7 +13,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.future.await
 import org.jetbrains.annotations.Nls
 import org.jetbrains.plugins.github.api.GithubApiRequestExecutor
-import org.jetbrains.plugins.github.i18n.GithubBundle
 import org.jetbrains.plugins.github.util.CachingGHUserAvatarLoader
 import java.awt.Image
 import javax.swing.Icon
@@ -21,6 +20,12 @@ import javax.swing.JComponent
 
 internal class WfRunsFiltersFactory(vm: WfRunsSearchPanelViewModel) :
     ReviewListSearchPanelFactory<WfRunsListSearchValue, WorkflowRunListQuickFilter, WfRunsSearchPanelViewModel>(vm) {
+
+    fun createWfRunsFiltersPanel(viewScope: CoroutineScope): JComponent {
+        val searchPanel = create(viewScope)
+        searchPanel.remove(0)
+        return searchPanel
+    }
 
     private class AvatarLoader(private val requestExecutor: GithubApiRequestExecutor) :
         AsyncImageIconsProvider.AsyncImageLoader<String> {

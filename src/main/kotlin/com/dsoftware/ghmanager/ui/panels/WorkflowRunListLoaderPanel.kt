@@ -179,7 +179,7 @@ internal class WorkflowRunListLoaderPanel(
                 context.updateFilter(it.toWorkflowRunFilter())
             }
         }
-        val searchPanel = WfRunsFiltersFactory(searchVm).create(scope)
+        val searchPanel = WfRunsFiltersFactory(searchVm).createWfRunsFiltersPanel(scope)
 
         progressStripe = ProgressStripe(
             JBUI.Panels.simplePanel(scrollPane).addToTop(infoPanel).addToTop(searchPanel).apply {
