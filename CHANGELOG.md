@@ -4,6 +4,13 @@
 
 ## [Unreleased]
 
+## [1.12.1]
+
+### 🐛 Bug Fixes
+
+- Showing right status for jobs that haven't started
+- Improved filters behavior
+
 ## [1.12.0]
 
 ### 🚀 Features

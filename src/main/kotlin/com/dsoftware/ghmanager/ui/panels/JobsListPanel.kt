@@ -105,14 +105,22 @@ class JobListComponent(
             }
 
             info.apply {
-                val startedAtLabel = ToolbarUtil.makeTimePretty(job.startedAt)
-                val took = if (job.conclusion == "cancelled" || job.completedAt == null || job.startedAt == null)
-                    ""
-                else {
-                    val duration = Duration.between(job.startedAt.toInstant(), job.completedAt.toInstant())
-                    "took ${duration.toMinutes()}:${duration.toSecondsPart().toString().padStart(2, '0')} minutes"
+                val info = when (job.status) {
+                    "queued" -> "Job is queued"
+                    "in_progress" -> "Job running"
+                    else -> {
+                        val startedAtLabel = ToolbarUtil.makeTimePretty(job.startedAt)
+                        val took =
+                            if (job.conclusion == "cancelled" || job.completedAt == null || job.startedAt == null)
+                                ""
+                            else {
+                                val duration = Duration.between(job.startedAt.toInstant(), job.completedAt.toInstant())
+                                "took ${duration.toMinutes()}:" +
+                                    "${duration.toSecondsPart().toString().padStart(2, '0')} minutes"
+                            }
+                        "Attempt #${job.runAttempt} started $startedAtLabel $took"
+                    }
                 }
-                val info = "Attempt #${job.runAttempt} started $startedAtLabel $took"
                 text = "<html>$info</html>"
                 foreground = secondaryTextColor
             }
