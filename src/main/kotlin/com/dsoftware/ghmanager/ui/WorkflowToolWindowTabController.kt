@@ -3,11 +3,7 @@ package com.dsoftware.ghmanager.ui
 
 import com.dsoftware.ghmanager.actions.ActionKeys
 import com.dsoftware.ghmanager.api.model.WorkflowRunJobsList
-import com.dsoftware.ghmanager.data.DataProvider
-import com.dsoftware.ghmanager.data.LogLoadingModelListener
-import com.dsoftware.ghmanager.data.WorkflowDataContextRepository
-import com.dsoftware.ghmanager.data.WorkflowRunJobsDataProvider
-import com.dsoftware.ghmanager.data.WorkflowRunSelectionContext
+import com.dsoftware.ghmanager.data.*
 import com.dsoftware.ghmanager.ui.panels.JobListComponent
 import com.dsoftware.ghmanager.ui.panels.WorkflowRunListLoaderPanel
 import com.dsoftware.ghmanager.ui.panels.createLogConsolePanel

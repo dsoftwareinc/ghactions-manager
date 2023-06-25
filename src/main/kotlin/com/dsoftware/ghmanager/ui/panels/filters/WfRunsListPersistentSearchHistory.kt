@@ -4,26 +4,35 @@ import com.intellij.openapi.components.*
 import kotlinx.serialization.Serializable
 
 @Service(Service.Level.PROJECT)
-@State(name = "WfRunsListSearchHistory", storages = [Storage(StoragePathMacros.WORKSPACE_FILE)], reportStatistic = false)
-internal class WfRunsListPersistentSearchHistory : SerializablePersistentStateComponent<WfRunsListPersistentSearchHistory.HistoryState>(
-  HistoryState()) {
+@State(
+    name = "WfRunsListSearchHistory",
+    storages = [Storage(StoragePathMacros.WORKSPACE_FILE)],
+    reportStatistic = false
+)
+internal class WfRunsListPersistentSearchHistory :
+    SerializablePersistentStateComponent<WfRunsListPersistentSearchHistory.HistoryState>(
+        HistoryState()
+    ) {
 
-  @Serializable
-  data class HistoryState(val history: List<WfRunsListSearchValue> = emptyList(), val lastFilter: WfRunsListSearchValue? = null)
+    @Serializable
+    data class HistoryState(
+        val history: List<WfRunsListSearchValue> = emptyList(),
+        val lastFilter: WfRunsListSearchValue? = null
+    )
 
-  var lastFilter: WfRunsListSearchValue?
-    get() = state.lastFilter
-    set(value) {
-      updateState {
-        it.copy(lastFilter = value)
-      }
-    }
+    var lastFilter: WfRunsListSearchValue?
+        get() = state.lastFilter
+        set(value) {
+            updateState {
+                it.copy(lastFilter = value)
+            }
+        }
 
-  var history: List<WfRunsListSearchValue>
-    get() = state.history.toList()
-    set(value) {
-      updateState {
-        it.copy(history = value)
-      }
-    }
+    var history: List<WfRunsListSearchValue>
+        get() = state.history.toList()
+        set(value) {
+            updateState {
+                it.copy(history = value)
+            }
+        }
 }

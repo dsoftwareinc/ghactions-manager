@@ -7,7 +7,7 @@ import org.jetbrains.plugins.github.api.GithubApiResponse
 import java.io.EOFException
 import java.io.InputStream
 import java.nio.charset.StandardCharsets
-import java.util.TreeMap
+import java.util.*
 import java.util.zip.ZipInputStream
 
 class GetRunLogRequest(url: String) : GithubApiRequest.Get<GitHubLog>(url) {

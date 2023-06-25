@@ -1,7 +1,7 @@
 package com.dsoftware.ghmanager.api.model
 
 import com.fasterxml.jackson.annotation.JsonFormat
-import java.util.Date
+import java.util.*
 
 data class WorkflowRunJobsList(
     val total_count: Int,

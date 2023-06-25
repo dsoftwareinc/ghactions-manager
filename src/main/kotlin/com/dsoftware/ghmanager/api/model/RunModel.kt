@@ -1,6 +1,6 @@
 package com.dsoftware.ghmanager.api.model
 
-import java.util.Date
+import java.util.*
 
 
 data class WorkflowRuns(

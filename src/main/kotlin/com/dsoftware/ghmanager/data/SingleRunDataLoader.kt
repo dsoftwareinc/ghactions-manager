@@ -9,7 +9,7 @@ import com.intellij.util.EventDispatcher
 import com.intellij.util.concurrency.annotations.RequiresEdt
 import org.jetbrains.plugins.github.api.GithubApiRequest
 import org.jetbrains.plugins.github.api.GithubApiRequestExecutor
-import java.util.EventListener
+import java.util.*
 
 class SingleRunDataLoader(
     private val requestExecutor: GithubApiRequestExecutor

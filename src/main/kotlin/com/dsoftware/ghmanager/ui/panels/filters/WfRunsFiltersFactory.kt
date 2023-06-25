@@ -13,7 +13,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.future.await
 import org.jetbrains.annotations.Nls
 import org.jetbrains.plugins.github.api.GithubApiRequestExecutor
-import org.jetbrains.plugins.github.api.data.GHUser
 import org.jetbrains.plugins.github.i18n.GithubBundle
 import org.jetbrains.plugins.github.util.CachingGHUserAvatarLoader
 import java.awt.Image
@@ -55,7 +54,7 @@ internal class WfRunsFiltersFactory(vm: WfRunsSearchPanelViewModel) :
                 },
             DropDownComponentFactory(vm.statusState)
                 .create(viewScope,
-                    filterName = GithubBundle.message("pull.request.list.filter.review"),
+                    filterName = "Status",
                     items = WfRunsListSearchValue.Status.values().asList(),
                     onSelect = {},
                     valuePresenter = Companion::getText,

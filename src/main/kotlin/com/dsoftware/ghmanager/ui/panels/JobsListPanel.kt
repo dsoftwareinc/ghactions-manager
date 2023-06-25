@@ -6,21 +6,9 @@ import com.dsoftware.ghmanager.api.model.Job
 import com.dsoftware.ghmanager.api.model.WorkflowRunJobsList
 import com.dsoftware.ghmanager.data.WorkflowRunSelectionContext
 import com.dsoftware.ghmanager.ui.ToolbarUtil
-import com.intellij.collaboration.ui.SingleValueModel
 import com.intellij.ide.CopyProvider
-import com.intellij.openapi.actionSystem.ActionGroup
-import com.intellij.openapi.actionSystem.ActionManager
-import com.intellij.openapi.actionSystem.ActionPopupMenu
-import com.intellij.openapi.actionSystem.DataContext
-import com.intellij.openapi.actionSystem.DataProvider
-import com.intellij.openapi.actionSystem.PlatformDataKeys
-import com.intellij.ui.AnimatedIcon
-import com.intellij.ui.ClientProperty
-import com.intellij.ui.CollectionListModel
-import com.intellij.ui.ListUtil
-import com.intellij.ui.PopupHandler
-import com.intellij.ui.ScrollPaneFactory
-import com.intellij.ui.ScrollingUtil
+import com.intellij.openapi.actionSystem.*
+import com.intellij.ui.*
 import com.intellij.ui.components.JBList
 import com.intellij.ui.components.JBPanel
 import com.intellij.util.applyIf
@@ -34,13 +22,7 @@ import org.jetbrains.plugins.github.ui.HtmlInfoPanel
 import java.awt.Component
 import java.awt.event.MouseEvent
 import java.time.Duration
-import javax.swing.JComponent
-import javax.swing.JLabel
-import javax.swing.JList
-import javax.swing.ListCellRenderer
-import javax.swing.ListModel
-import javax.swing.ListSelectionModel
-import javax.swing.ScrollPaneConstants
+import javax.swing.*
 
 
 class JobListComponent(

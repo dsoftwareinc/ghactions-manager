@@ -12,7 +12,7 @@ import org.jetbrains.plugins.github.api.GithubApiRequest
 import org.jetbrains.plugins.github.api.GithubApiRequestExecutor
 import org.jetbrains.plugins.github.util.LazyCancellableBackgroundProcessValue
 import java.io.IOException
-import java.util.EventListener
+import java.util.*
 
 open class DataProvider<T>(
     private val progressManager: ProgressManager,

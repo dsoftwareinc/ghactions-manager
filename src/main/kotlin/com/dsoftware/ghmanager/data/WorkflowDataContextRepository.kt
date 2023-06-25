@@ -7,11 +7,8 @@ import com.intellij.collaboration.async.CompletableFutureUtil.successOnEdt
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.components.service
 import com.intellij.openapi.diagnostic.logger
-import com.intellij.openapi.progress.EmptyProgressIndicator
 import com.intellij.openapi.progress.ProcessCanceledException
-import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.progress.ProgressManager
-import com.intellij.openapi.progress.coroutineToIndicator
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.CheckedDisposable
 import com.intellij.openapi.util.Disposer
@@ -19,16 +16,11 @@ import com.intellij.openapi.wm.ToolWindow
 import com.intellij.util.concurrency.annotations.RequiresBackgroundThread
 import com.intellij.util.concurrency.annotations.RequiresEdt
 import git4idea.remote.GitRemoteUrlCoordinates
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
-import org.jetbrains.plugins.github.api.GHGQLRequests
-import org.jetbrains.plugins.github.api.GHRepositoryCoordinates
 import org.jetbrains.plugins.github.api.GHRepositoryPath
 import org.jetbrains.plugins.github.api.GithubApiRequestExecutor
 import org.jetbrains.plugins.github.api.GithubServerPath
 import org.jetbrains.plugins.github.authentication.accounts.GithubAccount
 import org.jetbrains.plugins.github.exceptions.GithubMissingTokenException
-import org.jetbrains.plugins.github.pullrequest.data.service.GHPRRepositoryDataServiceImpl
 import org.jetbrains.plugins.github.util.GHCompatibilityUtil
 import org.jetbrains.plugins.github.util.GHGitRepositoryMapping
 import org.jetbrains.plugins.github.util.GithubUrlUtil
@@ -114,7 +106,13 @@ class WorkflowDataContextRepository(project: Project) {
         )
 
         return WorkflowRunSelectionContext(
-            disposable, toolWindow.project, account, singleRunDataLoader, listLoader, repositoryMapping,requestExecutor,
+            disposable,
+            toolWindow.project,
+            account,
+            singleRunDataLoader,
+            listLoader,
+            repositoryMapping,
+            requestExecutor,
         )
     }
 

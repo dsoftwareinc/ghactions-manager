@@ -7,7 +7,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class WfRunsListSearchValue(
     override val searchQuery: String? = null,
-    val user: String? = null,
+    val actor: String? = null,
     val branch: String? = null,
     val status: Status? = null,
 ) : ReviewListSearchValue {
@@ -17,7 +17,7 @@ data class WfRunsListSearchValue(
         return StringBuilder().apply {
             if (searchQuery != null) append(""""$searchQuery"""").append(" ")
             if (status != null) append("status:$status").append(" ")
-            if (user != null) append("user:$user").append(" ")
+            if (actor != null) append("user:$actor").append(" ")
             if (branch != null) append("branch:$branch").append(" ")
         }.toString()
     }
@@ -27,7 +27,7 @@ data class WfRunsListSearchValue(
     }
 
     fun toWorkflowRunFilter(): WorkflowRunFilter {
-        return WorkflowRunFilter(branch, status?.toString()?.lowercase(), user, "")
+        return WorkflowRunFilter(branch, status?.toString()?.lowercase(), actor, "")
     }
 
     enum class Status {
