@@ -112,15 +112,20 @@ class WorkflowRunListLoader(
     }
 
     private fun updateBranches(indicator: ProgressIndicator) {
-        val request = GithubApiRequests.Repos.Branches.get(
-            repositoryCoordinates.serverPath,
-            repositoryCoordinates.repositoryPath.owner,
-            repositoryCoordinates.repositoryPath.repository
-        )
-        LOG.info("Calling ${request.url}")
-        val response = requestExecutor.execute(indicator, request)
         repoBranches.clear()
-        repoBranches.addAll(response.items.map { it.name })
+        var pageNumber = 1;
+        do {
+            val request = GithubApiRequests.Repos.Branches.get(
+                    repositoryCoordinates.serverPath,
+                    repositoryCoordinates.repositoryPath.owner,
+                    repositoryCoordinates.repositoryPath.repository,
+                    GithubRequestPagination(pageNumber)
+            )
+            LOG.info("Calling ${request.url}")
+            val response = requestExecutor.execute(indicator, request)
+            repoBranches.addAll(response.items.map { it.name })
+            pageNumber++;
+        } while (response.hasNext)
     }
 
     override fun dispose() {
