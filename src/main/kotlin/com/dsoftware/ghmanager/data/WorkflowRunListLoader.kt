@@ -98,17 +98,24 @@ class WorkflowRunListLoader(
     }
 
     private fun updateCollaborators(indicator: ProgressIndicator) {
-        val request = GithubApiRequests.Repos.Collaborators.get(
-            repositoryCoordinates.serverPath,
-            repositoryCoordinates.repositoryPath.owner,
-            repositoryCoordinates.repositoryPath.repository
-        )
-        val response = requestExecutor.execute(indicator, request)
-        LOG.info("Calling ${request.url}")
         repoCollaborators.clear()
-        repoCollaborators.addAll(
-            response.items.map { GHUser(it.nodeId, it.login, it.htmlUrl, it.avatarUrl ?: "", null) }
-        )
+        var pageNumber = 1;
+        do {
+            val request = GithubApiRequests.Repos.Collaborators.get(
+                repositoryCoordinates.serverPath,
+                repositoryCoordinates.repositoryPath.owner,
+                repositoryCoordinates.repositoryPath.repository,
+                GithubRequestPagination(pageNumber)
+            )
+
+            LOG.info("Calling ${request.url}")
+            val response = requestExecutor.execute(indicator, request)
+
+            repoCollaborators.addAll(
+                response.items.map { GHUser(it.nodeId, it.login, it.htmlUrl, it.avatarUrl ?: "", null) }
+            )
+            pageNumber++;
+        } while (response.hasNext)
     }
 
     private fun updateBranches(indicator: ProgressIndicator) {
