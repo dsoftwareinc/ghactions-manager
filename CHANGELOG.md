@@ -4,6 +4,12 @@
 
 ## [Unreleased]
 
+## [1.12.2]
+
+### 🐛 Bug Fixes
+
+- Showing all branches and all collaborators on filters #92
+
 ## [1.12.1]
 
 ### 🐛 Bug Fixes
