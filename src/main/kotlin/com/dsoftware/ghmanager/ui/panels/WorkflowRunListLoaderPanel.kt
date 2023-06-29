@@ -230,6 +230,7 @@ internal class WorkflowRunListLoaderPanel(
             runListComponent.emptyText.text = "No workflow run loaded. "
             runListComponent.emptyText.appendSecondaryText("Refresh", SimpleTextAttributes.LINK_PLAIN_ATTRIBUTES) {
                 workflowRunsLoader.reset()
+                workflowRunsLoader.loadMore(true)
             }
             infoPanel.setInfo(
                 when {

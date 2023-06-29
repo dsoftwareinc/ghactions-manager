@@ -16,9 +16,12 @@ import com.intellij.openapi.util.Disposer
 import com.intellij.ui.CollectionListModel
 import com.intellij.util.EventDispatcher
 import com.intellij.util.concurrency.AppExecutorUtil
+import org.jetbrains.plugins.github.api.GithubApiRequest
 import org.jetbrains.plugins.github.api.GithubApiRequestExecutor
 import org.jetbrains.plugins.github.api.GithubApiRequests
 import org.jetbrains.plugins.github.api.data.GHUser
+import org.jetbrains.plugins.github.api.data.GithubResponsePage
+import org.jetbrains.plugins.github.api.data.GithubUserWithPermissions
 import org.jetbrains.plugins.github.api.data.request.GithubRequestPagination
 import org.jetbrains.plugins.github.util.NonReusableEmptyProgressIndicator
 import java.util.concurrent.CompletableFuture
@@ -98,29 +101,50 @@ class WorkflowRunListLoader(
     }
 
     private fun updateCollaborators(indicator: ProgressIndicator) {
-        val request = GithubApiRequests.Repos.Collaborators.get(
-            repositoryCoordinates.serverPath,
-            repositoryCoordinates.repositoryPath.owner,
-            repositoryCoordinates.repositoryPath.repository
-        )
-        val response = requestExecutor.execute(indicator, request)
-        LOG.info("Calling ${request.url}")
         repoCollaborators.clear()
-        repoCollaborators.addAll(
-            response.items.map { GHUser(it.nodeId, it.login, it.htmlUrl, it.avatarUrl ?: "", null) }
-        )
+        var nextLink: String? = null;
+
+        do {
+            val request = if (nextLink == null) {
+                GithubApiRequests.Repos.Collaborators.get(
+                        repositoryCoordinates.serverPath,
+                        repositoryCoordinates.repositoryPath.owner,
+                        repositoryCoordinates.repositoryPath.repository,
+                        GithubRequestPagination()
+                )
+            } else {
+                GithubApiRequests.Repos.Collaborators.get(nextLink);
+            }
+
+
+            LOG.info("Calling ${request.url}")
+            val response = requestExecutor.execute(indicator, request)
+            repoCollaborators.addAll(
+                response.items.map { GHUser(it.nodeId, it.login, it.htmlUrl, it.avatarUrl ?: "", null) }
+            )
+            nextLink = response.nextLink;
+        } while (nextLink != null)
     }
 
     private fun updateBranches(indicator: ProgressIndicator) {
-        val request = GithubApiRequests.Repos.Branches.get(
-            repositoryCoordinates.serverPath,
-            repositoryCoordinates.repositoryPath.owner,
-            repositoryCoordinates.repositoryPath.repository
-        )
-        LOG.info("Calling ${request.url}")
-        val response = requestExecutor.execute(indicator, request)
         repoBranches.clear()
-        repoBranches.addAll(response.items.map { it.name })
+        var nextLink: String? = null;
+        do {
+            val request = if (nextLink == null) {
+                GithubApiRequests.Repos.Branches.get(
+                        repositoryCoordinates.serverPath,
+                        repositoryCoordinates.repositoryPath.owner,
+                        repositoryCoordinates.repositoryPath.repository,
+                        GithubRequestPagination()
+                )
+            } else {
+                GithubApiRequests.Repos.Branches.get(nextLink);
+            }
+            LOG.info("Calling ${request.url}")
+            val response = requestExecutor.execute(indicator, request)
+            repoBranches.addAll(response.items.map { it.name })
+            nextLink = response.nextLink;
+        } while (response.hasNext)
     }
 
     override fun dispose() {
