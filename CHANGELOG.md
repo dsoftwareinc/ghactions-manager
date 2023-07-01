@@ -4,7 +4,11 @@
 
 ## [Unreleased]
 
-## [1.12.3]
+## [1.13.0]
+
+### 🚀 Features
+
+- Add workflow runs filter based on event.
 
 ### 🐛 Bug Fixes
 
