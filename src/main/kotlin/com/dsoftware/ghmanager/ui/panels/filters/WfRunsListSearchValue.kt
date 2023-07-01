@@ -12,7 +12,10 @@ data class WfRunsListSearchValue(
     @Transient val actor: GHUser? = null,
     val branch: String? = null,
     val status: Status? = null,
+    val event: Event? = null,
 ) : ReviewListSearchValue {
+    val actorName
+        get() = actor?.shortName
 
     fun getShortText(): String {
         @Suppress("HardCodedStringLiteral")
@@ -42,5 +45,12 @@ data class WfRunsListSearchValue(
         FAILURE,
         STALE,
         TIMED_OUT,
+    }
+
+    enum class Event {
+        PULL_REQUEST,
+        PUSH,
+        PULL_REQUEST_TARGET,
+        RELEASE,
     }
 }

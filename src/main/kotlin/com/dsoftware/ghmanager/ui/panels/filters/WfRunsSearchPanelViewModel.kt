@@ -29,16 +29,10 @@ internal class WfRunsSearchPanelViewModel(
         WorkflowRunListQuickFilter.All(),
     )
 
-    val branchFilterState = searchState.partialState(WfRunsListSearchValue::branch) {
-        copy(branch = it)
-    }
-
-    val userFilterState = searchState.partialState(WfRunsListSearchValue::actor) {
-        copy(actor = it)
-    }
-    val statusState = searchState.partialState(WfRunsListSearchValue::status) {
-        copy(status = it)
-    }
+    val branchFilterState = searchState.partialState(WfRunsListSearchValue::branch) { copy(branch = it) }
+    val eventFilterState = searchState.partialState(WfRunsListSearchValue::event) { copy(event = it) }
+    val userFilterState = searchState.partialState(WfRunsListSearchValue::actor) { copy(actor = it) }
+    val statusState = searchState.partialState(WfRunsListSearchValue::status) { copy(status = it) }
 
 }
 
