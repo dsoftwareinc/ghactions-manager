@@ -6,7 +6,6 @@ import com.intellij.collaboration.ui.codereview.list.search.ReviewListQuickFilte
 import com.intellij.collaboration.ui.codereview.list.search.ReviewListSearchPanelViewModelBase
 import com.intellij.openapi.components.service
 import kotlinx.coroutines.CoroutineScope
-import org.jetbrains.plugins.github.authentication.accounts.GithubAccount
 
 
 internal class WfRunsSearchPanelViewModel(
@@ -16,7 +15,7 @@ internal class WfRunsSearchPanelViewModel(
     scope,
     WfRunsSearchHistoryModel(context.project.service<WfRunsListPersistentSearchHistory>()),
     emptySearch = WfRunsListSearchValue.EMPTY,
-    defaultQuickFilter = WorkflowRunListQuickFilter.StartedByYou(context.account)
+    defaultQuickFilter = WorkflowRunListQuickFilter.All(),
 ) {
 
     val branches
@@ -27,7 +26,7 @@ internal class WfRunsSearchPanelViewModel(
     override fun WfRunsListSearchValue.withQuery(query: String?) = copy(searchQuery = query)
 
     override val quickFilters: List<WorkflowRunListQuickFilter> = listOf(
-        WorkflowRunListQuickFilter.StartedByYou(context.account),
+        WorkflowRunListQuickFilter.All(),
     )
 
     val branchFilterState = searchState.partialState(WfRunsListSearchValue::branch) {
@@ -43,11 +42,9 @@ internal class WfRunsSearchPanelViewModel(
 
 }
 
-sealed class WorkflowRunListQuickFilter(user: GithubAccount) : ReviewListQuickFilter<WfRunsListSearchValue> {
-    protected val userLogin = user.name
+sealed class WorkflowRunListQuickFilter(val title: String) : ReviewListQuickFilter<WfRunsListSearchValue> {
 
-    data class StartedByYou(val user: GithubAccount) : WorkflowRunListQuickFilter(user) {
-        override val filter = WfRunsListSearchValue(actor = userLogin)
+    class All : WorkflowRunListQuickFilter("All workflows") {
+        override val filter = WfRunsListSearchValue()
     }
-
 }

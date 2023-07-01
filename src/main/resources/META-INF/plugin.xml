@@ -6,7 +6,7 @@
 
     <depends>com.intellij.modules.platform</depends>
     <depends>org.jetbrains.plugins.github</depends>
-    <idea-version since-build="231.4840.387" until-build="231.*"/>
+    <idea-version since-build="231.4840.387"/>
 
     <extensions defaultExtensionNs="com.intellij">
         <toolWindow

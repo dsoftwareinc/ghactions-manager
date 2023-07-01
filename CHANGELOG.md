@@ -4,6 +4,12 @@
 
 ## [Unreleased]
 
+## [1.12.3]
+
+### 🐛 Bug Fixes
+
+- Filters now work for future IDE versions.
+
 ## [1.12.2]
 
 ### 🐛 Bug Fixes

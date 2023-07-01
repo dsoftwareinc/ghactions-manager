@@ -48,15 +48,18 @@ internal class WfRunsFiltersFactory(vm: WfRunsSearchPanelViewModel) :
         )
         return listOf(
             DropDownComponentFactory(vm.userFilterState)
-                .create(viewScope, "User") { point, popupState ->
-                    ChooserPopupUtil.showAsyncChooserPopup(point, popupState, { vm.collaborators }) {
+                .create(viewScope,
+                    filterName = "Actor",
+                    items = vm.collaborators,
+                    onSelect = {},
+                    valuePresenter = { it.shortName },
+                    popupItemPresenter = {
                         ChooserPopupUtil.PopupItemPresentation.Simple(
                             it.shortName,
                             avatarIconsProvider.getIcon(it.avatarUrl, AVATAR_SIZE),
                             it.name
                         )
-                    }?.login
-                },
+                    }),
             DropDownComponentFactory(vm.statusState)
                 .create(viewScope,
                     filterName = "Status",
@@ -80,9 +83,7 @@ internal class WfRunsFiltersFactory(vm: WfRunsSearchPanelViewModel) :
         )
     }
 
-    override fun WorkflowRunListQuickFilter.getQuickFilterTitle(): String = when (this) {
-        is WorkflowRunListQuickFilter.StartedByYou -> "Started by you"
-    }
+    override fun WorkflowRunListQuickFilter.getQuickFilterTitle(): String = this.title
 
     override fun getShortText(searchValue: WfRunsListSearchValue): @Nls String {
         return searchValue.getShortText()

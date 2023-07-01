@@ -11,6 +11,7 @@ import com.intellij.openapi.util.Disposer
 import com.intellij.ui.CollectionListModel
 import com.intellij.util.concurrency.AppExecutorUtil
 import org.jetbrains.plugins.github.api.GithubApiRequestExecutor
+import org.jetbrains.plugins.github.api.data.GHUser
 import org.jetbrains.plugins.github.authentication.accounts.GithubAccount
 import org.jetbrains.plugins.github.util.GHGitRepositoryMapping
 import java.util.concurrent.ScheduledFuture
@@ -20,7 +21,7 @@ import java.util.concurrent.TimeUnit
 class WorkflowRunSelectionContext internal constructor(
     parentDisposable: CheckedDisposable,
     val project: Project,
-    val account: GithubAccount,
+    private val account: GithubAccount,
     val dataLoader: SingleRunDataLoader,
     val runsListLoader: WorkflowRunListLoader,
     val repositoryMapping: GHGitRepositoryMapping,
@@ -70,6 +71,10 @@ class WorkflowRunSelectionContext internal constructor(
                 logsDataProvider?.reload()
             }
         }, 1, frequency, TimeUnit.SECONDS)
+    }
+
+    fun getCurrentAccountGHUser(): GHUser {
+        return runsListLoader.repoCollaborators.first { user -> user.shortName == account.name }
     }
 
     private fun setNewJobsProvider() {
