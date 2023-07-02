@@ -4,6 +4,12 @@
 
 ## [Unreleased]
 
+## [1.13.1]
+
+### 🐛 Bug Fixes
+
+- Fix time shown for workflow runs and jobs.
+
 ## [1.13.0]
 
 ### 🚀 Features
