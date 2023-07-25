@@ -4,6 +4,13 @@
 
 ## [Unreleased]
 
+## [1.13.2]
+
+### 🐛 Bug Fixes
+
+- Fix refreshing of jobs list.
+- Updated dependencies
+
 ## [1.13.1]
 
 ### 🐛 Bug Fixes
