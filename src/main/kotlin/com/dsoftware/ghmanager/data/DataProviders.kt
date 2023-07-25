@@ -36,11 +36,6 @@ open class DataProvider<T>(
         }
 
     val request = processValue.value
-//    val request by backgroundProcessValue(processValue)
-
-//    private fun <T> backgroundProcessValue(backingValue: LazyCancellableBackgroundProcessValue<T>)
-//        : ReadOnlyProperty<Any?, CompletableFuture<T>> =
-//        ReadOnlyProperty { _, _ -> backingValue.value }
 
     fun url(): String = githubApiRequest.url
 
