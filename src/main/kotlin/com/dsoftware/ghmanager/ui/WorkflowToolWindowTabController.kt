@@ -2,13 +2,14 @@ package com.dsoftware.ghmanager.ui
 
 
 import com.dsoftware.ghmanager.actions.ActionKeys
-import com.dsoftware.ghmanager.api.model.WorkflowRunJobsList
-import com.dsoftware.ghmanager.data.*
+import com.dsoftware.ghmanager.data.JobsLoadingModelListener
+import com.dsoftware.ghmanager.data.LogLoadingModelListener
+import com.dsoftware.ghmanager.data.WorkflowDataContextRepository
+import com.dsoftware.ghmanager.data.WorkflowRunSelectionContext
 import com.dsoftware.ghmanager.ui.panels.JobListComponent
 import com.dsoftware.ghmanager.ui.panels.WorkflowRunListLoaderPanel
 import com.dsoftware.ghmanager.ui.panels.createLogConsolePanel
 import com.dsoftware.ghmanager.ui.settings.GhActionsSettingsService
-import com.intellij.collaboration.ui.SingleValueModel
 import com.intellij.ide.DataManager
 import com.intellij.ide.actions.RefreshAction
 import com.intellij.openapi.Disposable
@@ -141,16 +142,20 @@ class WorkflowToolWindowTabController(
     }
 
     private fun createJobsPanel(selectedRunContext: WorkflowRunSelectionContext): JComponent {
-        val jobLoadingModel = createJobsLoadingModel(selectedRunContext.jobDataProviderLoadModel)
+        val jobsLoadingModel = JobsLoadingModelListener(
+            selectedRunContext.selectedRunDisposable,
+            selectedRunContext.jobDataProviderLoadModel,
+            selectedRunContext.runSelectionHolder
+        )
 
-        val jobLoadingPanel = GHLoadingPanelFactory(
-            jobLoadingModel,
+        val jobsPanel = GHLoadingPanelFactory(
+            jobsLoadingModel.jobsLoadingModel,
             "Select a workflow to show list of jobs",
             "Can't load jobs list from GitHub for run ${selectedRunContext.runSelectionHolder.selection?.name ?: ""}",
             GHApiLoadingErrorHandler(toolWindow.project, ghAccount) {}
-        ).create { _, workflowRunJobsList ->
+        ).create { _, _ ->
             val (topInfoPanel, jobListPanel) = JobListComponent.createJobsListComponent(
-                workflowRunJobsList, selectedRunContext,
+                jobsLoadingModel.jobsModel, selectedRunContext,
                 infoInNewLine = !settingsService.state.jobListAboveLogs,
             )
             val panel = JBPanelWithEmptyText(BorderLayout()).apply {
@@ -160,40 +165,10 @@ class WorkflowToolWindowTabController(
             }
             panel
         }
-        return jobLoadingPanel
+
+        return jobsPanel
     }
 
-    private fun createJobsLoadingModel(
-        dataProviderModel: SingleValueModel<WorkflowRunJobsDataProvider?>,
-    ): GHCompletableFutureLoadingModel<WorkflowRunJobsList> {
-        LOG.debug("createJobsDataProviderModel Create jobs loading model")
-        val loadingModel =
-            GHCompletableFutureLoadingModel<WorkflowRunJobsList>(disposable)
-
-        var listenerDisposable: Disposable? = null
-
-        dataProviderModel.addListener { provider ->
-            LOG.debug("Jobs loading model Value changed")
-            loadingModel.future = null
-            listenerDisposable?.let { Disposer.dispose(it) }
-            listenerDisposable = null
-
-            provider?.let {
-                loadingModel.future = it.request
-                val disposable = Disposer.newDisposable().apply {
-                    Disposer.register(disposable, this)
-                }
-                it.addRunChangesListener(disposable,
-                    object : DataProvider.DataProviderChangeListener {
-                        override fun changed() {
-                            loadingModel.future = it.request
-                        }
-                    })
-                listenerDisposable = disposable
-            }
-        }
-        return loadingModel
-    }
 
 
     companion object {

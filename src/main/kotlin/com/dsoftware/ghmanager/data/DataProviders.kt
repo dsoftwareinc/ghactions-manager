@@ -12,7 +12,9 @@ import org.jetbrains.plugins.github.api.GithubApiRequest
 import org.jetbrains.plugins.github.api.GithubApiRequestExecutor
 import org.jetbrains.plugins.github.util.LazyCancellableBackgroundProcessValue
 import java.io.IOException
-import java.util.*
+import java.util.EventListener
+import java.util.concurrent.CompletableFuture
+import kotlin.properties.ReadOnlyProperty
 
 open class DataProvider<T>(
     private val progressManager: ProgressManager,
@@ -35,8 +37,11 @@ open class DataProvider<T>(
             }
         }
 
-    val request = processValue.value
+    val request by backgroundProcessValue(processValue)
 
+    private fun <T> backgroundProcessValue(backingValue: LazyCancellableBackgroundProcessValue<T>)
+        : ReadOnlyProperty<Any?, CompletableFuture<T>> =
+        ReadOnlyProperty { _, _ -> backingValue.value }
     fun url(): String = githubApiRequest.url
 
     @RequiresEdt
