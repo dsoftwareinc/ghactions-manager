@@ -16,12 +16,9 @@ import com.intellij.openapi.util.Disposer
 import com.intellij.ui.CollectionListModel
 import com.intellij.util.EventDispatcher
 import com.intellij.util.concurrency.AppExecutorUtil
-import org.jetbrains.plugins.github.api.GithubApiRequest
 import org.jetbrains.plugins.github.api.GithubApiRequestExecutor
 import org.jetbrains.plugins.github.api.GithubApiRequests
-import org.jetbrains.plugins.github.api.GithubServerPath
 import org.jetbrains.plugins.github.api.data.GHUser
-import org.jetbrains.plugins.github.api.data.GithubUserWithPermissions
 import org.jetbrains.plugins.github.api.data.request.GithubRequestPagination
 import org.jetbrains.plugins.github.util.NonReusableEmptyProgressIndicator
 import java.util.concurrent.CompletableFuture
@@ -39,7 +36,7 @@ class WorkflowRunListLoader(
     val listModel = CollectionListModel<WorkflowRun>()
     val repoCollaborators = ArrayList<GHUser>()
     val repoBranches = ArrayList<String>()
-    private val progressManager = ProgressManager.getInstance();
+    private val progressManager = ProgressManager.getInstance()
     private var lastFuture = CompletableFuture.completedFuture(emptyList<WorkflowRun>())
     private val loadingStateChangeEventDispatcher = EventDispatcher.create(SimpleEventListener::class.java)
     private val errorChangeEventDispatcher = EventDispatcher.create(SimpleEventListener::class.java)
@@ -106,18 +103,18 @@ class WorkflowRunListLoader(
 
     private fun updateCollaborators(indicator: ProgressIndicator) {
         repoCollaborators.clear()
-        var nextLink: String? = null;
+        var nextLink: String? = null
 
         do {
             val request = if (nextLink == null) {
-                Contributors.get(
+                GithubApiRequests.Repos.Collaborators.get(
                     repositoryCoordinates.serverPath,
                     repositoryCoordinates.repositoryPath.owner,
                     repositoryCoordinates.repositoryPath.repository,
                     GithubRequestPagination()
                 )
             } else {
-                GithubApiRequests.Repos.Collaborators.get(nextLink);
+                GithubApiRequests.Repos.Collaborators.get(nextLink)
             }
 
 
@@ -126,13 +123,13 @@ class WorkflowRunListLoader(
             repoCollaborators.addAll(
                 response.items.map { GHUser(it.nodeId, it.login, it.htmlUrl, it.avatarUrl ?: "", null) }
             )
-            nextLink = response.nextLink;
+            nextLink = response.nextLink
         } while (nextLink != null)
     }
 
     private fun updateBranches(indicator: ProgressIndicator) {
         repoBranches.clear()
-        var nextLink: String? = null;
+        var nextLink: String? = null
         do {
             val request = if (nextLink == null) {
                 GithubApiRequests.Repos.Branches.get(
@@ -142,12 +139,12 @@ class WorkflowRunListLoader(
                     GithubRequestPagination()
                 )
             } else {
-                GithubApiRequests.Repos.Branches.get(nextLink);
+                GithubApiRequests.Repos.Branches.get(nextLink)
             }
             LOG.info("Calling ${request.url}")
             val response = requestExecutor.execute(indicator, request)
             repoBranches.addAll(response.items.map { it.name })
-            nextLink = response.nextLink;
+            nextLink = response.nextLink
         } while (response.hasNext)
     }
 
@@ -215,25 +212,25 @@ class WorkflowRunListLoader(
         private val LOG = logger<WorkflowRunListLoader>()
     }
 }
-
-object Contributors : GithubApiRequests.Entity("/contributors") {
-
-    fun get(server: GithubServerPath, username: String, repoName: String, pagination: GithubRequestPagination? = null) =
-        GithubApiRequest.Get.jsonPage<GithubUserWithPermissions>(
-            GithubApiRequests.getUrl(
-                server, "/repos/$username/$repoName", urlSuffix,
-                getQuery(pagination?.toString().orEmpty())
-            )
-        ).withOperationName("get contributors")
-
-    private fun getQuery(vararg queryParts: String): String {
-        val builder = StringBuilder()
-        for (part in queryParts) {
-            if (part.isEmpty()) continue
-            if (builder.isEmpty()) builder.append("?")
-            else builder.append("&")
-            builder.append(part)
-        }
-        return builder.toString()
-    }
-}
+//
+//object Contributors : GithubApiRequests.Entity("/contributors") {
+//
+//    fun get(server: GithubServerPath, username: String, repoName: String, pagination: GithubRequestPagination? = null) =
+//        GithubApiRequest.Get.jsonPage<GithubUserWithPermissions>(
+//            GithubApiRequests.getUrl(
+//                server, "/repos/$username/$repoName", urlSuffix,
+//                getQuery(pagination?.toString().orEmpty())
+//            )
+//        ).withOperationName("get contributors")
+//
+//    private fun getQuery(vararg queryParts: String): String {
+//        val builder = StringBuilder()
+//        for (part in queryParts) {
+//            if (part.isEmpty()) continue
+//            if (builder.isEmpty()) builder.append("?")
+//            else builder.append("&")
+//            builder.append(part)
+//        }
+//        return builder.toString()
+//    }
+//}

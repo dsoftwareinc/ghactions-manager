@@ -8,7 +8,6 @@
 
 ### 🐛 Bug Fixes
 
-- Using contributors instead of collaborators in repository.
 - Limiting requests to contributors and branches.
 
 ## [1.13.2]
