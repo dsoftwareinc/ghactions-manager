@@ -19,8 +19,8 @@ import com.intellij.util.concurrency.AppExecutorUtil
 import org.jetbrains.plugins.github.api.GithubApiRequest
 import org.jetbrains.plugins.github.api.GithubApiRequestExecutor
 import org.jetbrains.plugins.github.api.GithubApiRequests
+import org.jetbrains.plugins.github.api.GithubServerPath
 import org.jetbrains.plugins.github.api.data.GHUser
-import org.jetbrains.plugins.github.api.data.GithubResponsePage
 import org.jetbrains.plugins.github.api.data.GithubUserWithPermissions
 import org.jetbrains.plugins.github.api.data.request.GithubRequestPagination
 import org.jetbrains.plugins.github.util.NonReusableEmptyProgressIndicator
@@ -85,11 +85,15 @@ class WorkflowRunListLoader(
     }
 
     private fun requestLoadMore(indicator: ProgressIndicator, update: Boolean): CompletableFuture<List<WorkflowRun>> {
-        progressManager.submitIOTask(NonReusableEmptyProgressIndicator()) {
-            updateCollaborators(it)
+        if (repoCollaborators.isEmpty()) {
+            progressManager.submitIOTask(NonReusableEmptyProgressIndicator()) {
+                updateCollaborators(it)
+            }
         }
-        progressManager.submitIOTask(NonReusableEmptyProgressIndicator()) {
-            updateBranches(it)
+        if (repoBranches.isEmpty()) {
+            progressManager.submitIOTask(NonReusableEmptyProgressIndicator()) {
+                updateBranches(it)
+            }
         }
 
         lastFuture = lastFuture.thenCompose {
@@ -106,11 +110,11 @@ class WorkflowRunListLoader(
 
         do {
             val request = if (nextLink == null) {
-                GithubApiRequests.Repos.Collaborators.get(
-                        repositoryCoordinates.serverPath,
-                        repositoryCoordinates.repositoryPath.owner,
-                        repositoryCoordinates.repositoryPath.repository,
-                        GithubRequestPagination()
+                Contributors.get(
+                    repositoryCoordinates.serverPath,
+                    repositoryCoordinates.repositoryPath.owner,
+                    repositoryCoordinates.repositoryPath.repository,
+                    GithubRequestPagination()
                 )
             } else {
                 GithubApiRequests.Repos.Collaborators.get(nextLink);
@@ -132,10 +136,10 @@ class WorkflowRunListLoader(
         do {
             val request = if (nextLink == null) {
                 GithubApiRequests.Repos.Branches.get(
-                        repositoryCoordinates.serverPath,
-                        repositoryCoordinates.repositoryPath.owner,
-                        repositoryCoordinates.repositoryPath.repository,
-                        GithubRequestPagination()
+                    repositoryCoordinates.serverPath,
+                    repositoryCoordinates.repositoryPath.owner,
+                    repositoryCoordinates.repositoryPath.repository,
+                    GithubRequestPagination()
                 )
             } else {
                 GithubApiRequests.Repos.Branches.get(nextLink);
@@ -209,5 +213,27 @@ class WorkflowRunListLoader(
 
     companion object {
         private val LOG = logger<WorkflowRunListLoader>()
+    }
+}
+
+object Contributors : GithubApiRequests.Entity("/contributors") {
+
+    fun get(server: GithubServerPath, username: String, repoName: String, pagination: GithubRequestPagination? = null) =
+        GithubApiRequest.Get.jsonPage<GithubUserWithPermissions>(
+            GithubApiRequests.getUrl(
+                server, "/repos/$username/$repoName", urlSuffix,
+                getQuery(pagination?.toString().orEmpty())
+            )
+        ).withOperationName("get contributors")
+
+    private fun getQuery(vararg queryParts: String): String {
+        val builder = StringBuilder()
+        for (part in queryParts) {
+            if (part.isEmpty()) continue
+            if (builder.isEmpty()) builder.append("?")
+            else builder.append("&")
+            builder.append(part)
+        }
+        return builder.toString()
     }
 }
