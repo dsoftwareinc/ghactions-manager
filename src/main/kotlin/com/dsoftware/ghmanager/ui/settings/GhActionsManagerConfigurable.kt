@@ -9,7 +9,13 @@ import com.intellij.openapi.options.BoundConfigurable
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.DialogPanel
 import com.intellij.ui.components.JBCheckBox
-import com.intellij.ui.dsl.builder.*
+import com.intellij.ui.dsl.builder.Cell
+import com.intellij.ui.dsl.builder.RowLayout
+import com.intellij.ui.dsl.builder.bindIntText
+import com.intellij.ui.dsl.builder.bindSelected
+import com.intellij.ui.dsl.builder.bindText
+import com.intellij.ui.dsl.builder.panel
+import com.intellij.ui.dsl.builder.selected
 import com.intellij.ui.layout.not
 import com.intellij.util.messages.Topic
 import org.jetbrains.plugins.github.util.GHHostedRepositoriesManager
@@ -23,7 +29,7 @@ internal class GhActionsManagerConfigurable internal constructor(project: Projec
 
     override fun apply() {
         super.apply()
-        ApplicationManager.getApplication().messageBus.syncPublisher(SETTINGS_CHANGED).settingsChanged()
+        ApplicationManager.getApplication().messageBus.syncPublisher(Util.SETTINGS_CHANGED).settingsChanged()
     }
 
     override fun createPanel(): DialogPanel {
@@ -90,11 +96,12 @@ internal class GhActionsManagerConfigurable internal constructor(project: Projec
         fun settingsChanged()
     }
 
-    companion object {
+    object Util {
         @JvmField
         @Topic.AppLevel
         val SETTINGS_CHANGED = Topic(SettingsChangedListener::class.java, Topic.BroadcastDirection.NONE)
     }
+
 }
 
 

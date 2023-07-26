@@ -1,7 +1,6 @@
 package com.dsoftware.ghmanager.data
 
 import com.dsoftware.ghmanager.api.model.WorkflowRunJobsList
-import com.dsoftware.ghmanager.ui.WorkflowToolWindowTabController
 import com.intellij.collaboration.ui.SingleValueModel
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.util.Disposer

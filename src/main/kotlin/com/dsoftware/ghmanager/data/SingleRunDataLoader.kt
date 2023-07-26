@@ -9,7 +9,7 @@ import com.intellij.util.EventDispatcher
 import com.intellij.util.concurrency.annotations.RequiresEdt
 import org.jetbrains.plugins.github.api.GithubApiRequest
 import org.jetbrains.plugins.github.api.GithubApiRequestExecutor
-import java.util.*
+import java.util.EventListener
 
 class SingleRunDataLoader(
     private val requestExecutor: GithubApiRequestExecutor
@@ -37,7 +37,7 @@ class SingleRunDataLoader(
     }
 
     fun <T> createDataProvider(request: GithubApiRequest<T>): DataProvider<T> {
-        return DataProvider<T>(progressManager, requestExecutor, request, null)
+        return DataProvider(progressManager, requestExecutor, request, null)
     }
 
     @RequiresEdt

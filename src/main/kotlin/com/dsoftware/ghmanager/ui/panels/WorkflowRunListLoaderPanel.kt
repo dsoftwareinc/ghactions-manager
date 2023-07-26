@@ -10,11 +10,26 @@ import com.dsoftware.ghmanager.ui.panels.filters.WfRunsFiltersFactory
 import com.dsoftware.ghmanager.ui.panels.filters.WfRunsSearchPanelViewModel
 import com.intellij.ide.CopyProvider
 import com.intellij.openapi.Disposable
-import com.intellij.openapi.actionSystem.*
+import com.intellij.openapi.actionSystem.ActionGroup
+import com.intellij.openapi.actionSystem.ActionManager
+import com.intellij.openapi.actionSystem.ActionPlaces
+import com.intellij.openapi.actionSystem.ActionPopupMenu
+import com.intellij.openapi.actionSystem.ActionUpdateThread
+import com.intellij.openapi.actionSystem.DataContext
+import com.intellij.openapi.actionSystem.DataProvider
+import com.intellij.openapi.actionSystem.PlatformDataKeys
 import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.progress.util.ProgressWindow
 import com.intellij.openapi.util.Disposer
-import com.intellij.ui.*
+import com.intellij.ui.AnimatedIcon
+import com.intellij.ui.ClientProperty
+import com.intellij.ui.ColorUtil
+import com.intellij.ui.JBColor
+import com.intellij.ui.ListUtil
+import com.intellij.ui.PopupHandler
+import com.intellij.ui.ScrollPaneFactory
+import com.intellij.ui.ScrollingUtil
+import com.intellij.ui.SimpleTextAttributes
 import com.intellij.ui.components.JBLabel
 import com.intellij.ui.components.JBList
 import com.intellij.util.ui.JBDimension
@@ -36,7 +51,18 @@ import java.awt.BorderLayout
 import java.awt.Component
 import java.awt.event.ActionEvent
 import java.awt.event.MouseEvent
-import javax.swing.*
+import javax.swing.AbstractAction
+import javax.swing.Action
+import javax.swing.Box
+import javax.swing.BoxLayout
+import javax.swing.JComponent
+import javax.swing.JLabel
+import javax.swing.JList
+import javax.swing.JPanel
+import javax.swing.ListCellRenderer
+import javax.swing.ListModel
+import javax.swing.ListSelectionModel
+import javax.swing.ScrollPaneConstants
 import javax.swing.event.ListDataEvent
 import javax.swing.event.ListDataListener
 
@@ -50,8 +76,8 @@ class LoadingErrorHandler(private val resetRunnable: () -> Unit) {
     }
 }
 
-class WorkflowRunList(model: ListModel<WorkflowRun>) : JBList<WorkflowRun>(model), DataProvider,
-    CopyProvider {
+class WorkflowRunList(model: ListModel<WorkflowRun>) :
+    JBList<WorkflowRun>(model), DataProvider, CopyProvider {
 
     init {
         selectionModel.selectionMode = ListSelectionModel.SINGLE_SELECTION
@@ -62,6 +88,10 @@ class WorkflowRunList(model: ListModel<WorkflowRun>) : JBList<WorkflowRun>(model
 
         ScrollingUtil.installActions(this)
         ClientProperty.put(this, AnimatedIcon.ANIMATION_IN_RENDERER_ALLOWED, true)
+    }
+
+    override fun getActionUpdateThread(): ActionUpdateThread {
+        return ActionUpdateThread.BGT
     }
 
     override fun getToolTipText(event: MouseEvent): String? {

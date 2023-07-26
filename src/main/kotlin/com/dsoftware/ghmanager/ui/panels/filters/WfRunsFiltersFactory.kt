@@ -55,7 +55,8 @@ internal class WfRunsFiltersFactory(vm: WfRunsSearchPanelViewModel) :
                     valuePresenter = { it.shortName },
                     popupItemPresenter = {
                         ChooserPopupUtil.PopupItemPresentation.Simple(
-                            it.shortName, avatarIconsProvider.getIcon(it.avatarUrl, AVATAR_SIZE), it.name)
+                            it.shortName, avatarIconsProvider.getIcon(it.avatarUrl, AVATAR_SIZE), it.name
+                        )
                     }),
             DropDownComponentFactory(vm.statusState)
                 .create(viewScope,
@@ -65,7 +66,8 @@ internal class WfRunsFiltersFactory(vm: WfRunsSearchPanelViewModel) :
                     valuePresenter = Companion::getStatusText,
                     popupItemPresenter = {
                         ChooserPopupUtil.PopupItemPresentation.Simple(
-                            getStatusText(it), ToolbarUtil.statusIcon(it.name.lowercase(), null))
+                            getStatusText(it), ToolbarUtil.statusIcon(it.name.lowercase(), null)
+                        )
                     }),
             DropDownComponentFactory(vm.branchFilterState)
                 .create(viewScope,
@@ -106,6 +108,7 @@ internal class WfRunsFiltersFactory(vm: WfRunsSearchPanelViewModel) :
             WfRunsListSearchValue.Status.QUEUED -> "Queued"
             WfRunsListSearchValue.Status.CANCELLED -> "Cancelled"
         }
+
         private fun getEventText(status: WfRunsListSearchValue.Event): @Nls String = when (status) {
             WfRunsListSearchValue.Event.PULL_REQUEST -> "pull_request"
             WfRunsListSearchValue.Event.PULL_REQUEST_TARGET -> "pull_request_target"

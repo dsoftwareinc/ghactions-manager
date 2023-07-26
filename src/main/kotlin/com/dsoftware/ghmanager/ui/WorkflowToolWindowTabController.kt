@@ -170,7 +170,6 @@ class WorkflowToolWindowTabController(
     }
 
 
-
     companion object {
         val KEY = Key.create<WorkflowToolWindowTabController>("Github.Actions.ToolWindow.Tab.Controller")
         private val LOG = logger<WorkflowToolWindowTabController>()

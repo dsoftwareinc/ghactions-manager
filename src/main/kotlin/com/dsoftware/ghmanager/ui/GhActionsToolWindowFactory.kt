@@ -55,7 +55,7 @@ class GhActionsToolWindowFactory : ToolWindowFactory, DumbAware {
         settingsService = GhActionsSettingsService.getInstance(toolWindow.project)
         val bus = ApplicationManager.getApplication().messageBus.connect(toolWindow.disposable)
         bus.subscribe(
-            GhActionsManagerConfigurable.SETTINGS_CHANGED,
+            GhActionsManagerConfigurable.Util.SETTINGS_CHANGED,
             object : GhActionsManagerConfigurable.SettingsChangedListener {
                 override fun settingsChanged() {
                     createToolWindowContent(toolWindow.project, toolWindow)

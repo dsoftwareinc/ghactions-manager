@@ -17,7 +17,7 @@ import java.util.concurrent.CompletableFuture
 import kotlin.properties.ReadOnlyProperty
 
 open class DataProvider<T>(
-    private val progressManager: ProgressManager,
+    progressManager: ProgressManager,
     private val requestExecutor: GithubApiRequestExecutor,
     private val githubApiRequest: GithubApiRequest<T>,
     private val errorValue: T?,
@@ -42,6 +42,7 @@ open class DataProvider<T>(
     private fun <T> backgroundProcessValue(backingValue: LazyCancellableBackgroundProcessValue<T>)
         : ReadOnlyProperty<Any?, CompletableFuture<T>> =
         ReadOnlyProperty { _, _ -> backingValue.value }
+
     fun url(): String = githubApiRequest.url
 
     @RequiresEdt

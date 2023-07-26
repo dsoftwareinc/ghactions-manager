@@ -7,8 +7,7 @@ import com.intellij.ui.components.JBList
 import com.intellij.util.text.DateFormatUtil
 import java.time.LocalDateTime
 import java.time.ZoneId
-import java.time.ZoneOffset
-import java.util.*
+import java.util.Date
 import javax.swing.Icon
 import javax.swing.event.ListSelectionEvent
 
