@@ -4,6 +4,12 @@
 
 ## [Unreleased]
 
+## [1.13.4]
+
+### 🐛 Bug Fixes
+
+- Fix exception thrown due to EDT thread #95
+
 ## [1.13.3]
 
 ### 🐛 Bug Fixes

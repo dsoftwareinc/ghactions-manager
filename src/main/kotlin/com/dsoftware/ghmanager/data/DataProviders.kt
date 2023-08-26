@@ -45,7 +45,6 @@ open class DataProvider<T>(
 
     fun url(): String = githubApiRequest.url
 
-    @RequiresEdt
     fun reload() {
         processValue.drop()
         runChangesEventDispatcher.multicaster.changed()
