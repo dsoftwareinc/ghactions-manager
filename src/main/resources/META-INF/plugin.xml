@@ -48,8 +48,10 @@
                     class="com.dsoftware.ghmanager.actions.CancelWorkflowAction"/>
             <action id="Github.Workflow.OpenFile"
                     class="com.dsoftware.ghmanager.actions.OpenWorkflowFileAction"/>
-            <action id="Github.Workflow.Open.PullRequest"
+            <action id="Github.Workflow.Open.PullRequest.In.Browser"
                     class="com.dsoftware.ghmanager.actions.PullRequestOpenInBrowserAction"/>
+            <action id="Github.Workflow.Open.PullRequest.In.ToolWindow"
+                    class="com.dsoftware.ghmanager.actions.OpenPullRequestInToolwindowAction"/>
             <reference id="Github.Workflow.List.Reload"/>
         </group>
         <group id="Github.ToolWindow.JobList.Popup">
