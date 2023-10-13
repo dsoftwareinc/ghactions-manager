@@ -70,7 +70,27 @@ data class Job(
     val runnerGroupId: Long?,
     /* The name of the runner group to which this job has been assigned. (If a runner hasn't yet been assigned, this will be null.) */
     val runnerGroupName: String?
-)
+) {
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as Job
+
+        if (id != other.id) return false
+        if (runId != other.runId) return false
+        if (runAttempt != other.runAttempt) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = id.hashCode()
+        result = 31 * result + runId.hashCode()
+        result = 31 * result + (runAttempt ?: 0)
+        return result
+    }
+}
 
 /**
  *

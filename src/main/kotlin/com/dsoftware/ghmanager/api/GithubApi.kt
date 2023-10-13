@@ -29,7 +29,7 @@ object GithubApi : GithubApiRequests.Entity("/repos") {
         GithubApiRequest.Post.Json(url, Object(), Object::class.java, null)
             .withOperationName("Rerun workflow")
 
-    suspend fun getBranches(coordinates: RepositoryCoordinates): GithubApiRequest<GithubResponsePage<GithubBranch>> =
+    fun getBranches(coordinates: RepositoryCoordinates): GithubApiRequest<GithubResponsePage<GithubBranch>> =
         GithubApiRequests.Repos.Branches.get(
             coordinates.serverPath,
             coordinates.repositoryPath.owner,

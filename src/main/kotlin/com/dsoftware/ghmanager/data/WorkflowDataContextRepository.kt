@@ -36,7 +36,7 @@ data class RepositoryCoordinates(
     }
 }
 
-@Service
+@Service(Service.Level.PROJECT)
 class WorkflowDataContextRepository(project: Project) {
     private val settingsService = GhActionsSettingsService.getInstance(project)
     private val repositories =
