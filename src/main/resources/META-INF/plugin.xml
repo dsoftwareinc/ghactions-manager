@@ -6,7 +6,7 @@
 
     <depends>com.intellij.modules.platform</depends>
     <depends>org.jetbrains.plugins.github</depends>
-    <idea-version since-build="231.4840.387"/>
+    <idea-version since-build="231.8109.175"/>
 
     <extensions defaultExtensionNs="com.intellij">
         <toolWindow
@@ -18,7 +18,7 @@
             implementation="com.dsoftware.ghmanager.ui.panels.GhActionConsoleFolding"/>
         <projectConfigurable
             parentId="tools"
-            instance="com.dsoftware.ghmanager.ui.settings.GhActionsManagerConfigurable"/>
+            instance="com.dsoftware.ghmanager.ui.settings.GhActionsManagerConfigurable" displayName="GitHub Workflows Manager"/>
     </extensions>
     <actions>
         <action
