@@ -61,7 +61,7 @@ internal class WfRunsFiltersFactory(vm: WfRunsSearchPanelViewModel) :
             DropDownComponentFactory(vm.statusState)
                 .create(viewScope,
                     filterName = "Status",
-                    items = WfRunsListSearchValue.Status.values().asList(),
+                    items = WfRunsListSearchValue.Status.entries,
                     onSelect = {},
                     valuePresenter = Companion::getStatusText,
                     popupItemPresenter = {
@@ -80,7 +80,7 @@ internal class WfRunsFiltersFactory(vm: WfRunsSearchPanelViewModel) :
             DropDownComponentFactory(vm.eventFilterState)
                 .create(viewScope,
                     filterName = "Event",
-                    items = WfRunsListSearchValue.Event.values().asList(),
+                    items = WfRunsListSearchValue.Event.entries,
                     onSelect = {},
                     valuePresenter = Companion::getEventText,
                     popupItemPresenter = {

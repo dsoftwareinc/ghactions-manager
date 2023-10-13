@@ -7,7 +7,6 @@ import com.intellij.openapi.Disposable
 import com.intellij.openapi.diagnostic.thisLogger
 import com.intellij.openapi.progress.ProgressManager
 import com.intellij.util.EventDispatcher
-import com.intellij.util.concurrency.annotations.RequiresEdt
 import org.jetbrains.plugins.github.api.GithubApiRequest
 import org.jetbrains.plugins.github.api.GithubApiRequestExecutor
 import org.jetbrains.plugins.github.util.LazyCancellableBackgroundProcessValue
@@ -24,7 +23,7 @@ open class DataProvider<T>(
 ) {
     private val runChangesEventDispatcher = EventDispatcher.create(DataProviderChangeListener::class.java)
 
-    val processValue: LazyCancellableBackgroundProcessValue<T> =
+    private val processValue: LazyCancellableBackgroundProcessValue<T> =
         LazyCancellableBackgroundProcessValue.create(progressManager) {
             try {
                 LOG.info("Executing ${githubApiRequest.url}")
