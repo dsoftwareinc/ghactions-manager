@@ -4,6 +4,12 @@
 
 ## [Unreleased]
 
+## [1.13.5]
+
+### Maintainance
+
+- Add support for build 223.3 and fixed a few warnings. @wyatt-herkamp #97
+
 ## [1.13.4]
 
 ### 🐛 Bug Fixes
