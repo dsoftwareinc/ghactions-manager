@@ -22,7 +22,8 @@ internal class WfRunsSearchPanelViewModel(
         get() = context.runsListLoader.repoBranches
     val collaborators
         get() = context.runsListLoader.repoCollaborators
-
+    val workflowTypes
+        get() = context.runsListLoader.workflowTypes
     override fun WfRunsListSearchValue.withQuery(query: String?) = copy(searchQuery = query)
 
     override val quickFilters: List<WorkflowRunListQuickFilter> = listOf(
@@ -33,6 +34,7 @@ internal class WfRunsSearchPanelViewModel(
     val eventFilterState = searchState.partialState(WfRunsListSearchValue::event) { copy(event = it) }
     val userFilterState = searchState.partialState(WfRunsListSearchValue::actor) { copy(actor = it) }
     val statusState = searchState.partialState(WfRunsListSearchValue::status) { copy(status = it) }
+    val workflowType = searchState.partialState(WfRunsListSearchValue::status) { copy(status = it) }
 
 }
 
