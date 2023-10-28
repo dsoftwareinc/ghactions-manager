@@ -4,6 +4,12 @@
 
 ## [Unreleased]
 
+## [1.14.0]
+
+### 🚀 Features
+
+- Filter by workflow type #98
+
 ## [1.13.5]
 
 ### Maintainance
