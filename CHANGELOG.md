@@ -10,9 +10,13 @@
 
 - Filter by workflow type #98
 
+### Maintenance
+
+- Improve filter behavior
+
 ## [1.13.5]
 
-### Maintainance
+### Maintenance
 
 - Add support for build 223.3 and fixed a few warnings. @wyatt-herkamp #97
 
