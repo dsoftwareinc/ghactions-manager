@@ -16,8 +16,6 @@ data class WfRunsListSearchValue(
     val event: Event? = null,
     val workflowType: WorkflowType? = null,
 ) : ReviewListSearchValue {
-    val actorName
-        get() = actor?.shortName
 
     fun getShortText(): String {
         @Suppress("HardCodedStringLiteral")
@@ -34,7 +32,7 @@ data class WfRunsListSearchValue(
     }
 
     fun toWorkflowRunFilter(): WorkflowRunFilter {
-        return WorkflowRunFilter(branch, status?.toString()?.lowercase(), actor?.shortName, "")
+        return WorkflowRunFilter(branch, status?.toString()?.lowercase(), actor?.shortName, "", workflowType?.id)
     }
 
     enum class Status {

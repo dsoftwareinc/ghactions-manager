@@ -16,6 +16,7 @@ data class WorkflowRunFilter(
     val status: String? = null,
     val actor: String? = null,
     val event: String? = null,
+    val workflowId: Long? = null,
 )
 typealias GitHubLog = Map<String, Map<Int, String>>
 
@@ -47,11 +48,12 @@ object GithubApi : GithubApiRequests.Entity("/repos") {
         filter: WorkflowRunFilter,
         pagination: GithubRequestPagination? = null
     ): GithubApiRequest<WorkflowRuns> {
+        val specificWorkflow = if (filter.workflowId == null) "" else "/workflows/${filter.workflowId}"
         val url = GithubApiRequests.getUrl(
             coordinates.serverPath,
             urlSuffix,
             "/${coordinates.repositoryPath}",
-            "/actions",
+            "/actions${specificWorkflow}",
             "/runs",
             GithubApiUrlQueryBuilder.urlQuery {
                 param("event", filter.event)
@@ -62,6 +64,7 @@ object GithubApi : GithubApiRequests.Entity("/repos") {
             })
         return get<WorkflowRuns>(url, "Get workflow runs", pagination)
     }
+
 
     fun getWorkflowRunJobs(url: String) = get<WorkflowRunJobsList>(
         url, "Get workflow-run jobs", pagination = GithubRequestPagination(1)

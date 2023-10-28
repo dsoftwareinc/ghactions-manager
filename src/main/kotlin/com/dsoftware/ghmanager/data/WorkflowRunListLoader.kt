@@ -94,6 +94,11 @@ class WorkflowRunListLoader(
                 updateBranches(it)
             }
         }
+        if (workflowTypes.isEmpty()) {
+            progressManager.submitIOTask(NonReusableEmptyProgressIndicator()) {
+                updateWorkflowTypes(it)
+            }
+        }
 
         lastFuture = lastFuture.thenCompose {
             progressManager.submitIOTask(indicator) {
@@ -186,6 +191,7 @@ class WorkflowRunListLoader(
         listModel.removeAll()
         repoCollaborators.clear()
         repoBranches.clear()
+        workflowTypes.clear()
     }
 
     private fun canLoadMore() = !loading && (page * settingsService.state.pageSize < totalCount)
