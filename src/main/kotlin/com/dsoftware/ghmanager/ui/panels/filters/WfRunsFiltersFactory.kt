@@ -47,6 +47,15 @@ internal class WfRunsFiltersFactory(vm: WfRunsSearchPanelViewModel) :
             AsyncImageIconsProvider(viewScope, AvatarLoader(vm.context.requestExecutor))
         )
         return listOf(
+            DropDownComponentFactory(vm.workflowType)
+                .create(viewScope,
+                    filterName = "Workflow",
+                    items = vm.workflowTypes,
+                    onSelect = {},
+                    valuePresenter = { it.name },
+                    popupItemPresenter = {
+                        ChooserPopupUtil.PopupItemPresentation.Simple(it.name.toString())
+                    }),
             DropDownComponentFactory(vm.userFilterState)
                 .create(viewScope,
                     filterName = "Actor",

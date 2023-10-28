@@ -1,18 +1,32 @@
 package com.dsoftware.ghmanager.api.model
 
 import com.fasterxml.jackson.annotation.JsonFormat
+import kotlinx.serialization.Serializable
 import java.util.Date
 
 
-data class WorkflowRuns(
+data class WorkflowTypes(
     val total_count: Int,
-    val workflow_runs: List<WorkflowRun> = emptyList()
+    val workflows: List<WorkflowType> = emptyList()
+)
+
+@Serializable
+data class WorkflowType(
+    val id: Long,
+    val name: String,
+    val path: String,
+    val state: String,
 )
 
 data class PullRequest(
     val id: Int,
     val number: Int,
     val url: String,
+)
+
+data class WorkflowRuns(
+    val total_count: Int,
+    val workflow_runs: List<WorkflowRun> = emptyList()
 )
 
 data class WorkflowRun(
@@ -37,6 +51,7 @@ data class WorkflowRun(
     val artifacts_url: String,
     val cancel_url: String,
     val rerun_url: String,
+    val workflow_id: Long,
     val workflow_url: String,
     val name: String,
     val head_commit: GitHubHeadCommit,

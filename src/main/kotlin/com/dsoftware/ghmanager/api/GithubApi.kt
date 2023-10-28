@@ -2,13 +2,12 @@ package com.dsoftware.ghmanager.api
 
 import com.dsoftware.ghmanager.api.model.WorkflowRunJobsList
 import com.dsoftware.ghmanager.api.model.WorkflowRuns
+import com.dsoftware.ghmanager.api.model.WorkflowTypes
 import com.dsoftware.ghmanager.data.RepositoryCoordinates
 import com.intellij.openapi.diagnostic.logger
 import org.jetbrains.plugins.github.api.GithubApiRequest
 import org.jetbrains.plugins.github.api.GithubApiRequest.Get.Companion.json
 import org.jetbrains.plugins.github.api.GithubApiRequests
-import org.jetbrains.plugins.github.api.data.GithubBranch
-import org.jetbrains.plugins.github.api.data.GithubResponsePage
 import org.jetbrains.plugins.github.api.data.request.GithubRequestPagination
 import org.jetbrains.plugins.github.api.util.GithubApiUrlQueryBuilder
 
@@ -17,6 +16,7 @@ data class WorkflowRunFilter(
     val status: String? = null,
     val actor: String? = null,
     val event: String? = null,
+    val workflowId: Long? = null,
 )
 typealias GitHubLog = Map<String, Map<Int, String>>
 
@@ -29,23 +29,31 @@ object GithubApi : GithubApiRequests.Entity("/repos") {
         GithubApiRequest.Post.Json(url, Object(), Object::class.java, null)
             .withOperationName("Rerun workflow")
 
-    fun getBranches(coordinates: RepositoryCoordinates): GithubApiRequest<GithubResponsePage<GithubBranch>> =
-        GithubApiRequests.Repos.Branches.get(
+    fun getWorkflowTypes(
+        coordinates: RepositoryCoordinates,
+        pagination: GithubRequestPagination? = null
+    ): GithubApiRequest<WorkflowTypes> {
+        val url = GithubApiRequests.getUrl(
             coordinates.serverPath,
-            coordinates.repositoryPath.owner,
-            coordinates.repositoryPath.repository,
+            urlSuffix,
+            "/${coordinates.repositoryPath}",
+            "/actions",
+            "/workflows"
         )
+        return get<WorkflowTypes>(url, "Get workflow types", pagination)
+    }
 
     fun getWorkflowRuns(
         coordinates: RepositoryCoordinates,
         filter: WorkflowRunFilter,
         pagination: GithubRequestPagination? = null
     ): GithubApiRequest<WorkflowRuns> {
+        val specificWorkflow = if (filter.workflowId == null) "" else "/workflows/${filter.workflowId}"
         val url = GithubApiRequests.getUrl(
             coordinates.serverPath,
             urlSuffix,
             "/${coordinates.repositoryPath}",
-            "/actions",
+            "/actions${specificWorkflow}",
             "/runs",
             GithubApiUrlQueryBuilder.urlQuery {
                 param("event", filter.event)
@@ -54,8 +62,9 @@ object GithubApi : GithubApiRequests.Entity("/repos") {
                 param("branch", filter.branch)
                 param(pagination)
             })
-        return get<WorkflowRuns>(url, "search workflow runs", pagination)
+        return get<WorkflowRuns>(url, "Get workflow runs", pagination)
     }
+
 
     fun getWorkflowRunJobs(url: String) = get<WorkflowRunJobsList>(
         url, "Get workflow-run jobs", pagination = GithubRequestPagination(1)

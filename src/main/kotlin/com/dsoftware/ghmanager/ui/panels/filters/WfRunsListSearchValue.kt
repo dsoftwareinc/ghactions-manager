@@ -1,6 +1,7 @@
 package com.dsoftware.ghmanager.ui.panels.filters
 
 import com.dsoftware.ghmanager.api.WorkflowRunFilter
+import com.dsoftware.ghmanager.api.model.WorkflowType
 import com.intellij.collaboration.ui.codereview.list.search.ReviewListSearchValue
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
@@ -13,9 +14,8 @@ data class WfRunsListSearchValue(
     val branch: String? = null,
     val status: Status? = null,
     val event: Event? = null,
+    val workflowType: WorkflowType? = null,
 ) : ReviewListSearchValue {
-    val actorName
-        get() = actor?.shortName
 
     fun getShortText(): String {
         @Suppress("HardCodedStringLiteral")
@@ -32,7 +32,7 @@ data class WfRunsListSearchValue(
     }
 
     fun toWorkflowRunFilter(): WorkflowRunFilter {
-        return WorkflowRunFilter(branch, status?.toString()?.lowercase(), actor?.shortName, "")
+        return WorkflowRunFilter(branch, status?.toString()?.lowercase(), actor?.shortName, "", workflowType?.id)
     }
 
     enum class Status {
