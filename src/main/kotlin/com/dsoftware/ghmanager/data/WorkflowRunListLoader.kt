@@ -109,9 +109,8 @@ class WorkflowRunListLoader(
     }
 
     private fun updateCollaborators(indicator: ProgressIndicator) {
-        repoCollaborators.clear()
+        val collaboratorSet = HashSet<GHUser>()
         var nextLink: String? = null
-
         do {
             val request = if (nextLink == null) {
                 GithubApiRequests.Repos.Collaborators.get(
@@ -123,19 +122,19 @@ class WorkflowRunListLoader(
             } else {
                 GithubApiRequests.Repos.Collaborators.get(nextLink)
             }
-
-
             LOG.info("Calling ${request.url}")
             val response = requestExecutor.execute(indicator, request)
-            repoCollaborators.addAll(
+            collaboratorSet.addAll(
                 response.items.map { GHUser(it.nodeId, it.login, it.htmlUrl, it.avatarUrl ?: "", null) }
             )
             nextLink = response.nextLink
         } while (nextLink != null)
+        repoCollaborators.clear()
+        repoCollaborators.addAll(collaboratorSet)
     }
 
     private fun updateBranches(indicator: ProgressIndicator) {
-        val branchesSet = HashSet<String>()
+        val branchSet = HashSet<String>()
         var nextLink: String? = null
         do {
             val request = if (nextLink == null) {
@@ -150,11 +149,11 @@ class WorkflowRunListLoader(
             }
             LOG.info("Calling ${request.url}")
             val response = requestExecutor.execute(indicator, request)
-            branchesSet.addAll(response.items.map { it.name })
+            branchSet.addAll(response.items.map { it.name })
             nextLink = response.nextLink
         } while (response.hasNext)
         repoBranches.clear()
-        repoBranches.addAll(branchesSet)
+        repoBranches.addAll(branchSet)
     }
 
     private fun updateWorkflowTypes(indicator: ProgressIndicator) {
