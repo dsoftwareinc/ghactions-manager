@@ -3,6 +3,7 @@ package com.dsoftware.ghmanager.data
 import com.dsoftware.ghmanager.api.GithubApi
 import com.dsoftware.ghmanager.api.WorkflowRunFilter
 import com.dsoftware.ghmanager.api.model.WorkflowRun
+import com.dsoftware.ghmanager.api.model.WorkflowType
 import com.dsoftware.ghmanager.ui.settings.GhActionsSettingsService
 import com.intellij.collaboration.async.CompletableFutureUtil
 import com.intellij.collaboration.async.CompletableFutureUtil.handleOnEdt
@@ -36,6 +37,7 @@ class WorkflowRunListLoader(
     val listModel = CollectionListModel<WorkflowRun>()
     val repoCollaborators = ArrayList<GHUser>()
     val repoBranches = ArrayList<String>()
+    val workflowTypes = ArrayList<WorkflowType>()
     private val progressManager = ProgressManager.getInstance()
     private var lastFuture = CompletableFuture.completedFuture(emptyList<WorkflowRun>())
     private val loadingStateChangeEventDispatcher = EventDispatcher.create(SimpleEventListener::class.java)
@@ -90,6 +92,11 @@ class WorkflowRunListLoader(
         if (repoBranches.isEmpty()) {
             progressManager.submitIOTask(NonReusableEmptyProgressIndicator()) {
                 updateBranches(it)
+            }
+        }
+        if (workflowTypes.isEmpty()) {
+            progressManager.submitIOTask(NonReusableEmptyProgressIndicator()) {
+                updateWorkflowTypes(it)
             }
         }
 
@@ -149,6 +156,23 @@ class WorkflowRunListLoader(
         repoBranches.addAll(branchSet)
     }
 
+    private fun updateWorkflowTypes(indicator: ProgressIndicator) {
+        val workflowTypesSet = HashSet<WorkflowType>()
+        var nextPage: Int = 0
+        do {
+            nextPage += 1
+            val request = GithubApi.getWorkflowTypes(
+                repositoryCoordinates,
+                GithubRequestPagination(pageNumber = nextPage, pageSize = 100)
+            )
+            LOG.info("Calling ${request.url}")
+            val response = requestExecutor.execute(indicator, request)
+            workflowTypesSet.addAll(response.workflows)
+        } while (nextPage * 100 < response.total_count)
+        workflowTypes.clear()
+        workflowTypes.addAll(workflowTypesSet)
+    }
+
     override fun dispose() {
         progressIndicator.cancel()
         task.cancel(true)
@@ -166,6 +190,7 @@ class WorkflowRunListLoader(
         listModel.removeAll()
         repoCollaborators.clear()
         repoBranches.clear()
+        workflowTypes.clear()
     }
 
     private fun canLoadMore() = !loading && (page * settingsService.state.pageSize < totalCount)
