@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat
 import java.util.Date
 
 data class WorkflowRunJobsList(
-    val total_count: Int,
+    val totalCount: Int,
     val jobs: List<Job>
 )
 

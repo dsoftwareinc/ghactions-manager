@@ -168,7 +168,7 @@ class WorkflowRunListLoader(
             LOG.info("Calling ${request.url}")
             val response = requestExecutor.execute(indicator, request)
             workflowTypesSet.addAll(response.workflows)
-        } while (nextPage * 100 < response.total_count)
+        } while (nextPage * 100 < response.totalCount)
         workflowTypes.clear()
         workflowTypes.addAll(workflowTypesSet)
     }
@@ -204,8 +204,8 @@ class WorkflowRunListLoader(
         )
         LOG.info("Calling ${request.url}")
         val wfRunsResponse = requestExecutor.execute(indicator, request)
-        totalCount = wfRunsResponse.total_count
-        val workflowRuns = wfRunsResponse.workflow_runs
+        totalCount = wfRunsResponse.totalCount
+        val workflowRuns = wfRunsResponse.workflowRuns
         if (update) {
             val existingRunIds = listModel.items.mapIndexed { idx, it -> it.id to idx }.toMap()
             val newRuns = workflowRuns.filter { !existingRunIds.contains(it.id) }

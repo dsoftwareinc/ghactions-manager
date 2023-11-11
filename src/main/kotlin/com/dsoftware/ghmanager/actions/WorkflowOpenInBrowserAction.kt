@@ -40,7 +40,7 @@ class WorkflowOpenInBrowserAction : OpenInBrowserAction("Open this workflow run 
 
     override fun getData(dataContext: DataContext): String? {
         dataContext.getData(CommonDataKeys.PROJECT) ?: return null
-        return dataContext.getData(ActionKeys.SELECTED_WORKFLOW_RUN)?.html_url
+        return dataContext.getData(ActionKeys.SELECTED_WORKFLOW_RUN)?.htmlUrl
     }
 }
 
@@ -58,7 +58,7 @@ class PullRequestOpenInBrowserAction : OpenInBrowserAction("Open Pull-Request in
         dataContext.getData(CommonDataKeys.PROJECT) ?: return null
         LOG.info("${dataContext.getData(ActionKeys.SELECTED_WORKFLOW_RUN)?.url}")
         val run = dataContext.getData(ActionKeys.SELECTED_WORKFLOW_RUN) ?: return null
-        val pullRequestNumber = run.pull_requests?.firstOrNull()?.number ?: return null
-        return "${run.repository.html_url}/pull/$pullRequestNumber"
+        val pullRequestNumber = run.pullRequests?.firstOrNull()?.number ?: return null
+        return "${run.repository.htmlUrl}/pull/$pullRequestNumber"
     }
 }

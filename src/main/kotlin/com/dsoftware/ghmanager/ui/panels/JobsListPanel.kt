@@ -146,7 +146,7 @@ class JobListComponent(
                 infoPanel.setInfo("")
                 it?.let {
                     list.add(it.jobs)
-                    infoPanel.setInfo("${it.total_count} jobs loaded")
+                    infoPanel.setInfo("${it.totalCount} jobs loaded")
                 }
             }
             val listComponent = JobListComponent(list, infoInNewLine).apply {

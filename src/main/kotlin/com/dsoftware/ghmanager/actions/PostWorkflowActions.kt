@@ -39,20 +39,20 @@ abstract class PostUrlAction(
 class CancelWorkflowAction : PostUrlAction("Cancel Workflow", null, AllIcons.Actions.Cancel) {
     override fun update(e: AnActionEvent) {
         val context = e.dataContext.getData(ActionKeys.SELECTED_WORKFLOW_RUN)
-        val url = context?.cancel_url
+        val url = context?.cancelUrl
         val status = context?.status
         e.presentation.isEnabledAndVisible = (url != null) && (status == "in_progress" || status == "queued")
     }
 
     override fun getUrl(dataContext: DataContext): String? {
         dataContext.getData(CommonDataKeys.PROJECT) ?: return null
-        return dataContext.getData(ActionKeys.SELECTED_WORKFLOW_RUN)?.cancel_url
+        return dataContext.getData(ActionKeys.SELECTED_WORKFLOW_RUN)?.cancelUrl
     }
 }
 
 class RerunWorkflowAction : PostUrlAction("Rerun Workflow", null, AllIcons.Actions.Rerun) {
     override fun getUrl(dataContext: DataContext): String? {
         dataContext.getData(CommonDataKeys.PROJECT) ?: return null
-        return dataContext.getData(ActionKeys.SELECTED_WORKFLOW_RUN)?.rerun_url
+        return dataContext.getData(ActionKeys.SELECTED_WORKFLOW_RUN)?.rerunUrl
     }
 }
