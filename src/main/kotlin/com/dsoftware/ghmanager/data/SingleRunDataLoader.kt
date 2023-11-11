@@ -25,14 +25,14 @@ class SingleRunDataLoader(
 
 
     fun getLogsDataProvider(workflowRun: WorkflowRun): WorkflowRunLogsDataProvider {
-        return cache.get(workflowRun.logs_url) {
-            WorkflowRunLogsDataProvider(progressManager, requestExecutor, workflowRun.logs_url)
+        return cache.get(workflowRun.logsUrl) {
+            WorkflowRunLogsDataProvider(progressManager, requestExecutor, workflowRun.logsUrl)
         } as WorkflowRunLogsDataProvider
     }
 
     fun getJobsDataProvider(workflowRun: WorkflowRun): WorkflowRunJobsDataProvider {
-        return cache.get(workflowRun.jobs_url) {
-            WorkflowRunJobsDataProvider(progressManager, requestExecutor, workflowRun.jobs_url)
+        return cache.get(workflowRun.jobsUrl) {
+            WorkflowRunJobsDataProvider(progressManager, requestExecutor, workflowRun.jobsUrl)
         } as WorkflowRunJobsDataProvider
     }
 

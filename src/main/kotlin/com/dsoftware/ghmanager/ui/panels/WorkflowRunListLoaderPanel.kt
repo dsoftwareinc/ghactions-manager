@@ -143,21 +143,21 @@ class WorkflowRunList(model: ListModel<WorkflowRun>) :
 
             stateIcon.icon = ToolbarUtil.statusIcon(ghWorkflowRun.status, ghWorkflowRun.conclusion)
             title.apply {
-                text = ghWorkflowRun.head_commit.message.split("\n")[0]
+                text = ghWorkflowRun.headCommit.message.split("\n")[0]
                 foreground = primaryTextColor
             }
 
             info.apply {
-                val updatedAtLabel = ToolbarUtil.makeTimePretty(ghWorkflowRun.updated_at)
+                val updatedAtLabel = ToolbarUtil.makeTimePretty(ghWorkflowRun.updatedAt)
                 val action = if (ghWorkflowRun.event == "release") "created by" else "pushed by"
 
-                text = "${ghWorkflowRun.name} #${ghWorkflowRun.run_number}: " +
-                    "$action ${ghWorkflowRun.head_commit.author.name} started $updatedAtLabel"
+                text = "${ghWorkflowRun.name} #${ghWorkflowRun.runNumber}: " +
+                    "$action ${ghWorkflowRun.headCommit.author.name} started $updatedAtLabel"
                 foreground = secondaryTextColor
             }
             labels.apply {
                 removeAll()
-                add(JBLabel(" ${ghWorkflowRun.head_branch} ", UIUtil.ComponentStyle.SMALL).apply {
+                add(JBLabel(" ${ghWorkflowRun.headBranch} ", UIUtil.ComponentStyle.SMALL).apply {
                     foreground = JBColor(ColorUtil.softer(secondaryTextColor), ColorUtil.softer(secondaryTextColor))
                 })
                 add(Box.createRigidArea(JBDimension(4, 0)))

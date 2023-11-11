@@ -6,7 +6,7 @@ import java.util.Date
 
 
 data class WorkflowTypes(
-    val total_count: Int,
+    val totalCount: Int,
     val workflows: List<WorkflowType> = emptyList()
 )
 
@@ -25,38 +25,38 @@ data class PullRequest(
 )
 
 data class WorkflowRuns(
-    val total_count: Int,
-    val workflow_runs: List<WorkflowRun> = emptyList()
+    val totalCount: Int,
+    val workflowRuns: List<WorkflowRun> = emptyList()
 )
 
 data class WorkflowRun(
     val id: Long,
     val path: String?,
-    val node_id: String,
-    val head_branch: String?,
-    val head_sha: String?,
-    val run_number: Int,
+    val nodeId: String,
+    val headBranch: String?,
+    val headSha: String?,
+    val runNumber: Int,
     val event: String,
     val status: String,
     val conclusion: String?,
     val url: String,
-    val html_url: String,
+    val htmlUrl: String,
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'", timezone = "UTC")
-    val created_at: Date?,
+    val createdAt: Date?,
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'", timezone = "UTC")
-    val updated_at: Date?,
-    val jobs_url: String,
-    val logs_url: String,
-    val check_suite_url: String,
-    val artifacts_url: String,
-    val cancel_url: String,
-    val rerun_url: String,
-    val workflow_id: Long,
-    val workflow_url: String,
+    val updatedAt: Date?,
+    val jobsUrl: String,
+    val logsUrl: String,
+    val checkSuiteUrl: String,
+    val artifactsUrl: String,
+    val cancelUrl: String,
+    val rerunUrl: String,
+    val workflowId: Long,
+    val workflowUrl: String,
     val name: String,
-    val head_commit: GitHubHeadCommit,
+    val headCommit: GitHubHeadCommit,
     val repository: GitHubRepository,
-    val pull_requests: List<PullRequest>? = emptyList(),
+    val pullRequests: List<PullRequest>? = emptyList(),
 ) : Comparable<WorkflowRun> {
 
     /**
@@ -64,16 +64,16 @@ data class WorkflowRun(
      * @param other The other workflow to compare to
      */
     override fun compareTo(other: WorkflowRun): Int {
-        return other.updated_at?.compareTo(this.updated_at)
-            ?: other.created_at?.compareTo(this.created_at)
-            ?: other.run_number.compareTo(this.run_number)
+        return other.updatedAt?.compareTo(this.updatedAt)
+            ?: other.createdAt?.compareTo(this.createdAt)
+            ?: other.runNumber.compareTo(this.runNumber)
     }
 }
 
 data class GitHubRepository(
     val id: Int,
-    val pulls_url: String,
-    val html_url: String,
+    val pullsUrl: String,
+    val htmlUrl: String,
 )
 
 data class GitHubHeadCommit(

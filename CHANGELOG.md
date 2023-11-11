@@ -4,6 +4,12 @@
 
 ## [Unreleased]
 
+## [1.15.0]
+
+### 🐛 Bug Fixes
+
+- Using camel-case variable names in POJOs #99
+
 ## [1.14.0]
 
 ### 🚀 Features
