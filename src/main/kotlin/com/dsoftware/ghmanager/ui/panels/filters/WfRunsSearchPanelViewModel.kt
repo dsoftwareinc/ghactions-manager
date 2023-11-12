@@ -24,10 +24,12 @@ internal class WfRunsSearchPanelViewModel(
         get() = context.runsListLoader.repoCollaborators
     val workflowTypes
         get() = context.runsListLoader.workflowTypes
+
     override fun WfRunsListSearchValue.withQuery(query: String?) = copy(searchQuery = query)
 
     override val quickFilters: List<WorkflowRunListQuickFilter> = listOf(
         WorkflowRunListQuickFilter.All(),
+        WorkflowRunListQuickFilter.InProgres(),
     )
 
     val branchFilterState = searchState.partialState(WfRunsListSearchValue::branch) { copy(branch = it) }
@@ -39,7 +41,12 @@ internal class WfRunsSearchPanelViewModel(
 
 sealed class WorkflowRunListQuickFilter(val title: String) : ReviewListQuickFilter<WfRunsListSearchValue> {
 
+
     class All : WorkflowRunListQuickFilter("All workflow runs") {
         override val filter = WfRunsListSearchValue()
+    }
+
+    class InProgres : WorkflowRunListQuickFilter("Runs in progress") {
+        override val filter = WfRunsListSearchValue(status = WfRunsListSearchValue.Status.IN_PROGRESS)
     }
 }
