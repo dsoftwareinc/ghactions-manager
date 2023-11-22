@@ -97,7 +97,7 @@ class WorkflowDataContextRepository(project: Project) {
         requestExecutor.addListener(singleRunDataLoader) {
             singleRunDataLoader.invalidateAllData()
         }
-        val listLoader = WorkflowRunListLoader(
+        val runsLoader = WorkflowRunListLoader(
             disposable,
             requestExecutor,
             repositoryCoordinates,
@@ -110,7 +110,7 @@ class WorkflowDataContextRepository(project: Project) {
             toolWindow.project,
             account,
             singleRunDataLoader,
-            listLoader,
+            runsLoader,
             repositoryMapping,
             requestExecutor,
         )
