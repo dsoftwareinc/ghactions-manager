@@ -20,7 +20,7 @@ internal class WfRunsListPersistentSearchHistory :
 
     @Serializable
     data class HistoryState(
-        val history: List<WfRunsListSearchValue> = emptyList(),
+        val history: List<WfRunsListSearchValue> = mutableListOf(),
         val lastFilter: WfRunsListSearchValue? = null
     )
 
@@ -28,7 +28,7 @@ internal class WfRunsListPersistentSearchHistory :
         get() = state.lastFilter
         set(value) {
             updateState {
-                it.copy(lastFilter = value)
+                it.copy(lastFilter = value, history = it.history + listOfNotNull(value))
             }
         }
 

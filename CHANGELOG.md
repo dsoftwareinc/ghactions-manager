@@ -4,11 +4,13 @@
 
 ## [Unreleased]
 
-## [1.15.0]
+## [1.14.1]
 
 ### 🐛 Bug Fixes
 
 - Using camel-case variable names in POJOs #99
+- WfRunsListPersistentSearchHistory state is not being save properly #102
+- Fix updating logs from non-EDT #101
 
 ## [1.14.0]
 
