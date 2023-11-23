@@ -40,15 +40,9 @@ class WorkflowTypesActionsGroup : ActionGroup("Select Workflow to Execute", true
         val context = e.getData(ActionKeys.ACTION_DATA_CONTEXT) ?: return EMPTY_ARRAY
         val workflowTypeList: List<WorkflowType> = context.runsListLoader.workflowTypes
         LOG.debug("Got ${workflowTypeList.size} workflow types")
-        val description = "Select workflow to dispatch"
+
         val children: List<AnAction> = workflowTypeList.map { workflowType ->
-            val text = workflowType.name
-            val action: AnAction = object : AnAction(text, description, null) {
-                override fun actionPerformed(e: AnActionEvent) {
-                    // Execute workflow
-                }
-            }
-            action
+            WorkflowDispatchAction(workflowType)
         }.toList()
 
         return children.toTypedArray()
