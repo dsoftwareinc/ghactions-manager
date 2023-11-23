@@ -20,5 +20,5 @@ object ActionKeys {
 
     @JvmStatic
     val ACTION_DATA_CONTEXT =
-        DataKey.create<WorkflowRunSelectionContext>("com.dsoftware.githubactionstab.workflowrun.action.datacontext")
+        DataKey.create<WorkflowRunSelectionContext>("com.dsoftware.ghactions.workflowrun.action.datacontext")
 }
