@@ -1,13 +1,13 @@
 [versions]
 # libraries
-annotations = "24.0.1"
+annotations = "24.1.0"
 
 # plugins
-kotlin = "1.9.10"
+kotlin = "1.9.20"
 changelog = "2.2.0"
 gradleIntelliJPlugin = "1.16.0"
 qodana = "0.1.13"
-kover = "0.7.3"
+kover = "0.7.4"
 dokka = "1.8.10"
 serialization = "1.5.1"
 

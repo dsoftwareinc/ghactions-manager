@@ -25,6 +25,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.util.Key
 import com.intellij.ui.components.JBPanelWithEmptyText
+import com.intellij.util.concurrency.annotations.RequiresEdt
 import com.intellij.util.ui.UIUtil
 import java.awt.BorderLayout
 import javax.swing.plaf.PanelUI
@@ -81,6 +82,7 @@ fun createLogConsolePanel(
         isOpaque = false
     }
 
+    @RequiresEdt
     fun addConsole(logValue: String?) {
         if (logValue.isNullOrBlank()) {
             return
