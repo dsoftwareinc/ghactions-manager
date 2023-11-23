@@ -3,6 +3,7 @@ package com.dsoftware.ghmanager.actions
 import com.dsoftware.ghmanager.api.GithubApi
 import com.dsoftware.ghmanager.api.model.WorkflowType
 import com.dsoftware.ghmanager.data.RepositoryCoordinates
+import com.dsoftware.ghmanager.data.WorkflowRunSelectionContext
 import com.intellij.icons.AllIcons
 import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnActionEvent
@@ -14,8 +15,9 @@ import org.jetbrains.plugins.github.util.GithubUrlUtil
 import javax.swing.Icon
 
 abstract class PostUrlAction(
-    val text: String, description: String?, icon: Icon, private val data: Any? = null,
+    private val text: String, description: String?, icon: Icon,
 ) : DumbAwareAction(text, description, icon) {
+    private var context: WorkflowRunSelectionContext? = null
     override fun getActionUpdateThread(): ActionUpdateThread {
         return ActionUpdateThread.BGT
     }
@@ -32,13 +34,16 @@ abstract class PostUrlAction(
             val context = e.getRequiredData(ActionKeys.ACTION_DATA_CONTEXT)
             val future = context.dataLoader.createDataProvider(request).request
             future.thenApply {
-                context.resetAllData()
+                afterPostUrl()
             }
         }
     }
 
     abstract fun getUrl(dataContext: DataContext): String?
     open fun getData(dataContext: DataContext): Any = Object()
+    open fun afterPostUrl() {
+        context.let { it?.resetAllData() }
+    }
 }
 
 class CancelWorkflowAction : PostUrlAction("Cancel Workflow", null, AllIcons.Actions.Cancel) {
@@ -85,5 +90,8 @@ class WorkflowDispatchAction(private val workflowType: WorkflowType) :
     override fun getData(dataContext: DataContext): Any {
         val context = dataContext.getData(ActionKeys.ACTION_DATA_CONTEXT) ?: return Object()
         return mapOf("ref" to context.repositoryMapping.gitRepository.currentBranch?.name)
+    }
+
+    override fun afterPostUrl() {
     }
 }
