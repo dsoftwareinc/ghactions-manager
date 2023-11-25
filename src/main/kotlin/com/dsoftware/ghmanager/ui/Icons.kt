@@ -18,9 +18,6 @@ object Icons {
     val Workflow = load("/icons/workflow.svg")
 
     @JvmField
-    val WorkflowAll = load("/icons/workflow-all.svg")
-
-    @JvmField
     val WorkflowAllToolbar = load("/icons/workflow-all-toolbar.svg")
 
     @JvmField

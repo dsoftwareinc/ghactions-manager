@@ -33,6 +33,11 @@
                 id="Github.Actions.Manager.Settings.Open"
                 class="com.dsoftware.ghmanager.actions.ShowPluginSettingsAction"
                 icon="AllIcons.General.Settings"/>
+            <group id="WorkflowTypesActionsGroup"
+                   class="com.dsoftware.ghmanager.actions.WorkflowTypesActionsGroup"
+                   icon="com.dsoftware.ghmanager.ui.Icons.WorkflowAllToolbar"
+                   popup="true"/>
+
         </group>
 
         <group id="Github.Workflow.ToolWindow.List.Popup">

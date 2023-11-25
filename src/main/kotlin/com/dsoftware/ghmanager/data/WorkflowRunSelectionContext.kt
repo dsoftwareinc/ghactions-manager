@@ -21,7 +21,7 @@ import java.util.concurrent.TimeUnit
 class WorkflowRunSelectionContext internal constructor(
     parentDisposable: CheckedDisposable,
     val project: Project,
-    private val account: GithubAccount,
+    val account: GithubAccount,
     val dataLoader: SingleRunDataLoader,
     val runsListLoader: WorkflowRunListLoader,
     val repositoryMapping: GHGitRepositoryMapping,

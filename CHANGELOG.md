@@ -4,7 +4,17 @@
 
 ## [Unreleased]
 
-## [1.14.1]
+## [1.15.1]
+
+### Maintenance
+
+- Update dependencies to latest versions
+
+## [1.15.0]
+
+### 🚀 Features
+
+- Trigger workflow dispatch event #75
 
 ### 🐛 Bug Fixes
 
