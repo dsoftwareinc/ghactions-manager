@@ -4,6 +4,12 @@
 
 ## [Unreleased]
 
+## [1.15.1]
+
+### Maintenance
+
+- Update dependencies to latest versions
+
 ## [1.15.0]
 
 ### 🚀 Features
