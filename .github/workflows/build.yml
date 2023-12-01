@@ -52,7 +52,7 @@ jobs:
 
       # Setup Java 17 environment for the next steps
       - name: Setup Java
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4
         with:
           distribution: zulu
           java-version: 17
@@ -69,18 +69,17 @@ jobs:
         run: |
           PROPERTIES="$(./gradlew properties --console=plain -q)"
           VERSION="$(echo "$PROPERTIES" | grep "^version:" | cut -f2- -d ' ')"
-          NAME="$(echo "$PROPERTIES" | grep "^pluginName:" | cut -f2- -d ' ')"
           CHANGELOG="$(./gradlew getChangelog --unreleased --no-header --console=plain -q)"
-          CHANGELOG="${CHANGELOG//'%'/'%25'}"
-          CHANGELOG="${CHANGELOG//$'\n'/'%0A'}"
-          CHANGELOG="${CHANGELOG//$'\r'/'%0D'}"
+
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "pluginVerifierHomeDir=~/.pluginVerifier" >> $GITHUB_OUTPUT
           
-          echo "::set-output name=version::$VERSION"
-          echo "::set-output name=name::$NAME"
-          echo "::set-output name=changelog::$CHANGELOG"
-          echo "::set-output name=pluginVerifierHomeDir::~/.pluginVerifier"
-          
+          echo "changelog<<EOF" >> $GITHUB_OUTPUT
+          echo "$CHANGELOG" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
           ./gradlew listProductsReleases # prepare list of IDEs for Plugin Verifier
+
 
       # Run tests
       - name: Run Tests
