@@ -87,9 +87,7 @@ fun createLogConsolePanel(
         if (logValue.isNullOrBlank()) {
             return
         }
-        if (Constants.emptyTextMessage(logValue)) {
-            panel.emptyText.text = logValue
-        } else {
+        if (!Constants.updateEmptyText(logValue, panel.emptyText)) {
             panel.removeAll()
             val console = LogConsolePanel(project, logValue, parentDisposable)
             panel.add(console.component, BorderLayout.CENTER)
