@@ -13,6 +13,7 @@ import com.intellij.openapi.actionSystem.ActionManager
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.DefaultActionGroup
 import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.application.runInEdt
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.actions.ToggleUseSoftWrapsToolbarAction
 import com.intellij.openapi.editor.colors.EditorColorsListener
@@ -87,9 +88,7 @@ fun createLogConsolePanel(
         if (logValue.isNullOrBlank()) {
             return
         }
-        if (Constants.emptyTextMessage(logValue)) {
-            panel.emptyText.text = logValue
-        } else {
+        if (!Constants.updateEmptyText(logValue, panel.emptyText)) {
             panel.removeAll()
             val console = LogConsolePanel(project, logValue, parentDisposable)
             panel.add(console.component, BorderLayout.CENTER)
@@ -110,11 +109,11 @@ fun createLogConsolePanel(
         }
     }
     model.logModel.addAndInvokeListener {
-        addConsole(it)
+        runInEdt { addConsole(it) }
     }
     ApplicationManager.getApplication().messageBus.connect(parentDisposable)
         .subscribe(EditorColorsManager.TOPIC, EditorColorsListener {
-            addConsole(model.logModel.value)
+            runInEdt { addConsole(model.logModel.value) }
         })
     return panel
 }
