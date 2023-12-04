@@ -4,6 +4,12 @@
 
 ## [Unreleased]
 
+## [1.15.2]
+
+### 🐛 Bug Fixes
+
+- Fix run in EDT thread #106
+
 ## [1.15.1]
 
 ### Maintenance
