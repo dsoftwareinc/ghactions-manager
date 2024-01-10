@@ -1,12 +1,12 @@
 <!-- Plugin Configuration File. Read more: https://plugins.jetbrains.com/docs/intellij/plugin-configuration-file.html -->
-<idea-plugin>
+<idea-plugin require-restart="false">
     <id>com.dsoftware.ghtoolbar</id>
     <name>GitHub Actions Manager</name>
     <vendor>D Software</vendor>
 
     <depends>com.intellij.modules.platform</depends>
     <depends>org.jetbrains.plugins.github</depends>
-    <idea-version since-build="231.8109.175"/>
+    <idea-version since-build="232"/>
 
     <extensions defaultExtensionNs="com.intellij">
         <toolWindow

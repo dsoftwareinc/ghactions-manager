@@ -272,10 +272,10 @@ internal class WorkflowRunListLoaderPanel(
             return
         }
         LOG.warn("Got error when getting workflow-runs: $error")
-        runListComponent.emptyText.appendText(
+        runListComponent.emptyText.setText(
             "Can't load workflow runs - check that the token you set in GitHub settings have sufficient permissions",
             SimpleTextAttributes.ERROR_ATTRIBUTES
-        ).appendSecondaryText(
+        ).appendLine(
             getLoadingErrorText(workflowRunsLoader.url, error),
             SimpleTextAttributes.ERROR_ATTRIBUTES,
             null
