@@ -43,7 +43,6 @@ internal class ProjectRepositories(val toolWindow: ToolWindow) {
 
 class GhActionsToolWindowFactory : ToolWindowFactory, DumbAware {
     private lateinit var settingsService: GhActionsSettingsService
-    private val accountManager = service<GHAccountManager>()
     private val projectReposMap = mutableMapOf<Project, ProjectRepositories>()
     private val scope = CoroutineScope(SupervisorJob())
 
@@ -68,6 +67,7 @@ class GhActionsToolWindowFactory : ToolWindowFactory, DumbAware {
                 updateRepos(toolWindow, it)
             }
         }
+        val accountManager = service<GHAccountManager>()
         scope.launch {
             accountManager.accountsState.collect {
                 updateRepos(toolWindow, repositoriesManager.knownRepositories)
@@ -104,23 +104,23 @@ class GhActionsToolWindowFactory : ToolWindowFactory, DumbAware {
             if ((GHAccountsUtil.accounts.isEmpty() && settingsService.state.useGitHubSettings)
                 || (!settingsService.state.useGitHubSettings && settingsService.state.apiToken == "")
             ) {
-                noGitHubAccountPanel(disposable, projectRepos)
+                createNoAccountPanel(disposable, projectRepos)
             } else if (projectRepos.knownRepositories.isEmpty()) {
-                noRepositories(disposable, projectRepos)
+                createNoReposPanel(disposable, projectRepos)
             } else {
                 val countRepos = projectRepos.knownRepositories.count {
                     settingsService.state.customRepos[it.remote.url]?.included ?: false
                 }
                 if (settingsService.state.useCustomRepos && countRepos == 0) {
-                    noActiveRepositories(disposable, projectRepos)
+                    createNoActiveReposPanel(disposable, projectRepos)
                 } else {
-                    ghAccountAndReposConfigured(disposable, projectRepos)
+                    createRepoWorkflowsPanels(disposable, projectRepos)
                 }
             }
         }
     }
 
-    private fun noActiveRepositories(
+    private fun createNoActiveReposPanel(
         disposable: Disposable,
         projectRepositories: ProjectRepositories
     ) =
@@ -148,7 +148,7 @@ class GhActionsToolWindowFactory : ToolWindowFactory, DumbAware {
             )
         }
 
-    private fun noGitHubAccountPanel(
+    private fun createNoAccountPanel(
         disposable: Disposable,
         projectRepositories: ProjectRepositories
     ) = with(projectRepositories.toolWindow.contentManager) {
@@ -182,7 +182,7 @@ class GhActionsToolWindowFactory : ToolWindowFactory, DumbAware {
         )
     }
 
-    private fun noRepositories(
+    private fun createNoReposPanel(
         disposable: Disposable,
         projectRepositories: ProjectRepositories
     ) = with(projectRepositories.toolWindow.contentManager) {
@@ -203,7 +203,7 @@ class GhActionsToolWindowFactory : ToolWindowFactory, DumbAware {
         return accounts.firstOrNull { it.server.equals(repo.repository.serverPath, true) }
     }
 
-    private fun ghAccountAndReposConfigured(
+    private fun createRepoWorkflowsPanels(
         parentDisposable: Disposable,
         projectRepositories: ProjectRepositories
     ) =
