@@ -12,6 +12,8 @@ import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import com.intellij.toolWindow.ToolWindowHeadlessManagerImpl.MockToolWindow
 import com.intellij.util.ThrowableRunnable
 import com.intellij.util.concurrency.annotations.RequiresEdt
+import io.github.cdimascio.dotenv.Dotenv
+import io.github.cdimascio.dotenv.dotenv
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.yield
 import org.jetbrains.plugins.github.api.GithubApiRequestExecutor
@@ -53,19 +55,21 @@ abstract class GitHubActionsManagerBaseTest : BasePlatformTestCase() {
     protected lateinit var host: GithubServerPath
     override fun setUp() {
         super.setUp()
+        Dotenv.configure().load()
+        val dotenv= dotenv()
         myProject = project
         factory = GhActionsToolWindowFactory()
         toolWindow = MockToolWindow(myProject)
-        host = GithubServerPath.from(System.getenv("idea_test_github_host") ?: System.getenv("idea.test.github.host"))
+        host = GithubServerPath.from(dotenv.get("idea_test_github_host") ?: dotenv.get("idea.test.github.host"))
 
-        val token1 = System.getenv("idea_test_github_token1") ?: System.getenv("idea.test.github.token1")
+        val token1 = dotenv.get("idea_test_github_token1") ?: dotenv.get("idea.test.github.token1")
 
         assertNotNull(token1)
         executor = service<GithubApiRequestExecutor.Factory>().create(token1)
         accountManager = service()
         repositoriesManager = project.service()
 
-        organisation = System.getenv("idea_test_github_org") ?: System.getenv("idea.test.github.org")
+        organisation = dotenv.get("idea_test_github_org") ?: dotenv.get("idea.test.github.org")
         assertNotNull(organisation)
         mainAccount = createAccountData(token1)
         setCurrentAccount(mainAccount)

@@ -54,7 +54,7 @@ internal class WfRunsFiltersFactory(vm: WfRunsSearchPanelViewModel) :
                     onSelect = {},
                     valuePresenter = { it.name },
                     popupItemPresenter = {
-                        ChooserPopupUtil.PopupItemPresentation.Simple(it.name.toString())
+                        ChooserPopupUtil.PopupItemPresentation.Simple(it.name)
                     }),
             DropDownComponentFactory(vm.userFilterState)
                 .create(viewScope,
