@@ -23,6 +23,36 @@ on:
       - master
 
 jobs:
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    steps:
+      # Check out current repository
+      - name: Fetch Sources
+        uses: actions/checkout@v4
+
+      # Validate wrapper
+      - name: Gradle Wrapper Validation
+        uses: gradle/wrapper-validation-action@v1.1.0
+
+      # Setup Java 17 environment for the next steps
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: zulu
+          java-version: 17
+          cache: gradle
+        # Run tests
+      - name: Run Tests
+        run: ./gradlew test
+
+      # Collect Tests Result of failed tests
+      - name: Collect Tests Result
+        if: ${{ failure() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: tests-result
+          path: ${{ github.workspace }}/build/reports/tests
 
   # Run Gradle Wrapper Validation Action to verify the wrapper's checksum
   # Run verifyPlugin, IntelliJ Plugin Verifier, and test Gradle tasks
@@ -80,18 +110,6 @@ jobs:
           
           ./gradlew listProductsReleases # prepare list of IDEs for Plugin Verifier
       
-
-      # Run tests
-      - name: Run Tests
-        run: ./gradlew test
-
-      # Collect Tests Result of failed tests
-      - name: Collect Tests Result
-        if: ${{ failure() }}
-        uses: actions/upload-artifact@v4
-        with:
-          name: tests-result
-          path: ${{ github.workspace }}/build/reports/tests
 
       # Cache Plugin Verifier IDEs
       - name: Setup Plugin Verifier IDEs Cache
