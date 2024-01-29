@@ -44,11 +44,11 @@ jobs:
           cache: gradle
         # Run tests
       - name: Run Tests
-        run: |
-          idea_test_github_host=github.com
-          idea_test_github_org=cunla
-          idea_test_github_token1=${{ secrets.GITHUB_TOKEN }}
-          ./gradlew test
+        env:
+            idea_test_github_host: github.com
+            idea_test_github_org: cunla
+            idea_test_github_token1: ${{ secrets.GITHUB_TOKEN }}
+        run: ./gradlew test
 
       # Collect Tests Result of failed tests
       - name: Collect Tests Result
