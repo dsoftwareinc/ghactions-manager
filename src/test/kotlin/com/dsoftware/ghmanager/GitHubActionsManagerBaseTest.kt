@@ -17,8 +17,6 @@ import kotlinx.coroutines.yield
 import org.jetbrains.plugins.github.api.GithubApiRequestExecutor
 import org.jetbrains.plugins.github.api.GithubApiRequests
 import org.jetbrains.plugins.github.api.GithubServerPath
-import org.jetbrains.plugins.github.api.data.GithubRepo
-import org.jetbrains.plugins.github.api.data.GithubResponsePage
 import org.jetbrains.plugins.github.authentication.GHAccountsUtil
 import org.jetbrains.plugins.github.authentication.accounts.GHAccountManager
 import org.jetbrains.plugins.github.authentication.accounts.GithubAccount
@@ -42,44 +40,43 @@ import org.jetbrains.plugins.github.util.GHHostedRepositoriesManager
  *
  */
 abstract class GitHubActionsManagerBaseTest : BasePlatformTestCase() {
-    private lateinit var accountManager: GHAccountManager
-    private lateinit var organisation: String
+    protected lateinit var organisation: String
+    protected lateinit var executor: GithubApiRequestExecutor
+    protected lateinit var accountManager: GHAccountManager
     protected lateinit var repositoriesManager: GHHostedRepositoriesManager
     protected lateinit var mainAccount: AccountData
 
-    private val mainRepos = mutableSetOf<String>()
     protected lateinit var myProject: Project
     protected lateinit var factory: GhActionsToolWindowFactory
     protected lateinit var toolWindow: ToolWindow
+
+    protected lateinit var host: GithubServerPath
     override fun setUp() {
         super.setUp()
         myProject = project
         factory = GhActionsToolWindowFactory()
         toolWindow = MockToolWindow(myProject)
-        val host =
-            GithubServerPath.from(System.getenv("idea_test_github_host") ?: System.getenv("idea.test.github.host"))
+        host = GithubServerPath.from(System.getenv("idea_test_github_host") ?: System.getenv("idea.test.github.host"))
+
         val token1 = System.getenv("idea_test_github_token1") ?: System.getenv("idea.test.github.token1")
 
         assertNotNull(token1)
+        executor = service<GithubApiRequestExecutor.Factory>().create(token1)
         accountManager = service()
         repositoriesManager = project.service()
 
         organisation = System.getenv("idea_test_github_org") ?: System.getenv("idea.test.github.org")
         assertNotNull(organisation)
-        mainAccount = createAccountData(host, token1)
+        mainAccount = createAccountData(token1)
         setCurrentAccount(mainAccount)
     }
 
-    private fun createAccountData(host: GithubServerPath, token: String): AccountData {
+    protected fun createAccountData(token: String): AccountData {
         val account = GHAccountManager.createAccount("token", host)
-        runBlocking { accountManager.updateAccount(account, token) }
-        val executor = service<GithubApiRequestExecutor.Factory>().create(token)
         val username = executor.execute(GithubApiRequests.CurrentUser.get(account.server)).login
-        val repos =
-            executor.execute<GithubResponsePage<GithubRepo>>(GithubApiRequests.CurrentUser.Repos.get(account.server))
-        repos.items.forEach { mainRepos.add(it.name) }
+        val repos = executor.execute(GithubApiRequests.CurrentUser.Repos.get(account.server))
 
-        return AccountData(token, account, username, executor)
+        return AccountData(token, account, username, executor, repos.items.map { it.name }.toSet())
     }
 
 
@@ -91,7 +88,8 @@ abstract class GitHubActionsManagerBaseTest : BasePlatformTestCase() {
         val token: String,
         val account: GithubAccount,
         val username: String,
-        val executor: GithubApiRequestExecutor
+        val executor: GithubApiRequestExecutor,
+        val repos: Set<String>,
     )
 
 

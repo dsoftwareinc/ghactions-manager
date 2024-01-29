@@ -27,7 +27,6 @@ import git4idea.remote.hosting.knownRepositories
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
-import org.jetbrains.plugins.github.authentication.GHAccountsUtil
 import org.jetbrains.plugins.github.authentication.accounts.GHAccountManager
 import org.jetbrains.plugins.github.authentication.accounts.GithubAccount
 import org.jetbrains.plugins.github.util.GHGitRepositoryMapping
@@ -45,7 +44,7 @@ class GhActionsToolWindowFactory : ToolWindowFactory, DumbAware {
     private lateinit var settingsService: GhActionsSettingsService
     private val projectReposMap = mutableMapOf<Project, ProjectRepositories>()
     private val scope = CoroutineScope(SupervisorJob())
-
+    private val gitHubAccounts: MutableSet<GithubAccount> = mutableSetOf()
     override fun init(toolWindow: ToolWindow) {
         val project = toolWindow.project
         if (!projectReposMap.containsKey(toolWindow.project)) {
@@ -70,6 +69,8 @@ class GhActionsToolWindowFactory : ToolWindowFactory, DumbAware {
         val accountManager = service<GHAccountManager>()
         scope.launch {
             accountManager.accountsState.collect {
+                gitHubAccounts.clear()
+                gitHubAccounts.addAll(it)
                 updateRepos(toolWindow, repositoriesManager.knownRepositories)
             }
         }
@@ -101,7 +102,7 @@ class GhActionsToolWindowFactory : ToolWindowFactory, DumbAware {
         Disposer.register(toolWindow.disposable, disposable)
         ApplicationManager.getApplication().invokeLater {
             toolWindow.contentManager.removeAllContents(true)
-            if ((GHAccountsUtil.accounts.isEmpty() && settingsService.state.useGitHubSettings)
+            if ((gitHubAccounts.isEmpty() && settingsService.state.useGitHubSettings)
                 || (!settingsService.state.useGitHubSettings && settingsService.state.apiToken == "")
             ) {
                 createNoAccountPanel(disposable, projectRepos)
@@ -199,8 +200,7 @@ class GhActionsToolWindowFactory : ToolWindowFactory, DumbAware {
     }
 
     private fun guessAccountForRepository(repo: GHGitRepositoryMapping): GithubAccount? {
-        val accounts = GHAccountsUtil.accounts
-        return accounts.firstOrNull { it.server.equals(repo.repository.serverPath, true) }
+        return gitHubAccounts.firstOrNull { it.server.equals(repo.repository.serverPath, true) }
     }
 
     private fun createRepoWorkflowsPanels(
