@@ -4,7 +4,7 @@ package com.dsoftware.ghmanager.ui
 import com.dsoftware.ghmanager.actions.ActionKeys
 import com.dsoftware.ghmanager.data.JobsLoadingModelListener
 import com.dsoftware.ghmanager.data.LogLoadingModelListener
-import com.dsoftware.ghmanager.data.WorkflowDataContextRepository
+import com.dsoftware.ghmanager.data.WorkflowDataContextService
 import com.dsoftware.ghmanager.data.WorkflowRunSelectionContext
 import com.dsoftware.ghmanager.ui.panels.JobListComponent
 import com.dsoftware.ghmanager.ui.panels.WorkflowRunListLoaderPanel
@@ -35,7 +35,7 @@ import kotlin.properties.Delegates
 class WorkflowToolWindowTabController(
     repositoryMapping: GHGitRepositoryMapping,
     private val ghAccount: GithubAccount,
-    private val dataContextRepository: WorkflowDataContextRepository,
+    private val dataContextRepository: WorkflowDataContextService,
     parentDisposable: Disposable,
     private val toolWindow: ToolWindow,
 ) {

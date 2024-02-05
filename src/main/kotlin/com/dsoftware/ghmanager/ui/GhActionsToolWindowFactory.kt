@@ -1,6 +1,7 @@
 package com.dsoftware.ghmanager.ui
 
-import com.dsoftware.ghmanager.data.WorkflowDataContextRepository
+import com.dsoftware.ghmanager.data.GhActionsService
+import com.dsoftware.ghmanager.data.WorkflowDataContextService
 import com.dsoftware.ghmanager.ui.settings.GhActionsManagerConfigurable
 import com.dsoftware.ghmanager.ui.settings.GhActionsSettingsService
 import com.dsoftware.ghmanager.ui.settings.GithubActionsManagerSettings
@@ -23,14 +24,11 @@ import com.intellij.ui.content.ContentManagerEvent
 import com.intellij.ui.content.ContentManagerListener
 import com.intellij.util.concurrency.AppExecutorUtil
 import com.intellij.util.ui.UIUtil
-import git4idea.remote.hosting.knownRepositories
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
-import org.jetbrains.plugins.github.authentication.accounts.GHAccountManager
 import org.jetbrains.plugins.github.authentication.accounts.GithubAccount
 import org.jetbrains.plugins.github.util.GHGitRepositoryMapping
-import org.jetbrains.plugins.github.util.GHHostedRepositoriesManager
 import java.awt.BorderLayout
 import java.util.concurrent.TimeUnit
 import javax.swing.JPanel
@@ -42,15 +40,17 @@ internal class ProjectRepositories(val toolWindow: ToolWindow) {
 
 class GhActionsToolWindowFactory : ToolWindowFactory, DumbAware {
     private lateinit var settingsService: GhActionsSettingsService
+    private lateinit var ghActionsService: GhActionsService
     private val projectReposMap = mutableMapOf<Project, ProjectRepositories>()
     private val scope = CoroutineScope(SupervisorJob())
     private val gitHubAccounts: MutableSet<GithubAccount> = mutableSetOf()
     override fun init(toolWindow: ToolWindow) {
         val project = toolWindow.project
+        ghActionsService = project.service<GhActionsService>()
+        settingsService = GhActionsSettingsService.getInstance(project)
         if (!projectReposMap.containsKey(toolWindow.project)) {
             projectReposMap[toolWindow.project] = ProjectRepositories(toolWindow)
         }
-        settingsService = GhActionsSettingsService.getInstance(toolWindow.project)
         val bus = ApplicationManager.getApplication().messageBus.connect(toolWindow.disposable)
         bus.subscribe(
             GhActionsManagerConfigurable.Util.SETTINGS_CHANGED,
@@ -60,18 +60,16 @@ class GhActionsToolWindowFactory : ToolWindowFactory, DumbAware {
                 }
             })
 
-        val repositoriesManager = project.service<GHHostedRepositoriesManager>()
         scope.launch {
-            repositoriesManager.knownRepositoriesState.collect {
+            ghActionsService.knownRepositoriesState.collect {
                 updateRepos(toolWindow, it)
             }
         }
-        val accountManager = service<GHAccountManager>()
         scope.launch {
-            accountManager.accountsState.collect {
+            ghActionsService.accountsState.collect {
                 gitHubAccounts.clear()
                 gitHubAccounts.addAll(it)
-                updateRepos(toolWindow, repositoriesManager.knownRepositories)
+                updateRepos(toolWindow, ghActionsService.knownRepositories)
             }
         }
     }
@@ -209,7 +207,7 @@ class GhActionsToolWindowFactory : ToolWindowFactory, DumbAware {
         with(projectRepositories) {
             val actionManager = ActionManager.getInstance()
             toolWindow.setAdditionalGearActions(DefaultActionGroup(actionManager.getAction("Github.Actions.Manager.Settings.Open")))
-            val dataContextRepository = WorkflowDataContextRepository.getInstance(toolWindow.project)
+            val dataContextRepository = WorkflowDataContextService.getInstance(toolWindow.project)
             knownRepositories.filter {
                 !settingsService.state.useCustomRepos
                     || (settingsService.state.customRepos[it.remote.url]?.included

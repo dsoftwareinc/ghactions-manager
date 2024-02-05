@@ -37,7 +37,7 @@ data class RepositoryCoordinates(
 }
 
 @Service(Service.Level.PROJECT)
-class WorkflowDataContextRepository(project: Project) {
+class WorkflowDataContextService(project: Project) {
     private val settingsService = GhActionsSettingsService.getInstance(project)
     private val repositories =
         mutableMapOf<GitRemoteUrlCoordinates, LazyCancellableBackgroundProcessValue<WorkflowRunSelectionContext>>()
@@ -101,7 +101,7 @@ class WorkflowDataContextRepository(project: Project) {
             disposable,
             requestExecutor,
             repositoryCoordinates,
-            settingsService = GhActionsSettingsService.getInstance(toolWindow.project),
+            settingsService,
             WorkflowRunFilter(),
         )
 
@@ -117,7 +117,7 @@ class WorkflowDataContextRepository(project: Project) {
     }
 
     companion object {
-        private val LOG = logger<WorkflowDataContextRepository>()
-        fun getInstance(project: Project) = project.service<WorkflowDataContextRepository>()
+        private val LOG = logger<WorkflowDataContextService>()
+        fun getInstance(project: Project) = project.service<WorkflowDataContextService>()
     }
 }
