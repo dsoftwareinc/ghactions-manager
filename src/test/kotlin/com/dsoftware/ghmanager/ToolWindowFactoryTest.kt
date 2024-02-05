@@ -7,6 +7,8 @@ import javax.swing.JPanel
 
 
 class ToolWindowFactoryTest : GitHubActionsManagerBaseTest() {
+
+
     fun testNoGitHubAccountPanel() {
         mockGhActionsService(emptySet(), emptySet())
 
