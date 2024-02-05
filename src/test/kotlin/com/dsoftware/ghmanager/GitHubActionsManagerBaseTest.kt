@@ -22,27 +22,9 @@ import org.jetbrains.plugins.github.authentication.GHAccountsUtil
 import org.jetbrains.plugins.github.authentication.accounts.GHAccountManager
 import org.jetbrains.plugins.github.authentication.accounts.GithubAccount
 import org.jetbrains.plugins.github.util.GHGitRepositoryMapping
-import org.jetbrains.plugins.github.util.GHHostedRepositoriesManager
 
 
-/**
- *
- * The base class for JUnit platform tests of the github plugin.<br></br>
- * Extend this test to write a test on GitHub which has the following features/limitations:
- *
- *  * This is a "platform test case", which means that IDEA "almost" production platform is set up before the test starts.
- *  * Project base directory is the root of everything.
- *
- *
- * All tests inherited from this class are required to have a token to access the Github server.
- * They are set up in Environment variables: <br></br>
- * `idea_test_github_host<br></br>
- * idea_test_github_token1<br></br> // token test user
- * idea_test_github_token2` // token user with configured test repositories
- *
- */
 abstract class GitHubActionsManagerBaseTest : BasePlatformTestCase() {
-    private lateinit var ghRepositoryManager: GHHostedRepositoriesManager
 
     protected lateinit var myProject: Project
     protected lateinit var factory: GhActionsToolWindowFactory
