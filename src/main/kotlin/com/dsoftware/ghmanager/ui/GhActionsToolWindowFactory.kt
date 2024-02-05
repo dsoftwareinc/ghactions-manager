@@ -188,8 +188,7 @@ class GhActionsToolWindowFactory : ToolWindowFactory, DumbAware {
         projectRepositories: ProjectRepositories
     ) = with(projectRepositories.toolWindow.contentManager) {
         LOG.debug("No git repositories in project")
-        val emptyTextPanel = JBPanelWithEmptyText()
-            .withEmptyText("No git repositories in project")
+        val emptyTextPanel = JBPanelWithEmptyText().withEmptyText("No git repositories in project")
 
         addContent(factory.createContent(emptyTextPanel, "Workflows", false)
             .apply {
