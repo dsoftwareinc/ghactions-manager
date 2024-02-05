@@ -11,6 +11,8 @@ import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import com.intellij.testFramework.registerServiceInstance
 import com.intellij.toolWindow.ToolWindowHeadlessManagerImpl.MockToolWindow
 import com.intellij.util.concurrency.annotations.RequiresEdt
+import io.mockk.every
+import io.mockk.mockk
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.yield
@@ -33,7 +35,13 @@ abstract class GitHubActionsManagerBaseTest : BasePlatformTestCase() {
 
     fun mockGhActionsService(repoUrls: Set<String>, accountNames: Collection<String>) {
         val accounts = accountNames.map { GHAccountManager.createAccount(it, host) }
-        val repos: Set<GHGitRepositoryMapping> = emptySet()
+        val repos: Set<GHGitRepositoryMapping> = repoUrls.map {
+            mockk<GHGitRepositoryMapping>().apply {
+                every { remote.url } returns it
+                every { repository.serverPath } returns host
+                every { repositoryPath } returns it.replace("http://github.com/", "")
+            }
+        }.toSet()
 
         project.registerServiceInstance(GhActionsService::class.java, object : GhActionsService {
             override val knownRepositoriesState: StateFlow<Set<GHGitRepositoryMapping>>

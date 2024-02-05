@@ -15,7 +15,7 @@ serialization = "1.6.0"
 annotations = { group = "org.jetbrains", name = "annotations", version.ref = "annotations" }
 serialization = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "serialization" }
 #dotenv = { group = "io.github.cdimascio", name = "dotenv-kotlin", version = "6.4.1" }
-mockito = { group = "org.mockito.kotlin", name = "mockito-kotlin", version = "5.2.1" }
+mockk = { group = "io.mockk", name = "mockk-jvm", version = "1.13.9" }
 
 [plugins]
 changelog = { id = "org.jetbrains.changelog", version.ref = "changelog" }

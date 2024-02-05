@@ -3,6 +3,7 @@ package com.dsoftware.ghmanager
 import com.intellij.ui.SimpleColoredComponent
 import com.intellij.ui.components.JBPanelWithEmptyText
 import junit.framework.TestCase
+import javax.swing.JPanel
 
 
 class ToolWindowFactoryTest : GitHubActionsManagerBaseTest() {
@@ -38,15 +39,16 @@ class ToolWindowFactoryTest : GitHubActionsManagerBaseTest() {
     }
 
     fun testGitHubAccountWithReposPanel() {
-        mockGhActionsService(emptySet(), setOf("account1"))
+        mockGhActionsService(setOf("http://github.com/owner/repo"), setOf("account1"))
 
         factory.init(toolWindow)
         executeSomeCoroutineTasksAndDispatchAllInvocationEvents(project)
 
         TestCase.assertEquals(1, toolWindow.contentManager.contentCount)
-        val component = toolWindow.contentManager.contents[0].component
-        TestCase.assertTrue(component is JBPanelWithEmptyText)
-        val panel = component as JBPanelWithEmptyText
-        TestCase.assertEquals("No git repositories in project", panel.emptyText.text)
+        val content = toolWindow.contentManager.contents[0]
+        TestCase.assertEquals("owner/repo", content.displayName)
+        TestCase.assertTrue(content.component is JPanel)
+        val panel = content.component as JPanel
+        TestCase.assertEquals(1, panel.componentCount)
     }
 }
