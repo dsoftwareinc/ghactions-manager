@@ -5,7 +5,7 @@ annotations = "24.1.0"
 # plugins
 kotlin = "1.9.21"
 changelog = "2.2.0"
-gradleIntelliJPlugin = "1.17.0"
+gradleIntelliJPlugin = "1.17.1"
 qodana = "0.1.13"
 kover = "0.7.5"
 dokka = "1.8.10"
@@ -14,7 +14,7 @@ serialization = "1.6.0"
 [libraries]
 annotations = { group = "org.jetbrains", name = "annotations", version.ref = "annotations" }
 serialization = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "serialization" }
-dotenv = { group = "io.github.cdimascio", name = "dotenv-kotlin", version = "6.4.1" }
+#dotenv = { group = "io.github.cdimascio", name = "dotenv-kotlin", version = "6.4.1" }
 mockito = { group = "org.mockito.kotlin", name = "mockito-kotlin", version = "5.2.1" }
 
 [plugins]

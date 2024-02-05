@@ -11,33 +11,24 @@ import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import com.intellij.testFramework.registerServiceInstance
 import com.intellij.toolWindow.ToolWindowHeadlessManagerImpl.MockToolWindow
 import com.intellij.util.concurrency.annotations.RequiresEdt
-import io.github.cdimascio.dotenv.Dotenv
-import io.github.cdimascio.dotenv.dotenv
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.yield
-import org.jetbrains.plugins.github.api.GithubApiRequestExecutor
 import org.jetbrains.plugins.github.api.GithubServerPath
-import org.jetbrains.plugins.github.authentication.GHAccountsUtil
 import org.jetbrains.plugins.github.authentication.accounts.GHAccountManager
 import org.jetbrains.plugins.github.authentication.accounts.GithubAccount
 import org.jetbrains.plugins.github.util.GHGitRepositoryMapping
 
 
 abstract class GitHubActionsManagerBaseTest : BasePlatformTestCase() {
-
-    protected lateinit var myProject: Project
     protected lateinit var factory: GhActionsToolWindowFactory
     protected lateinit var toolWindow: ToolWindow
 
     protected val host: GithubServerPath = GithubServerPath.from("github.com")
     override fun setUp() {
         super.setUp()
-        Dotenv.configure().load()
-        val dotenv = dotenv()
-        myProject = project
         factory = GhActionsToolWindowFactory()
-        toolWindow = MockToolWindow(myProject)
+        toolWindow = MockToolWindow(project)
     }
 
     fun mockGhActionsService(repoUrls: Set<String>, accountNames: Collection<String>) {
@@ -53,18 +44,6 @@ abstract class GitHubActionsManagerBaseTest : BasePlatformTestCase() {
                 get() = MutableStateFlow(accounts)
         })
     }
-
-    protected open fun setCurrentAccount(accountData: AccountData?) {
-        GHAccountsUtil.setDefaultAccount(myProject, accountData?.account)
-    }
-
-    protected data class AccountData(
-        val token: String,
-        val account: GithubAccount,
-        val username: String,
-        val executor: GithubApiRequestExecutor,
-        val repos: Set<String>,
-    )
 
 
     companion object {
