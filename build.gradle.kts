@@ -31,6 +31,7 @@ dependencies {
 testing {
     dependencies {
         implementation(libs.dotenv)
+        implementation(libs.mockito)
     }
 }
 

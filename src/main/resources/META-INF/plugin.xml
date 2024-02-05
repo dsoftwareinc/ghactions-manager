@@ -19,6 +19,9 @@
             parentId="tools"
             instance="com.dsoftware.ghmanager.ui.settings.GhActionsManagerConfigurable"
             displayName="GitHub Workflows Manager"/>
+        <projectService
+            serviceInterface="com.dsoftware.ghmanager.data.GhActionsService"
+            serviceImplementation="com.dsoftware.ghmanager.data.GhActionsServiceImpl"/>
     </extensions>
     <actions>
         <action id="ShowGithubSettings" class="com.dsoftware.ghmanager.actions.ShowGithubSettingsAction"/>

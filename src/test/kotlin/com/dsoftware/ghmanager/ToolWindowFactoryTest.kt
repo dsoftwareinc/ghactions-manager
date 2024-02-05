@@ -3,11 +3,12 @@ package com.dsoftware.ghmanager
 import com.intellij.ui.SimpleColoredComponent
 import com.intellij.ui.components.JBPanelWithEmptyText
 import junit.framework.TestCase
-import kotlinx.coroutines.runBlocking
 
 
 class ToolWindowFactoryTest : GitHubActionsManagerBaseTest() {
     fun testNoGitHubAccountPanel() {
+        mockGhActionsService(emptySet(), emptySet())
+
         factory.init(toolWindow)
         executeSomeCoroutineTasksAndDispatchAllInvocationEvents(project)
 
@@ -24,7 +25,7 @@ class ToolWindowFactoryTest : GitHubActionsManagerBaseTest() {
     }
 
     fun testGitHubAccountNoReposPanel() {
-        runBlocking { accountManager.updateAccount(mainAccount.account, mainAccount.token) }
+        mockGhActionsService(emptySet(), setOf("account1"))
 
         factory.init(toolWindow)
         executeSomeCoroutineTasksAndDispatchAllInvocationEvents(project)
@@ -36,16 +37,16 @@ class ToolWindowFactoryTest : GitHubActionsManagerBaseTest() {
         TestCase.assertEquals("No git repositories in project", panel.emptyText.text)
     }
 
-//    fun testGitHubAccountWithReposPanel() {
-//        //TODO
-//        runBlocking { accountManager.updateAccount(mainAccount.account, mainAccount.token) }
-//        factory.init(toolWindow)
-//        executeSomeCoroutineTasksAndDispatchAllInvocationEvents(project)
-//
-//        TestCase.assertEquals(1, toolWindow.contentManager.contentCount)
-//        val component = toolWindow.contentManager.contents[0].component
-//        TestCase.assertTrue(component is JBPanelWithEmptyText)
-//        val panel = component as JBPanelWithEmptyText
-//        TestCase.assertEquals("No git repositories in project", panel.emptyText.text)
-//    }
+    fun testGitHubAccountWithReposPanel() {
+        mockGhActionsService(emptySet(), setOf("account1"))
+
+        factory.init(toolWindow)
+        executeSomeCoroutineTasksAndDispatchAllInvocationEvents(project)
+
+        TestCase.assertEquals(1, toolWindow.contentManager.contentCount)
+        val component = toolWindow.contentManager.contents[0].component
+        TestCase.assertTrue(component is JBPanelWithEmptyText)
+        val panel = component as JBPanelWithEmptyText
+        TestCase.assertEquals("No git repositories in project", panel.emptyText.text)
+    }
 }

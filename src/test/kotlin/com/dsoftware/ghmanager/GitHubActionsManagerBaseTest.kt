@@ -1,27 +1,27 @@
 package com.dsoftware.ghmanager
 
+import com.dsoftware.ghmanager.data.GhActionsService
 import com.dsoftware.ghmanager.ui.GhActionsToolWindowFactory
-import com.intellij.openapi.components.service
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.wm.ToolWindow
 import com.intellij.platform.ide.progress.runWithModalProgressBlocking
 import com.intellij.testFramework.PlatformTestUtil
-import com.intellij.testFramework.RunAll
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
+import com.intellij.testFramework.registerServiceInstance
 import com.intellij.toolWindow.ToolWindowHeadlessManagerImpl.MockToolWindow
-import com.intellij.util.ThrowableRunnable
 import com.intellij.util.concurrency.annotations.RequiresEdt
 import io.github.cdimascio.dotenv.Dotenv
 import io.github.cdimascio.dotenv.dotenv
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.yield
 import org.jetbrains.plugins.github.api.GithubApiRequestExecutor
-import org.jetbrains.plugins.github.api.GithubApiRequests
 import org.jetbrains.plugins.github.api.GithubServerPath
 import org.jetbrains.plugins.github.authentication.GHAccountsUtil
 import org.jetbrains.plugins.github.authentication.accounts.GHAccountManager
 import org.jetbrains.plugins.github.authentication.accounts.GithubAccount
+import org.jetbrains.plugins.github.util.GHGitRepositoryMapping
 import org.jetbrains.plugins.github.util.GHHostedRepositoriesManager
 
 
@@ -42,47 +42,35 @@ import org.jetbrains.plugins.github.util.GHHostedRepositoriesManager
  *
  */
 abstract class GitHubActionsManagerBaseTest : BasePlatformTestCase() {
-    protected lateinit var organisation: String
-    protected lateinit var executor: GithubApiRequestExecutor
-    protected lateinit var accountManager: GHAccountManager
-    protected lateinit var repositoriesManager: GHHostedRepositoriesManager
-    protected lateinit var mainAccount: AccountData
+    private lateinit var ghRepositoryManager: GHHostedRepositoriesManager
 
     protected lateinit var myProject: Project
     protected lateinit var factory: GhActionsToolWindowFactory
     protected lateinit var toolWindow: ToolWindow
 
-    protected lateinit var host: GithubServerPath
+    protected val host: GithubServerPath = GithubServerPath.from("github.com")
     override fun setUp() {
         super.setUp()
         Dotenv.configure().load()
-        val dotenv= dotenv()
+        val dotenv = dotenv()
         myProject = project
         factory = GhActionsToolWindowFactory()
         toolWindow = MockToolWindow(myProject)
-        host = GithubServerPath.from(dotenv.get("idea_test_github_host") ?: dotenv.get("idea.test.github.host"))
-
-        val token1 = dotenv.get("idea_test_github_token1") ?: dotenv.get("idea.test.github.token1")
-
-        assertNotNull(token1)
-        executor = service<GithubApiRequestExecutor.Factory>().create(token1)
-        accountManager = service()
-        repositoriesManager = project.service()
-
-        organisation = dotenv.get("idea_test_github_org") ?: dotenv.get("idea.test.github.org")
-        assertNotNull(organisation)
-        mainAccount = createAccountData(token1)
-        setCurrentAccount(mainAccount)
     }
 
-    protected fun createAccountData(token: String): AccountData {
-        val account = GHAccountManager.createAccount("token", host)
-        val username = executor.execute(GithubApiRequests.CurrentUser.get(account.server)).login
-        val repos = executor.execute(GithubApiRequests.CurrentUser.Repos.get(account.server))
+    fun mockGhActionsService(repoUrls: Set<String>, accountNames: Collection<String>) {
+        val accounts = accountNames.map { GHAccountManager.createAccount(it, host) }
+        val repos: Set<GHGitRepositoryMapping> = emptySet()
 
-        return AccountData(token, account, username, executor, repos.items.map { it.name }.toSet())
+        project.registerServiceInstance(GhActionsService::class.java, object : GhActionsService {
+            override val knownRepositoriesState: StateFlow<Set<GHGitRepositoryMapping>>
+                get() = MutableStateFlow(repos)
+            override val knownRepositories: Set<GHGitRepositoryMapping>
+                get() = repos
+            override val accountsState: StateFlow<Collection<GithubAccount>>
+                get() = MutableStateFlow(accounts)
+        })
     }
-
 
     protected open fun setCurrentAccount(accountData: AccountData?) {
         GHAccountsUtil.setDefaultAccount(myProject, accountData?.account)
@@ -96,27 +84,6 @@ abstract class GitHubActionsManagerBaseTest : BasePlatformTestCase() {
         val repos: Set<String>,
     )
 
-
-    @Throws(Exception::class)
-    override fun tearDown() {
-        RunAll(
-            ThrowableRunnable { setCurrentAccount(null) },
-            ThrowableRunnable { if (::accountManager.isInitialized) runBlocking { accountManager.updateAccounts(emptyMap()) } },
-            ThrowableRunnable { super.tearDown() }
-        ).run()
-    }
-
-//
-//    private fun deleteRepos(account: AccountData, repos: Collection<String>) {
-//        setCurrentAccount(account)
-//        for (repo in repos) {
-//            retry(LOG, true) {
-//                account.executor.execute(GithubApiRequests.Repos.delete(repo))
-//                val info = account.executor.execute(GithubApiRequests.Repos.get(repo))
-//                check(info == null) { "Repository still exists" }
-//            }
-//        }
-//    }
 
     companion object {
         private const val RETRIES = 3
