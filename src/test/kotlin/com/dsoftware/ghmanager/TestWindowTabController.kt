@@ -11,6 +11,7 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkObject
 import io.mockk.mockkStatic
+import io.mockk.verify
 import junit.framework.TestCase
 import org.jetbrains.plugins.github.api.GithubApiRequest
 import org.jetbrains.plugins.github.api.GithubApiRequestExecutor
@@ -28,6 +29,11 @@ class TestWindowTabController : GitHubActionsManagerBaseTest() {
         mockGhActionsService(setOf("http://github.com/owner/repo"), setOf("account1"))
         mockkStatic(GHCompatibilityUtil::class)
         every { GHCompatibilityUtil.getOrRequestToken(any(), any()) } returns "token"
+        executorMock = mockk<GithubApiRequestExecutor>(relaxed = true) {}
+        mockkObject(GithubApiRequestExecutor.Factory)
+        every { GithubApiRequestExecutor.Factory.getInstance() } returns mockk<GithubApiRequestExecutor.Factory> {
+            every { create(token = any()) } returns executorMock
+        }
         workflowDataContextService = project.service<WorkflowDataContextService>()
         factory.init(toolWindow)
         executeSomeCoroutineTasksAndDispatchAllInvocationEvents(project)
@@ -48,6 +54,9 @@ class TestWindowTabController : GitHubActionsManagerBaseTest() {
         val workflowRunSelectionContext: WorkflowRunSelectionContext =
             workflowDataContextService.repositories.values.first().value.get()
         TestCase.assertEquals(0, workflowRunSelectionContext.runsListModel.size)
+        verify {
+            executorMock.execute(any(), ofType(GithubApiRequest::class))
+        }
     }
 
     private fun mockGithubApiRequestExecutor(
@@ -69,7 +78,7 @@ class TestWindowTabController : GitHubActionsManagerBaseTest() {
             branch
         })
         val workflowTypesResponse = WorkflowTypes(workflowTypes.size, workflowTypes.toList())
-        executorMock = mockk<GithubApiRequestExecutor>(relaxed = true) {
+        executorMock.apply {
             every {
                 execute(any(), any<GithubApiRequest<WorkflowRuns>>())
             } returns WorkflowRuns(workflowRunsList.size, workflowRunsList.toList())
@@ -83,9 +92,6 @@ class TestWindowTabController : GitHubActionsManagerBaseTest() {
                 execute(any(), any<GithubApiRequest<WorkflowTypes>>())
             } returns workflowTypesResponse
         }
-        mockkObject(GithubApiRequestExecutor.Factory)
-        every { GithubApiRequestExecutor.Factory.getInstance() } returns mockk<GithubApiRequestExecutor.Factory> {
-            every { create(token = any()) } returns executorMock
-        }
+
     }
 }

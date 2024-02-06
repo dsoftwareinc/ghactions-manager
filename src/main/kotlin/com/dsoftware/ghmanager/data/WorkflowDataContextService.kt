@@ -92,7 +92,7 @@ class WorkflowDataContextService(project: Project) {
             settingsService.state.apiToken
         }
 
-        val requestExecutor = GithubApiRequestExecutor.Factory.Companion.getInstance().create(token)
+        val requestExecutor = GithubApiRequestExecutor.Factory.Companion.getInstance().create(token=token)
         val singleRunDataLoader = SingleRunDataLoader(requestExecutor)
         requestExecutor.addListener(singleRunDataLoader) {
             singleRunDataLoader.invalidateAllData()
