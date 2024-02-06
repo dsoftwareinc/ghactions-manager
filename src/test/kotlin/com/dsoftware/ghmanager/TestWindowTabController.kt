@@ -1,5 +1,6 @@
 package com.dsoftware.ghmanager
 
+import com.dsoftware.ghmanager.api.model.WorkflowRun
 import com.dsoftware.ghmanager.api.model.WorkflowRuns
 import com.dsoftware.ghmanager.api.model.WorkflowType
 import com.dsoftware.ghmanager.api.model.WorkflowTypes
@@ -21,22 +22,22 @@ import javax.swing.JPanel
 
 class TestWindowTabController : GitHubActionsManagerBaseTest() {
     private lateinit var workflowDataContextService: WorkflowDataContextService
+    private lateinit var executorMock: GithubApiRequestExecutor
     override fun setUp() {
         super.setUp()
         mockGhActionsService(setOf("http://github.com/owner/repo"), setOf("account1"))
         mockkStatic(GHCompatibilityUtil::class)
         every { GHCompatibilityUtil.getOrRequestToken(any(), any()) } returns "token"
+        workflowDataContextService = project.service<WorkflowDataContextService>()
         factory.init(toolWindow)
         executeSomeCoroutineTasksAndDispatchAllInvocationEvents(project)
-        workflowDataContextService = project.service<WorkflowDataContextService>()
     }
 
     fun testNoWorkflowRunsInRepo() {
-
-        mockGithubApiRequestExecutor(WorkflowRuns(0, emptyList()))
-
+        mockGithubApiRequestExecutor(emptyList())
+        // act
         executeSomeCoroutineTasksAndDispatchAllInvocationEvents(project)
-
+        // assert
         TestCase.assertEquals(1, toolWindow.contentManager.contentCount)
         val content = toolWindow.contentManager.contents[0]
         TestCase.assertEquals("owner/repo", content.displayName)
@@ -45,12 +46,12 @@ class TestWindowTabController : GitHubActionsManagerBaseTest() {
         TestCase.assertEquals(1, panel.componentCount)
         TestCase.assertEquals(1, workflowDataContextService.repositories.size)
         val workflowRunSelectionContext: WorkflowRunSelectionContext =
-            workflowDataContextService.repositories.values.first().lastLoadedValue!!
+            workflowDataContextService.repositories.values.first().value.get()
         TestCase.assertEquals(0, workflowRunSelectionContext.runsListModel.size)
     }
 
     private fun mockGithubApiRequestExecutor(
-        workflowRuns: WorkflowRuns,
+        workflowRunsList: Collection<WorkflowRun>,
         collaborators: Collection<String> = emptyList(),
         branches: Collection<String> = emptyList(),
         workflowTypes: Collection<WorkflowType> = emptyList(),
@@ -68,30 +69,23 @@ class TestWindowTabController : GitHubActionsManagerBaseTest() {
             branch
         })
         val workflowTypesResponse = WorkflowTypes(workflowTypes.size, workflowTypes.toList())
-
+        executorMock = mockk<GithubApiRequestExecutor>(relaxed = true) {
+            every {
+                execute(any(), any<GithubApiRequest<WorkflowRuns>>())
+            } returns WorkflowRuns(workflowRunsList.size, workflowRunsList.toList())
+            every {// collaborators
+                execute(any(), any<GithubApiRequest<GithubResponsePage<GithubUserWithPermissions>>>())
+            } returns collaboratorsResponse
+            every { // branches
+                execute(any(), any<GithubApiRequest<GithubResponsePage<GithubBranch>>>())
+            } returns branchesResponse
+            every { // branches
+                execute(any(), any<GithubApiRequest<WorkflowTypes>>())
+            } returns workflowTypesResponse
+        }
         mockkObject(GithubApiRequestExecutor.Factory)
         every { GithubApiRequestExecutor.Factory.getInstance() } returns mockk<GithubApiRequestExecutor.Factory> {
-            every { create(token = any()) } returns mockk<GithubApiRequestExecutor>(relaxed = true) {
-                every { execute(any(), any<GithubApiRequest<WorkflowRuns>>()) } returns workflowRuns
-                every {// collaborators
-                    execute(
-                        any(),
-                        any<GithubApiRequest<GithubResponsePage<GithubUserWithPermissions>>>()
-                    )
-                } returns collaboratorsResponse
-                every { // branches
-                    execute(
-                        any(),
-                        any<GithubApiRequest<GithubResponsePage<GithubBranch>>>()
-                    )
-                } returns branchesResponse
-                every { // branches
-                    execute(
-                        any(),
-                        any<GithubApiRequest<WorkflowTypes>>()
-                    )
-                } returns workflowTypesResponse
-            }
+            every { create(token = any()) } returns executorMock
         }
     }
 }
