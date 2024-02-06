@@ -7,6 +7,7 @@ import com.dsoftware.ghmanager.api.model.WorkflowTypes
 import com.dsoftware.ghmanager.data.WorkflowDataContextService
 import com.dsoftware.ghmanager.data.WorkflowRunSelectionContext
 import com.intellij.openapi.components.service
+import io.mockk.MockKMatcherScope
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkObject
@@ -83,21 +84,18 @@ class TestWindowTabController : GitHubActionsManagerBaseTest() {
                 execute(any(), match<GithubApiRequest<WorkflowRuns>> { it.url.contains("/actions/runs") })
             } returns WorkflowRuns(workflowRunsList.size, workflowRunsList.toList())
             every {// collaborators
-                execute(
-                    any(),
-                    match<GithubApiRequest<GithubResponsePage<GithubUserWithPermissions>>> { it.url.contains("/collaborators") }
-                )
+                execute(any(), matchApiRequestUrl<GithubResponsePage<GithubUserWithPermissions>>("/collaborators"))
             } returns collaboratorsResponse
             every { // branches
-                execute(
-                    any(),
-                    match<GithubApiRequest<GithubResponsePage<GithubBranch>>> { it.url.contains("/branches") }
-                )
+                execute(any(), matchApiRequestUrl<GithubResponsePage<GithubBranch>>("/branches"))
             } returns branchesResponse
             every { // workflow types
-                execute(any(), match<GithubApiRequest<WorkflowTypes>> { it.url.contains("/actions/workflows") })
+                execute(any(), matchApiRequestUrl<WorkflowTypes>("/actions/workflows"))
             } returns workflowTypesResponse
         }
 
     }
+
+    private fun <T> MockKMatcherScope.matchApiRequestUrl(url: String) =
+        match<GithubApiRequest<T>> { it.url.contains(url) }
 }
