@@ -7,6 +7,7 @@ import com.dsoftware.ghmanager.api.model.WorkflowTypes
 import com.dsoftware.ghmanager.data.WorkflowDataContextService
 import com.dsoftware.ghmanager.data.WorkflowRunSelectionContext
 import com.intellij.openapi.components.service
+import com.intellij.ui.OnePixelSplitter
 import io.mockk.MockKMatcherScope
 import io.mockk.every
 import io.mockk.mockk
@@ -49,15 +50,24 @@ class TestWindowTabController : GitHubActionsManagerBaseTest() {
         val content = toolWindow.contentManager.contents[0]
         TestCase.assertEquals("owner/repo", content.displayName)
         TestCase.assertTrue(content.component is JPanel)
-        val panel = content.component as JPanel
-        TestCase.assertEquals(1, panel.componentCount)
+        val tabWrapPanel = content.component as JPanel
+        TestCase.assertEquals(1, tabWrapPanel.componentCount)
         TestCase.assertEquals(1, workflowDataContextService.repositories.size)
         val workflowRunSelectionContext: WorkflowRunSelectionContext =
             workflowDataContextService.repositories.values.first().value.get()
         TestCase.assertEquals(0, workflowRunSelectionContext.runsListModel.size)
-        verify {
-            executorMock.execute(any(), ofType(GithubApiRequest::class))
+        verify(atLeast = 1) {
+            executorMock.execute(any(), matchApiRequestUrl<WorkflowTypes>("/actions/workflows"))
+            executorMock.execute(
+                any(),
+                matchApiRequestUrl<GithubResponsePage<GithubUserWithPermissions>>("/collaborators")
+            )
+            executorMock.execute(any(), matchApiRequestUrl<GithubResponsePage<GithubBranch>>("/branches"))
+            executorMock.execute(any(), matchApiRequestUrl<WorkflowTypes>("/actions/workflows"))
         }
+        TestCase.assertEquals(1, (tabWrapPanel.components[0] as JPanel).componentCount)
+        val splitterComponent = (tabWrapPanel.components[0] as JPanel).components[0]
+        TestCase.assertTrue(splitterComponent is OnePixelSplitter)
     }
 
     private fun mockGithubApiRequestExecutor(
