@@ -79,17 +79,23 @@ class TestWindowTabController : GitHubActionsManagerBaseTest() {
         })
         val workflowTypesResponse = WorkflowTypes(workflowTypes.size, workflowTypes.toList())
         executorMock.apply {
-            every {
-                execute(any(), any<GithubApiRequest<WorkflowRuns>>())
+            every {// workflow runs
+                execute(any(), match<GithubApiRequest<WorkflowRuns>> { it.url.contains("/actions/runs") })
             } returns WorkflowRuns(workflowRunsList.size, workflowRunsList.toList())
             every {// collaborators
-                execute(any(), any<GithubApiRequest<GithubResponsePage<GithubUserWithPermissions>>>())
+                execute(
+                    any(),
+                    match<GithubApiRequest<GithubResponsePage<GithubUserWithPermissions>>> { it.url.contains("/collaborators") }
+                )
             } returns collaboratorsResponse
             every { // branches
-                execute(any(), any<GithubApiRequest<GithubResponsePage<GithubBranch>>>())
+                execute(
+                    any(),
+                    match<GithubApiRequest<GithubResponsePage<GithubBranch>>> { it.url.contains("/branches") }
+                )
             } returns branchesResponse
-            every { // branches
-                execute(any(), any<GithubApiRequest<WorkflowTypes>>())
+            every { // workflow types
+                execute(any(), match<GithubApiRequest<WorkflowTypes>> { it.url.contains("/actions/workflows") })
             } returns workflowTypesResponse
         }
 
