@@ -11,8 +11,10 @@ import com.intellij.collaboration.async.CompletableFutureUtil.submitIOTask
 import com.intellij.collaboration.ui.SimpleEventListener
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.diagnostic.logger
+import com.intellij.openapi.observable.util.whenDisposed
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.progress.ProgressManager
+import com.intellij.openapi.util.CheckedDisposable
 import com.intellij.openapi.util.Disposer
 import com.intellij.ui.CollectionListModel
 import com.intellij.util.EventDispatcher
@@ -28,7 +30,7 @@ import java.util.concurrent.TimeUnit
 import kotlin.properties.Delegates
 
 class WorkflowRunListLoader(
-    parentDisposable: Disposable,
+    parentDisposable: CheckedDisposable,
     private val requestExecutor: GithubApiRequestExecutor,
     private val repositoryCoordinates: RepositoryCoordinates,
     private val settingsService: GhActionsSettingsService,

@@ -39,7 +39,7 @@ data class RepositoryCoordinates(
 @Service(Service.Level.PROJECT)
 class WorkflowDataContextService(project: Project) {
     private val settingsService = GhActionsSettingsService.getInstance(project)
-    private val repositories =
+    val repositories =
         mutableMapOf<GitRemoteUrlCoordinates, LazyCancellableBackgroundProcessValue<WorkflowRunSelectionContext>>()
 
     @RequiresEdt
@@ -75,7 +75,7 @@ class WorkflowDataContextService(project: Project) {
     @RequiresBackgroundThread
     @Throws(IOException::class)
     private fun getContext(
-        disposable: CheckedDisposable,
+        checkedDisposable: CheckedDisposable,
         account: GithubAccount,
         repositoryMapping: GHGitRepositoryMapping,
         toolWindow: ToolWindow,
@@ -98,7 +98,7 @@ class WorkflowDataContextService(project: Project) {
             singleRunDataLoader.invalidateAllData()
         }
         val runsLoader = WorkflowRunListLoader(
-            disposable,
+            checkedDisposable,
             requestExecutor,
             repositoryCoordinates,
             settingsService,
@@ -106,7 +106,7 @@ class WorkflowDataContextService(project: Project) {
         )
 
         return WorkflowRunSelectionContext(
-            disposable,
+            checkedDisposable,
             toolWindow.project,
             account,
             singleRunDataLoader,
