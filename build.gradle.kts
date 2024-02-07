@@ -30,7 +30,6 @@ dependencies {
 
 testing {
     dependencies {
-//        implementation(libs.dotenv)
         testImplementation(libs.mockk)
     }
 }
