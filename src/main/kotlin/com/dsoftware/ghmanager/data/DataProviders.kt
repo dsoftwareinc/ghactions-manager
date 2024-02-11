@@ -61,15 +61,25 @@ open class DataProvider<T>(
     }
 }
 
+class JobLogDataProvider(
+    progressManager: ProgressManager,
+    requestExecutor: GithubApiRequestExecutor,
+    jobLogUrl: String
+) : DataProvider<WorkflowRunLog>(
+    progressManager,
+    requestExecutor,
+    GithubApi.getWorkflowRunLogs(jobLogUrl),
+    emptyMap()
+)
 
 class WorkflowRunLogsDataProvider(
     progressManager: ProgressManager,
     requestExecutor: GithubApiRequestExecutor,
-    logsUrl: String,
+    workflowLogsUrl: String,
 ) : DataProvider<WorkflowRunLog>(
     progressManager,
     requestExecutor,
-    GithubApi.getDownloadUrlForWorkflowLog(logsUrl),
+    GithubApi.getWorkflowRunLogs(workflowLogsUrl),
     emptyMap()
 )
 
