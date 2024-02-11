@@ -3,7 +3,7 @@ package com.dsoftware.ghmanager.ui.panels
 
 import com.dsoftware.ghmanager.actions.ActionKeys
 import com.dsoftware.ghmanager.api.model.Job
-import com.dsoftware.ghmanager.api.model.WorkflowRunJobsList
+import com.dsoftware.ghmanager.api.model.WorkflowRunJobs
 import com.dsoftware.ghmanager.data.WorkflowRunSelectionContext
 import com.dsoftware.ghmanager.ui.ToolbarUtil
 import com.intellij.collaboration.ui.SingleValueModel
@@ -134,7 +134,7 @@ class JobListComponent(
         private val actionManager = ActionManager.getInstance()
 
         fun createJobsListComponent(
-            jobValueModel: SingleValueModel<WorkflowRunJobsList?>,
+            jobValueModel: SingleValueModel<WorkflowRunJobs?>,
             runSelectionContext: WorkflowRunSelectionContext,
             infoInNewLine: Boolean,
         ): Pair<HtmlInfoPanel, JComponent> {

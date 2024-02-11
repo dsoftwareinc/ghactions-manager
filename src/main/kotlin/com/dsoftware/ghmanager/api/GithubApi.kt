@@ -1,6 +1,6 @@
 package com.dsoftware.ghmanager.api
 
-import com.dsoftware.ghmanager.api.model.WorkflowRunJobsList
+import com.dsoftware.ghmanager.api.model.WorkflowRunJobs
 import com.dsoftware.ghmanager.api.model.WorkflowRuns
 import com.dsoftware.ghmanager.api.model.WorkflowTypes
 import com.dsoftware.ghmanager.data.RepositoryCoordinates
@@ -18,16 +18,14 @@ data class WorkflowRunFilter(
     val event: String? = null,
     val workflowId: Long? = null,
 )
-typealias GitHubLog = Map<String, Map<Int, String>>
+typealias WorkflowRunLog = Map<String, Map<Int, String>>
 
 object GithubApi : GithubApiRequests.Entity("/repos") {
     private val LOG = logger<GithubApi>()
-    fun getDownloadUrlForWorkflowLog(url: String) = GetRunLogRequest(url)
-        .withOperationName("Download Workflow log")
+    fun getDownloadUrlForWorkflowLog(url: String) = GetRunLogRequest(url).withOperationName("Download Workflow log")
 
-    fun postUrl(name:String,url: String, data: Any = Object()) =
-        GithubApiRequest.Post.Json(url, data, Object::class.java, null)
-            .withOperationName(name)
+    fun postUrl(name: String, url: String, data: Any = Object()) =
+        GithubApiRequest.Post.Json(url, data, Object::class.java, null).withOperationName(name)
 
     fun getWorkflowTypes(
         coordinates: RepositoryCoordinates,
@@ -66,7 +64,7 @@ object GithubApi : GithubApiRequests.Entity("/repos") {
     }
 
 
-    fun getWorkflowRunJobs(url: String) = get<WorkflowRunJobsList>(
+    fun getWorkflowRunJobs(url: String) = get<WorkflowRunJobs>(
         url, "Get workflow-run jobs", pagination = GithubRequestPagination(1)
     )
 
