@@ -1,6 +1,7 @@
 package com.dsoftware.ghmanager.data
 
 import com.dsoftware.ghmanager.api.WorkflowRunFilter
+import com.dsoftware.ghmanager.api.model.Job
 import com.dsoftware.ghmanager.api.model.WorkflowRun
 import com.intellij.collaboration.ui.SingleValueModel
 import com.intellij.openapi.Disposable
@@ -35,14 +36,16 @@ class WorkflowRunSelectionContext internal constructor(
         get() = runsListLoader.listModel
     private val selectedWfRun: WorkflowRun?
         get() = runSelectionHolder.selection
-    val jobDataProviderLoadModel: SingleValueModel<WorkflowRunJobsDataProvider?> = SingleValueModel(null)
-    val logDataProviderLoadModel: SingleValueModel<WorkflowRunLogsDataProvider?> = SingleValueModel(null)
     var selectedRunDisposable = Disposer.newDisposable("Selected run disposable")
-    val logsDataProvider: WorkflowRunLogsDataProvider?
-        get() = selectedWfRun?.let { dataLoader.getLogsDataProvider(it) }
+    val jobDataProviderLoadModel: SingleValueModel<WorkflowRunJobsDataProvider?> = SingleValueModel(null)
     val jobsDataProvider: WorkflowRunJobsDataProvider?
         get() = selectedWfRun?.let { dataLoader.getJobsDataProvider(it) }
-
+    var selectedJobDisposable = Disposer.newDisposable("Selected job disposable")
+    val selectedJob: Job?
+        get() = jobSelectionHolder.selection
+    val jobLogDataProviderLoadModel: SingleValueModel<JobLogDataProvider?> = SingleValueModel(null)
+    val jobLogDataProvider: JobLogDataProvider?
+        get() = selectedJob?.let { dataLoader.getJobLogDataProvider(it) }
     init {
         if (!parentDisposable.isDisposed) {
             Disposer.register(parentDisposable, this)
@@ -54,10 +57,16 @@ class WorkflowRunSelectionContext internal constructor(
             selectedRunDisposable.dispose()
             selectedRunDisposable = Disposer.newDisposable("Selected run disposable")
         }
+        jobSelectionHolder.addSelectionChangeListener(parentDisposable) {
+            LOG.debug("jobSelectionHolder selection change listener")
+            setNewLogProvider()
+            selectedJobDisposable.dispose()
+            selectedJobDisposable = Disposer.newDisposable("Selected job disposable")
+        }
         dataLoader.addInvalidationListener(this) {
             LOG.debug("invalidation listener")
             jobDataProviderLoadModel.value = null
-            logDataProviderLoadModel.value = null
+            jobDataProviderLoadModel.value = null
             selectedRunDisposable.dispose()
         }
         task = AppExecutorUtil.getAppScheduledExecutorService().scheduleWithFixedDelay({
@@ -68,7 +77,9 @@ class WorkflowRunSelectionContext internal constructor(
             val status = selectedWfRun?.status
             if (selectedWfRun != null && status != "completed") {
                 jobsDataProvider?.reload()
-                logsDataProvider?.reload()
+            }
+            if(selectedJob != null && selectedJob?.status != "completed") {
+                jobLogDataProvider?.reload()
             }
         }, 1, frequency, TimeUnit.SECONDS)
     }
@@ -89,10 +100,10 @@ class WorkflowRunSelectionContext internal constructor(
     }
 
     private fun setNewLogProvider() {
-        val oldValue = logDataProviderLoadModel.value
-        val newValue = logsDataProvider
+        val oldValue = jobLogDataProviderLoadModel.value
+        val newValue = jobLogDataProvider
         if (oldValue != newValue && newValue != null && oldValue?.url() != newValue.url()) {
-            logDataProviderLoadModel.value = newValue
+            jobLogDataProviderLoadModel.value = newValue
         }
     }
 

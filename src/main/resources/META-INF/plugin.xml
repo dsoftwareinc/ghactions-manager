@@ -63,11 +63,11 @@
             <action id="Github.Workflow.Jobs.Open.In.Browser"
                     class="com.dsoftware.ghmanager.actions.JobOpenInBrowserAction"/>
             <action id="Github.Workflow.Job.List.Reload" class="com.dsoftware.ghmanager.actions.ReloadJobsAction"/>
+            <action id="Github.Workflow.Log.List.Reload" class="com.dsoftware.ghmanager.actions.ReloadJobLogAction"/>
             <!--            <reference id="Github.Workflow.Jobs.List.Reload"/>-->
         </group>
 
         <group id="Github.Workflow.Log.ToolWindow.List.Popup">
-            <action id="Github.Workflow.Log.List.Reload" class="com.dsoftware.ghmanager.actions.ReloadLogAction"/>
         </group>
 
     </actions>

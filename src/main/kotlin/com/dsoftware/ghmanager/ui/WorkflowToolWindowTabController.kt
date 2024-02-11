@@ -127,8 +127,8 @@ class WorkflowToolWindowTabController(
     private fun createLogPanel(selectedRunContext: WorkflowRunSelectionContext): JComponent {
         LOG.debug("Create log panel")
         val model = LogLoadingModelListener(
-            selectedRunContext.selectedRunDisposable,
-            selectedRunContext.logDataProviderLoadModel,
+            selectedRunContext.selectedJobDisposable,
+            selectedRunContext.jobLogDataProviderLoadModel,
             selectedRunContext.jobSelectionHolder
         )
         val panel = GHLoadingPanelFactory(

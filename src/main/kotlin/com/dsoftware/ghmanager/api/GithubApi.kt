@@ -24,7 +24,7 @@ typealias WorkflowRunLog = Map<String, JobLog>
 
 object GithubApi : GithubApiRequests.Entity("/repos") {
     private val LOG = logger<GithubApi>()
-    fun getWorkflowRunLogs(url: String) = GetRunLogRequest(url).withOperationName("Download Workflow log")
+    fun getJobLog(url: String) = GetJobLogRequest(url).withOperationName("Get Job log $url")
 
     fun postUrl(name: String, url: String, data: Any = Object()) =
         GithubApiRequest.Post.Json(url, data, Object::class.java, null).withOperationName(name)
@@ -69,7 +69,6 @@ object GithubApi : GithubApiRequests.Entity("/repos") {
     fun getWorkflowRunJobs(url: String) = get<WorkflowRunJobs>(
         url, "Get workflow-run jobs", pagination = GithubRequestPagination(1)
     )
-
 
 
     private inline fun <reified T> get(

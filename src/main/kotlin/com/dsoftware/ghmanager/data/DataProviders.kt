@@ -2,6 +2,7 @@ package com.dsoftware.ghmanager.data
 
 import com.dsoftware.ghmanager.api.WorkflowRunLog
 import com.dsoftware.ghmanager.api.GithubApi
+import com.dsoftware.ghmanager.api.JobLog
 import com.dsoftware.ghmanager.api.model.WorkflowRunJobs
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.diagnostic.thisLogger
@@ -65,24 +66,12 @@ class JobLogDataProvider(
     progressManager: ProgressManager,
     requestExecutor: GithubApiRequestExecutor,
     jobLogUrl: String
-) : DataProvider<WorkflowRunLog>(
+) : DataProvider<JobLog>(
     progressManager,
     requestExecutor,
-    GithubApi.getWorkflowRunLogs(jobLogUrl),
+    GithubApi.getJobLog(jobLogUrl),
     emptyMap()
 )
-
-class WorkflowRunLogsDataProvider(
-    progressManager: ProgressManager,
-    requestExecutor: GithubApiRequestExecutor,
-    workflowLogsUrl: String,
-) : DataProvider<WorkflowRunLog>(
-    progressManager,
-    requestExecutor,
-    GithubApi.getWorkflowRunLogs(workflowLogsUrl),
-    emptyMap()
-)
-
 
 class WorkflowRunJobsDataProvider(
     progressManager: ProgressManager,
