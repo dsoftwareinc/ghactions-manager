@@ -41,10 +41,10 @@ class WorkflowRunSelectionContext internal constructor(
     val jobsDataProvider: WorkflowRunJobsDataProvider?
         get() = selectedWfRun?.let { dataLoader.getJobsDataProvider(it) }
     var selectedJobDisposable = Disposer.newDisposable("Selected job disposable")
-    val selectedJob: Job?
+    private val selectedJob: Job?
         get() = jobSelectionHolder.selection
     val jobLogDataProviderLoadModel: SingleValueModel<JobLogDataProvider?> = SingleValueModel(null)
-    val jobLogDataProvider: JobLogDataProvider?
+    val logDataProvider: JobLogDataProvider?
         get() = selectedJob?.let { dataLoader.getJobLogDataProvider(it) }
     init {
         if (!parentDisposable.isDisposed) {
@@ -79,7 +79,7 @@ class WorkflowRunSelectionContext internal constructor(
                 jobsDataProvider?.reload()
             }
             if(selectedJob != null && selectedJob?.status != "completed") {
-                jobLogDataProvider?.reload()
+                logDataProvider?.reload()
             }
         }, 1, frequency, TimeUnit.SECONDS)
     }
@@ -101,7 +101,7 @@ class WorkflowRunSelectionContext internal constructor(
 
     private fun setNewLogProvider() {
         val oldValue = jobLogDataProviderLoadModel.value
-        val newValue = jobLogDataProvider
+        val newValue = logDataProvider
         if (oldValue != newValue && newValue != null && oldValue?.url() != newValue.url()) {
             jobLogDataProviderLoadModel.value = newValue
         }
