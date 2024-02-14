@@ -106,17 +106,12 @@ data class Job(
  * @param completedAt The time that the job finished, in ISO 8601 format.
  */
 data class JobStep(
-    /* The phase of the lifecycle that the job is currently in. */
     val status: String,
-    /* The outcome of the job. */
     val conclusion: String?,
-    /* The name of the job. */
     val name: String,
     val number: Int,
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSX", timezone = "UTC")
-    /* The time that the step started, in ISO 8601 format. */
     val startedAt: Date? = null,
-    /* The time that the job finished, in ISO 8601 format. */
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSX", timezone = "UTC")
     val completedAt: Date? = null
 )
