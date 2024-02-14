@@ -5,7 +5,7 @@ import com.intellij.ide.actions.RefreshAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.diagnostic.logger
 
-class ReloadJobsAction : RefreshAction("Refresh Workflow Jobs", null, AllIcons.Actions.Refresh) {
+class ReloadJobsAction : RefreshAction("Refresh Workflow Run Jobs List", null, AllIcons.Actions.Refresh) {
     override fun update(e: AnActionEvent) {
         val selection = e.getData(ActionKeys.ACTION_DATA_CONTEXT)?.jobsDataProvider
         e.presentation.isEnabled = selection != null

@@ -1,5 +1,6 @@
 package com.dsoftware.ghmanager.data
 
+import com.dsoftware.ghmanager.api.model.Job
 import com.dsoftware.ghmanager.api.model.WorkflowRun
 import com.google.common.cache.CacheBuilder
 import com.intellij.openapi.Disposable
@@ -23,11 +24,10 @@ class SingleRunDataLoader(
         .maximumSize(200)
         .build<String, DataProvider<*>>()
 
-
-    fun getLogsDataProvider(workflowRun: WorkflowRun): WorkflowRunLogsDataProvider {
-        return cache.get(workflowRun.logsUrl) {
-            WorkflowRunLogsDataProvider(progressManager, requestExecutor, workflowRun.logsUrl)
-        } as WorkflowRunLogsDataProvider
+    fun getJobLogDataProvider(job: Job): JobLogDataProvider {
+        return cache.get("${job.url}/logs") {
+            JobLogDataProvider(progressManager, requestExecutor, job)
+        } as JobLogDataProvider
     }
 
     fun getJobsDataProvider(workflowRun: WorkflowRun): WorkflowRunJobsDataProvider {
