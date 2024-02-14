@@ -1,227 +1,95 @@
 {
-    "total_count": 2,
+    "total_count": 1,
     "jobs": [
         {
-            "id": 21251882098,
-            "run_id": 7792954290,
-            "workflow_name": "Build",
+            "id": 21454796844,
+            "run_id": 7863783013,
+            "workflow_name": "Push on master",
             "head_branch": "master",
-            "run_url": "https://api.github.com/repos/cunla/ghactions-manager/actions/runs/7792954290",
+            "run_url": "https://api.github.com/repos/cunla/fakeredis-py/actions/runs/7863783013",
             "run_attempt": 1,
-            "node_id": "CR_kwDOHYewBs8AAAAE8rX8cg",
-            "head_sha": "198fcd73a1808fb5949e3a31c47b97a81bab9426",
-            "url": "https://api.github.com/repos/cunla/ghactions-manager/actions/jobs/21251882098",
-            "html_url": "https://github.com/cunla/ghactions-manager/actions/runs/7792954290/job/21251882098",
+            "node_id": "CR_kwDOHLrRQs8AAAAE_s44LA",
+            "head_sha": "a0576c489ba7cad8cad4ba7e14a7fe30ef9959a1",
+            "url": "https://api.github.com/repos/cunla/fakeredis-py/actions/jobs/21454796844",
+            "html_url": "https://github.com/cunla/fakeredis-py/actions/runs/7863783013/job/21454796844",
             "status": "completed",
             "conclusion": "success",
-            "created_at": "2024-02-06T00:47:32Z",
-            "started_at": "2024-02-06T00:47:39Z",
-            "completed_at": "2024-02-06T00:51:13Z",
-            "name": "Build",
+            "created_at": "2024-02-11T18:09:46Z",
+            "started_at": "2024-02-11T18:09:52Z",
+            "completed_at": "2024-02-11T18:11:49Z",
+            "name": "Analyze (python)",
             "steps": [
                 {
                     "name": "Set up job",
                     "status": "completed",
                     "conclusion": "success",
                     "number": 1,
-                    "started_at": "2024-02-06T00:47:38.000Z",
-                    "completed_at": "2024-02-06T00:47:40.000Z"
+                    "started_at": "2024-02-11T18:09:51.000Z",
+                    "completed_at": "2024-02-11T18:09:55.000Z"
                 },
                 {
-                    "name": "Maximize Build Space",
+                    "name": "Checkout repository",
                     "status": "completed",
                     "conclusion": "success",
                     "number": 2,
-                    "started_at": "2024-02-06T00:47:40.000Z",
-                    "completed_at": "2024-02-06T00:48:37.000Z"
+                    "started_at": "2024-02-11T18:09:55.000Z",
+                    "completed_at": "2024-02-11T18:09:56.000Z"
                 },
                 {
-                    "name": "Fetch Sources",
+                    "name": "Initialize CodeQL",
                     "status": "completed",
                     "conclusion": "success",
                     "number": 3,
-                    "started_at": "2024-02-06T00:48:37.000Z",
-                    "completed_at": "2024-02-06T00:48:37.000Z"
+                    "started_at": "2024-02-11T18:09:56.000Z",
+                    "completed_at": "2024-02-11T18:10:09.000Z"
                 },
                 {
-                    "name": "Gradle Wrapper Validation",
+                    "name": "Perform CodeQL Analysis",
                     "status": "completed",
                     "conclusion": "success",
                     "number": 4,
-                    "started_at": "2024-02-06T00:48:38.000Z",
-                    "completed_at": "2024-02-06T00:48:38.000Z"
+                    "started_at": "2024-02-11T18:10:09.000Z",
+                    "completed_at": "2024-02-11T18:11:46.000Z"
                 },
                 {
-                    "name": "Setup Java",
-                    "status": "completed",
-                    "conclusion": "success",
-                    "number": 5,
-                    "started_at": "2024-02-06T00:48:38.000Z",
-                    "completed_at": "2024-02-06T00:49:08.000Z"
-                },
-                {
-                    "name": "Run Tests",
+                    "name": "Post Perform CodeQL Analysis",
                     "status": "completed",
                     "conclusion": "success",
                     "number": 6,
-                    "started_at": "2024-02-06T00:49:08.000Z",
-                    "completed_at": "2024-02-06T00:50:07.000Z"
+                    "started_at": "2024-02-11T18:11:47.000Z",
+                    "completed_at": "2024-02-11T18:11:47.000Z"
                 },
                 {
-                    "name": "Collect Tests Result",
+                    "name": "Post Initialize CodeQL",
                     "status": "completed",
-                    "conclusion": "skipped",
+                    "conclusion": "success",
                     "number": 7,
-                    "started_at": "2024-02-06T00:50:07.000Z",
-                    "completed_at": "2024-02-06T00:50:07.000Z"
+                    "started_at": "2024-02-11T18:11:47.000Z",
+                    "completed_at": "2024-02-11T18:11:47.000Z"
                 },
                 {
-                    "name": "plugin verifier",
+                    "name": "Post Checkout repository",
                     "status": "completed",
                     "conclusion": "success",
                     "number": 8,
-                    "started_at": "2024-02-06T00:50:07.000Z",
-                    "completed_at": "2024-02-06T00:50:50.000Z"
+                    "started_at": "2024-02-11T18:11:49.000Z",
+                    "completed_at": "2024-02-11T18:11:49.000Z"
                 },
                 {
-                    "name": "Export Properties",
+                    "name": "Complete job",
                     "status": "completed",
                     "conclusion": "success",
                     "number": 9,
-                    "started_at": "2024-02-06T00:50:51.000Z",
-                    "completed_at": "2024-02-06T00:50:54.000Z"
-                },
-                {
-                    "name": "Setup Plugin Verifier IDEs Cache",
-                    "status": "completed",
-                    "conclusion": "success",
-                    "number": 10,
-                    "started_at": "2024-02-06T00:50:54.000Z",
-                    "completed_at": "2024-02-06T00:50:54.000Z"
-                },
-                {
-                    "name": "Run Plugin Verification tasks",
-                    "status": "completed",
-                    "conclusion": "success",
-                    "number": 11,
-                    "started_at": "2024-02-06T00:50:55.000Z",
-                    "completed_at": "2024-02-06T00:51:09.000Z"
-                },
-                {
-                    "name": "Collect Plugin Verifier Result",
-                    "status": "completed",
-                    "conclusion": "success",
-                    "number": 12,
-                    "started_at": "2024-02-06T00:51:09.000Z",
-                    "completed_at": "2024-02-06T00:51:10.000Z"
-                },
-                {
-                    "name": "Prepare Plugin Artifact",
-                    "status": "completed",
-                    "conclusion": "success",
-                    "number": 13,
-                    "started_at": "2024-02-06T00:51:10.000Z",
-                    "completed_at": "2024-02-06T00:51:10.000Z"
-                },
-                {
-                    "name": "Upload artifact",
-                    "status": "completed",
-                    "conclusion": "success",
-                    "number": 14,
-                    "started_at": "2024-02-06T00:51:10.000Z",
-                    "completed_at": "2024-02-06T00:51:11.000Z"
-                },
-                {
-                    "name": "Post Setup Plugin Verifier IDEs Cache",
-                    "status": "completed",
-                    "conclusion": "success",
-                    "number": 26,
-                    "started_at": "2024-02-06T00:51:11.000Z",
-                    "completed_at": "2024-02-06T00:51:11.000Z"
-                },
-                {
-                    "name": "Post Setup Java",
-                    "status": "completed",
-                    "conclusion": "success",
-                    "number": 27,
-                    "started_at": "2024-02-06T00:51:13.000Z",
-                    "completed_at": "2024-02-06T00:51:13.000Z"
-                },
-                {
-                    "name": "Post Fetch Sources",
-                    "status": "completed",
-                    "conclusion": "success",
-                    "number": 28,
-                    "started_at": "2024-02-06T00:51:13.000Z",
-                    "completed_at": "2024-02-06T00:51:13.000Z"
-                },
-                {
-                    "name": "Complete job",
-                    "status": "completed",
-                    "conclusion": "success",
-                    "number": 29,
-                    "started_at": "2024-02-06T00:51:11.000Z",
-                    "completed_at": "2024-02-06T00:51:11.000Z"
+                    "started_at": "2024-02-11T18:11:47.000Z",
+                    "completed_at": "2024-02-11T18:11:47.000Z"
                 }
             ],
-            "check_run_url": "https://api.github.com/repos/cunla/ghactions-manager/check-runs/21251882098",
+            "check_run_url": "https://api.github.com/repos/cunla/fakeredis-py/check-runs/21454796844",
             "labels": [
                 "ubuntu-latest"
             ],
-            "runner_id": 5,
-            "runner_name": "GitHub Actions 5",
-            "runner_group_id": 2,
-            "runner_group_name": "GitHub Actions"
-        },
-        {
-            "id": 21251980476,
-            "run_id": 7792954290,
-            "workflow_name": "Build",
-            "head_branch": "master",
-            "run_url": "https://api.github.com/repos/cunla/ghactions-manager/actions/runs/7792954290",
-            "run_attempt": 1,
-            "node_id": "CR_kwDOHYewBs8AAAAE8rd8vA",
-            "head_sha": "198fcd73a1808fb5949e3a31c47b97a81bab9426",
-            "url": "https://api.github.com/repos/cunla/ghactions-manager/actions/jobs/21251980476",
-            "html_url": "https://github.com/cunla/ghactions-manager/actions/runs/7792954290/job/21251980476",
-            "status": "completed",
-            "conclusion": "success",
-            "created_at": "2024-02-06T00:51:15Z",
-            "started_at": "2024-02-06T00:51:21Z",
-            "completed_at": "2024-02-06T00:51:25Z",
-            "name": "Release Draft",
-            "steps": [
-                {
-                    "name": "Set up job",
-                    "status": "completed",
-                    "conclusion": "success",
-                    "number": 1,
-                    "started_at": "2024-02-06T00:51:20.000Z",
-                    "completed_at": "2024-02-06T00:51:21.000Z"
-                },
-                {
-                    "name": "Run release-drafter/release-drafter@v5",
-                    "status": "completed",
-                    "conclusion": "success",
-                    "number": 2,
-                    "started_at": "2024-02-06T00:51:21.000Z",
-                    "completed_at": "2024-02-06T00:51:24.000Z"
-                },
-                {
-                    "name": "Complete job",
-                    "status": "completed",
-                    "conclusion": "success",
-                    "number": 3,
-                    "started_at": "2024-02-06T00:51:24.000Z",
-                    "completed_at": "2024-02-06T00:51:24.000Z"
-                }
-            ],
-            "check_run_url": "https://api.github.com/repos/cunla/ghactions-manager/check-runs/21251980476",
-            "labels": [
-                "ubuntu-latest"
-            ],
-            "runner_id": 13,
-            "runner_name": "GitHub Actions 13",
+            "runner_id": 9,
+            "runner_name": "GitHub Actions 9",
             "runner_group_id": 2,
             "runner_group_name": "GitHub Actions"
         }

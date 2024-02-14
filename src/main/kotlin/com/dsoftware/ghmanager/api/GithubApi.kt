@@ -20,9 +20,6 @@ data class WorkflowRunFilter(
     val workflowId: Long? = null,
 )
 
-typealias JobLog = Map<Int, String>
-typealias WorkflowRunLog = Map<String, JobLog>
-
 object GithubApi : GithubApiRequests.Entity("/repos") {
     private val LOG = logger<GithubApi>()
     fun getJobLog(job: Job) = GetJobLogRequest(job).withOperationName("Get Job log ${job.id}")

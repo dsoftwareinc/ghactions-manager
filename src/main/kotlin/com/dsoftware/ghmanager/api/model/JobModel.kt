@@ -35,6 +35,8 @@ data class Job(
 
     /* The id of the job. */
     val id: Long,
+    val workflowName: String?,
+    val headBranch: String?,
     /* The id of the associated workflow run. */
     val runId: Long,
     val runUrl: String,
@@ -49,6 +51,8 @@ data class Job(
     val status: String,
     /* The outcome of the job. */
     val conclusion: String?,
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'", timezone = "UTC")
+    val createdAt: Date?,
     /* The time that the job started, in ISO 8601 format. */
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'", timezone = "UTC")
     val startedAt: Date?,
@@ -109,8 +113,10 @@ data class JobStep(
     /* The name of the job. */
     val name: String,
     val number: Int,
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSX", timezone = "UTC")
     /* The time that the step started, in ISO 8601 format. */
-    val startedAt: String? = null,
+    val startedAt: Date? = null,
     /* The time that the job finished, in ISO 8601 format. */
-    val completedAt: String? = null
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSX", timezone = "UTC")
+    val completedAt: Date? = null
 )

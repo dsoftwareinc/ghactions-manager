@@ -20,7 +20,7 @@ class LogLoadingModelListener(
     private val jobsSelectionHolder: JobListSelectionHolder,
 ) : GHLoadingModel.StateChangeListener {
     val logModel = SingleValueModel<String?>(null)
-    val logsLoadingModel = GHCompletableFutureLoadingModel<JobLog>(workflowRunDisposable)
+    val logsLoadingModel = GHCompletableFutureLoadingModel<String>(workflowRunDisposable)
 
     init {
         jobsSelectionHolder.addSelectionChangeListener(workflowRunDisposable, this::setLogValue)
@@ -50,34 +50,7 @@ class LogLoadingModelListener(
 
     }
 
-    private fun stepsAsLog(stepLogs: Map<Int, String>, selection: Job): String {
-        val stepsResult: Map<Int, JobStep> = if (selection.steps == null) {
-            emptyMap()
-        } else {
-            selection.steps.associateBy { it.number }
-        }
-        val stepNumbers = stepsResult.keys.sorted()
-        if (!stepNumbers.containsAll(stepLogs.keys)) {
-            LOG.warn(
-                "Some logs do not have a step-result associated " +
-                    "[steps in results=$stepNumbers, step with logs=${stepLogs.keys}] "
-            )
-        }
-        val res = StringBuilder()
-        for (index in stepNumbers) {
-            val stepInfo = stepsResult[index]!!
-            val logs = if (stepLogs.containsKey(index)) stepLogs[index] else ""
-            val indexStr = "%3d".format(index)
-            res.append(
-                when (stepInfo.conclusion) {
-                    "skipped" -> "\u001B[0m\u001B[37m---- Step ${indexStr}: ${stepInfo.name} (skipped) ----\u001b[0m\n"
-                    "failure" -> "\u001B[0m\u001B[31m---- Step ${indexStr}: ${stepInfo.name} (failed) ----\u001b[0m\n${logs}"
-                    else -> "\u001B[0m\u001B[32m---- Step ${indexStr}: ${stepInfo.name} ----\u001b[0m\n${logs}"
-                }
-            )
-        }
-        return res.toString()
-    }
+
 
     private fun setLogValue() {
         val jobSelection = jobsSelectionHolder.selection
@@ -91,7 +64,7 @@ class LogLoadingModelListener(
             jobSelection == null -> LOG_MSG_PICK_JOB
             jobSelection.status == "in_progress" -> LOG_MSG_JOB_IN_PROGRESS
             logs == null -> LOG_MSG_MISSING + jobSelection.name
-            else -> stepsAsLog(logs, jobSelection)
+            else -> logs
         }
     }
 
