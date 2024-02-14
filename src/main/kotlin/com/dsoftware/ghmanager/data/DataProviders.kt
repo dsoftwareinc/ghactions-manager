@@ -9,6 +9,7 @@ import com.intellij.openapi.progress.ProgressManager
 import com.intellij.util.EventDispatcher
 import org.jetbrains.plugins.github.api.GithubApiRequest
 import org.jetbrains.plugins.github.api.GithubApiRequestExecutor
+import org.jetbrains.plugins.github.exceptions.GithubStatusCodeException
 import org.jetbrains.plugins.github.util.LazyCancellableBackgroundProcessValue
 import java.io.IOException
 import java.util.EventListener
@@ -33,6 +34,9 @@ open class DataProvider<T>(
             } catch (ioe: IOException) {
                 LOG.warn("Error when getting $githubApiRequest.url: $ioe")
                 errorValue ?: throw ioe
+            }catch (e: GithubStatusCodeException){
+                LOG.warn("Error when getting $githubApiRequest.url: $e")
+                errorValue ?: throw e
             }
         }
 
