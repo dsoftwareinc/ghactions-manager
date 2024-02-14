@@ -4,7 +4,6 @@ import com.dsoftware.ghmanager.Constants.LOG_MSG_JOB_IN_PROGRESS
 import com.dsoftware.ghmanager.Constants.LOG_MSG_MISSING
 import com.dsoftware.ghmanager.Constants.LOG_MSG_PICK_JOB
 import com.dsoftware.ghmanager.api.JobLog
-import com.dsoftware.ghmanager.api.WorkflowRunLog
 import com.dsoftware.ghmanager.api.model.Job
 import com.dsoftware.ghmanager.api.model.JobStep
 import com.intellij.collaboration.ui.SingleValueModel
@@ -90,7 +89,7 @@ class LogLoadingModelListener(
         logModel.value = when {
             logsLoadingModel.result == null -> null
             jobSelection == null -> LOG_MSG_PICK_JOB
-            logs == null && jobSelection.status == "in_progress" -> LOG_MSG_JOB_IN_PROGRESS
+            jobSelection.status == "in_progress" -> LOG_MSG_JOB_IN_PROGRESS
             logs == null -> LOG_MSG_MISSING + jobSelection.name
             else -> stepsAsLog(logs, jobSelection)
         }

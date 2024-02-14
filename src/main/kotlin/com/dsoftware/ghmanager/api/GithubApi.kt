@@ -1,5 +1,6 @@
 package com.dsoftware.ghmanager.api
 
+import com.dsoftware.ghmanager.api.model.Job
 import com.dsoftware.ghmanager.api.model.WorkflowRunJobs
 import com.dsoftware.ghmanager.api.model.WorkflowRuns
 import com.dsoftware.ghmanager.api.model.WorkflowTypes
@@ -24,7 +25,7 @@ typealias WorkflowRunLog = Map<String, JobLog>
 
 object GithubApi : GithubApiRequests.Entity("/repos") {
     private val LOG = logger<GithubApi>()
-    fun getJobLog(url: String) = GetJobLogRequest(url).withOperationName("Get Job log $url")
+    fun getJobLog(job: Job) = GetJobLogRequest(job).withOperationName("Get Job log ${job.id}")
 
     fun postUrl(name: String, url: String, data: Any = Object()) =
         GithubApiRequest.Post.Json(url, data, Object::class.java, null).withOperationName(name)

@@ -110,9 +110,7 @@ data class JobStep(
     val name: String,
     val number: Int,
     /* The time that the step started, in ISO 8601 format. */
-    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSX", timezone = "UTC")
-    val startedAt: Date? = null,
+    val startedAt: String? = null,
     /* The time that the job finished, in ISO 8601 format. */
-    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSX", timezone = "UTC")
-    val completedAt: Date? = null
+    val completedAt: String? = null
 )
