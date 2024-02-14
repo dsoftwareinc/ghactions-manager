@@ -1,22 +1,8 @@
 package com.dsoftware.ghmanager.api.model
 
 import com.fasterxml.jackson.annotation.JsonFormat
-import kotlinx.serialization.Serializable
 import java.util.Date
 
-
-data class WorkflowTypes(
-    val totalCount: Int,
-    val workflows: List<WorkflowType> = emptyList()
-)
-
-@Serializable
-data class WorkflowType(
-    val id: Long,
-    val name: String,
-    val path: String,
-    val state: String,
-)
 
 data class PullRequest(
     val id: Int,

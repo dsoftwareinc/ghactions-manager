@@ -53,4 +53,18 @@ class TestGetJobLogRequest : TestCase() {
         assertTrue(log.contains("[31m---- Step   3: step 3 (failed) ----"))
     }
 
+    fun testBadLogStructure() {
+        // arrange
+        val wfJobsJson = TestGetJobLogRequest::class.java.getResource("/wf-run-jobs.json")!!.readText()
+        val wfJobs: WorkflowRunJobs = mapper.readValue(wfJobsJson)
+        val job = wfJobs.jobs.first()
+        val line="2024-02-11T18:09:51.DDDDDDDZ LTS\n"
+        //act
+        val log = GetJobLogRequest(job).extractJobLogFromStream(line.byteInputStream())
+
+        //assert
+        assertTrue(log.contains(line))
+
+    }
+
 }

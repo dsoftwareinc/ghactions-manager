@@ -9,6 +9,7 @@ import java.io.BufferedReader
 import java.io.IOException
 import java.io.InputStream
 import java.io.InputStreamReader
+import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.TimeZone
@@ -44,7 +45,7 @@ class GetJobLogRequest(private val job: Job) : GithubApiRequest.Get<String>(job.
         var currStep = 1
         try {
             val reader = BufferedReader(InputStreamReader(inputStream))
-            val lines = reader.readLines()
+            val lines = reader.lines()
             for (line in lines) {
                 ++lineNum
                 if (line.length < 29) {
@@ -52,9 +53,12 @@ class GetJobLogRequest(private val job: Job) : GithubApiRequest.Get<String>(job.
                     continue
                 }
                 val datetimeStr = line.substring(0, 23)
-                val time = formatter.parse(datetimeStr)
-                currStep = findStep(currStep, time)
-
+                try {
+                    val time = formatter.parse(datetimeStr)
+                    currStep = findStep(currStep, time)
+                } catch (e: ParseException) {
+                    LOG.warn("Failed to parse date from log line $lineNum: $line, $e")
+                }
                 contentBuilders.getOrPut(currStep) { StringBuilder(400_000) }.append(line + "\n")
             }
         } catch (e: IOException) {
