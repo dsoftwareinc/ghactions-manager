@@ -91,18 +91,16 @@ class WorkflowRunSelectionContext internal constructor(
     private fun setNewJobsProvider() {
         val oldValue = jobDataProviderLoadModel.value
         val newValue = jobsDataProvider
-        if (newValue != oldValue) {
-            jobSelectionHolder.selection = null
-        }
         if (oldValue != newValue && newValue != null && oldValue?.url() != newValue.url()) {
             jobDataProviderLoadModel.value = newValue
+            jobSelectionHolder.selection = null
         }
     }
 
     private fun setNewLogProvider() {
         val oldValue = jobLogDataProviderLoadModel.value
         val newValue = logDataProvider
-        if (oldValue != newValue && newValue != null && oldValue?.url() != newValue.url()) {
+        if (oldValue != newValue && oldValue?.url() != newValue?.url()) {
             jobLogDataProviderLoadModel.value = newValue
         }
     }
