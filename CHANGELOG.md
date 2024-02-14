@@ -4,7 +4,11 @@
 
 ## [Unreleased]
 
-## [1.15.3]
+## [1.16.0]
+
+### 🚀 Features
+
+- Downloading job logs instead of entire run logs #108
 
 ## [1.15.2]
 
