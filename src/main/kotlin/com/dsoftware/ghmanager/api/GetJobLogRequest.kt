@@ -37,9 +37,7 @@ class GetJobLogRequest(private val job: Job) : GithubApiRequest.Get<String>(job.
     fun extractLogByStep(inputStream: InputStream): Map<Int, StringBuilder> {
         val dateTimePattern = "yyyy-MM-dd'T'HH:mm:ss.SSS"
         val formatter = SimpleDateFormat(dateTimePattern)
-
         val contentBuilders = HashMap<Int, StringBuilder>()
-
         formatter.timeZone = TimeZone.getTimeZone("UTC")
         var lineNum = 0
         var currStep = 1
@@ -57,13 +55,12 @@ class GetJobLogRequest(private val job: Job) : GithubApiRequest.Get<String>(job.
                     val time = formatter.parse(datetimeStr)
                     currStep = findStep(currStep, time)
                 } catch (e: ParseException) {
-                    LOG.warn("Failed to parse date from log line $lineNum: $line, $e")
+                    LOG.warn("Failed to parse date \"$datetimeStr\" from log line $lineNum: $line, $e")
                 }
                 contentBuilders.getOrPut(currStep) { StringBuilder(400_000) }.append(line + "\n")
             }
         } catch (e: IOException) {
-            LOG.warn(e.message)
-            throw e
+            LOG.warn("Could not read log from input stream", e)
         }
         return contentBuilders
     }
