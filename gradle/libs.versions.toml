@@ -7,7 +7,6 @@ serialization = "1.6.0"
 kotlin = "1.9.21"
 changelog = "2.2.0"
 gradleIntelliJPlugin = "1.17.1"
-qodana = "0.1.13"
 kover = "0.7.5"
 dokka = "1.8.10"
 
@@ -27,4 +26,3 @@ gradleIntelliJPlugin = { id = "org.jetbrains.intellij", version.ref = "gradleInt
 kotlin = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 kover = { id = "org.jetbrains.kotlinx.kover", version.ref = "kover" }
-qodana = { id = "org.jetbrains.qodana", version.ref = "qodana" }
