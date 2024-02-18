@@ -46,16 +46,14 @@ class GetJobLogRequest(private val job: Job) : GithubApiRequest.Get<String>(job.
             val lines = reader.lines()
             for (line in lines) {
                 ++lineNum
-                if (line.length < 29) {
-                    contentBuilders.getOrDefault(currStep, StringBuilder()).append(line + "\n")
-                    continue
-                }
-                val datetimeStr = line.substring(0, 23)
-                try {
-                    val time = formatter.parse(datetimeStr)
-                    currStep = findStep(currStep, time)
-                } catch (e: ParseException) {
-                    LOG.warn("Failed to parse date \"$datetimeStr\" from log line $lineNum: $line, $e")
+                if (line.length >= 29) {
+                    val datetimeStr = line.substring(0, 23)
+                    try {
+                        val time = formatter.parse(datetimeStr)
+                        currStep = findStep(currStep, time)
+                    } catch (e: ParseException) {
+                        LOG.warn("Failed to parse date \"$datetimeStr\" from log line $lineNum: $line, $e")
+                    }
                 }
                 contentBuilders.getOrPut(currStep) { StringBuilder(400_000) }.append(line + "\n")
             }
