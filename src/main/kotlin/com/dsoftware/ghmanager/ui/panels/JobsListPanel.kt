@@ -109,7 +109,6 @@ class JobListComponent(
                                 ""
                             else {
                                 val duration = job.completedAt - job.startedAt
-//                                val duration = Duration.between(job.startedAt, job.completedAt.toInstant())
                                 val minutes = duration.inWholeMinutes
                                 val seconds = duration.inWholeSeconds % 60
                                 "took ${minutes}:" +

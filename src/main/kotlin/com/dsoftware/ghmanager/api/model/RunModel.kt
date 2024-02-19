@@ -1,7 +1,7 @@
 package com.dsoftware.ghmanager.api.model
 
-import com.fasterxml.jackson.annotation.JsonFormat
-import java.util.Date
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize
+import kotlinx.datetime.Instant
 
 
 data class PullRequest(
@@ -27,10 +27,10 @@ data class WorkflowRun(
     val conclusion: String?,
     val url: String,
     val htmlUrl: String,
-    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'", timezone = "UTC")
-    val createdAt: Date?,
-    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'", timezone = "UTC")
-    val updatedAt: Date?,
+    @JsonDeserialize(using = InstantDeserializer::class)
+    val createdAt: Instant?,
+    @JsonDeserialize(using = InstantDeserializer::class)
+    val updatedAt: Instant?,
     val jobsUrl: String,
     val logsUrl: String,
     val checkSuiteUrl: String,
@@ -50,9 +50,13 @@ data class WorkflowRun(
      * @param other The other workflow to compare to
      */
     override fun compareTo(other: WorkflowRun): Int {
-        return other.updatedAt?.compareTo(this.updatedAt)
-            ?: other.createdAt?.compareTo(this.createdAt)
-            ?: other.runNumber.compareTo(this.runNumber)
+        if (other.updatedAt != null && this.updatedAt != null) {
+            return other.updatedAt.compareTo(this.updatedAt)
+        } else if (other.createdAt != null && this.createdAt != null) {
+            return other.createdAt.compareTo(this.createdAt)
+        } else {
+            return other.runNumber.compareTo(this.runNumber)
+        }
     }
 }
 
