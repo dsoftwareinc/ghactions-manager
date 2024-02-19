@@ -25,7 +25,7 @@ class TestLogColors : TestCase() {
 
     fun testBadLogStructure() {
         // arrange
-        val wfJobsJson = TestGetJobLogRequest::class.java.getResource("/wf-run-jobs-7863783013.json")!!.readText()
+        val wfJobsJson = TestGetJobLogRequest::class.java.getResource("/wf-run-7863783013-jobs.json")!!.readText()
         val wfJobs: WorkflowRunJobs = GithubApiContentHelper.fromJson(wfJobsJson)
         val job = wfJobs.jobs.first()
         val line = "2024-02-11T18:09:51.DDDDDDDZ LTS\n"

@@ -8,6 +8,6 @@ import kotlin.time.Duration.Companion.milliseconds
 
 class InstantDeserializer : JsonDeserializer<Instant>() {
     override fun deserialize(jsonParser: JsonParser, context: DeserializationContext?): Instant {
-        return Instant.parse(jsonParser.text).plus(500.milliseconds)
+        return Instant.parse(jsonParser.text)
     }
 }

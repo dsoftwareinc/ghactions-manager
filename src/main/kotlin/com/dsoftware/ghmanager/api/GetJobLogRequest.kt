@@ -44,7 +44,10 @@ class GetJobLogRequest(private val job: Job) : GithubApiRequest.Get<String>(job.
             val lines = reader.lines()
             for (line in lines) {
                 ++lineNum
-                if (line.length >= 29) {
+                if (line.length >= 29
+                    &&( line.contains("##[group]Run ")
+                        || line.contains("Post job cleanup")
+                        || line.contains("Cleaning up orphan processes"))) {
                     val datetimeStr = line.substring(0, 28)
                     try {
                         val time = Instant.parse(datetimeStr)
