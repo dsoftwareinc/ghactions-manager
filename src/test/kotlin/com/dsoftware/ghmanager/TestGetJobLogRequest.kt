@@ -30,10 +30,10 @@ class TestGetJobLogRequest(
 
         //assert
         val jobLogLinesCount = jobLog.map { it.key to it.value.split("\n").size }.toMap()
-//        assertEquals(
-//            logContent.split("\n").size,
-//            expectedLogLinesCount.values.sum() - expectedLogLinesCount.keys.count()
-//        )
+        assertEquals(
+            logContent.split("\n").size,
+            expectedLogLinesCount.values.sum() - expectedLogLinesCount.keys.count()
+        )
         assertEquals(expectedLogLinesCount, jobLogLinesCount)
     }
 
@@ -43,15 +43,15 @@ class TestGetJobLogRequest(
         @JvmStatic
         @Parameters
         fun data() = listOf(
-//            arrayOf(
-//                "/wf-run-single-job-21454796844.log",
-//                "/wf-run-jobs-7863783013.json",
-//                mapOf((1 to 33), (2 to 21), (3 to 834), (4 to 813), (6 to 5), (8 to 15))
-//            ),
+            arrayOf(
+                "/wf-run-single-job-21454796844.log",
+                "/wf-run-jobs-7863783013.json",
+                mapOf((1 to 33), (2 to 21), (3 to 834), (4 to 813), (6 to 5), (8 to 15))
+            ),
             arrayOf(
                 "/wf-run-7946420025-single-job-21694126229.log",
                 "/wf-run-7946420025-jobs.json",
-                mapOf((1 to 23), (2 to 25), (3 to 49), (4 to 699), (7 to 12))
+                mapOf((1 to 6), (2 to 26), (4 to 186), (7 to 471), (9 to 146))
             )
         )
 
