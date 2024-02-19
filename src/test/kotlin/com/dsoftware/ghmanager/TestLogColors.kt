@@ -2,8 +2,8 @@ package com.dsoftware.ghmanager
 
 import com.dsoftware.ghmanager.api.GetJobLogRequest
 import com.dsoftware.ghmanager.api.model.WorkflowRunJobs
-import com.fasterxml.jackson.module.kotlin.readValue
 import junit.framework.TestCase
+import org.jetbrains.plugins.github.api.GithubApiContentHelper
 
 class TestLogColors : TestCase() {
     fun testStepsWithRightColor() {
@@ -25,8 +25,8 @@ class TestLogColors : TestCase() {
 
     fun testBadLogStructure() {
         // arrange
-        val wfJobsJson = TestGetJobLogRequest::class.java.getResource("/wf-run-jobs.json")!!.readText()
-        val wfJobs: WorkflowRunJobs = TestGetJobLogRequest.mapper.readValue(wfJobsJson)
+        val wfJobsJson = TestGetJobLogRequest::class.java.getResource("/wf-run-jobs-7863783013.json")!!.readText()
+        val wfJobs: WorkflowRunJobs = GithubApiContentHelper.fromJson(wfJobsJson)
         val job = wfJobs.jobs.first()
         val line = "2024-02-11T18:09:51.DDDDDDDZ LTS\n"
         //act
