@@ -1,6 +1,5 @@
 package com.dsoftware.ghmanager.api.model
 
-import com.fasterxml.jackson.annotation.JsonFormat
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import kotlinx.datetime.Instant
 
@@ -52,15 +51,10 @@ data class Job(
     val status: String,
     /* The outcome of the job. */
     val conclusion: String?,
-//    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'", timezone = "UTC")
     @JsonDeserialize(using = InstantDeserializer::class)
     val createdAt: Instant?,
-    /* The time that the job started, in ISO 8601 format. */
-//    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'", timezone = "UTC")
     @JsonDeserialize(using = InstantDeserializer::class)
     val startedAt: Instant?,
-    /* The time that the job finished, in ISO 8601 format. */
-//    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'", timezone = "UTC")
     @JsonDeserialize(using = InstantDeserializer::class)
     val completedAt: Instant?,
     /* The name of the job. */
@@ -114,10 +108,8 @@ data class JobStep(
     val conclusion: String?,
     val name: String,
     val number: Int,
-//    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSX", timezone = "UTC")
     @JsonDeserialize(using = InstantDeserializer::class)
     val startedAt: Instant? = null,
-//    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSX", timezone = "UTC")
     @JsonDeserialize(using = InstantDeserializer::class)
     val completedAt: Instant? = null
 )
