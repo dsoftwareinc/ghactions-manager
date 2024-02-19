@@ -5,8 +5,6 @@ import com.dsoftware.ghmanager.api.model.WorkflowRunJobs
 import com.dsoftware.ghmanager.api.model.WorkflowRuns
 import com.dsoftware.ghmanager.api.model.WorkflowTypes
 import com.dsoftware.ghmanager.data.RepositoryCoordinates
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import com.intellij.openapi.diagnostic.logger
 import org.jetbrains.plugins.github.api.GithubApiRequest
 import org.jetbrains.plugins.github.api.GithubApiRequest.Get.Companion.json
@@ -24,9 +22,6 @@ data class WorkflowRunFilter(
 
 object GithubApi : GithubApiRequests.Entity("/repos") {
     private val LOG = logger<GithubApi>()
-    init {
-        jacksonObjectMapper().registerKotlinModule()
-    }
     fun getJobLog(job: Job) = GetJobLogRequest(job).withOperationName("Get Job log ${job.id}")
 
     fun postUrl(name: String, url: String, data: Any = Object()) =
