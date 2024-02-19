@@ -2,6 +2,8 @@
 
 # GitHub-Actions-Manager Changelog
 
+## [Unreleased]
+
 ## [1.16.1]
 
 ### 🐛 Bug Fixes
