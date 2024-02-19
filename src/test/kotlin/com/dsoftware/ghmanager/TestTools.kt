@@ -2,9 +2,11 @@ package com.dsoftware.ghmanager
 
 import com.dsoftware.ghmanager.api.model.Job
 import com.dsoftware.ghmanager.api.model.JobStep
+import kotlinx.datetime.Clock
+import kotlinx.datetime.Instant
 import java.util.Date
 
-fun Job.withStep(number: Int, conclusion: String, startedAt: Date = Date(), completedAt: Date = Date()): Job {
+fun Job.withStep(number: Int, conclusion: String, startedAt: Instant= Clock.System.now(), completedAt: Instant= Clock.System.now()): Job {
     val jobStep = JobStep(
         number = number,
         name = "step $number",
@@ -34,9 +36,9 @@ fun createJob(
         htmlUrl = "https://github.com/$owner/$repo/actions/runs/$runId/job/$id",
         status = "completed",
         conclusion = "success",
-        createdAt = Date(),
-        startedAt = Date(),
-        completedAt = Date(),
+        createdAt = Clock.System.now(),
+        startedAt = Clock.System.now(),
+        completedAt = Clock.System.now(),
         name = "Analyze (python)",
         steps = mutableListOf(),
         checkRunUrl = "https://api.github.com/repos/$owner/$repo/check-runs/21454796844",

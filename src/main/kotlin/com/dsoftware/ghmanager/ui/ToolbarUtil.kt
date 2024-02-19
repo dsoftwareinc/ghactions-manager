@@ -5,6 +5,7 @@ import com.intellij.icons.AllIcons
 import com.intellij.ui.AnimatedIcon
 import com.intellij.ui.components.JBList
 import com.intellij.util.text.DateFormatUtil
+import kotlinx.datetime.Instant
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.util.Date
@@ -21,6 +22,13 @@ object ToolbarUtil {
         val localDateTime = LocalDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault())
         val zonedDateTime = localDateTime.atZone(ZoneId.systemDefault())
         return DateFormatUtil.formatPrettyDateTime(zonedDateTime.toInstant().toEpochMilli())
+    }
+
+    fun makeTimePretty(date: Instant?): String {
+        if (date == null) {
+            return "Unknown"
+        }
+        return DateFormatUtil.formatPrettyDateTime(date.toEpochMilliseconds())
     }
 
     fun statusIcon(status: String, conclusion: String?): Icon {

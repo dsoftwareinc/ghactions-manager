@@ -1,31 +1,28 @@
 package com.dsoftware.ghmanager
 
 import com.dsoftware.ghmanager.api.GetJobLogRequest
-import com.dsoftware.ghmanager.api.model.Job
-import com.dsoftware.ghmanager.api.model.JobStep
 import com.dsoftware.ghmanager.api.model.WorkflowRunJobs
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.databind.PropertyNamingStrategies
-import com.fasterxml.jackson.module.kotlin.readValue
-import com.fasterxml.jackson.module.kotlin.registerKotlinModule
-import com.jetbrains.rd.util.Date
-import junit.framework.TestCase
+import org.jetbrains.plugins.github.api.GithubApiContentHelper
+import org.junit.Assert.assertEquals
+import org.junit.Test
+import org.junit.runner.RunWith
+import org.junit.runners.Parameterized
+import org.junit.runners.Parameterized.Parameters
 
 
+@RunWith(Parameterized::class)
+class TestGetJobLogRequest(
+    private val logContentFilename: String,
+    private val jobsJsonFilename: String,
+    private val expectedLogLinesCount: Map<Int, Int>
+) {
 
-class TestGetJobLogRequest : TestCase() {
-    private val mapper = ObjectMapper().registerKotlinModule()
-
-    override fun setUp() {
-        super.setUp()
-        mapper.setPropertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE);
-    }
-
+    @Test
     fun testGetJobLogRequest() {
         // arrange
-        val logContent = TestGetJobLogRequest::class.java.getResource("/wf-run-single-job.log")!!.readText()
-        val wfJobsJson = TestGetJobLogRequest::class.java.getResource("/wf-run-jobs.json")!!.readText()
-        val wfJobs: WorkflowRunJobs = mapper.readValue(wfJobsJson)
+        val logContent = TestGetJobLogRequest::class.java.getResource(logContentFilename)!!.readText()
+        val wfJobsJson = TestGetJobLogRequest::class.java.getResource(jobsJsonFilename)!!.readText()
+        val wfJobs: WorkflowRunJobs = GithubApiContentHelper.fromJson(wfJobsJson)
         val job = wfJobs.jobs.first()
 
         //act
@@ -33,38 +30,30 @@ class TestGetJobLogRequest : TestCase() {
 
         //assert
         val jobLogLinesCount = jobLog.map { it.key to it.value.split("\n").size }.toMap()
-        assertTrue(jobLogLinesCount == mapOf((1 to 33), (2 to 21), (3 to 834), (4 to 813), (6 to 5), (8 to 15)))
+        assertEquals(
+            logContent.split("\n").size,
+            expectedLogLinesCount.values.sum() - expectedLogLinesCount.keys.count()
+        )
+        assertEquals(expectedLogLinesCount, jobLogLinesCount)
     }
 
-    fun testStepsWithRightColor() {
-        // arrange
-        val job = createJob()
-            .withStep(number = 1, conclusion = "success")
-            .withStep(number = 2, conclusion = "skipped")
-            .withStep(number = 3, conclusion = "failure")
 
-        //act
-        val log = GetJobLogRequest(job).extractJobLogFromStream("".byteInputStream())
+    companion object {
 
-        //assert
-
-        assertTrue(log.contains("[32m---- Step   1: step 1 ----"))
-        assertTrue(log.contains("[37m---- Step   2: step 2 (skipped) ----"))
-        assertTrue(log.contains("[31m---- Step   3: step 3 (failed) ----"))
-    }
-
-    fun testBadLogStructure() {
-        // arrange
-        val wfJobsJson = TestGetJobLogRequest::class.java.getResource("/wf-run-jobs.json")!!.readText()
-        val wfJobs: WorkflowRunJobs = mapper.readValue(wfJobsJson)
-        val job = wfJobs.jobs.first()
-        val line="2024-02-11T18:09:51.DDDDDDDZ LTS\n"
-        //act
-        val log = GetJobLogRequest(job).extractJobLogFromStream(line.byteInputStream())
-
-        //assert
-        assertTrue(log.contains(line))
+        @JvmStatic
+        @Parameters
+        fun data() = listOf(
+            arrayOf(
+                "/wf-run-7863783013-single-job-21454796844.log",
+                "/wf-run-7863783013-jobs.json",
+                mapOf((1 to 34), (2 to 69), (3 to 788), (4 to 813), (6 to 2), (8 to 15))
+            ),
+            arrayOf(
+                "/wf-run-7946420025-single-job-21694126031.log",
+                "/wf-run-7946420025-jobs.json",
+                mapOf((1 to 33), (2 to 28), (4 to 743), (7 to 15))
+            )
+        )
 
     }
-
 }

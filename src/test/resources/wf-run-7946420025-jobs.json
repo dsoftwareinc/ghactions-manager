@@ -1,0 +1,1013 @@
+{
+    "total_count": 12,
+    "jobs": [
+        {
+            "id": 21694126031,
+            "run_id": 7946420025,
+            "workflow_name": "Maven Build",
+            "head_branch": "master",
+            "run_url": "https://api.github.com/repos/kriegaex/Asciidoctor_HTMLContainsCRLFOnWindows/actions/runs/7946420025",
+            "run_attempt": 1,
+            "node_id": "CR_kwDOLUE4e88AAAAFDRIXzw",
+            "head_sha": "0b64661c30cff2bdb70db12a65ff07bae82fb1e0",
+            "url": "https://api.github.com/repos/kriegaex/Asciidoctor_HTMLContainsCRLFOnWindows/actions/jobs/21694126031",
+            "html_url": "https://github.com/kriegaex/Asciidoctor_HTMLContainsCRLFOnWindows/actions/runs/7946420025/job/21694126031",
+            "status": "completed",
+            "conclusion": "success",
+            "created_at": "2024-02-18T03:59:27Z",
+            "started_at": "2024-02-18T03:59:35Z",
+            "completed_at": "2024-02-18T03:59:54Z",
+            "name": "Build on ubuntu-latest with JDK 8",
+            "steps": [
+                {
+                    "name": "Set up job",
+                    "status": "completed",
+                    "conclusion": "success",
+                    "number": 1,
+                    "started_at": "2024-02-18T03:59:35.000Z",
+                    "completed_at": "2024-02-18T03:59:36.000Z"
+                },
+                {
+                    "name": "Set up JDK 8",
+                    "status": "completed",
+                    "conclusion": "success",
+                    "number": 2,
+                    "started_at": "2024-02-18T03:59:36.000Z",
+                    "completed_at": "2024-02-18T03:59:37.000Z"
+                },
+                {
+                    "name": "Check out code",
+                    "status": "completed",
+                    "conclusion": "success",
+                    "number": 3,
+                    "started_at": "2024-02-18T03:59:37.000Z",
+                    "completed_at": "2024-02-18T03:59:37.000Z"
+                },
+                {
+                    "name": "Run Maven Build",
+                    "status": "completed",
+                    "conclusion": "success",
+                    "number": 4,
+                    "started_at": "2024-02-18T03:59:37.000Z",
+                    "completed_at": "2024-02-18T03:59:50.000Z"
+                },
+                {
+                    "name": "Post Check out code",
+                    "status": "completed",
+                    "conclusion": "success",
+                    "number": 7,
+                    "started_at": "2024-02-18T03:59:54.000Z",
+                    "completed_at": "2024-02-18T03:59:54.000Z"
+                },
+                {
+                    "name": "Post Set up JDK 8",
+                    "status": "completed",
+                    "conclusion": "success",
+                    "number": 8,
+                    "started_at": "2024-02-18T03:59:54.000Z",
+                    "completed_at": "2024-02-18T03:59:54.000Z"
+                },
+                {
+                    "name": "Complete job",
+                    "status": "completed",
+                    "conclusion": "success",
+                    "number": 9,
+                    "started_at": "2024-02-18T03:59:50.000Z",
+                    "completed_at": "2024-02-18T03:59:50.000Z"
+                }
+            ],
+            "check_run_url": "https://api.github.com/repos/kriegaex/Asciidoctor_HTMLContainsCRLFOnWindows/check-runs/21694126031",
+            "labels": [
+                "ubuntu-latest"
+            ],
+            "runner_id": 13,
+            "runner_name": "GitHub Actions 13",
+            "runner_group_id": 2,
+            "runner_group_name": "GitHub Actions"
+        },
+        {
+            "id": 21694126102,
+            "run_id": 7946420025,
+            "workflow_name": "Maven Build",
+            "head_branch": "master",
+            "run_url": "https://api.github.com/repos/kriegaex/Asciidoctor_HTMLContainsCRLFOnWindows/actions/runs/7946420025",
+            "run_attempt": 1,
+            "node_id": "CR_kwDOLUE4e88AAAAFDRIYFg",
+            "head_sha": "0b64661c30cff2bdb70db12a65ff07bae82fb1e0",
+            "url": "https://api.github.com/repos/kriegaex/Asciidoctor_HTMLContainsCRLFOnWindows/actions/jobs/21694126102",
+            "html_url": "https://github.com/kriegaex/Asciidoctor_HTMLContainsCRLFOnWindows/actions/runs/7946420025/job/21694126102",
+            "status": "completed",
+            "conclusion": "success",
+            "created_at": "2024-02-18T03:59:28Z",
+            "started_at": "2024-02-18T03:59:34Z",
+            "completed_at": "2024-02-18T03:59:53Z",
+            "name": "Build on ubuntu-latest with JDK 11",
+            "steps": [
+                {
+                    "name": "Set up job",
+                    "status": "completed",
+                    "conclusion": "success",
+                    "number": 1,
+                    "started_at": "2024-02-18T03:59:33.000Z",
+                    "completed_at": "2024-02-18T03:59:35.000Z"
+                },
+                {
+                    "name": "Set up JDK 11",
+                    "status": "completed",
+                    "conclusion": "success",
+                    "number": 2,
+                    "started_at": "2024-02-18T03:59:35.000Z",
+                    "completed_at": "2024-02-18T03:59:35.000Z"
+                },
+                {
+                    "name": "Check out code",
+                    "status": "completed",
+                    "conclusion": "success",
+                    "number": 3,
+                    "started_at": "2024-02-18T03:59:36.000Z",
+                    "completed_at": "2024-02-18T03:59:36.000Z"
+                },
+                {
+                    "name": "Run Maven Build",
+                    "status": "completed",
+                    "conclusion": "success",
+                    "number": 4,
+                    "started_at": "2024-02-18T03:59:37.000Z",
+                    "completed_at": "2024-02-18T03:59:50.000Z"
+                },
+                {
+                    "name": "Post Check out code",
+                    "status": "completed",
+                    "conclusion": "success",
+                    "number": 7,
+                    "started_at": "2024-02-18T03:59:50.000Z",
+                    "completed_at": "2024-02-18T03:59:50.000Z"
+                },
+                {
+                    "name": "Post Set up JDK 11",
+                    "status": "completed",
+                    "conclusion": "success",
+                    "number": 8,
+                    "started_at": "2024-02-18T03:59:53.000Z",
+                    "completed_at": "2024-02-18T03:59:53.000Z"
+                },
+                {
+                    "name": "Complete job",
+                    "status": "completed",
+                    "conclusion": "success",
+                    "number": 9,
+                    "started_at": "2024-02-18T03:59:50.000Z",
+                    "completed_at": "2024-02-18T03:59:50.000Z"
+                }
+            ],
+            "check_run_url": "https://api.github.com/repos/kriegaex/Asciidoctor_HTMLContainsCRLFOnWindows/check-runs/21694126102",
+            "labels": [
+                "ubuntu-latest"
+            ],
+            "runner_id": 16,
+            "runner_name": "GitHub Actions 16",
+            "runner_group_id": 2,
+            "runner_group_name": "GitHub Actions"
+        },
+        {
+            "id": 21694126150,
+            "run_id": 7946420025,
+            "workflow_name": "Maven Build",
+            "head_branch": "master",
+            "run_url": "https://api.github.com/repos/kriegaex/Asciidoctor_HTMLContainsCRLFOnWindows/actions/runs/7946420025",
+            "run_attempt": 1,
+            "node_id": "CR_kwDOLUE4e88AAAAFDRIYRg",
+            "head_sha": "0b64661c30cff2bdb70db12a65ff07bae82fb1e0",
+            "url": "https://api.github.com/repos/kriegaex/Asciidoctor_HTMLContainsCRLFOnWindows/actions/jobs/21694126150",
+            "html_url": "https://github.com/kriegaex/Asciidoctor_HTMLContainsCRLFOnWindows/actions/runs/7946420025/job/21694126150",
+            "status": "completed",
+            "conclusion": "success",
+            "created_at": "2024-02-18T03:59:28Z",
+            "started_at": "2024-02-18T03:59:34Z",
+            "completed_at": "2024-02-18T03:59:46Z",
+            "name": "Build on ubuntu-latest with JDK 17",
+            "steps": [
+                {
+                    "name": "Set up job",
+                    "status": "completed",
+                    "conclusion": "success",
+                    "number": 1,
+                    "started_at": "2024-02-18T03:59:33.000Z",
+                    "completed_at": "2024-02-18T03:59:34.000Z"
+                },
+                {
+                    "name": "Set up JDK 17",
+                    "status": "completed",
+                    "conclusion": "success",
+                    "number": 2,
+                    "started_at": "2024-02-18T03:59:34.000Z",
+                    "completed_at": "2024-02-18T03:59:35.000Z"
+                },
+                {
+                    "name": "Check out code",
+                    "status": "completed",
+                    "conclusion": "success",
+                    "number": 3,
+                    "started_at": "2024-02-18T03:59:35.000Z",
+                    "completed_at": "2024-02-18T03:59:35.000Z"
+                },
+                {
+                    "name": "Run Maven Build",
+                    "status": "completed",
+                    "conclusion": "success",
+                    "number": 4,
+                    "started_at": "2024-02-18T03:59:35.000Z",
+                    "completed_at": "2024-02-18T03:59:45.000Z"
+                },
+                {
+                    "name": "Post Check out code",
+                    "status": "completed",
+                    "conclusion": "success",
+                    "number": 7,
+                    "started_at": "2024-02-18T03:59:45.000Z",
+                    "completed_at": "2024-02-18T03:59:45.000Z"
+                },
+                {
+                    "name": "Post Set up JDK 17",
+                    "status": "completed",
+                    "conclusion": "success",
+                    "number": 8,
+                    "started_at": "2024-02-18T03:59:45.000Z",
+                    "completed_at": "2024-02-18T03:59:45.000Z"
+                },
+                {
+                    "name": "Complete job",
+                    "status": "completed",
+                    "conclusion": "success",
+                    "number": 9,
+                    "started_at": "2024-02-18T03:59:45.000Z",
+                    "completed_at": "2024-02-18T03:59:45.000Z"
+                }
+            ],
+            "check_run_url": "https://api.github.com/repos/kriegaex/Asciidoctor_HTMLContainsCRLFOnWindows/check-runs/21694126150",
+            "labels": [
+                "ubuntu-latest"
+            ],
+            "runner_id": 9,
+            "runner_name": "GitHub Actions 9",
+            "runner_group_id": 2,
+            "runner_group_name": "GitHub Actions"
+        },
+        {
+            "id": 21694126173,
+            "run_id": 7946420025,
+            "workflow_name": "Maven Build",
+            "head_branch": "master",
+            "run_url": "https://api.github.com/repos/kriegaex/Asciidoctor_HTMLContainsCRLFOnWindows/actions/runs/7946420025",
+            "run_attempt": 1,
+            "node_id": "CR_kwDOLUE4e88AAAAFDRIYXQ",
+            "head_sha": "0b64661c30cff2bdb70db12a65ff07bae82fb1e0",
+            "url": "https://api.github.com/repos/kriegaex/Asciidoctor_HTMLContainsCRLFOnWindows/actions/jobs/21694126173",
+            "html_url": "https://github.com/kriegaex/Asciidoctor_HTMLContainsCRLFOnWindows/actions/runs/7946420025/job/21694126173",
+            "status": "completed",
+            "conclusion": "success",
+            "created_at": "2024-02-18T03:59:29Z",
+            "started_at": "2024-02-18T03:59:34Z",
+            "completed_at": "2024-02-18T03:59:55Z",
+            "name": "Build on ubuntu-latest with JDK 21",
+            "steps": [
+                {
+                    "name": "Set up job",
+                    "status": "completed",
+                    "conclusion": "success",
+                    "number": 1,
+                    "started_at": "2024-02-18T03:59:33.000Z",
+                    "completed_at": "2024-02-18T03:59:34.000Z"
+                },
+                {
+                    "name": "Set up JDK 21",
+                    "status": "completed",
+                    "conclusion": "success",
+                    "number": 2,
+                    "started_at": "2024-02-18T03:59:34.000Z",
+                    "completed_at": "2024-02-18T03:59:35.000Z"
+                },
+                {
+                    "name": "Check out code",
+                    "status": "completed",
+                    "conclusion": "success",
+                    "number": 3,
+                    "started_at": "2024-02-18T03:59:35.000Z",
+                    "completed_at": "2024-02-18T03:59:35.000Z"
+                },
+                {
+                    "name": "Run Maven Build",
+                    "status": "completed",
+                    "conclusion": "success",
+                    "number": 4,
+                    "started_at": "2024-02-18T03:59:36.000Z",
+                    "completed_at": "2024-02-18T03:59:52.000Z"
+                },
+                {
+                    "name": "Post Check out code",
+                    "status": "completed",
+                    "conclusion": "success",
+                    "number": 7,
+                    "started_at": "2024-02-18T03:59:53.000Z",
+                    "completed_at": "2024-02-18T03:59:53.000Z"
+                },
+                {
+                    "name": "Post Set up JDK 21",
+                    "status": "completed",
+                    "conclusion": "success",
+                    "number": 8,
+                    "started_at": "2024-02-18T03:59:53.000Z",
+                    "completed_at": "2024-02-18T03:59:53.000Z"
+                },
+                {
+                    "name": "Complete job",
+                    "status": "completed",
+                    "conclusion": "success",
+                    "number": 9,
+                    "started_at": "2024-02-18T03:59:53.000Z",
+                    "completed_at": "2024-02-18T03:59:53.000Z"
+                }
+            ],
+            "check_run_url": "https://api.github.com/repos/kriegaex/Asciidoctor_HTMLContainsCRLFOnWindows/check-runs/21694126173",
+            "labels": [
+                "ubuntu-latest"
+            ],
+            "runner_id": 12,
+            "runner_name": "GitHub Actions 12",
+            "runner_group_id": 2,
+            "runner_group_name": "GitHub Actions"
+        },
+        {
+            "id": 21694126187,
+            "run_id": 7946420025,
+            "workflow_name": "Maven Build",
+            "head_branch": "master",
+            "run_url": "https://api.github.com/repos/kriegaex/Asciidoctor_HTMLContainsCRLFOnWindows/actions/runs/7946420025",
+            "run_attempt": 1,
+            "node_id": "CR_kwDOLUE4e88AAAAFDRIYaw",
+            "head_sha": "0b64661c30cff2bdb70db12a65ff07bae82fb1e0",
+            "url": "https://api.github.com/repos/kriegaex/Asciidoctor_HTMLContainsCRLFOnWindows/actions/jobs/21694126187",
+            "html_url": "https://github.com/kriegaex/Asciidoctor_HTMLContainsCRLFOnWindows/actions/runs/7946420025/job/21694126187",
+            "status": "completed",
+            "conclusion": "failure",
+            "created_at": "2024-02-18T03:59:29Z",
+            "started_at": "2024-02-18T03:59:37Z",
+            "completed_at": "2024-02-18T04:00:32Z",
+            "name": "Build on windows-latest with JDK 8",
+            "steps": [
+                {
+                    "name": "Set up job",
+                    "status": "completed",
+                    "conclusion": "success",
+                    "number": 1,
+                    "started_at": "2024-02-18T03:59:37.000Z",
+                    "completed_at": "2024-02-18T03:59:39.000Z"
+                },
+                {
+                    "name": "Set up JDK 8",
+                    "status": "completed",
+                    "conclusion": "success",
+                    "number": 2,
+                    "started_at": "2024-02-18T03:59:39.000Z",
+                    "completed_at": "2024-02-18T03:59:39.000Z"
+                },
+                {
+                    "name": "Check out code",
+                    "status": "completed",
+                    "conclusion": "success",
+                    "number": 3,
+                    "started_at": "2024-02-18T03:59:39.000Z",
+                    "completed_at": "2024-02-18T03:59:42.000Z"
+                },
+                {
+                    "name": "Run Maven Build",
+                    "status": "completed",
+                    "conclusion": "failure",
+                    "number": 4,
+                    "started_at": "2024-02-18T03:59:43.000Z",
+                    "completed_at": "2024-02-18T04:00:29.000Z"
+                },
+                {
+                    "name": "Post Check out code",
+                    "status": "completed",
+                    "conclusion": "success",
+                    "number": 7,
+                    "started_at": "2024-02-18T04:00:29.000Z",
+                    "completed_at": "2024-02-18T04:00:30.000Z"
+                },
+                {
+                    "name": "Post Set up JDK 8",
+                    "status": "completed",
+                    "conclusion": "success",
+                    "number": 8,
+                    "started_at": "2024-02-18T04:00:32.000Z",
+                    "completed_at": "2024-02-18T04:00:32.000Z"
+                },
+                {
+                    "name": "Complete job",
+                    "status": "completed",
+                    "conclusion": "success",
+                    "number": 9,
+                    "started_at": "2024-02-18T04:00:30.000Z",
+                    "completed_at": "2024-02-18T04:00:30.000Z"
+                }
+            ],
+            "check_run_url": "https://api.github.com/repos/kriegaex/Asciidoctor_HTMLContainsCRLFOnWindows/check-runs/21694126187",
+            "labels": [
+                "windows-latest"
+            ],
+            "runner_id": 10,
+            "runner_name": "GitHub Actions 10",
+            "runner_group_id": 2,
+            "runner_group_name": "GitHub Actions"
+        },
+        {
+            "id": 21694126206,
+            "run_id": 7946420025,
+            "workflow_name": "Maven Build",
+            "head_branch": "master",
+            "run_url": "https://api.github.com/repos/kriegaex/Asciidoctor_HTMLContainsCRLFOnWindows/actions/runs/7946420025",
+            "run_attempt": 1,
+            "node_id": "CR_kwDOLUE4e88AAAAFDRIYfg",
+            "head_sha": "0b64661c30cff2bdb70db12a65ff07bae82fb1e0",
+            "url": "https://api.github.com/repos/kriegaex/Asciidoctor_HTMLContainsCRLFOnWindows/actions/jobs/21694126206",
+            "html_url": "https://github.com/kriegaex/Asciidoctor_HTMLContainsCRLFOnWindows/actions/runs/7946420025/job/21694126206",
+            "status": "completed",
+            "conclusion": "failure",
+            "created_at": "2024-02-18T03:59:29Z",
+            "started_at": "2024-02-18T03:59:37Z",
+            "completed_at": "2024-02-18T04:00:33Z",
+            "name": "Build on windows-latest with JDK 11",
+            "steps": [
+                {
+                    "name": "Set up job",
+                    "status": "completed",
+                    "conclusion": "success",
+                    "number": 1,
+                    "started_at": "2024-02-18T03:59:37.000Z",
+                    "completed_at": "2024-02-18T03:59:37.000Z"
+                },
+                {
+                    "name": "Set up JDK 11",
+                    "status": "completed",
+                    "conclusion": "success",
+                    "number": 2,
+                    "started_at": "2024-02-18T03:59:37.000Z",
+                    "completed_at": "2024-02-18T03:59:38.000Z"
+                },
+                {
+                    "name": "Check out code",
+                    "status": "completed",
+                    "conclusion": "success",
+                    "number": 3,
+                    "started_at": "2024-02-18T03:59:38.000Z",
+                    "completed_at": "2024-02-18T03:59:41.000Z"
+                },
+                {
+                    "name": "Run Maven Build",
+                    "status": "completed",
+                    "conclusion": "failure",
+                    "number": 4,
+                    "started_at": "2024-02-18T03:59:41.000Z",
+                    "completed_at": "2024-02-18T04:00:30.000Z"
+                },
+                {
+                    "name": "Post Check out code",
+                    "status": "completed",
+                    "conclusion": "success",
+                    "number": 7,
+                    "started_at": "2024-02-18T04:00:31.000Z",
+                    "completed_at": "2024-02-18T04:00:32.000Z"
+                },
+                {
+                    "name": "Post Set up JDK 11",
+                    "status": "completed",
+                    "conclusion": "success",
+                    "number": 8,
+                    "started_at": "2024-02-18T04:00:32.000Z",
+                    "completed_at": "2024-02-18T04:00:32.000Z"
+                },
+                {
+                    "name": "Complete job",
+                    "status": "completed",
+                    "conclusion": "success",
+                    "number": 9,
+                    "started_at": "2024-02-18T04:00:32.000Z",
+                    "completed_at": "2024-02-18T04:00:32.000Z"
+                }
+            ],
+            "check_run_url": "https://api.github.com/repos/kriegaex/Asciidoctor_HTMLContainsCRLFOnWindows/check-runs/21694126206",
+            "labels": [
+                "windows-latest"
+            ],
+            "runner_id": 11,
+            "runner_name": "GitHub Actions 11",
+            "runner_group_id": 2,
+            "runner_group_name": "GitHub Actions"
+        },
+        {
+            "id": 21694126229,
+            "run_id": 7946420025,
+            "workflow_name": "Maven Build",
+            "head_branch": "master",
+            "run_url": "https://api.github.com/repos/kriegaex/Asciidoctor_HTMLContainsCRLFOnWindows/actions/runs/7946420025",
+            "run_attempt": 1,
+            "node_id": "CR_kwDOLUE4e88AAAAFDRIYlQ",
+            "head_sha": "0b64661c30cff2bdb70db12a65ff07bae82fb1e0",
+            "url": "https://api.github.com/repos/kriegaex/Asciidoctor_HTMLContainsCRLFOnWindows/actions/jobs/21694126229",
+            "html_url": "https://github.com/kriegaex/Asciidoctor_HTMLContainsCRLFOnWindows/actions/runs/7946420025/job/21694126229",
+            "status": "completed",
+            "conclusion": "failure",
+            "created_at": "2024-02-18T03:59:30Z",
+            "started_at": "2024-02-18T03:59:37Z",
+            "completed_at": "2024-02-18T04:00:07Z",
+            "name": "Build on windows-latest with JDK 17",
+            "steps": [
+                {
+                    "name": "Set up job",
+                    "status": "completed",
+                    "conclusion": "success",
+                    "number": 1,
+                    "started_at": "2024-02-18T03:59:36.000Z",
+                    "completed_at": "2024-02-18T03:59:37.000Z"
+                },
+                {
+                    "name": "Set up JDK 17",
+                    "status": "completed",
+                    "conclusion": "success",
+                    "number": 2,
+                    "started_at": "2024-02-18T03:59:37.000Z",
+                    "completed_at": "2024-02-18T03:59:38.000Z"
+                },
+                {
+                    "name": "Check out code",
+                    "status": "completed",
+                    "conclusion": "success",
+                    "number": 3,
+                    "started_at": "2024-02-18T03:59:38.000Z",
+                    "completed_at": "2024-02-18T03:59:41.000Z"
+                },
+                {
+                    "name": "Run Maven Build",
+                    "status": "completed",
+                    "conclusion": "failure",
+                    "number": 4,
+                    "started_at": "2024-02-18T03:59:41.000Z",
+                    "completed_at": "2024-02-18T04:00:02.000Z"
+                },
+                {
+                    "name": "Post Check out code",
+                    "status": "completed",
+                    "conclusion": "success",
+                    "number": 7,
+                    "started_at": "2024-02-18T04:00:03.000Z",
+                    "completed_at": "2024-02-18T04:00:03.000Z"
+                },
+                {
+                    "name": "Post Set up JDK 17",
+                    "status": "completed",
+                    "conclusion": "success",
+                    "number": 8,
+                    "started_at": "2024-02-18T04:00:07.000Z",
+                    "completed_at": "2024-02-18T04:00:07.000Z"
+                },
+                {
+                    "name": "Complete job",
+                    "status": "completed",
+                    "conclusion": "success",
+                    "number": 9,
+                    "started_at": "2024-02-18T04:00:04.000Z",
+                    "completed_at": "2024-02-18T04:00:04.000Z"
+                }
+            ],
+            "check_run_url": "https://api.github.com/repos/kriegaex/Asciidoctor_HTMLContainsCRLFOnWindows/check-runs/21694126229",
+            "labels": [
+                "windows-latest"
+            ],
+            "runner_id": 14,
+            "runner_name": "GitHub Actions 14",
+            "runner_group_id": 2,
+            "runner_group_name": "GitHub Actions"
+        },
+        {
+            "id": 21694126262,
+            "run_id": 7946420025,
+            "workflow_name": "Maven Build",
+            "head_branch": "master",
+            "run_url": "https://api.github.com/repos/kriegaex/Asciidoctor_HTMLContainsCRLFOnWindows/actions/runs/7946420025",
+            "run_attempt": 1,
+            "node_id": "CR_kwDOLUE4e88AAAAFDRIYtg",
+            "head_sha": "0b64661c30cff2bdb70db12a65ff07bae82fb1e0",
+            "url": "https://api.github.com/repos/kriegaex/Asciidoctor_HTMLContainsCRLFOnWindows/actions/jobs/21694126262",
+            "html_url": "https://github.com/kriegaex/Asciidoctor_HTMLContainsCRLFOnWindows/actions/runs/7946420025/job/21694126262",
+            "status": "completed",
+            "conclusion": "failure",
+            "created_at": "2024-02-18T03:59:30Z",
+            "started_at": "2024-02-18T03:59:37Z",
+            "completed_at": "2024-02-18T04:00:26Z",
+            "name": "Build on windows-latest with JDK 21",
+            "steps": [
+                {
+                    "name": "Set up job",
+                    "status": "completed",
+                    "conclusion": "success",
+                    "number": 1,
+                    "started_at": "2024-02-18T03:59:36.000Z",
+                    "completed_at": "2024-02-18T03:59:37.000Z"
+                },
+                {
+                    "name": "Set up JDK 21",
+                    "status": "completed",
+                    "conclusion": "success",
+                    "number": 2,
+                    "started_at": "2024-02-18T03:59:37.000Z",
+                    "completed_at": "2024-02-18T03:59:38.000Z"
+                },
+                {
+                    "name": "Check out code",
+                    "status": "completed",
+                    "conclusion": "success",
+                    "number": 3,
+                    "started_at": "2024-02-18T03:59:38.000Z",
+                    "completed_at": "2024-02-18T03:59:41.000Z"
+                },
+                {
+                    "name": "Run Maven Build",
+                    "status": "completed",
+                    "conclusion": "failure",
+                    "number": 4,
+                    "started_at": "2024-02-18T03:59:41.000Z",
+                    "completed_at": "2024-02-18T04:00:21.000Z"
+                },
+                {
+                    "name": "Post Check out code",
+                    "status": "completed",
+                    "conclusion": "success",
+                    "number": 7,
+                    "started_at": "2024-02-18T04:00:22.000Z",
+                    "completed_at": "2024-02-18T04:00:23.000Z"
+                },
+                {
+                    "name": "Post Set up JDK 21",
+                    "status": "completed",
+                    "conclusion": "success",
+                    "number": 8,
+                    "started_at": "2024-02-18T04:00:23.000Z",
+                    "completed_at": "2024-02-18T04:00:23.000Z"
+                },
+                {
+                    "name": "Complete job",
+                    "status": "completed",
+                    "conclusion": "success",
+                    "number": 9,
+                    "started_at": "2024-02-18T04:00:23.000Z",
+                    "completed_at": "2024-02-18T04:00:23.000Z"
+                }
+            ],
+            "check_run_url": "https://api.github.com/repos/kriegaex/Asciidoctor_HTMLContainsCRLFOnWindows/check-runs/21694126262",
+            "labels": [
+                "windows-latest"
+            ],
+            "runner_id": 5,
+            "runner_name": "GitHub Actions 5",
+            "runner_group_id": 2,
+            "runner_group_name": "GitHub Actions"
+        },
+        {
+            "id": 21694126288,
+            "run_id": 7946420025,
+            "workflow_name": "Maven Build",
+            "head_branch": "master",
+            "run_url": "https://api.github.com/repos/kriegaex/Asciidoctor_HTMLContainsCRLFOnWindows/actions/runs/7946420025",
+            "run_attempt": 1,
+            "node_id": "CR_kwDOLUE4e88AAAAFDRIY0A",
+            "head_sha": "0b64661c30cff2bdb70db12a65ff07bae82fb1e0",
+            "url": "https://api.github.com/repos/kriegaex/Asciidoctor_HTMLContainsCRLFOnWindows/actions/jobs/21694126288",
+            "html_url": "https://github.com/kriegaex/Asciidoctor_HTMLContainsCRLFOnWindows/actions/runs/7946420025/job/21694126288",
+            "status": "completed",
+            "conclusion": "success",
+            "created_at": "2024-02-18T03:59:30Z",
+            "started_at": "2024-02-18T03:59:35Z",
+            "completed_at": "2024-02-18T04:00:06Z",
+            "name": "Build on macos-latest with JDK 8",
+            "steps": [
+                {
+                    "name": "Set up job",
+                    "status": "completed",
+                    "conclusion": "success",
+                    "number": 1,
+                    "started_at": "2024-02-18T03:59:34.000Z",
+                    "completed_at": "2024-02-18T03:59:36.000Z"
+                },
+                {
+                    "name": "Set up JDK 8",
+                    "status": "completed",
+                    "conclusion": "success",
+                    "number": 2,
+                    "started_at": "2024-02-18T03:59:36.000Z",
+                    "completed_at": "2024-02-18T03:59:37.000Z"
+                },
+                {
+                    "name": "Check out code",
+                    "status": "completed",
+                    "conclusion": "success",
+                    "number": 3,
+                    "started_at": "2024-02-18T03:59:38.000Z",
+                    "completed_at": "2024-02-18T03:59:38.000Z"
+                },
+                {
+                    "name": "Run Maven Build",
+                    "status": "completed",
+                    "conclusion": "success",
+                    "number": 4,
+                    "started_at": "2024-02-18T03:59:39.000Z",
+                    "completed_at": "2024-02-18T04:00:02.000Z"
+                },
+                {
+                    "name": "Post Check out code",
+                    "status": "completed",
+                    "conclusion": "success",
+                    "number": 7,
+                    "started_at": "2024-02-18T04:00:03.000Z",
+                    "completed_at": "2024-02-18T04:00:03.000Z"
+                },
+                {
+                    "name": "Post Set up JDK 8",
+                    "status": "completed",
+                    "conclusion": "success",
+                    "number": 8,
+                    "started_at": "2024-02-18T04:00:03.000Z",
+                    "completed_at": "2024-02-18T04:00:03.000Z"
+                },
+                {
+                    "name": "Complete job",
+                    "status": "completed",
+                    "conclusion": "success",
+                    "number": 9,
+                    "started_at": "2024-02-18T04:00:03.000Z",
+                    "completed_at": "2024-02-18T04:00:03.000Z"
+                }
+            ],
+            "check_run_url": "https://api.github.com/repos/kriegaex/Asciidoctor_HTMLContainsCRLFOnWindows/check-runs/21694126288",
+            "labels": [
+                "macos-latest"
+            ],
+            "runner_id": 8,
+            "runner_name": "GitHub Actions 8",
+            "runner_group_id": 2,
+            "runner_group_name": "GitHub Actions"
+        },
+        {
+            "id": 21694126309,
+            "run_id": 7946420025,
+            "workflow_name": "Maven Build",
+            "head_branch": "master",
+            "run_url": "https://api.github.com/repos/kriegaex/Asciidoctor_HTMLContainsCRLFOnWindows/actions/runs/7946420025",
+            "run_attempt": 1,
+            "node_id": "CR_kwDOLUE4e88AAAAFDRIY5Q",
+            "head_sha": "0b64661c30cff2bdb70db12a65ff07bae82fb1e0",
+            "url": "https://api.github.com/repos/kriegaex/Asciidoctor_HTMLContainsCRLFOnWindows/actions/jobs/21694126309",
+            "html_url": "https://github.com/kriegaex/Asciidoctor_HTMLContainsCRLFOnWindows/actions/runs/7946420025/job/21694126309",
+            "status": "completed",
+            "conclusion": "success",
+            "created_at": "2024-02-18T03:59:31Z",
+            "started_at": "2024-02-18T03:59:35Z",
+            "completed_at": "2024-02-18T04:00:02Z",
+            "name": "Build on macos-latest with JDK 11",
+            "steps": [
+                {
+                    "name": "Set up job",
+                    "status": "completed",
+                    "conclusion": "success",
+                    "number": 1,
+                    "started_at": "2024-02-18T03:59:34.000Z",
+                    "completed_at": "2024-02-18T03:59:36.000Z"
+                },
+                {
+                    "name": "Set up JDK 11",
+                    "status": "completed",
+                    "conclusion": "success",
+                    "number": 2,
+                    "started_at": "2024-02-18T03:59:36.000Z",
+                    "completed_at": "2024-02-18T03:59:37.000Z"
+                },
+                {
+                    "name": "Check out code",
+                    "status": "completed",
+                    "conclusion": "success",
+                    "number": 3,
+                    "started_at": "2024-02-18T03:59:38.000Z",
+                    "completed_at": "2024-02-18T03:59:39.000Z"
+                },
+                {
+                    "name": "Run Maven Build",
+                    "status": "completed",
+                    "conclusion": "success",
+                    "number": 4,
+                    "started_at": "2024-02-18T03:59:39.000Z",
+                    "completed_at": "2024-02-18T03:59:59.000Z"
+                },
+                {
+                    "name": "Post Check out code",
+                    "status": "completed",
+                    "conclusion": "success",
+                    "number": 7,
+                    "started_at": "2024-02-18T04:00:00.000Z",
+                    "completed_at": "2024-02-18T04:00:00.000Z"
+                },
+                {
+                    "name": "Post Set up JDK 11",
+                    "status": "completed",
+                    "conclusion": "success",
+                    "number": 8,
+                    "started_at": "2024-02-18T04:00:02.000Z",
+                    "completed_at": "2024-02-18T04:00:02.000Z"
+                },
+                {
+                    "name": "Complete job",
+                    "status": "completed",
+                    "conclusion": "success",
+                    "number": 9,
+                    "started_at": "2024-02-18T04:00:00.000Z",
+                    "completed_at": "2024-02-18T04:00:00.000Z"
+                }
+            ],
+            "check_run_url": "https://api.github.com/repos/kriegaex/Asciidoctor_HTMLContainsCRLFOnWindows/check-runs/21694126309",
+            "labels": [
+                "macos-latest"
+            ],
+            "runner_id": 6,
+            "runner_name": "GitHub Actions 6",
+            "runner_group_id": 2,
+            "runner_group_name": "GitHub Actions"
+        },
+        {
+            "id": 21694126333,
+            "run_id": 7946420025,
+            "workflow_name": "Maven Build",
+            "head_branch": "master",
+            "run_url": "https://api.github.com/repos/kriegaex/Asciidoctor_HTMLContainsCRLFOnWindows/actions/runs/7946420025",
+            "run_attempt": 1,
+            "node_id": "CR_kwDOLUE4e88AAAAFDRIY_Q",
+            "head_sha": "0b64661c30cff2bdb70db12a65ff07bae82fb1e0",
+            "url": "https://api.github.com/repos/kriegaex/Asciidoctor_HTMLContainsCRLFOnWindows/actions/jobs/21694126333",
+            "html_url": "https://github.com/kriegaex/Asciidoctor_HTMLContainsCRLFOnWindows/actions/runs/7946420025/job/21694126333",
+            "status": "completed",
+            "conclusion": "success",
+            "created_at": "2024-02-18T03:59:31Z",
+            "started_at": "2024-02-18T03:59:35Z",
+            "completed_at": "2024-02-18T04:00:03Z",
+            "name": "Build on macos-latest with JDK 17",
+            "steps": [
+                {
+                    "name": "Set up job",
+                    "status": "completed",
+                    "conclusion": "success",
+                    "number": 1,
+                    "started_at": "2024-02-18T03:59:34.000Z",
+                    "completed_at": "2024-02-18T03:59:37.000Z"
+                },
+                {
+                    "name": "Set up JDK 17",
+                    "status": "completed",
+                    "conclusion": "success",
+                    "number": 2,
+                    "started_at": "2024-02-18T03:59:37.000Z",
+                    "completed_at": "2024-02-18T03:59:38.000Z"
+                },
+                {
+                    "name": "Check out code",
+                    "status": "completed",
+                    "conclusion": "success",
+                    "number": 3,
+                    "started_at": "2024-02-18T03:59:39.000Z",
+                    "completed_at": "2024-02-18T03:59:39.000Z"
+                },
+                {
+                    "name": "Run Maven Build",
+                    "status": "completed",
+                    "conclusion": "success",
+                    "number": 4,
+                    "started_at": "2024-02-18T03:59:40.000Z",
+                    "completed_at": "2024-02-18T04:00:01.000Z"
+                },
+                {
+                    "name": "Post Check out code",
+                    "status": "completed",
+                    "conclusion": "success",
+                    "number": 7,
+                    "started_at": "2024-02-18T04:00:01.000Z",
+                    "completed_at": "2024-02-18T04:00:02.000Z"
+                },
+                {
+                    "name": "Post Set up JDK 17",
+                    "status": "completed",
+                    "conclusion": "success",
+                    "number": 8,
+                    "started_at": "2024-02-18T04:00:02.000Z",
+                    "completed_at": "2024-02-18T04:00:02.000Z"
+                },
+                {
+                    "name": "Complete job",
+                    "status": "completed",
+                    "conclusion": "success",
+                    "number": 9,
+                    "started_at": "2024-02-18T04:00:02.000Z",
+                    "completed_at": "2024-02-18T04:00:02.000Z"
+                }
+            ],
+            "check_run_url": "https://api.github.com/repos/kriegaex/Asciidoctor_HTMLContainsCRLFOnWindows/check-runs/21694126333",
+            "labels": [
+                "macos-latest"
+            ],
+            "runner_id": 20,
+            "runner_name": "GitHub Actions 20",
+            "runner_group_id": 2,
+            "runner_group_name": "GitHub Actions"
+        },
+        {
+            "id": 21694126366,
+            "run_id": 7946420025,
+            "workflow_name": "Maven Build",
+            "head_branch": "master",
+            "run_url": "https://api.github.com/repos/kriegaex/Asciidoctor_HTMLContainsCRLFOnWindows/actions/runs/7946420025",
+            "run_attempt": 1,
+            "node_id": "CR_kwDOLUE4e88AAAAFDRIZHg",
+            "head_sha": "0b64661c30cff2bdb70db12a65ff07bae82fb1e0",
+            "url": "https://api.github.com/repos/kriegaex/Asciidoctor_HTMLContainsCRLFOnWindows/actions/jobs/21694126366",
+            "html_url": "https://github.com/kriegaex/Asciidoctor_HTMLContainsCRLFOnWindows/actions/runs/7946420025/job/21694126366",
+            "status": "completed",
+            "conclusion": "success",
+            "created_at": "2024-02-18T03:59:31Z",
+            "started_at": "2024-02-18T03:59:38Z",
+            "completed_at": "2024-02-18T04:02:43Z",
+            "name": "Build on macos-latest with JDK 21",
+            "steps": [
+                {
+                    "name": "Set up job",
+                    "status": "completed",
+                    "conclusion": "success",
+                    "number": 1,
+                    "started_at": "2024-02-18T03:59:38.000Z",
+                    "completed_at": "2024-02-18T03:59:59.000Z"
+                },
+                {
+                    "name": "Set up JDK 21",
+                    "status": "completed",
+                    "conclusion": "success",
+                    "number": 2,
+                    "started_at": "2024-02-18T04:00:00.000Z",
+                    "completed_at": "2024-02-18T04:00:04.000Z"
+                },
+                {
+                    "name": "Check out code",
+                    "status": "completed",
+                    "conclusion": "success",
+                    "number": 3,
+                    "started_at": "2024-02-18T04:00:05.000Z",
+                    "completed_at": "2024-02-18T04:00:08.000Z"
+                },
+                {
+                    "name": "Run Maven Build",
+                    "status": "completed",
+                    "conclusion": "success",
+                    "number": 4,
+                    "started_at": "2024-02-18T04:00:08.000Z",
+                    "completed_at": "2024-02-18T04:02:41.000Z"
+                },
+                {
+                    "name": "Post Check out code",
+                    "status": "completed",
+                    "conclusion": "success",
+                    "number": 7,
+                    "started_at": "2024-02-18T04:02:41.000Z",
+                    "completed_at": "2024-02-18T04:02:41.000Z"
+                },
+                {
+                    "name": "Post Set up JDK 21",
+                    "status": "completed",
+                    "conclusion": "success",
+                    "number": 8,
+                    "started_at": "2024-02-18T04:02:41.000Z",
+                    "completed_at": "2024-02-18T04:02:41.000Z"
+                },
+                {
+                    "name": "Complete job",
+                    "status": "completed",
+                    "conclusion": "success",
+                    "number": 9,
+                    "started_at": "2024-02-18T04:02:41.000Z",
+                    "completed_at": "2024-02-18T04:02:42.000Z"
+                }
+            ],
+            "check_run_url": "https://api.github.com/repos/kriegaex/Asciidoctor_HTMLContainsCRLFOnWindows/check-runs/21694126366",
+            "labels": [
+                "macos-latest"
+            ],
+            "runner_id": 19,
+            "runner_name": "GitHub Actions 19",
+            "runner_group_id": 2,
+            "runner_group_name": "GitHub Actions"
+        }
+    ]
+}

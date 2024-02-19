@@ -1,7 +1,7 @@
 package com.dsoftware.ghmanager.api.model
 
-import com.fasterxml.jackson.annotation.JsonFormat
-import java.util.Date
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize
+import kotlinx.datetime.Instant
 
 data class WorkflowRunJobs(
     val totalCount: Int,
@@ -51,14 +51,12 @@ data class Job(
     val status: String,
     /* The outcome of the job. */
     val conclusion: String?,
-    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'", timezone = "UTC")
-    val createdAt: Date?,
-    /* The time that the job started, in ISO 8601 format. */
-    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'", timezone = "UTC")
-    val startedAt: Date?,
-    /* The time that the job finished, in ISO 8601 format. */
-    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'", timezone = "UTC")
-    val completedAt: Date?,
+    @JsonDeserialize(using = InstantDeserializer::class)
+    val createdAt: Instant?,
+    @JsonDeserialize(using = InstantDeserializer::class)
+    val startedAt: Instant?,
+    @JsonDeserialize(using = InstantDeserializer::class)
+    val completedAt: Instant?,
     /* The name of the job. */
     val name: String,
     /* Steps in this job. */
@@ -110,8 +108,8 @@ data class JobStep(
     val conclusion: String?,
     val name: String,
     val number: Int,
-    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSX", timezone = "UTC")
-    val startedAt: Date? = null,
-    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSX", timezone = "UTC")
-    val completedAt: Date? = null
+    @JsonDeserialize(using = InstantDeserializer::class)
+    val startedAt: Instant? = null,
+    @JsonDeserialize(using = InstantDeserializer::class)
+    val completedAt: Instant? = null
 )
