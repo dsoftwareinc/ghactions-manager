@@ -2,7 +2,11 @@
 
 # GitHub-Actions-Manager Changelog
 
-## [Unreleased]
+## [1.16.1]
+
+### 🐛 Bug Fixes
+
+- Fix job log parsing dates #109
 
 ## [1.16.0]
 
