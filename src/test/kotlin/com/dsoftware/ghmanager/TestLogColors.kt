@@ -6,7 +6,7 @@ import junit.framework.TestCase
 import org.jetbrains.plugins.github.api.GithubApiContentHelper
 
 class TestLogColors : TestCase() {
-    fun testStepsWithRightColor() {
+    fun `test steps' log showing with right color`() {
         // arrange
         val job = createJob()
             .withStep(number = 1, conclusion = "success")
@@ -23,7 +23,7 @@ class TestLogColors : TestCase() {
         assertTrue(log.contains("[31m---- Step   3: step 3 (failed) ----"))
     }
 
-    fun testBadLogStructure() {
+    fun `test log has bad date-time structure`() {
         // arrange
         val wfJobsJson = TestGetJobLogRequest::class.java.getResource("/wf-run-7863783013-jobs.json")!!.readText()
         val wfJobs: WorkflowRunJobs = GithubApiContentHelper.fromJson(wfJobsJson)

@@ -14,11 +14,11 @@ import org.junit.runners.Parameterized.Parameters
 class TestGetJobLogRequest(
     private val logContentFilename: String,
     private val jobsJsonFilename: String,
-    private val expectedLogLinesCount: Map<Int, Int>
+    private val expectedLogLinesCount: Map<Int, Int>,
 ) {
 
     @Test
-    fun testGetJobLogRequest() {
+    fun `test GetJobLogRequest should split log lines to steps`() {
         // arrange
         val logContent = TestGetJobLogRequest::class.java.getResource(logContentFilename)!!.readText()
         val wfJobsJson = TestGetJobLogRequest::class.java.getResource(jobsJsonFilename)!!.readText()

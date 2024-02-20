@@ -41,7 +41,7 @@ class TestWindowTabController : GitHubActionsManagerBaseTest() {
         executeSomeCoroutineTasksAndDispatchAllInvocationEvents(project)
     }
 
-    fun testNoWorkflowRunsInRepo() {
+    fun `test repo with no workflow-runs`() {
         mockGithubApiRequestExecutor(emptyList())
         // act
         executeSomeCoroutineTasksAndDispatchAllInvocationEvents(project)

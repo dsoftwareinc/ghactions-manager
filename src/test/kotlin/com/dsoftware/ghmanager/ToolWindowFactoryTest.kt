@@ -25,7 +25,7 @@ class ToolWindowFactoryTest : GitHubActionsManagerBaseTest() {
         every { GithubApiRequestExecutor.Factory.getInstance() } returns requestExecutorfactoryMock
     }
 
-    fun testNoGitHubAccountPanel() {
+    fun `test Panel No GitHub Account`() {
         mockGhActionsService(emptySet(), emptySet())
 
         factory.init(toolWindow)
@@ -46,7 +46,7 @@ class ToolWindowFactoryTest : GitHubActionsManagerBaseTest() {
         }
     }
 
-    fun testGitHubAccountNoReposPanel() {
+    fun `test GitHub Account exists but no repositories configured`() {
         mockGhActionsService(emptySet(), setOf("account1"))
 
         factory.init(toolWindow)
@@ -62,7 +62,7 @@ class ToolWindowFactoryTest : GitHubActionsManagerBaseTest() {
         }
     }
 
-    fun testGitHubAccountWithReposPanel() {
+    fun `test GitHub Account and repos configured shows repo-panel`() {
         mockkStatic(GHCompatibilityUtil::class)
         every { GHCompatibilityUtil.getOrRequestToken(any(), any()) } returns "token"
         mockGhActionsService(setOf("http://github.com/owner/repo"), setOf("account1"))
@@ -80,4 +80,7 @@ class ToolWindowFactoryTest : GitHubActionsManagerBaseTest() {
             requestExecutorfactoryMock.create(token = any())
         }
     }
+
+    //todo test where using settings custom repos + zero repos (createNoActiveReposPanel)
+
 }
