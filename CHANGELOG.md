@@ -4,6 +4,17 @@
 
 ## Unreleased
 
+## 1.16.2
+
+### 🧰 Maintenance
+
+- Major code refactoring
+- Implement tests
+
+### 🐛 Bug Fixes
+
+- Minor bug when unable to parse Instant
+
 ## 1.16.1
 
 ### 🐛 Bug Fixes
@@ -24,7 +35,7 @@
 
 ## 1.15.1
 
-### Maintenance
+### 🧰 Maintenance
 
 - Update dependencies to latest versions
 
@@ -46,13 +57,13 @@
 
 - Filter by workflow type #98
 
-### Maintenance
+### 🧰 Maintenance
 
 - Improve filter behavior
 
 ## 1.13.5
 
-### Maintenance
+### 🧰 Maintenance
 
 - Add support for build 223.3 and fixed a few warnings. @wyatt-herkamp #97
 
