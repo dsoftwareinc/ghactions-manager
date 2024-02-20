@@ -1,9 +1,9 @@
 package com.dsoftware.ghmanager.api.model
 
-import com.fasterxml.jackson.annotation.JsonFormat
-import java.util.Date
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize
+import kotlinx.datetime.Instant
 
-data class WorkflowRunJobsList(
+data class WorkflowRunJobs(
     val totalCount: Int,
     val jobs: List<Job>
 )
@@ -35,6 +35,8 @@ data class Job(
 
     /* The id of the job. */
     val id: Long,
+    val workflowName: String?,
+    val headBranch: String?,
     /* The id of the associated workflow run. */
     val runId: Long,
     val runUrl: String,
@@ -49,16 +51,16 @@ data class Job(
     val status: String,
     /* The outcome of the job. */
     val conclusion: String?,
-    /* The time that the job started, in ISO 8601 format. */
-    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'", timezone = "UTC")
-    val startedAt: Date?,
-    /* The time that the job finished, in ISO 8601 format. */
-    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'", timezone = "UTC")
-    val completedAt: Date?,
+    @JsonDeserialize(using = InstantDeserializer::class)
+    val createdAt: Instant?,
+    @JsonDeserialize(using = InstantDeserializer::class)
+    val startedAt: Instant?,
+    @JsonDeserialize(using = InstantDeserializer::class)
+    val completedAt: Instant?,
     /* The name of the job. */
     val name: String,
     /* Steps in this job. */
-    val steps: List<JobStep>? = emptyList(),
+    val steps: List<JobStep> = emptyList(),
     val checkRunUrl: String,
     /* Labels for the workflow job. Specified by the \"runs_on\" attribute in the action's workflow file. */
     val labels: Array<String>,
@@ -102,17 +104,12 @@ data class Job(
  * @param completedAt The time that the job finished, in ISO 8601 format.
  */
 data class JobStep(
-    /* The phase of the lifecycle that the job is currently in. */
     val status: String,
-    /* The outcome of the job. */
     val conclusion: String?,
-    /* The name of the job. */
     val name: String,
     val number: Int,
-    /* The time that the step started, in ISO 8601 format. */
-    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSX", timezone = "UTC")
-    val startedAt: Date? = null,
-    /* The time that the job finished, in ISO 8601 format. */
-    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSX", timezone = "UTC")
-    val completedAt: Date? = null
+    @JsonDeserialize(using = InstantDeserializer::class)
+    val startedAt: Instant? = null,
+    @JsonDeserialize(using = InstantDeserializer::class)
+    val completedAt: Instant? = null
 )

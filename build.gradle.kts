@@ -10,7 +10,6 @@ plugins {
     alias(libs.plugins.serialization) // Kotlin support
     alias(libs.plugins.gradleIntelliJPlugin) // Gradle IntelliJ Plugin
     alias(libs.plugins.changelog) // Gradle Changelog Plugin
-    alias(libs.plugins.qodana) // Gradle Qodana Plugin
     alias(libs.plugins.kover) // Gradle Kover Plugin
 }
 
@@ -26,6 +25,12 @@ repositories {
 dependencies {
     implementation(libs.annotations)
     compileOnly(libs.serialization)
+}
+
+testing {
+    dependencies {
+        testImplementation(libs.mockk)
+    }
 }
 
 kotlin {
@@ -48,14 +53,6 @@ changelog {
     repositoryUrl = properties("pluginRepositoryUrl")
 }
 
-// Configure Gradle Qodana Plugin - read more: https://github.com/JetBrains/gradle-qodana-plugin
-qodana {
-    cachePath = provider { file(".qodana").canonicalPath }
-    reportPath = provider { file("build/reports/inspections").canonicalPath }
-    saveReport = true
-    showReport = environment("QODANA_SHOW_REPORT").map { it.toBoolean() }.getOrElse(false)
-}
-
 // Configure Gradle Kover Plugin - read more: https://github.com/Kotlin/kotlinx-kover#configuration
 koverReport {
     defaults {
@@ -66,6 +63,10 @@ koverReport {
 }
 
 tasks {
+    test {
+        systemProperty("idea.log.debug.categories", "com.dsoftware.ghmanager")
+    }
+
     wrapper {
         gradleVersion = properties("gradleVersion").get()
     }
@@ -80,7 +81,7 @@ tasks {
             val start = "<!-- Plugin description -->"
             val end = "<!-- Plugin description end -->"
 
-            with (it.lines()) {
+            with(it.lines()) {
                 if (!containsAll(listOf(start, end))) {
                     throw GradleException("Plugin description section not found in README.md:\n$start ... $end")
                 }

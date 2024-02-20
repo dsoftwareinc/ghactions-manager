@@ -3,7 +3,7 @@ package com.dsoftware.ghmanager.ui.panels
 
 import com.dsoftware.ghmanager.actions.ActionKeys
 import com.dsoftware.ghmanager.api.model.Job
-import com.dsoftware.ghmanager.api.model.WorkflowRunJobsList
+import com.dsoftware.ghmanager.api.model.WorkflowRunJobs
 import com.dsoftware.ghmanager.data.WorkflowRunSelectionContext
 import com.dsoftware.ghmanager.ui.ToolbarUtil
 import com.intellij.collaboration.ui.SingleValueModel
@@ -28,7 +28,6 @@ import net.miginfocom.swing.MigLayout
 import org.jetbrains.plugins.github.ui.HtmlInfoPanel
 import java.awt.Component
 import java.awt.event.MouseEvent
-import java.time.Duration
 import javax.swing.JComponent
 import javax.swing.JLabel
 import javax.swing.JList
@@ -109,9 +108,11 @@ class JobListComponent(
                             if (job.conclusion == "cancelled" || job.completedAt == null || job.startedAt == null)
                                 ""
                             else {
-                                val duration = Duration.between(job.startedAt.toInstant(), job.completedAt.toInstant())
-                                "took ${duration.toMinutes()}:" +
-                                    "${duration.toSecondsPart().toString().padStart(2, '0')} minutes"
+                                val duration = job.completedAt - job.startedAt
+                                val minutes = duration.inWholeMinutes
+                                val seconds = duration.inWholeSeconds % 60
+                                "took ${minutes}:" +
+                                    "${seconds.toString().padStart(2, '0')} minutes"
                             }
                         "Attempt #${job.runAttempt} started $startedAtLabel $took"
                     }
@@ -134,7 +135,7 @@ class JobListComponent(
         private val actionManager = ActionManager.getInstance()
 
         fun createJobsListComponent(
-            jobValueModel: SingleValueModel<WorkflowRunJobsList?>,
+            jobValueModel: SingleValueModel<WorkflowRunJobs?>,
             runSelectionContext: WorkflowRunSelectionContext,
             infoInNewLine: Boolean,
         ): Pair<HtmlInfoPanel, JComponent> {

@@ -1,0 +1,97 @@
+{
+    "total_count": 1,
+    "jobs": [
+        {
+            "id": 21454796844,
+            "run_id": 7863783013,
+            "workflow_name": "Push on master",
+            "head_branch": "master",
+            "run_url": "https://api.github.com/repos/cunla/fakeredis-py/actions/runs/7863783013",
+            "run_attempt": 1,
+            "node_id": "CR_kwDOHLrRQs8AAAAE_s44LA",
+            "head_sha": "a0576c489ba7cad8cad4ba7e14a7fe30ef9959a1",
+            "url": "https://api.github.com/repos/cunla/fakeredis-py/actions/jobs/21454796844",
+            "html_url": "https://github.com/cunla/fakeredis-py/actions/runs/7863783013/job/21454796844",
+            "status": "completed",
+            "conclusion": "success",
+            "created_at": "2024-02-11T18:09:46Z",
+            "started_at": "2024-02-11T18:09:52Z",
+            "completed_at": "2024-02-11T18:11:49Z",
+            "name": "Analyze (python)",
+            "steps": [
+                {
+                    "name": "Set up job",
+                    "status": "completed",
+                    "conclusion": "success",
+                    "number": 1,
+                    "started_at": "2024-02-11T18:09:51.000Z",
+                    "completed_at": "2024-02-11T18:09:55.000Z"
+                },
+                {
+                    "name": "Checkout repository",
+                    "status": "completed",
+                    "conclusion": "success",
+                    "number": 2,
+                    "started_at": "2024-02-11T18:09:55.000Z",
+                    "completed_at": "2024-02-11T18:09:56.000Z"
+                },
+                {
+                    "name": "Initialize CodeQL",
+                    "status": "completed",
+                    "conclusion": "success",
+                    "number": 3,
+                    "started_at": "2024-02-11T18:09:56.000Z",
+                    "completed_at": "2024-02-11T18:10:09.000Z"
+                },
+                {
+                    "name": "Perform CodeQL Analysis",
+                    "status": "completed",
+                    "conclusion": "success",
+                    "number": 4,
+                    "started_at": "2024-02-11T18:10:09.000Z",
+                    "completed_at": "2024-02-11T18:11:46.000Z"
+                },
+                {
+                    "name": "Post Perform CodeQL Analysis",
+                    "status": "completed",
+                    "conclusion": "success",
+                    "number": 6,
+                    "started_at": "2024-02-11T18:11:47.000Z",
+                    "completed_at": "2024-02-11T18:11:47.000Z"
+                },
+                {
+                    "name": "Post Initialize CodeQL",
+                    "status": "completed",
+                    "conclusion": "success",
+                    "number": 7,
+                    "started_at": "2024-02-11T18:11:47.000Z",
+                    "completed_at": "2024-02-11T18:11:47.000Z"
+                },
+                {
+                    "name": "Post Checkout repository",
+                    "status": "completed",
+                    "conclusion": "success",
+                    "number": 8,
+                    "started_at": "2024-02-11T18:11:49.000Z",
+                    "completed_at": "2024-02-11T18:11:49.000Z"
+                },
+                {
+                    "name": "Complete job",
+                    "status": "completed",
+                    "conclusion": "success",
+                    "number": 9,
+                    "started_at": "2024-02-11T18:11:47.000Z",
+                    "completed_at": "2024-02-11T18:11:47.000Z"
+                }
+            ],
+            "check_run_url": "https://api.github.com/repos/cunla/fakeredis-py/check-runs/21454796844",
+            "labels": [
+                "ubuntu-latest"
+            ],
+            "runner_id": 9,
+            "runner_name": "GitHub Actions 9",
+            "runner_group_id": 2,
+            "runner_group_name": "GitHub Actions"
+        }
+    ]
+}

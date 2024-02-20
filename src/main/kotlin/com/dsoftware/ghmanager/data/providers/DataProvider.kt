@@ -1,14 +1,12 @@
-package com.dsoftware.ghmanager.data
+package com.dsoftware.ghmanager.data.providers
 
-import com.dsoftware.ghmanager.api.GitHubLog
-import com.dsoftware.ghmanager.api.GithubApi
-import com.dsoftware.ghmanager.api.model.WorkflowRunJobsList
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.diagnostic.thisLogger
 import com.intellij.openapi.progress.ProgressManager
 import com.intellij.util.EventDispatcher
 import org.jetbrains.plugins.github.api.GithubApiRequest
 import org.jetbrains.plugins.github.api.GithubApiRequestExecutor
+import org.jetbrains.plugins.github.exceptions.GithubStatusCodeException
 import org.jetbrains.plugins.github.util.LazyCancellableBackgroundProcessValue
 import java.io.IOException
 import java.util.EventListener
@@ -33,6 +31,9 @@ open class DataProvider<T>(
             } catch (ioe: IOException) {
                 LOG.warn("Error when getting $githubApiRequest.url: $ioe")
                 errorValue ?: throw ioe
+            } catch (e: GithubStatusCodeException) {
+                LOG.warn("Error when getting $githubApiRequest.url: $e")
+                errorValue ?: throw e
             }
         }
 
@@ -60,27 +61,3 @@ open class DataProvider<T>(
         private val LOG = thisLogger()
     }
 }
-
-
-class WorkflowRunLogsDataProvider(
-    progressManager: ProgressManager,
-    requestExecutor: GithubApiRequestExecutor,
-    logsUrl: String,
-) : DataProvider<GitHubLog>(
-    progressManager,
-    requestExecutor,
-    GithubApi.getDownloadUrlForWorkflowLog(logsUrl),
-    emptyMap()
-)
-
-
-class WorkflowRunJobsDataProvider(
-    progressManager: ProgressManager,
-    requestExecutor: GithubApiRequestExecutor,
-    jobsUrl: String
-) : DataProvider<WorkflowRunJobsList>(
-    progressManager,
-    requestExecutor,
-    GithubApi.getWorkflowRunJobs(jobsUrl),
-    WorkflowRunJobsList(0, emptyList())
-)

@@ -1,6 +1,7 @@
 package com.dsoftware.ghmanager.data
 
 import com.dsoftware.ghmanager.api.WorkflowRunFilter
+import com.dsoftware.ghmanager.data.providers.SingleRunDataLoader
 import com.dsoftware.ghmanager.ui.settings.GhActionsSettingsService
 import com.intellij.collaboration.async.CompletableFutureUtil.submitIOTask
 import com.intellij.collaboration.async.CompletableFutureUtil.successOnEdt
@@ -28,18 +29,12 @@ import org.jetbrains.plugins.github.util.LazyCancellableBackgroundProcessValue
 import java.io.IOException
 import java.util.concurrent.CompletableFuture
 
-data class RepositoryCoordinates(
-    val serverPath: GithubServerPath, val repositoryPath: GHRepositoryPath
-) {
-    override fun toString(): String {
-        return "$serverPath/$repositoryPath"
-    }
-}
+data class RepositoryCoordinates(val serverPath: GithubServerPath, val repositoryPath: GHRepositoryPath)
 
 @Service(Service.Level.PROJECT)
-class WorkflowDataContextRepository(project: Project) {
+class WorkflowDataContextService(project: Project) {
     private val settingsService = GhActionsSettingsService.getInstance(project)
-    private val repositories =
+    val repositories =
         mutableMapOf<GitRemoteUrlCoordinates, LazyCancellableBackgroundProcessValue<WorkflowRunSelectionContext>>()
 
     @RequiresEdt
@@ -75,7 +70,7 @@ class WorkflowDataContextRepository(project: Project) {
     @RequiresBackgroundThread
     @Throws(IOException::class)
     private fun getContext(
-        disposable: CheckedDisposable,
+        checkedDisposable: CheckedDisposable,
         account: GithubAccount,
         repositoryMapping: GHGitRepositoryMapping,
         toolWindow: ToolWindow,
@@ -92,21 +87,21 @@ class WorkflowDataContextRepository(project: Project) {
             settingsService.state.apiToken
         }
 
-        val requestExecutor = GithubApiRequestExecutor.Factory.Companion.getInstance().create(token)
+        val requestExecutor = GithubApiRequestExecutor.Factory.Companion.getInstance().create(token = token)
         val singleRunDataLoader = SingleRunDataLoader(requestExecutor)
         requestExecutor.addListener(singleRunDataLoader) {
             singleRunDataLoader.invalidateAllData()
         }
         val runsLoader = WorkflowRunListLoader(
-            disposable,
+            checkedDisposable,
             requestExecutor,
             repositoryCoordinates,
-            settingsService = GhActionsSettingsService.getInstance(toolWindow.project),
+            settingsService,
             WorkflowRunFilter(),
         )
 
         return WorkflowRunSelectionContext(
-            disposable,
+            checkedDisposable,
             toolWindow.project,
             account,
             singleRunDataLoader,
@@ -117,7 +112,7 @@ class WorkflowDataContextRepository(project: Project) {
     }
 
     companion object {
-        private val LOG = logger<WorkflowDataContextRepository>()
-        fun getInstance(project: Project) = project.service<WorkflowDataContextRepository>()
+        private val LOG = logger<WorkflowDataContextService>()
+        fun getInstance(project: Project) = project.service<WorkflowDataContextService>()
     }
 }

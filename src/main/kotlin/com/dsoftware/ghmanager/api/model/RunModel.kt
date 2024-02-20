@@ -1,22 +1,8 @@
 package com.dsoftware.ghmanager.api.model
 
-import com.fasterxml.jackson.annotation.JsonFormat
-import kotlinx.serialization.Serializable
-import java.util.Date
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize
+import kotlinx.datetime.Instant
 
-
-data class WorkflowTypes(
-    val totalCount: Int,
-    val workflows: List<WorkflowType> = emptyList()
-)
-
-@Serializable
-data class WorkflowType(
-    val id: Long,
-    val name: String,
-    val path: String,
-    val state: String,
-)
 
 data class PullRequest(
     val id: Int,
@@ -41,10 +27,10 @@ data class WorkflowRun(
     val conclusion: String?,
     val url: String,
     val htmlUrl: String,
-    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'", timezone = "UTC")
-    val createdAt: Date?,
-    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'", timezone = "UTC")
-    val updatedAt: Date?,
+    @JsonDeserialize(using = InstantDeserializer::class)
+    val createdAt: Instant?,
+    @JsonDeserialize(using = InstantDeserializer::class)
+    val updatedAt: Instant?,
     val jobsUrl: String,
     val logsUrl: String,
     val checkSuiteUrl: String,
@@ -64,9 +50,13 @@ data class WorkflowRun(
      * @param other The other workflow to compare to
      */
     override fun compareTo(other: WorkflowRun): Int {
-        return other.updatedAt?.compareTo(this.updatedAt)
-            ?: other.createdAt?.compareTo(this.createdAt)
-            ?: other.runNumber.compareTo(this.runNumber)
+        return if (other.updatedAt != null && this.updatedAt != null) {
+            other.updatedAt.compareTo(this.updatedAt)
+        } else if (other.createdAt != null && this.createdAt != null) {
+            other.createdAt.compareTo(this.createdAt)
+        } else {
+            other.runNumber.compareTo(this.runNumber)
+        }
     }
 }
 

@@ -1,13 +1,15 @@
 package com.dsoftware.ghmanager.ui.panels
 
-import com.dsoftware.ghmanager.Constants
 import com.dsoftware.ghmanager.data.LogLoadingModelListener
+import com.dsoftware.ghmanager.data.LogValue
+import com.dsoftware.ghmanager.data.LogValueStatus
 import com.intellij.execution.ConsoleFolding
 import com.intellij.execution.impl.ConsoleViewImpl
 import com.intellij.execution.process.AnsiEscapeDecoder
 import com.intellij.execution.process.ProcessOutputType
 import com.intellij.execution.ui.ConsoleView
 import com.intellij.execution.ui.ConsoleViewContentType
+import com.intellij.ide.BrowserUtil
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.actionSystem.ActionManager
 import com.intellij.openapi.actionSystem.AnActionEvent
@@ -25,6 +27,7 @@ import com.intellij.openapi.editor.impl.softwrap.SoftWrapAppliancePlaces
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.util.Key
+import com.intellij.ui.SimpleTextAttributes
 import com.intellij.ui.components.JBPanelWithEmptyText
 import com.intellij.util.concurrency.annotations.RequiresEdt
 import com.intellij.util.ui.UIUtil
@@ -75,39 +78,58 @@ class LogConsolePanel(
     }
 }
 
-private val actionManager = ActionManager.getInstance()
+
 fun createLogConsolePanel(
     project: Project, model: LogLoadingModelListener, parentDisposable: Disposable,
 ): JBPanelWithEmptyText {
     val panel = JBPanelWithEmptyText(BorderLayout()).apply {
         isOpaque = false
     }
+    val actionManager = ActionManager.getInstance()
 
     @RequiresEdt
-    fun addConsole(logValue: String?) {
-        if (logValue.isNullOrBlank()) {
-            return
-        }
-        if (!Constants.updateEmptyText(logValue, panel.emptyText)) {
-            panel.removeAll()
-            val console = LogConsolePanel(project, logValue, parentDisposable)
-            panel.add(console.component, BorderLayout.CENTER)
-            (console.editor as EditorEx).installPopupHandler(
-                ContextMenuPopupHandler.Simple(
-                    DefaultActionGroup().apply {
-                        removeAll()
-                        add(actionManager.getAction("Github.Workflow.Log.List.Reload"))
-                        add(
-                            object : ToggleUseSoftWrapsToolbarAction(SoftWrapAppliancePlaces.CONSOLE) {
-                                override fun getEditor(e: AnActionEvent): Editor? {
-                                    return console.editor
-                                }
-                            }
-                        )
-                    })
-            )
+    fun addConsole(logValue: LogValue?) {
+        if (logValue == null) return
+        when (logValue.status) {
+            LogValueStatus.LOG_EXIST -> {
+                panel.removeAll()
+                val console = LogConsolePanel(project, logValue.log!!, parentDisposable)
+                panel.add(console.component, BorderLayout.CENTER)
+                (console.editor as EditorEx).installPopupHandler(
+                    ContextMenuPopupHandler.Simple(
+                        DefaultActionGroup().apply {
+                            removeAll()
+                            add(actionManager.getAction("Github.Workflow.Log.List.Reload"))
+                            add(object : ToggleUseSoftWrapsToolbarAction(SoftWrapAppliancePlaces.CONSOLE) {
+                                override fun getEditor(e: AnActionEvent): Editor? = console.editor
+                            })
+                        })
+                )
+            }
+
+            LogValueStatus.LOG_MISSING -> {
+                panel.removeAll()
+                panel.emptyText.text = "Job logs missing for: " + logValue.jobName
+            }
+
+            LogValueStatus.NO_JOB_SELECTED -> {
+                panel.removeAll()
+                panel.emptyText.text = "Pick a job to view logs"
+            }
+
+            LogValueStatus.JOB_IN_PROGRESS -> {
+                panel.removeAll()
+                panel.emptyText.text = "Job is still in progress, can't view logs."
+                panel.emptyText.appendSecondaryText(
+                    "Please upvote this issue on  GitHub so they will prioritize it.",
+                    SimpleTextAttributes.LINK_PLAIN_ATTRIBUTES
+                ) {
+                    BrowserUtil.browse("https://github.com/orgs/community/discussions/75518")
+                }
+            }
         }
     }
+
     model.logModel.addAndInvokeListener {
         runInEdt { addConsole(it) }
     }

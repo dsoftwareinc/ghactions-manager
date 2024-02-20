@@ -4,7 +4,7 @@ package com.dsoftware.ghmanager.ui
 import com.dsoftware.ghmanager.actions.ActionKeys
 import com.dsoftware.ghmanager.data.JobsLoadingModelListener
 import com.dsoftware.ghmanager.data.LogLoadingModelListener
-import com.dsoftware.ghmanager.data.WorkflowDataContextRepository
+import com.dsoftware.ghmanager.data.WorkflowDataContextService
 import com.dsoftware.ghmanager.data.WorkflowRunSelectionContext
 import com.dsoftware.ghmanager.ui.panels.JobListComponent
 import com.dsoftware.ghmanager.ui.panels.WorkflowRunListLoaderPanel
@@ -15,6 +15,7 @@ import com.intellij.ide.actions.RefreshAction
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.actionSystem.ActionManager
 import com.intellij.openapi.diagnostic.logger
+import com.intellij.openapi.util.CheckedDisposable
 import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.util.Key
 import com.intellij.openapi.wm.ToolWindow
@@ -35,14 +36,14 @@ import kotlin.properties.Delegates
 class WorkflowToolWindowTabController(
     repositoryMapping: GHGitRepositoryMapping,
     private val ghAccount: GithubAccount,
-    private val dataContextRepository: WorkflowDataContextRepository,
+    private val dataContextRepository: WorkflowDataContextService,
     parentDisposable: Disposable,
     private val toolWindow: ToolWindow,
 ) {
     val loadingModel: GHCompletableFutureLoadingModel<WorkflowRunSelectionContext>
     private val settingsService = GhActionsSettingsService.getInstance(toolWindow.project)
     private val actionManager = ActionManager.getInstance()
-    val disposable = Disposer.newCheckedDisposable("WorkflowToolWindowTabController")
+    val disposable: CheckedDisposable = Disposer.newCheckedDisposable("WorkflowToolWindowTabController")
     val panel: JComponent
     private var contentDisposable by Delegates.observable<Disposable?>(null) { _, oldValue, newValue ->
         if (oldValue != null) Disposer.dispose(oldValue)
@@ -52,8 +53,8 @@ class WorkflowToolWindowTabController(
     init {
         Disposer.register(parentDisposable, disposable)
         contentDisposable = Disposable {
-            Disposer.dispose(disposable)
             dataContextRepository.clearContext(repositoryMapping)
+            Disposer.dispose(disposable)
         }
         loadingModel = GHCompletableFutureLoadingModel<WorkflowRunSelectionContext>(disposable).apply {
             future = dataContextRepository.acquireContext(
@@ -126,8 +127,8 @@ class WorkflowToolWindowTabController(
     private fun createLogPanel(selectedRunContext: WorkflowRunSelectionContext): JComponent {
         LOG.debug("Create log panel")
         val model = LogLoadingModelListener(
-            selectedRunContext.selectedRunDisposable,
-            selectedRunContext.logDataProviderLoadModel,
+            selectedRunContext.selectedJobDisposable,
+            selectedRunContext.jobLogDataProviderLoadModel,
             selectedRunContext.jobSelectionHolder
         )
         val panel = GHLoadingPanelFactory(

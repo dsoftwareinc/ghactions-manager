@@ -1,0 +1,26 @@
+[
+    {
+        "name": "detached",
+        "commit": {
+            "sha": "048dfc02d42e657199e636e0d60df56389a8078c",
+            "url": "https://api.github.com/repos/cunla/ghactions-manager/commits/048dfc02d42e657199e636e0d60df56389a8078c"
+        },
+        "protected": false
+    },
+    {
+        "name": "group_by_workflow",
+        "commit": {
+            "sha": "6e033c6e63d8b91e1430cce275110b4438d59f10",
+            "url": "https://api.github.com/repos/cunla/ghactions-manager/commits/6e033c6e63d8b91e1430cce275110b4438d59f10"
+        },
+        "protected": false
+    },
+    {
+        "name": "master",
+        "commit": {
+            "sha": "239789f77d6706067bd8dab32ec4155e1cfd9962",
+            "url": "https://api.github.com/repos/cunla/ghactions-manager/commits/239789f77d6706067bd8dab32ec4155e1cfd9962"
+        },
+        "protected": true
+    }
+]

@@ -1,11 +1,7 @@
 package com.dsoftware.ghmanager.data
 
-import com.dsoftware.ghmanager.Constants.LOG_MSG_JOB_IN_PROGRESS
-import com.dsoftware.ghmanager.Constants.LOG_MSG_MISSING
-import com.dsoftware.ghmanager.Constants.LOG_MSG_PICK_JOB
-import com.dsoftware.ghmanager.api.GitHubLog
-import com.dsoftware.ghmanager.api.model.Job
-import com.dsoftware.ghmanager.api.model.JobStep
+import com.dsoftware.ghmanager.data.providers.DataProvider
+import com.dsoftware.ghmanager.data.providers.JobLogDataProvider
 import com.intellij.collaboration.ui.SingleValueModel
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.diagnostic.logger
@@ -13,14 +9,19 @@ import com.intellij.openapi.util.Disposer
 import org.jetbrains.plugins.github.pullrequest.ui.GHCompletableFutureLoadingModel
 import org.jetbrains.plugins.github.pullrequest.ui.GHLoadingModel
 
+enum class LogValueStatus {
+    LOG_EXIST, LOG_MISSING, JOB_IN_PROGRESS, NO_JOB_SELECTED,
+}
+
+data class LogValue(val log: String?, val status: LogValueStatus, val jobName: String? = null)
 
 class LogLoadingModelListener(
     workflowRunDisposable: Disposable,
-    dataProviderModel: SingleValueModel<WorkflowRunLogsDataProvider?>,
+    dataProviderModel: SingleValueModel<JobLogDataProvider?>,
     private val jobsSelectionHolder: JobListSelectionHolder,
 ) : GHLoadingModel.StateChangeListener {
-    val logModel = SingleValueModel<String?>(null)
-    val logsLoadingModel = GHCompletableFutureLoadingModel<GitHubLog>(workflowRunDisposable)
+    val logModel = SingleValueModel<LogValue?>(null)
+    val logsLoadingModel = GHCompletableFutureLoadingModel<String>(workflowRunDisposable)
 
     init {
         jobsSelectionHolder.addSelectionChangeListener(workflowRunDisposable, this::setLogValue)
@@ -50,51 +51,20 @@ class LogLoadingModelListener(
 
     }
 
-    private fun stepsAsLog(stepLogs: Map<Int, String>, selection: Job): String {
-        val stepsResult: Map<Int, JobStep> = if (selection.steps == null) {
-            emptyMap()
-        } else {
-            selection.steps.associateBy { it.number }
-        }
-        val stepNumbers = stepsResult.keys.sorted()
-        if (!stepNumbers.containsAll(stepLogs.keys)) {
-            LOG.warn(
-                "Some logs do not have a step-result associated " +
-                    "[steps in results=$stepNumbers, step with logs=${stepLogs.keys}] "
-            )
-        }
-        val res = StringBuilder()
-        for (index in stepNumbers) {
-            val stepInfo = stepsResult[index]!!
-            val logs = if (stepLogs.containsKey(index)) stepLogs[index] else ""
-            res.append(
-                when (stepInfo.conclusion) {
-                    "skipped" -> "\u001B[0m\u001B[37m---- Step: ${index}_${stepInfo.name} (skipped) ----\u001b[0m\n"
-                    "failure" -> "\u001B[0m\u001B[31m---- Step: ${index}_${stepInfo.name} (failed) ----\u001b[0m\n${logs}"
-                    else -> "\u001B[0m\u001B[32m---- Step: ${index}_${stepInfo.name} ----\u001b[0m\n${logs}"
-                }
-            )
-        }
-        return res.toString()
-    }
 
     private fun setLogValue() {
-        val removeChars = setOf('<', '>', '/', ':')
         val jobSelection = jobsSelectionHolder.selection
-        val jobName = jobSelection?.name?.filterNot {
-            removeChars.contains(it)
-        }?.trim()
         val logs =
-            if (jobName == null || !logsLoadingModel.resultAvailable)
+            if (jobSelection == null || !logsLoadingModel.resultAvailable)
                 null
             else
-                logsLoadingModel.result?.get(jobName)
+                logsLoadingModel.result
         logModel.value = when {
             logsLoadingModel.result == null -> null
-            jobName == null -> LOG_MSG_PICK_JOB
-            logs == null && jobSelection.status == "in_progress" -> LOG_MSG_JOB_IN_PROGRESS
-            logs == null -> LOG_MSG_MISSING + jobSelection.name
-            else -> stepsAsLog(logs, jobSelection)
+            jobSelection == null -> LogValue(null, LogValueStatus.NO_JOB_SELECTED)
+            jobSelection.status == "in_progress" -> LogValue(null, LogValueStatus.JOB_IN_PROGRESS)
+            logs == null -> LogValue(null, LogValueStatus.LOG_MISSING, jobSelection.name)
+            else -> LogValue(logs, LogValueStatus.LOG_EXIST)
         }
     }
 

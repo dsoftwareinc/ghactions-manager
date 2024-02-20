@@ -1,0 +1,84 @@
+{
+    "id": 21694126229,
+    "run_id": 7946420025,
+    "workflow_name": "Maven Build",
+    "head_branch": "master",
+    "run_url": "https://api.github.com/repos/kriegaex/Asciidoctor_HTMLContainsCRLFOnWindows/actions/runs/7946420025",
+    "run_attempt": 1,
+    "node_id": "CR_kwDOLUE4e88AAAAFDRIYlQ",
+    "head_sha": "0b64661c30cff2bdb70db12a65ff07bae82fb1e0",
+    "url": "https://api.github.com/repos/kriegaex/Asciidoctor_HTMLContainsCRLFOnWindows/actions/jobs/21694126229",
+    "html_url": "https://github.com/kriegaex/Asciidoctor_HTMLContainsCRLFOnWindows/actions/runs/7946420025/job/21694126229",
+    "status": "completed",
+    "conclusion": "failure",
+    "created_at": "2024-02-18T03:59:30Z",
+    "started_at": "2024-02-18T03:59:37Z",
+    "completed_at": "2024-02-18T04:00:07Z",
+    "name": "Build on windows-latest with JDK 17",
+    "steps": [
+        {
+            "name": "Set up job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 1,
+            "started_at": "2024-02-18T03:59:36.000Z",
+            "completed_at": "2024-02-18T03:59:37.000Z"
+        },
+        {
+            "name": "Set up JDK 17",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 2,
+            "started_at": "2024-02-18T03:59:37.000Z",
+            "completed_at": "2024-02-18T03:59:38.000Z"
+        },
+        {
+            "name": "Check out code",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 3,
+            "started_at": "2024-02-18T03:59:38.000Z",
+            "completed_at": "2024-02-18T03:59:41.000Z"
+        },
+        {
+            "name": "Run Maven Build",
+            "status": "completed",
+            "conclusion": "failure",
+            "number": 4,
+            "started_at": "2024-02-18T03:59:41.000Z",
+            "completed_at": "2024-02-18T04:00:02.000Z"
+        },
+        {
+            "name": "Post Check out code",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 7,
+            "started_at": "2024-02-18T04:00:03.000Z",
+            "completed_at": "2024-02-18T04:00:03.000Z"
+        },
+        {
+            "name": "Post Set up JDK 17",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 8,
+            "started_at": "2024-02-18T04:00:07.000Z",
+            "completed_at": "2024-02-18T04:00:07.000Z"
+        },
+        {
+            "name": "Complete job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 9,
+            "started_at": "2024-02-18T04:00:04.000Z",
+            "completed_at": "2024-02-18T04:00:04.000Z"
+        }
+    ],
+    "check_run_url": "https://api.github.com/repos/kriegaex/Asciidoctor_HTMLContainsCRLFOnWindows/check-runs/21694126229",
+    "labels": [
+        "windows-latest"
+    ],
+    "runner_id": 14,
+    "runner_name": "GitHub Actions 14",
+    "runner_group_id": 2,
+    "runner_group_name": "GitHub Actions"
+}

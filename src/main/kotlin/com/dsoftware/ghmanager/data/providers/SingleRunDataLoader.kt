@@ -1,9 +1,9 @@
-package com.dsoftware.ghmanager.data
+package com.dsoftware.ghmanager.data.providers
 
+import com.dsoftware.ghmanager.api.model.Job
 import com.dsoftware.ghmanager.api.model.WorkflowRun
 import com.google.common.cache.CacheBuilder
 import com.intellij.openapi.Disposable
-import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.progress.ProgressManager
 import com.intellij.util.EventDispatcher
 import com.intellij.util.concurrency.annotations.RequiresEdt
@@ -11,9 +11,8 @@ import org.jetbrains.plugins.github.api.GithubApiRequest
 import org.jetbrains.plugins.github.api.GithubApiRequestExecutor
 import java.util.EventListener
 
-class SingleRunDataLoader(
-    private val requestExecutor: GithubApiRequestExecutor
-) : Disposable {
+class SingleRunDataLoader(private val requestExecutor: GithubApiRequestExecutor) : Disposable {
+    private val progressManager = ProgressManager.getInstance()
     private val invalidationEventDispatcher = EventDispatcher.create(DataInvalidatedListener::class.java)
 
     private val cache = CacheBuilder.newBuilder()
@@ -23,11 +22,10 @@ class SingleRunDataLoader(
         .maximumSize(200)
         .build<String, DataProvider<*>>()
 
-
-    fun getLogsDataProvider(workflowRun: WorkflowRun): WorkflowRunLogsDataProvider {
-        return cache.get(workflowRun.logsUrl) {
-            WorkflowRunLogsDataProvider(progressManager, requestExecutor, workflowRun.logsUrl)
-        } as WorkflowRunLogsDataProvider
+    fun getJobLogDataProvider(job: Job): JobLogDataProvider {
+        return cache.get("${job.url}/logs") {
+            JobLogDataProvider(progressManager, requestExecutor, job)
+        } as JobLogDataProvider
     }
 
     fun getJobsDataProvider(workflowRun: WorkflowRun): WorkflowRunJobsDataProvider {
@@ -42,7 +40,6 @@ class SingleRunDataLoader(
 
     @RequiresEdt
     fun invalidateAllData() {
-        LOG.debug("All cache invalidated")
         cache.invalidateAll()
     }
 
@@ -55,11 +52,6 @@ class SingleRunDataLoader(
 
     override fun dispose() {
         invalidateAllData()
-    }
-
-    companion object {
-        private val LOG = logger<SingleRunDataLoader>()
-        private val progressManager = ProgressManager.getInstance()
     }
 
     private interface DataInvalidatedListener : EventListener {
