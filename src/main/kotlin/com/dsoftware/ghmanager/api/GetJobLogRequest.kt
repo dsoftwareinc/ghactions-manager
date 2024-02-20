@@ -10,7 +10,6 @@ import java.io.BufferedReader
 import java.io.IOException
 import java.io.InputStream
 import java.io.InputStreamReader
-import java.text.ParseException
 
 typealias JobLog = Map<Int, StringBuilder>
 
@@ -54,7 +53,7 @@ class GetJobLogRequest(private val job: Job) : GithubApiRequest.Get<String>(job.
                             LOG.debug("Line $lineNum: step changed from $currStep to $nextStep")
                         }
                         currStep = nextStep
-                    } catch (e: ParseException) {
+                    } catch (e: Exception) {
                         LOG.warn("Failed to parse date \"$datetimeStr\" from log line $lineNum: $line, $e")
                     }
                 }

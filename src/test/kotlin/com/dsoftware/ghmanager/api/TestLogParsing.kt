@@ -29,7 +29,7 @@ class TestLogParsing : TestCase() {
         val wfJobsJson = TestGetJobLogRequest::class.java.getResource("/wf-run-7863783013-jobs.json")!!.readText()
         val wfJobs: WorkflowRunJobs = GithubApiContentHelper.fromJson(wfJobsJson)
         val job = wfJobs.jobs.first()
-        val line = "2024-02-11T18:09:51.DDDDDDDZ LTS\n"
+        val line = "2024-02-11T18:09:51.DDDDDDDZ LTS ##[group]Run \n"
         //act
         val log = GetJobLogRequest(job).extractJobLogFromStream(line.byteInputStream())
 
