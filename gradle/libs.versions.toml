@@ -16,7 +16,6 @@ mockk = "1.13.9"
 [libraries]
 annotations = { group = "org.jetbrains", name = "annotations", version.ref = "annotations" }
 serialization = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "serialization" }
-# dotenv = { group = "io.github.cdimascio", name = "dotenv-kotlin", version = "6.4.1" }
 mockk = { group = "io.mockk", name = "mockk-jvm", version.ref = "mockk" }
 
 [plugins]
