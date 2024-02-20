@@ -38,6 +38,38 @@ internal class ProjectRepositories(val toolWindow: ToolWindow) {
     var knownRepositories: Set<GHGitRepositoryMapping> = emptySet()
 }
 
+fun createEmptyTextPanel(
+    text: String,
+    showGithubSettings: Boolean,
+    showGhmanagerSettings: Boolean
+): JBPanelWithEmptyText {
+    val emptyTextPanel = JBPanelWithEmptyText()
+    emptyTextPanel.emptyText.appendText(text)
+    if (showGithubSettings) {
+        emptyTextPanel.emptyText.appendLine(
+            "Go to github accounts Settings",
+            SimpleTextAttributes.LINK_ATTRIBUTES,
+            ActionUtil.createActionListener(
+                "ShowGithubSettings",
+                emptyTextPanel,
+                ActionPlaces.UNKNOWN
+            )
+        )
+    }
+    if (showGhmanagerSettings) {
+        emptyTextPanel.emptyText.appendLine(
+            "Go to ghactions-manager Settings",
+            SimpleTextAttributes.LINK_ATTRIBUTES,
+            ActionUtil.createActionListener(
+                "Github.Actions.Manager.Settings.Open",
+                emptyTextPanel,
+                ActionPlaces.UNKNOWN
+            )
+        )
+    }
+    return emptyTextPanel
+}
+
 class GhActionsToolWindowFactory : ToolWindowFactory, DumbAware {
     private lateinit var settingsService: GhActionsSettingsService
     private lateinit var ghActionsService: GhActionsService
@@ -119,32 +151,22 @@ class GhActionsToolWindowFactory : ToolWindowFactory, DumbAware {
         }
     }
 
-    private fun createNoActiveReposPanel(
-        disposable: Disposable,
-        projectRepositories: ProjectRepositories
-    ) =
+    private fun createNoActiveReposPanel(disposable: Disposable, projectRepositories: ProjectRepositories) =
         with(projectRepositories.toolWindow.contentManager) {
             LOG.debug("No active repositories in project")
-            val emptyTextPanel = JBPanelWithEmptyText()
-            emptyTextPanel.emptyText
-                .appendText("No repositories configured for GitHub-Actions-Manager")
-                .appendSecondaryText(
-                    "Go to GitHub-Actions-Manager settings",
-                    SimpleTextAttributes.LINK_ATTRIBUTES,
-                    ActionUtil.createActionListener(
-                        "Github.Actions.Manager.Settings.Open",
-                        emptyTextPanel,
-                        ActionPlaces.UNKNOWN
-                    )
+            createEmptyTextPanel(
+                "No repositories configured for GitHub-Actions-Manager",
+                showGithubSettings = true,
+                showGhmanagerSettings = true
+            ).let {
+                addContent(
+                    factory.createContent(it, "Workflows", false)
+                        .apply {
+                            isCloseable = false
+                            setDisposer(disposable)
+                        }
                 )
-
-            addContent(
-                factory.createContent(emptyTextPanel, "Workflows", false)
-                    .apply {
-                        isCloseable = false
-                        setDisposer(disposable)
-                    }
-            )
+            }
         }
 
     private fun createNoAccountPanel(
@@ -152,33 +174,19 @@ class GhActionsToolWindowFactory : ToolWindowFactory, DumbAware {
         projectRepositories: ProjectRepositories
     ) = with(projectRepositories.toolWindow.contentManager) {
         LOG.debug("No GitHub account configured")
-        val emptyTextPanel = JBPanelWithEmptyText()
-        emptyTextPanel.emptyText
-            .appendText("GitHub account not configured and no API Token")
-            .appendLine(
-                "Go to github Settings",
-                SimpleTextAttributes.LINK_ATTRIBUTES,
-                ActionUtil.createActionListener(
-                    "ShowGithubSettings",
-                    emptyTextPanel,
-                    ActionPlaces.UNKNOWN
-                )
+        createEmptyTextPanel(
+            "GitHub account not configured and no API Token",
+            showGithubSettings = true,
+            showGhmanagerSettings = true
+        ).let {
+            addContent(
+                factory.createContent(it, "Workflows", false)
+                    .apply {
+                        isCloseable = false
+                        setDisposer(disposable)
+                    }
             )
-            .appendLine(
-                "Go to ghactions-manager Settings",
-                SimpleTextAttributes.LINK_ATTRIBUTES,
-                ActionUtil.createActionListener(
-                    "Github.Actions.Manager.Settings.Open",
-                    emptyTextPanel,
-                    ActionPlaces.UNKNOWN
-                )
-            )
-        addContent(factory.createContent(emptyTextPanel, "Workflows", false)
-            .apply {
-                isCloseable = false
-                setDisposer(disposable)
-            }
-        )
+        }
     }
 
     private fun createNoReposPanel(
@@ -225,44 +233,30 @@ class GhActionsToolWindowFactory : ToolWindowFactory, DumbAware {
                         Disposer.register(parentDisposable, disposable)
                         setDisposer(disposable)
                         displayName = repoSettings.customName.ifEmpty { repo.repositoryPath }
-                        val controller = WorkflowToolWindowTabController(
-                            repo, ghAccount, dataContextRepository, this.disposer!!, toolWindow,
-                        )
-                        component.apply {
-                            layout = BorderLayout()
-                            background = UIUtil.getListBackground()
-                            removeAll()
-                            add(controller.panel, BorderLayout.CENTER)
-                            revalidate()
-                            repaint()
-                        }
-                        putUserData(WorkflowToolWindowTabController.KEY, controller)
                     }
+                    val controller = WorkflowToolWindowTabController(
+                        repo, ghAccount, dataContextRepository, tab.disposer!!, toolWindow,
+                    )
+                    tab.component.apply {
+                        layout = BorderLayout()
+                        background = UIUtil.getListBackground()
+                        removeAll()
+                        add(controller.panel, BorderLayout.CENTER)
+                        revalidate()
+                        repaint()
+                    }
+                    tab.putUserData(WorkflowToolWindowTabController.KEY, controller)
                     toolWindow.contentManager.addContent(tab)
                 } else {
-                    val emptyTextPanel = JBPanelWithEmptyText()
-                    emptyTextPanel.emptyText
-                        .appendText("GitHub account not configured for ${repo.repository}, go to settings to fix")
-                        .appendLine(
-                            "Go to github accounts Settings",
-                            SimpleTextAttributes.LINK_ATTRIBUTES,
-                            ActionUtil.createActionListener(
-                                "ShowGithubSettings",
-                                emptyTextPanel,
-                                ActionPlaces.UNKNOWN
-                            )
-                        )
-                        .appendLine(
-                            "Go to ghactions-manager Settings",
-                            SimpleTextAttributes.LINK_ATTRIBUTES,
-                            ActionUtil.createActionListener(
-                                "Github.Actions.Manager.Settings.Open",
-                                emptyTextPanel,
-                                ActionPlaces.UNKNOWN
-                            )
-                        )
                     toolWindow.contentManager.addContent(
-                        toolWindow.contentManager.factory.createContent(emptyTextPanel, repo.repositoryPath, false)
+                        toolWindow.contentManager.factory.createContent(
+                            createEmptyTextPanel(
+                                "GitHub account not configured for ${repo.repository}, go to settings to fix",
+                                showGithubSettings = true,
+                                showGhmanagerSettings = true
+                            ),
+                            repo.repositoryPath, false
+                        )
                     )
                 }
             }
@@ -285,7 +279,6 @@ class GhActionsToolWindowFactory : ToolWindowFactory, DumbAware {
                     }
                 }
             }, 5, TimeUnit.SECONDS)
-
         }
 
     companion object {
