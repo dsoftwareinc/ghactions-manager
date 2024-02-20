@@ -11,14 +11,13 @@ import java.io.IOException
 import java.io.InputStream
 import java.io.InputStreamReader
 import java.text.ParseException
-import java.time.format.DateTimeFormatter
 
 typealias JobLog = Map<Int, StringBuilder>
 
 class GetJobLogRequest(private val job: Job) : GithubApiRequest.Get<String>(job.url + "/logs") {
-    private val stepsPeriodMap = job.steps?.associate { step ->
+    private val stepsPeriodMap = job.steps.associate { step ->
         step.number to (step.startedAt to step.completedAt)
-    } ?: emptyMap()
+    }
     private val lastStepNumber: Int = stepsPeriodMap.keys.maxOrNull() ?: 0
 
     override fun extractResult(response: GithubApiResponse): String {
@@ -34,8 +33,6 @@ class GetJobLogRequest(private val job: Job) : GithubApiRequest.Get<String>(job.
     }
 
     fun extractLogByStep(inputStream: InputStream): Map<Int, StringBuilder> {
-        val dateTimePattern = "yyyy-MM-dd'T'HH:mm:ss.SSS"
-        val formatter = DateTimeFormatter.ofPattern(dateTimePattern)
         val contentBuilders = HashMap<Int, StringBuilder>()
         var lineNum = 0
         var currStep = 1
