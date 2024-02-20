@@ -45,12 +45,12 @@ class TestGetJobLogRequest(
             arrayOf(
                 "/wf-run-7863783013-single-job-21454796844.log",
                 "/wf-run-7863783013-jobs.json",
-                mapOf((1 to 34), (2 to 69), (3 to 788), (4 to 813), (6 to 2), (8 to 15))
+                mapOf((1 to 34), (2 to 21), (3 to 836), (4 to 810), (6 to 5), (7 to 2), (8 to 14))
             ),
             arrayOf(
                 "/wf-run-7946420025-single-job-21694126031.log",
                 "/wf-run-7946420025-jobs.json",
-                mapOf((1 to 33), (2 to 28), (4 to 743), (7 to 15))
+                mapOf((1 to 33), (2 to 14), (3 to 15), (4 to 743), (7 to 15))
             )
         )
 

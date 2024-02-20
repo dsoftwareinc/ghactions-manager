@@ -14,10 +14,8 @@ import java.io.InputStreamReader
 typealias JobLog = Map<Int, StringBuilder>
 
 class GetJobLogRequest(private val job: Job) : GithubApiRequest.Get<String>(job.url + "/logs") {
-    private val stepsPeriodMap = job.steps.associate { step ->
-        step.number to (step.startedAt to step.completedAt)
-    }
-    private val lastStepNumber: Int = stepsPeriodMap.keys.maxOrNull() ?: 0
+    private val stepsMap = job.steps.associateBy { step -> step.number }
+    private val lastStepNumber: Int = stepsMap.keys.maxOrNull() ?: 0
 
     override fun extractResult(response: GithubApiResponse): String {
         LOG.debug("extracting result for $url")
@@ -41,21 +39,16 @@ class GetJobLogRequest(private val job: Job) : GithubApiRequest.Get<String>(job.
             for (line in lines) {
                 ++lineNum
                 if (line.length >= 29
-                    && (line.contains("##[group]Run ")
+                    && (line.contains("##[group]")
                         || line.contains("Post job cleanup")
                         || line.contains("Cleaning up orphan processes"))
                 ) {
-                    val datetimeStr = line.substring(0, 28)
-                    try {
-                        val time = Instant.parse(datetimeStr)
-                        val nextStep = findStep(currStep, time)
-                        if (nextStep != currStep) {
-                            LOG.debug("Line $lineNum: step changed from $currStep to $nextStep")
-                        }
-                        currStep = nextStep
-                    } catch (e: Exception) {
-                        LOG.warn("Failed to parse date \"$datetimeStr\" from log line $lineNum: $line, $e")
+                    val nextStep = findStep(currStep, lineNum, line)
+                    if (nextStep != currStep) {
+                        LOG.debug("Line $lineNum: step changed from $currStep to $nextStep")
                     }
+                    currStep = nextStep
+
                 }
                 contentBuilders.getOrPut(currStep) { StringBuilder(400_000) }.append(line + "\n")
             }
@@ -65,20 +58,30 @@ class GetJobLogRequest(private val job: Job) : GithubApiRequest.Get<String>(job.
         return contentBuilders
     }
 
-    private fun findStep(initialStep: Int, time: Instant): Int {
+    private fun findStep(initialStep: Int, lineNum: Int, line: String): Int {
+        val datetimeStr = line.substring(0, 28)
+        val time = try {
+            Instant.parse(datetimeStr)
+        } catch (e: Exception) {
+            LOG.warn("Failed to parse date \"$datetimeStr\" from log line $lineNum: $line, $e")
+            return initialStep
+        }
         var currStep = initialStep
+
+        stepsMap[currStep]?.let { step ->
+            if (step.startedAt != null && step.startedAt > time) {
+                return currStep
+            }
+            if (step.completedAt == null || step.completedAt >= time) {
+                return currStep
+            }
+        }
+        currStep += 1
         while (currStep < lastStepNumber) {
-            if (!stepsPeriodMap.containsKey(currStep)) {
-                currStep += 1
-                continue
-            }
-            val currStart = stepsPeriodMap[currStep]?.first
-            val currEnd = stepsPeriodMap[currStep]?.second
-            if (currStart != null && currStart > time) {
-                return currStep
-            }
-            if (currEnd == null || currEnd > time || currEnd == time) {
-                return currStep
+            stepsMap[currStep]?.let { step ->
+                if (step.conclusion != "skipped") {
+                    return currStep
+                }
             }
             currStep += 1
         }
