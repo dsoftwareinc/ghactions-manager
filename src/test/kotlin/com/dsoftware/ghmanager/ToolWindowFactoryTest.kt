@@ -33,6 +33,7 @@ class ToolWindowFactoryTest : GitHubActionsManagerBaseTest() {
         executeSomeCoroutineTasksAndDispatchAllInvocationEvents(project)
 
         TestCase.assertEquals(1, toolWindow.contentManager.contentCount)
+        TestCase.assertEquals("Workflows", toolWindow.contentManager.contents[0].displayName)
         val component = toolWindow.contentManager.contents[0].component
         TestCase.assertTrue(component is JBPanelWithEmptyText)
         val panel = component as JBPanelWithEmptyText
@@ -40,8 +41,8 @@ class ToolWindowFactoryTest : GitHubActionsManagerBaseTest() {
         TestCase.assertEquals("GitHub account not configured and no API Token", panel.emptyText.text)
         val subComponents = panel.emptyText.wrappedFragmentsIterable.map { it as SimpleColoredComponent }.toList()
         TestCase.assertEquals("GitHub account not configured and no API Token", subComponents[0].getCharSequence(true))
-        TestCase.assertEquals("Go to github Settings", subComponents[1].getCharSequence(true))
-        TestCase.assertEquals("Go to ghactions-manager Settings", subComponents[2].getCharSequence(true))
+        TestCase.assertEquals("Go to GitHub settings", subComponents[1].getCharSequence(true))
+        TestCase.assertEquals("Go to GitHub-actions-manager plugin settings", subComponents[2].getCharSequence(true))
         verify {
             requestExecutorfactoryMock.create(token = any()) wasNot Called
         }
@@ -55,6 +56,7 @@ class ToolWindowFactoryTest : GitHubActionsManagerBaseTest() {
 
         TestCase.assertEquals(1, toolWindow.contentManager.contentCount)
         val component = toolWindow.contentManager.contents[0].component
+        TestCase.assertEquals("Workflows", toolWindow.contentManager.contents[0].displayName)
         TestCase.assertTrue(component is JBPanelWithEmptyText)
         val panel = component as JBPanelWithEmptyText
         TestCase.assertEquals("No git repositories in project", panel.emptyText.text)
@@ -108,7 +110,7 @@ class ToolWindowFactoryTest : GitHubActionsManagerBaseTest() {
         TestCase.assertEquals("No repositories configured for GitHub-Actions-Manager", panel.emptyText.text)
         val subComponents = panel.emptyText.wrappedFragmentsIterable.map { it as SimpleColoredComponent }.toList()
         TestCase.assertEquals("No repositories configured for GitHub-Actions-Manager", subComponents[0].getCharSequence(true))
-        TestCase.assertEquals("Go to GitHub-Actions-Manager settings", subComponents[1].getCharSequence(true))
+        TestCase.assertEquals("Go to GitHub-actions-manager plugin settings", subComponents[1].getCharSequence(true))
         verify {
             requestExecutorfactoryMock.create(token = any()) wasNot Called
         }

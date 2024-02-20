@@ -47,7 +47,7 @@ fun createEmptyTextPanel(
     emptyTextPanel.emptyText.appendText(text)
     if (showGithubSettings) {
         emptyTextPanel.emptyText.appendLine(
-            "Go to github accounts Settings",
+            "Go to GitHub settings",
             SimpleTextAttributes.LINK_ATTRIBUTES,
             ActionUtil.createActionListener(
                 "ShowGithubSettings",
@@ -58,7 +58,7 @@ fun createEmptyTextPanel(
     }
     if (showGhmanagerSettings) {
         emptyTextPanel.emptyText.appendLine(
-            "Go to ghactions-manager Settings",
+            "Go to GitHub-actions-manager plugin settings",
             SimpleTextAttributes.LINK_ATTRIBUTES,
             ActionUtil.createActionListener(
                 "Github.Actions.Manager.Settings.Open",
@@ -156,7 +156,7 @@ class GhActionsToolWindowFactory : ToolWindowFactory, DumbAware {
             LOG.debug("No active repositories in project")
             createEmptyTextPanel(
                 "No repositories configured for GitHub-Actions-Manager",
-                showGithubSettings = true,
+                showGithubSettings = false,
                 showGhmanagerSettings = true
             ).let {
                 addContent(
