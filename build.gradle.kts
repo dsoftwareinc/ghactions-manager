@@ -63,6 +63,10 @@ koverReport {
 }
 
 tasks {
+    test {
+        systemProperty("idea.log.debug.categories", "com.dsoftware.ghmanager")
+    }
+
     wrapper {
         gradleVersion = properties("gradleVersion").get()
     }

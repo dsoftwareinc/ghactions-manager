@@ -2,6 +2,8 @@ package com.dsoftware.ghmanager
 
 import com.dsoftware.ghmanager.data.GhActionsService
 import com.dsoftware.ghmanager.ui.GhActionsToolWindowFactory
+import com.dsoftware.ghmanager.ui.settings.GhActionsSettingsService
+import com.dsoftware.ghmanager.ui.settings.GithubActionsManagerSettings
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.wm.ToolWindow
 import com.intellij.platform.ide.progress.runWithModalProgressBlocking
@@ -49,6 +51,13 @@ abstract class GitHubActionsManagerBaseTest : BasePlatformTestCase() {
             override val accountsState: StateFlow<Collection<GithubAccount>>
                 get() = MutableStateFlow(accounts)
         })
+    }
+
+    fun mockSettingsService(settings: GithubActionsManagerSettings) {
+        val settingsService = mockk<GhActionsSettingsService> {
+            every { state } returns settings
+        }
+        project.registerServiceInstance(GhActionsSettingsService::class.java, settingsService)
     }
 }
 

@@ -1,5 +1,6 @@
 package com.dsoftware.ghmanager
 
+import com.dsoftware.ghmanager.ui.settings.GithubActionsManagerSettings
 import com.intellij.ui.SimpleColoredComponent
 import com.intellij.ui.components.JBPanelWithEmptyText
 import io.mockk.Called
@@ -81,6 +82,35 @@ class ToolWindowFactoryTest : GitHubActionsManagerBaseTest() {
         }
     }
 
-    //todo test where using settings custom repos + zero repos (createNoActiveReposPanel)
+    fun `test when using settings custom repos + zero repos`() {
+        mockkStatic(GHCompatibilityUtil::class)
+        every { GHCompatibilityUtil.getOrRequestToken(any(), any()) } returns "token"
+        mockGhActionsService(setOf("http://github.com/owner/repo"), setOf("account1"))
+        mockSettingsService(
+            GithubActionsManagerSettings(
+                customRepos = mutableMapOf(
+                    "http://github.com/owner/repo" to
+                        GithubActionsManagerSettings.RepoSettings(false, "customName")
+                )
+            )
+        )
 
+        factory.init(toolWindow)
+        executeSomeCoroutineTasksAndDispatchAllInvocationEvents(project)
+
+        val content = toolWindow.contentManager.contents[0]
+        TestCase.assertEquals("Workflows", content.displayName)
+        TestCase.assertEquals(1, toolWindow.contentManager.contentCount)
+        val component = toolWindow.contentManager.contents[0].component
+        TestCase.assertTrue(component is JBPanelWithEmptyText)
+        val panel = component as JBPanelWithEmptyText
+
+        TestCase.assertEquals("No repositories configured for GitHub-Actions-Manager", panel.emptyText.text)
+        val subComponents = panel.emptyText.wrappedFragmentsIterable.map { it as SimpleColoredComponent }.toList()
+        TestCase.assertEquals("No repositories configured for GitHub-Actions-Manager", subComponents[0].getCharSequence(true))
+        TestCase.assertEquals("Go to GitHub-Actions-Manager settings", subComponents[1].getCharSequence(true))
+        verify {
+            requestExecutorfactoryMock.create(token = any()) wasNot Called
+        }
+    }
 }
