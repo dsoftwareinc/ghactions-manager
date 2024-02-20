@@ -1,11 +1,12 @@
-package com.dsoftware.ghmanager
+package com.dsoftware.ghmanager.api
 
-import com.dsoftware.ghmanager.api.GetJobLogRequest
 import com.dsoftware.ghmanager.api.model.WorkflowRunJobs
+import com.dsoftware.ghmanager.createJob
+import com.dsoftware.ghmanager.withStep
 import junit.framework.TestCase
 import org.jetbrains.plugins.github.api.GithubApiContentHelper
 
-class TestLogColors : TestCase() {
+class TestLogParsing : TestCase() {
     fun `test steps' log showing with right color`() {
         // arrange
         val job = createJob()

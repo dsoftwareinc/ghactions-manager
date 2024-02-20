@@ -3,6 +3,9 @@ package com.dsoftware.ghmanager.data
 import com.dsoftware.ghmanager.api.WorkflowRunFilter
 import com.dsoftware.ghmanager.api.model.Job
 import com.dsoftware.ghmanager.api.model.WorkflowRun
+import com.dsoftware.ghmanager.data.providers.JobLogDataProvider
+import com.dsoftware.ghmanager.data.providers.SingleRunDataLoader
+import com.dsoftware.ghmanager.data.providers.WorkflowRunJobsDataProvider
 import com.intellij.collaboration.ui.SingleValueModel
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.diagnostic.logger

@@ -1,5 +1,7 @@
 package com.dsoftware.ghmanager.data
 
+import com.dsoftware.ghmanager.data.providers.DataProvider
+import com.dsoftware.ghmanager.data.providers.JobLogDataProvider
 import com.intellij.collaboration.ui.SingleValueModel
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.diagnostic.logger

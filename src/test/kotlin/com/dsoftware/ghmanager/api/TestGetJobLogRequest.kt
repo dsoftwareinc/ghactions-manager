@@ -1,6 +1,5 @@
-package com.dsoftware.ghmanager
+package com.dsoftware.ghmanager.api
 
-import com.dsoftware.ghmanager.api.GetJobLogRequest
 import com.dsoftware.ghmanager.api.model.WorkflowRunJobs
 import org.jetbrains.plugins.github.api.GithubApiContentHelper
 import org.junit.Assert.assertEquals

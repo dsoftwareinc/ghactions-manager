@@ -1,6 +1,7 @@
 package com.dsoftware.ghmanager.data
 
 import com.dsoftware.ghmanager.api.WorkflowRunFilter
+import com.dsoftware.ghmanager.data.providers.SingleRunDataLoader
 import com.dsoftware.ghmanager.ui.settings.GhActionsSettingsService
 import com.intellij.collaboration.async.CompletableFutureUtil.submitIOTask
 import com.intellij.collaboration.async.CompletableFutureUtil.successOnEdt
@@ -28,13 +29,7 @@ import org.jetbrains.plugins.github.util.LazyCancellableBackgroundProcessValue
 import java.io.IOException
 import java.util.concurrent.CompletableFuture
 
-data class RepositoryCoordinates(
-    val serverPath: GithubServerPath, val repositoryPath: GHRepositoryPath
-) {
-    override fun toString(): String {
-        return "$serverPath/$repositoryPath"
-    }
-}
+data class RepositoryCoordinates(val serverPath: GithubServerPath, val repositoryPath: GHRepositoryPath)
 
 @Service(Service.Level.PROJECT)
 class WorkflowDataContextService(project: Project) {
@@ -92,7 +87,7 @@ class WorkflowDataContextService(project: Project) {
             settingsService.state.apiToken
         }
 
-        val requestExecutor = GithubApiRequestExecutor.Factory.Companion.getInstance().create(token=token)
+        val requestExecutor = GithubApiRequestExecutor.Factory.Companion.getInstance().create(token = token)
         val singleRunDataLoader = SingleRunDataLoader(requestExecutor)
         requestExecutor.addListener(singleRunDataLoader) {
             singleRunDataLoader.invalidateAllData()

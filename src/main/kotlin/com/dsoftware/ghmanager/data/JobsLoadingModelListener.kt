@@ -1,6 +1,8 @@
 package com.dsoftware.ghmanager.data
 
 import com.dsoftware.ghmanager.api.model.WorkflowRunJobs
+import com.dsoftware.ghmanager.data.providers.DataProvider
+import com.dsoftware.ghmanager.data.providers.WorkflowRunJobsDataProvider
 import com.intellij.collaboration.ui.SingleValueModel
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.util.Disposer

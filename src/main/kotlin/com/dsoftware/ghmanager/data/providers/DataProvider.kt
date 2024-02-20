@@ -1,8 +1,5 @@
-package com.dsoftware.ghmanager.data
+package com.dsoftware.ghmanager.data.providers
 
-import com.dsoftware.ghmanager.api.GithubApi
-import com.dsoftware.ghmanager.api.model.Job
-import com.dsoftware.ghmanager.api.model.WorkflowRunJobs
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.diagnostic.thisLogger
 import com.intellij.openapi.progress.ProgressManager
@@ -34,7 +31,7 @@ open class DataProvider<T>(
             } catch (ioe: IOException) {
                 LOG.warn("Error when getting $githubApiRequest.url: $ioe")
                 errorValue ?: throw ioe
-            }catch (e: GithubStatusCodeException){
+            } catch (e: GithubStatusCodeException) {
                 LOG.warn("Error when getting $githubApiRequest.url: $e")
                 errorValue ?: throw e
             }
@@ -64,25 +61,3 @@ open class DataProvider<T>(
         private val LOG = thisLogger()
     }
 }
-
-class JobLogDataProvider(
-    progressManager: ProgressManager,
-    requestExecutor: GithubApiRequestExecutor,
-    job: Job
-) : DataProvider<String>(
-    progressManager,
-    requestExecutor,
-    GithubApi.getJobLog(job),
-    null
-)
-
-class WorkflowRunJobsDataProvider(
-    progressManager: ProgressManager,
-    requestExecutor: GithubApiRequestExecutor,
-    jobsUrl: String
-) : DataProvider<WorkflowRunJobs>(
-    progressManager,
-    requestExecutor,
-    GithubApi.getWorkflowRunJobs(jobsUrl),
-    WorkflowRunJobs(0, emptyList())
-)
