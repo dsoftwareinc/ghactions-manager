@@ -45,9 +45,10 @@ class GetJobLogRequest(private val job: Job) : GithubApiRequest.Get<String>(job.
             for (line in lines) {
                 ++lineNum
                 if (line.length >= 29
-                    &&( line.contains("##[group]Run ")
+                    && (line.contains("##[group]Run ")
                         || line.contains("Post job cleanup")
-                        || line.contains("Cleaning up orphan processes"))) {
+                        || line.contains("Cleaning up orphan processes"))
+                ) {
                     val datetimeStr = line.substring(0, 28)
                     try {
                         val time = Instant.parse(datetimeStr)
@@ -89,22 +90,13 @@ class GetJobLogRequest(private val job: Job) : GithubApiRequest.Get<String>(job.
     }
 
     private fun stepsAsLog(stepLogs: JobLog): String {
-        val stepsResult: Map<Int, JobStep> = if (job.steps == null) {
-            emptyMap()
-        } else {
-            job.steps.associateBy { it.number }
-        }
+        val stepsResult: Map<Int, JobStep> = job.steps.associateBy { it.number }
         val stepNumbers = stepsResult.keys.sorted()
-        if (!stepNumbers.containsAll(stepLogs.keys)) {
-            LOG.warn(
-                "Some logs do not have a step-result associated " +
-                    "[steps in results=$stepNumbers, step with logs=${stepLogs.keys}] "
-            )
-        }
+
         val res = StringBuilder(1_000_000)
-        for (index in stepNumbers) {
-            val stepInfo = stepsResult[index]!!
-            val indexStr = "%3d".format(index)
+        for (stepNumber in stepNumbers) {
+            val stepInfo = stepsResult[stepNumber]!!
+            val indexStr = "%3d".format(stepNumber)
             res.append(
                 when (stepInfo.conclusion) {
                     "skipped" -> "\u001B[0m\u001B[37m---- Step ${indexStr}: ${stepInfo.name} (skipped) ----\u001b[0m\n"
@@ -112,9 +104,9 @@ class GetJobLogRequest(private val job: Job) : GithubApiRequest.Get<String>(job.
                     else -> "\u001B[0m\u001B[32m---- Step ${indexStr}: ${stepInfo.name} ----\u001b[0m\n"
                 }
             )
-            if (stepInfo.conclusion != "skipped" && stepLogs.containsKey(index) && (res.length < 950_000)) {
-                if (res.length + (stepLogs[index]?.length ?: 0) < 990_000) {
-                    res.append(stepLogs[index])
+            if (stepInfo.conclusion != "skipped" && stepLogs.containsKey(stepNumber) && (res.length < 950_000)) {
+                if (res.length + (stepLogs[stepNumber]?.length ?: 0) < 990_000) {
+                    res.append(stepLogs[stepNumber])
                 } else {
                     res.append("Log is too big to display, showing only first 1mb")
                 }

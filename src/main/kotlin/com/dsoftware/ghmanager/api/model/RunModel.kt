@@ -50,12 +50,12 @@ data class WorkflowRun(
      * @param other The other workflow to compare to
      */
     override fun compareTo(other: WorkflowRun): Int {
-        if (other.updatedAt != null && this.updatedAt != null) {
-            return other.updatedAt.compareTo(this.updatedAt)
+        return if (other.updatedAt != null && this.updatedAt != null) {
+            other.updatedAt.compareTo(this.updatedAt)
         } else if (other.createdAt != null && this.createdAt != null) {
-            return other.createdAt.compareTo(this.createdAt)
+            other.createdAt.compareTo(this.createdAt)
         } else {
-            return other.runNumber.compareTo(this.runNumber)
+            other.runNumber.compareTo(this.runNumber)
         }
     }
 }

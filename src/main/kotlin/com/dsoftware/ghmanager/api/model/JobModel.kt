@@ -60,7 +60,7 @@ data class Job(
     /* The name of the job. */
     val name: String,
     /* Steps in this job. */
-    val steps: List<JobStep>? = emptyList(),
+    val steps: List<JobStep> = emptyList(),
     val checkRunUrl: String,
     /* Labels for the workflow job. Specified by the \"runs_on\" attribute in the action's workflow file. */
     val labels: Array<String>,

@@ -2,6 +2,7 @@ package com.dsoftware.ghmanager.ui.panels
 
 
 import com.dsoftware.ghmanager.actions.ActionKeys
+import com.dsoftware.ghmanager.api.GithubApi
 import com.dsoftware.ghmanager.api.model.WorkflowRun
 import com.dsoftware.ghmanager.data.WorkflowRunListLoader
 import com.dsoftware.ghmanager.data.WorkflowRunSelectionContext
