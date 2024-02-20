@@ -218,8 +218,7 @@ class GhActionsToolWindowFactory : ToolWindowFactory, DumbAware {
             val dataContextRepository = WorkflowDataContextService.getInstance(toolWindow.project)
             knownRepositories.filter {
                 !settingsService.state.useCustomRepos
-                    || (settingsService.state.customRepos[it.remote.url]?.included
-                    ?: false)
+                    || (settingsService.state.customRepos[it.remote.url]?.included ?: false)
             }.forEach { repo ->
                 val ghAccount = guessAccountForRepository(repo)
                 if (ghAccount != null) {
