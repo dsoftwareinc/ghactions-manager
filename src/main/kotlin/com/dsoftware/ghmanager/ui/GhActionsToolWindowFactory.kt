@@ -2,6 +2,7 @@ package com.dsoftware.ghmanager.ui
 
 import com.dsoftware.ghmanager.data.GhActionsService
 import com.dsoftware.ghmanager.data.WorkflowDataContextService
+import com.dsoftware.ghmanager.i18n.MessagesBundle.message
 import com.dsoftware.ghmanager.ui.settings.GhActionsManagerConfigurable
 import com.dsoftware.ghmanager.ui.settings.GhActionsSettingsService
 import com.dsoftware.ghmanager.ui.settings.GithubActionsManagerSettings
@@ -47,7 +48,7 @@ fun createEmptyTextPanel(
     emptyTextPanel.emptyText.appendText(text)
     if (showGithubSettings) {
         emptyTextPanel.emptyText.appendLine(
-            "Go to GitHub settings",
+            message("go.to.github-settings"),
             SimpleTextAttributes.LINK_ATTRIBUTES,
             ActionUtil.createActionListener(
                 "ShowGithubSettings",
@@ -58,7 +59,7 @@ fun createEmptyTextPanel(
     }
     if (showGhmanagerSettings) {
         emptyTextPanel.emptyText.appendLine(
-            "Go to GitHub-actions-manager plugin settings",
+            message("go.to.ghmanager-settings"),
             SimpleTextAttributes.LINK_ATTRIBUTES,
             ActionUtil.createActionListener(
                 "Github.Actions.Manager.Settings.Open",
@@ -155,12 +156,12 @@ class GhActionsToolWindowFactory : ToolWindowFactory, DumbAware {
         with(projectRepositories.toolWindow.contentManager) {
             LOG.debug("No active repositories in project")
             createEmptyTextPanel(
-                "No repositories configured for GitHub-Actions-Manager",
+                message("empty-panel.no-repos-configured"),
                 showGithubSettings = false,
                 showGhmanagerSettings = true
             ).let {
                 addContent(
-                    factory.createContent(it, "Workflows", false)
+                    factory.createContent(it, message("default-tab-title"), false)
                         .apply {
                             isCloseable = false
                             setDisposer(disposable)
@@ -175,12 +176,12 @@ class GhActionsToolWindowFactory : ToolWindowFactory, DumbAware {
     ) = with(projectRepositories.toolWindow.contentManager) {
         LOG.debug("No GitHub account configured")
         createEmptyTextPanel(
-            "GitHub account not configured and no API Token",
+            message("empty-panel.no-account-configured"),
             showGithubSettings = true,
             showGhmanagerSettings = true
         ).let {
             addContent(
-                factory.createContent(it, "Workflows", false)
+                factory.createContent(it, message("default-tab-title"), false)
                     .apply {
                         isCloseable = false
                         setDisposer(disposable)
@@ -194,9 +195,9 @@ class GhActionsToolWindowFactory : ToolWindowFactory, DumbAware {
         projectRepositories: ProjectRepositories
     ) = with(projectRepositories.toolWindow.contentManager) {
         LOG.debug("No git repositories in project")
-        val emptyTextPanel = JBPanelWithEmptyText().withEmptyText("No git repositories in project")
+        val emptyTextPanel = JBPanelWithEmptyText().withEmptyText(message("empty-panel.no-repos-in-project"))
 
-        addContent(factory.createContent(emptyTextPanel, "Workflows", false)
+        addContent(factory.createContent(emptyTextPanel, message("default-tab-title"), false)
             .apply {
                 isCloseable = false
                 setDisposer(disposable)
