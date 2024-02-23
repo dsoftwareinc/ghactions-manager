@@ -251,7 +251,7 @@ class GhActionsToolWindowFactory : ToolWindowFactory, DumbAware {
                     toolWindow.contentManager.addContent(
                         toolWindow.contentManager.factory.createContent(
                             createEmptyTextPanel(
-                                "GitHub account not configured for ${repo.repository}, go to settings to fix",
+                                message("empty-panel.no-account-for-repo", repo.repository),
                                 showGithubSettings = true,
                                 showGhmanagerSettings = true
                             ),
