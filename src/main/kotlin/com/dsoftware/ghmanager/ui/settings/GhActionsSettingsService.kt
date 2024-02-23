@@ -9,7 +9,7 @@ import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project
 
 data class GithubActionsManagerSettings(
-    var useCustomRepos: Boolean = true,
+    var useCustomRepos: Boolean = false,
     var customRepos: MutableMap<String, RepoSettings> = mutableMapOf(),
     var jobListAboveLogs: Boolean = true,
     var frequency: Int = 30,

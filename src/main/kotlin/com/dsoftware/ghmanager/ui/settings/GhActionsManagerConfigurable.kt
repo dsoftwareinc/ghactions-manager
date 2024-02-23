@@ -1,7 +1,7 @@
 // Copyright 2000-2020 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
 package com.dsoftware.ghmanager.ui.settings
 
-import com.dsoftware.ghmanager.ui.ToolbarUtil
+import com.dsoftware.ghmanager.i18n.MessagesBundle
 import com.dsoftware.ghmanager.ui.settings.GithubActionsManagerSettings.RepoSettings
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.components.service
@@ -22,7 +22,7 @@ import org.jetbrains.plugins.github.util.GHHostedRepositoriesManager
 
 
 internal class GhActionsManagerConfigurable internal constructor(project: Project) :
-    BoundConfigurable(ToolbarUtil.SETTINGS_DISPLAY_NAME, "settings.ghactions-manager") {
+    BoundConfigurable(MessagesBundle.message("settings.display.name"), "settings.ghactions-manager") {
     private val ghActionsSettingsService = GhActionsSettingsService.getInstance(project)
     private val state = ghActionsSettingsService.state
     private val repoManager = project.service<GHHostedRepositoriesManager>()
@@ -35,20 +35,20 @@ internal class GhActionsManagerConfigurable internal constructor(project: Projec
     override fun createPanel(): DialogPanel {
         val knownRepositories = repoManager.knownRepositoriesState.value
         return panel {
-            group("API Usage") {
+            group(MessagesBundle.message("settings.group.api-usage.title")){
                 row {
                     intTextField(0..100).bindIntText(state::frequency, state::frequency::set)
-                        .label("How often Should the list of workflows be updated")
-                        .comment("In seconds")
+                        .label(MessagesBundle.message("settings.group.api-usage.frequency.label"))
+                        .comment(MessagesBundle.message("settings.group.api-usage.frequency.comment"))
                 }
                 lateinit var checkbox: Cell<JBCheckBox>
                 row {
-                    checkbox = checkBox("Use GitHub accounts settings?")
-                        .comment("GHActions-Manager can use either the GitHub-Settings or a custom token")
+                    checkbox = checkBox(MessagesBundle.message("settings.group.github-settings.label"))
+                        .comment(MessagesBundle.message("settings.group.github-settings.comment"))
                         .bindSelected(state::useGitHubSettings, state::useGitHubSettings::set)
                 }
                 row {
-                    label("GitHub API token")
+                    label(MessagesBundle.message("settings.group.github-api-token.label"))
                     passwordField().bindText(state::apiToken, state::apiToken::set)
                 }.enabledIf(checkbox.selected.not())
             }
