@@ -48,7 +48,7 @@ fun createEmptyTextPanel(
     emptyTextPanel.emptyText.appendText(text)
     if (showGithubSettings) {
         emptyTextPanel.emptyText.appendLine(
-            message("go.to.github-settings"),
+            message("factory.go.to.github-settings"),
             SimpleTextAttributes.LINK_ATTRIBUTES,
             ActionUtil.createActionListener(
                 "ShowGithubSettings",
@@ -59,7 +59,7 @@ fun createEmptyTextPanel(
     }
     if (showGhmanagerSettings) {
         emptyTextPanel.emptyText.appendLine(
-            message("go.to.ghmanager-settings"),
+            message("factory.go.to.ghmanager-settings"),
             SimpleTextAttributes.LINK_ATTRIBUTES,
             ActionUtil.createActionListener(
                 "Github.Actions.Manager.Settings.Open",
@@ -156,12 +156,12 @@ class GhActionsToolWindowFactory : ToolWindowFactory, DumbAware {
         with(projectRepositories.toolWindow.contentManager) {
             LOG.debug("No active repositories in project")
             createEmptyTextPanel(
-                message("empty-panel.no-repos-configured"),
+                message("factory.empty-panel.no-repos-configured"),
                 showGithubSettings = false,
                 showGhmanagerSettings = true
             ).let {
                 addContent(
-                    factory.createContent(it, message("default-tab-title"), false)
+                    factory.createContent(it, message("factory.default-tab-title"), false)
                         .apply {
                             isCloseable = false
                             setDisposer(disposable)
@@ -176,12 +176,12 @@ class GhActionsToolWindowFactory : ToolWindowFactory, DumbAware {
     ) = with(projectRepositories.toolWindow.contentManager) {
         LOG.debug("No GitHub account configured")
         createEmptyTextPanel(
-            message("empty-panel.no-account-configured"),
+            message("factory.empty-panel.no-account-configured"),
             showGithubSettings = true,
             showGhmanagerSettings = true
         ).let {
             addContent(
-                factory.createContent(it, message("default-tab-title"), false)
+                factory.createContent(it, message("factory.default-tab-title"), false)
                     .apply {
                         isCloseable = false
                         setDisposer(disposable)
@@ -195,9 +195,9 @@ class GhActionsToolWindowFactory : ToolWindowFactory, DumbAware {
         projectRepositories: ProjectRepositories
     ) = with(projectRepositories.toolWindow.contentManager) {
         LOG.debug("No git repositories in project")
-        val emptyTextPanel = JBPanelWithEmptyText().withEmptyText(message("empty-panel.no-repos-in-project"))
+        val emptyTextPanel = JBPanelWithEmptyText().withEmptyText(message("factory.empty-panel.no-repos-in-project"))
 
-        addContent(factory.createContent(emptyTextPanel, message("default-tab-title"), false)
+        addContent(factory.createContent(emptyTextPanel, message("factory.default-tab-title"), false)
             .apply {
                 isCloseable = false
                 setDisposer(disposable)
@@ -251,7 +251,7 @@ class GhActionsToolWindowFactory : ToolWindowFactory, DumbAware {
                     toolWindow.contentManager.addContent(
                         toolWindow.contentManager.factory.createContent(
                             createEmptyTextPanel(
-                                message("empty-panel.no-account-for-repo", repo.repository),
+                                message("factory.empty-panel.no-account-for-repo", repo.repository),
                                 showGithubSettings = true,
                                 showGhmanagerSettings = true
                             ),
