@@ -2,6 +2,7 @@ package com.dsoftware.ghmanager.ui.panels
 
 
 import com.dsoftware.ghmanager.actions.ActionKeys
+import com.dsoftware.ghmanager.api.model.Conclusion
 import com.dsoftware.ghmanager.api.model.Job
 import com.dsoftware.ghmanager.api.model.Status
 import com.dsoftware.ghmanager.api.model.WorkflowRunJobs
@@ -103,23 +104,34 @@ class JobListComponent(
                     Status.QUEUED.value -> message("panel.jobs.job-status.queued")
                     Status.IN_PROGRESS.value -> message("panel.jobs.job-status.in-progress")
                     Status.WAITING.value -> message("panel.jobs.job-status.waiting")
-                    Status.COMPLETED.value -> message("panel.jobs.job-status.waiting")
-                    else -> {
-                        val startedAtLabel = ToolbarUtil.makeTimePretty(job.startedAt)
-                        val took =
-                            if (job.conclusion == "cancelled" || job.completedAt == null || job.startedAt == null)
-                                ""
-                            else {
-                                val duration = job.completedAt - job.startedAt
-                                val minutes = duration.inWholeMinutes
-                                val seconds = duration.inWholeSeconds % 60
+                    else -> { // Status.COMPLETED.value
+                        when (job.conclusion) {
+                            Conclusion.SKIPPED.value -> message("panel.jobs.job-status.completed.skipped")
+                            Conclusion.CANCELLED.value -> message("panel.jobs.job-status.completed.cancelled")
+                            Conclusion.TIMED_OUT.value -> message("panel.jobs.job-status.completed.timed-out")
+                            Conclusion.FAILURE.value, Conclusion.SUCCESS.value -> {
+                                val startedAtLabel = ToolbarUtil.makeTimePretty(job.startedAt)
+                                val took =
+                                    if (job.conclusion == "cancelled" || job.completedAt == null || job.startedAt == null)
+                                        ""
+                                    else {
+                                        val duration = job.completedAt - job.startedAt
+                                        val minutes = duration.inWholeMinutes
+                                        val seconds = duration.inWholeSeconds % 60
+                                        message(
+                                            "panel.jobs.job-status.completed.took",
+                                            minutes,
+                                            seconds.toString().padStart(2, '0')
+                                        )
+                                    }
                                 message(
-                                    "panel.jobs.job-status.completed.took",
-                                    minutes,
-                                    seconds.toString().padStart(2, '0')
-                                )
+                                    "panel.jobs.job-status.completed.job-done",
+                                    job.runAttempt,
+                                    startedAtLabel
+                                ) + " " + took
                             }
-                        message("panel.jobs.job-status.completed", job.runAttempt, startedAtLabel) + " " + took
+                            else -> ""
+                        }
                     }
                 }
                 text = "<html>$info</html>"
