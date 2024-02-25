@@ -1,5 +1,6 @@
 package com.dsoftware.ghmanager.actions
 
+import com.dsoftware.ghmanager.i18n.MessagesBundle.message
 import com.dsoftware.ghmanager.ui.ToolbarUtil
 import com.intellij.icons.AllIcons
 import com.intellij.openapi.actionSystem.AnActionEvent
@@ -13,7 +14,7 @@ class ShowPluginSettingsAction : DumbAwareAction(
 ) {
     override fun actionPerformed(e: AnActionEvent) {
         ShowSettingsUtil.getInstance().showSettingsDialog(
-            e.project, ToolbarUtil.SETTINGS_DISPLAY_NAME
+            e.project, message("settings.display.name")
         )
     }
 }

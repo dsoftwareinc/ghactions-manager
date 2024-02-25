@@ -6,6 +6,7 @@ import com.dsoftware.ghmanager.data.JobsLoadingModelListener
 import com.dsoftware.ghmanager.data.LogLoadingModelListener
 import com.dsoftware.ghmanager.data.WorkflowDataContextService
 import com.dsoftware.ghmanager.data.WorkflowRunSelectionContext
+import com.dsoftware.ghmanager.i18n.MessagesBundle.message
 import com.dsoftware.ghmanager.ui.panels.JobListComponent
 import com.dsoftware.ghmanager.ui.panels.WorkflowRunListLoaderPanel
 import com.dsoftware.ghmanager.ui.panels.createLogConsolePanel
@@ -76,8 +77,8 @@ class WorkflowToolWindowTabController(
         }
         panel = GHLoadingPanelFactory(
             loadingModel,
-            "Not loading workflow runs",
-            "Can't load workflow runs from GitHub",
+            message("panel.wfruns.not-loading"),
+            message("panel.wfruns.loading-error"),
             errorHandler,
         ).create { _, result ->
             val content = createContent(result)
@@ -133,8 +134,8 @@ class WorkflowToolWindowTabController(
         )
         val panel = GHLoadingPanelFactory(
             model.logsLoadingModel,
-            "Select a job to show logs",
-            "Can't load logs from GitHub for run ${selectedRunContext.runSelectionHolder.selection?.name ?: ""}",
+            message("panel.log.not-loading"),
+            message("panel.log.loading-error", selectedRunContext.jobSelectionHolder.selection?.name ?: ""),
             GHApiLoadingErrorHandler(toolWindow.project, ghAccount) {}
         ).create { _, _ ->
             createLogConsolePanel(toolWindow.project, model, selectedRunContext.selectedRunDisposable)
@@ -151,8 +152,8 @@ class WorkflowToolWindowTabController(
 
         val jobsPanel = GHLoadingPanelFactory(
             jobsLoadingModel.jobsLoadingModel,
-            "Select a workflow to show list of jobs",
-            "Can't load jobs list from GitHub for run ${selectedRunContext.runSelectionHolder.selection?.name ?: ""}",
+            message("panel.jobs.not-loading"),
+            message("panel.jobs.loading-error",selectedRunContext.runSelectionHolder.selection?.name ?: ""),
             GHApiLoadingErrorHandler(toolWindow.project, ghAccount) {}
         ).create { _, _ ->
             val (topInfoPanel, jobListPanel) = JobListComponent.createJobsListComponent(

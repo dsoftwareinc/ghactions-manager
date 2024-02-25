@@ -3,12 +3,20 @@ package com.dsoftware.ghmanager.ui.panels
 
 import com.dsoftware.ghmanager.actions.ActionKeys
 import com.dsoftware.ghmanager.api.model.Job
+import com.dsoftware.ghmanager.api.model.Status
 import com.dsoftware.ghmanager.api.model.WorkflowRunJobs
 import com.dsoftware.ghmanager.data.WorkflowRunSelectionContext
+import com.dsoftware.ghmanager.i18n.MessagesBundle.message
 import com.dsoftware.ghmanager.ui.ToolbarUtil
 import com.intellij.collaboration.ui.SingleValueModel
 import com.intellij.ide.CopyProvider
-import com.intellij.openapi.actionSystem.*
+import com.intellij.openapi.actionSystem.ActionGroup
+import com.intellij.openapi.actionSystem.ActionManager
+import com.intellij.openapi.actionSystem.ActionPopupMenu
+import com.intellij.openapi.actionSystem.ActionUpdateThread
+import com.intellij.openapi.actionSystem.DataContext
+import com.intellij.openapi.actionSystem.DataProvider
+import com.intellij.openapi.actionSystem.PlatformDataKeys
 import com.intellij.ui.AnimatedIcon
 import com.intellij.ui.ClientProperty
 import com.intellij.ui.CollectionListModel
@@ -100,8 +108,10 @@ class JobListComponent(
 
             info.apply {
                 val info = when (job.status) {
-                    "queued" -> "Job is queued"
-                    "in_progress" -> "Job running"
+                    Status.QUEUED.value -> message("panel.jobs.job-status.queued")
+                    Status.IN_PROGRESS.value -> message("panel.jobs.job-status.in-progress")
+                    Status.WAITING.value -> message("panel.jobs.job-status.waiting")
+                    Status.COMPLETED.value -> message("panel.jobs.job-status.waiting")
                     else -> {
                         val startedAtLabel = ToolbarUtil.makeTimePretty(job.startedAt)
                         val took =
@@ -111,10 +121,9 @@ class JobListComponent(
                                 val duration = job.completedAt - job.startedAt
                                 val minutes = duration.inWholeMinutes
                                 val seconds = duration.inWholeSeconds % 60
-                                "took ${minutes}:" +
-                                    "${seconds.toString().padStart(2, '0')} minutes"
+                                message("panel.jobs.job-status.completed.took", minutes, seconds.toString().padStart(2, '0'))
                             }
-                        "Attempt #${job.runAttempt} started $startedAtLabel $took"
+                        message("panel.jobs.job-status.completed", job.runAttempt, startedAtLabel) + " " + took
                     }
                 }
                 text = "<html>$info</html>"
@@ -133,6 +142,23 @@ class JobListComponent(
 
     companion object {
         private val actionManager = ActionManager.getInstance()
+        private fun infoTitleString(jobs: List<Job>): String {
+            val statusCounter = jobs.groupingBy { job -> job.status }.eachCount()
+            val conclusionCounter = jobs.groupingBy { job -> job.conclusion }.eachCount()
+
+            val (statusCount, status) = if (statusCounter.containsKey("queued")) {
+                Pair(statusCounter["queued"]!!, "queued")
+            } else if (statusCounter.containsKey("in_progress")) {
+                Pair(statusCounter["in_progress"]!!, "in progress")
+            } else {
+                Pair(statusCounter["completed"] ?: jobs.size, "completed")
+            }
+            val res = message("panel.jobs.info.title", statusCount, jobs.size, status)
+            if (conclusionCounter.containsKey("failure")) {
+                return res + message("panel.jobs.info.jobs-failed", conclusionCounter["failure"]!!)
+            }
+            return res
+        }
 
         fun createJobsListComponent(
             jobValueModel: SingleValueModel<WorkflowRunJobs?>,
@@ -147,11 +173,12 @@ class JobListComponent(
                 infoPanel.setInfo("")
                 it?.let {
                     list.add(it.jobs)
-                    infoPanel.setInfo("${it.totalCount} jobs loaded")
+                    infoPanel.setInfo(infoTitleString(it.jobs))
                 }
             }
+
             val listComponent = JobListComponent(list, infoInNewLine).apply {
-                emptyText.text = "No jobs in workflow run"
+                emptyText.text = message("panel.jobs.info.no-jobs")
             }.also {
                 installPopup(it)
                 ToolbarUtil.installSelectionHolder(it, runSelectionContext.jobSelectionHolder)
