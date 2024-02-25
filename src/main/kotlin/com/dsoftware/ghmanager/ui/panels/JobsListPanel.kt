@@ -72,12 +72,8 @@ class JobListComponent(
         else -> null
     }
 
-    private inner class JobsListCellRenderer
-        : ListCellRenderer<Job>, JBPanel<JobsListCellRenderer>(
-        MigLayout(
-            LC().gridGap("0", "0")
-                .insets("0", "0", "0", "0")
-        )
+    private inner class JobsListCellRenderer : ListCellRenderer<Job>, JBPanel<JobsListCellRenderer>(
+        MigLayout(LC().gridGap("0", "0").insets("0", "0", "0", "0"))
     ) {
         private val title = JLabel()
         private val info = JLabel()
@@ -90,11 +86,7 @@ class JobListComponent(
         }
 
         override fun getListCellRendererComponent(
-            list: JList<out Job>,
-            job: Job,
-            index: Int,
-            isSelected: Boolean,
-            cellHasFocus: Boolean
+            list: JList<out Job>, job: Job, index: Int, isSelected: Boolean, cellHasFocus: Boolean,
         ): Component {
             UIUtil.setBackgroundRecursively(this, ListUiUtil.WithTallRow.background(list, isSelected, list.hasFocus()))
             val primaryTextColor = ListUiUtil.WithTallRow.foreground(isSelected, list.hasFocus())
@@ -121,7 +113,11 @@ class JobListComponent(
                                 val duration = job.completedAt - job.startedAt
                                 val minutes = duration.inWholeMinutes
                                 val seconds = duration.inWholeSeconds % 60
-                                message("panel.jobs.job-status.completed.took", minutes, seconds.toString().padStart(2, '0'))
+                                message(
+                                    "panel.jobs.job-status.completed.took",
+                                    minutes,
+                                    seconds.toString().padStart(2, '0')
+                                )
                             }
                         message("panel.jobs.job-status.completed", job.runAttempt, startedAtLabel) + " " + took
                     }
@@ -141,7 +137,6 @@ class JobListComponent(
     override fun isCopyVisible(dataContext: DataContext): Boolean = false
 
     companion object {
-        private val actionManager = ActionManager.getInstance()
         private fun infoTitleString(jobs: List<Job>): String {
             val statusCounter = jobs.groupingBy { job -> job.status }.eachCount()
             val conclusionCounter = jobs.groupingBy { job -> job.conclusion }.eachCount()
@@ -196,6 +191,7 @@ class JobListComponent(
         }
 
         private fun installPopup(list: JobListComponent) {
+            val actionManager = ActionManager.getInstance()
             list.addMouseListener(object : PopupHandler() {
                 override fun invokePopup(comp: Component, x: Int, y: Int) {
                     val (place, groupId) = if (ListUtil.isPointOnSelection(list, x, y)) {
