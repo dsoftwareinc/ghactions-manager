@@ -153,12 +153,12 @@ class JobListComponent(
             val statusCounter = jobs.groupingBy { job -> job.status }.eachCount()
             val conclusionCounter = jobs.groupingBy { job -> job.conclusion }.eachCount()
 
-            val (statusCount, status) = if (statusCounter.containsKey("queued")) {
-                Pair(statusCounter["queued"]!!, "queued")
-            } else if (statusCounter.containsKey("in_progress")) {
-                Pair(statusCounter["in_progress"]!!, "in progress")
+            val (statusCount, status) = if (statusCounter.containsKey(Status.QUEUED.value)) {
+                Pair(statusCounter[Status.QUEUED.value]!!, "queued")
+            } else if (statusCounter.containsKey(Status.IN_PROGRESS.value)) {
+                Pair(statusCounter[Status.IN_PROGRESS.value]!!, "in progress")
             } else {
-                Pair(statusCounter["completed"] ?: jobs.size, "completed")
+                Pair(statusCounter[Status.COMPLETED.value] ?: jobs.size, "completed")
             }
             val res = message("panel.jobs.info.title", statusCount, jobs.size, status)
             if (conclusionCounter.containsKey("failure")) {

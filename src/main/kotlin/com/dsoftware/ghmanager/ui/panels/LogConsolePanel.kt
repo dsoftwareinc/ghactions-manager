@@ -39,7 +39,7 @@ class GhActionConsoleFolding : ConsoleFolding() {
     override fun shouldBeAttachedToThePreviousLine(): Boolean = true
 
     override fun getPlaceholderText(project: Project, lines: MutableList<String>): String {
-        return "...${lines.size} lines..."
+        return message("panel.log.lines-folded", lines.size)
     }
 
     override fun shouldFoldLine(project: Project, line: String): Boolean {

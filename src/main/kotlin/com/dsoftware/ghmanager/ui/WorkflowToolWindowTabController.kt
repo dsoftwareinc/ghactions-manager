@@ -77,8 +77,8 @@ class WorkflowToolWindowTabController(
         }
         panel = GHLoadingPanelFactory(
             loadingModel,
-            message("panel.wfruns.not-loading"),
-            message("panel.wfruns.loading-error"),
+            message("panel.workflow-runs.not-loading"),
+            message("panel.workflow-runs.loading-error"),
             errorHandler,
         ).create { _, result ->
             val content = createContent(result)

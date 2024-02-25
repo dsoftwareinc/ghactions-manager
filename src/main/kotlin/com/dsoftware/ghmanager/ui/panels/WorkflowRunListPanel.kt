@@ -2,10 +2,10 @@ package com.dsoftware.ghmanager.ui.panels
 
 
 import com.dsoftware.ghmanager.actions.ActionKeys
-import com.dsoftware.ghmanager.api.GithubApi
 import com.dsoftware.ghmanager.api.model.WorkflowRun
 import com.dsoftware.ghmanager.data.WorkflowRunListLoader
 import com.dsoftware.ghmanager.data.WorkflowRunSelectionContext
+import com.dsoftware.ghmanager.i18n.MessagesBundle.message
 import com.dsoftware.ghmanager.ui.ToolbarUtil
 import com.dsoftware.ghmanager.ui.panels.filters.WfRunsFiltersFactory
 import com.dsoftware.ghmanager.ui.panels.filters.WfRunsSearchPanelViewModel
@@ -50,10 +50,7 @@ import org.jetbrains.plugins.github.exceptions.GithubStatusCodeException
 import org.jetbrains.plugins.github.ui.HtmlInfoPanel
 import java.awt.BorderLayout
 import java.awt.Component
-import java.awt.event.ActionEvent
 import java.awt.event.MouseEvent
-import javax.swing.AbstractAction
-import javax.swing.Action
 import javax.swing.Box
 import javax.swing.BoxLayout
 import javax.swing.JComponent
@@ -67,18 +64,8 @@ import javax.swing.ScrollPaneConstants
 import javax.swing.event.ListDataEvent
 import javax.swing.event.ListDataListener
 
-class LoadingErrorHandler(private val resetRunnable: () -> Unit) {
-    fun getActionForError(): Action {
-        return RetryAction()
-    }
 
-    private inner class RetryAction : AbstractAction("Retry") {
-        override fun actionPerformed(e: ActionEvent?) = resetRunnable()
-    }
-}
-
-class WorkflowRunList(model: ListModel<WorkflowRun>) :
-    JBList<WorkflowRun>(model), DataProvider, CopyProvider {
+class WorkflowRunList(model: ListModel<WorkflowRun>) : JBList<WorkflowRun>(model), DataProvider, CopyProvider {
 
     init {
         selectionModel.selectionMode = ListSelectionModel.SINGLE_SELECTION
@@ -113,16 +100,12 @@ class WorkflowRunList(model: ListModel<WorkflowRun>) :
         private val stateIcon = JLabel()
         private val title = JLabel()
         private val info = JLabel()
-        private val labels = JPanel().apply {
-            layout = BoxLayout(this, BoxLayout.X_AXIS)
-        }
+        private val labels = JPanel().apply { layout = BoxLayout(this, BoxLayout.X_AXIS) }
 
         init {
             border = JBUI.Borders.empty(5, 8)
             layout = MigLayout(
-                LC().gridGap("0", "0")
-                    .insets("0", "0", "0", "0")
-                    .fillX()
+                LC().gridGap("0", "0").insets("0", "0", "0", "0").fillX()
             )
             val gapAfter = "${JBUI.scale(5)}px"
             add(stateIcon, CC().gapAfter(gapAfter))
@@ -152,10 +135,11 @@ class WorkflowRunList(model: ListModel<WorkflowRun>) :
                 val updatedAtLabel = ToolbarUtil.makeTimePretty(ghWorkflowRun.updatedAt)
                 val action = if (ghWorkflowRun.event == "release") "created by" else "pushed by"
 
-                text = "${ghWorkflowRun.name} #${ghWorkflowRun.runNumber}: " +
-                    "$action ${ghWorkflowRun.headCommit.author.name} started $updatedAtLabel"
+                text =
+                    "${ghWorkflowRun.name} #${ghWorkflowRun.runNumber}: $action ${ghWorkflowRun.headCommit.author.name} started $updatedAtLabel"
                 foreground = secondaryTextColor
             }
+
             labels.apply {
                 removeAll()
                 add(JBLabel(" ${ghWorkflowRun.headBranch} ", UIUtil.ComponentStyle.SMALL).apply {
@@ -177,12 +161,11 @@ internal class WorkflowRunListLoaderPanel(
     private val context: WorkflowRunSelectionContext,
 ) : BorderLayoutPanel(), Disposable {
     private val scope = MainScope().also { Disposer.register(parentDisposable) { it.cancel() } }
-    private val runListComponent: WorkflowRunList = WorkflowRunList(context.runsListModel)
-        .apply {
-            emptyText.clear()
-            installPopup(this)
-            ToolbarUtil.installSelectionHolder(this, context.runSelectionHolder)
-        }
+    private val runListComponent: WorkflowRunList = WorkflowRunList(context.runsListModel).apply {
+        emptyText.clear()
+        installPopup(this)
+        ToolbarUtil.installSelectionHolder(this, context.runSelectionHolder)
+    }
     private val scrollPane = ScrollPaneFactory.createScrollPane(
         runListComponent,
         ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
@@ -197,10 +180,7 @@ internal class WorkflowRunListLoaderPanel(
     private val workflowRunsLoader: WorkflowRunListLoader
         get() = context.runsListLoader
 
-    private val errorHandler = LoadingErrorHandler {
-        LOG.warn("Error on GitHub Workflow Run list loading, resetting the loader")
-        workflowRunsLoader.reset()
-    }
+    private val errorHandler = LoadingErrorHandler { workflowRunsLoader.reset() }
 
     init {
         Disposer.register(parentDisposable, this)
@@ -224,16 +204,12 @@ internal class WorkflowRunListLoaderPanel(
             updateInfoPanelAndEmptyText()
         }
 
-        workflowRunsLoader.addErrorChangeListener(this) {
-            updateInfoPanelAndEmptyText()
-        }
-//        val filters = createFilters(viewScope)
+        workflowRunsLoader.addErrorChangeListener(this) { updateInfoPanelAndEmptyText() }
         setLoading(workflowRunsLoader.loading)
         updateInfoPanelAndEmptyText()
         val actionsManager = ActionManager.getInstance()
         val actionsGroup = actionsManager.getAction("GHWorkflows.ActionGroup") as ActionGroup
-        val actionToolbar = actionsManager
-            .createActionToolbar(ActionPlaces.CONTEXT_TOOLBAR, actionsGroup, false)
+        val actionToolbar = actionsManager.createActionToolbar(ActionPlaces.CONTEXT_TOOLBAR, actionsGroup, false)
         actionToolbar.targetComponent = this
 
         add(actionToolbar.component, BorderLayout.WEST)
@@ -253,40 +229,41 @@ internal class WorkflowRunListLoaderPanel(
     private fun updateInfoPanelAndEmptyText() {
         runListComponent.emptyText.clear()
         if (workflowRunsLoader.loading) {
-            runListComponent.emptyText.text = "Loading workflow runs..."
+            runListComponent.emptyText.text = message("panel.workflow-runs.loading")
             return
         }
         val error = workflowRunsLoader.error
         if (error == null) {
-            runListComponent.emptyText.text = "No workflow run loaded. "
-            runListComponent.emptyText.appendSecondaryText("Refresh", SimpleTextAttributes.LINK_PLAIN_ATTRIBUTES) {
-                workflowRunsLoader.reset()
-                workflowRunsLoader.loadMore(true)
+            runListComponent.emptyText.apply {
+                text = message("panel.workflow-runs.no-runs")
+                appendSecondaryText(
+                    message("panel.workflow-runs.no-runs.refresh"), SimpleTextAttributes.LINK_PLAIN_ATTRIBUTES
+                ) {
+                    workflowRunsLoader.reset()
+                    workflowRunsLoader.loadMore(true)
+                }
             }
             infoPanel.setInfo(
                 when {
-                    workflowRunsLoader.loading -> "Loading workflow runs..."
-                    workflowRunsLoader.listModel.isEmpty -> "No workflow runs"
-                    else -> "${workflowRunsLoader.listModel.size} workflow runs loaded out of ${workflowRunsLoader.totalCount}"
+                    workflowRunsLoader.loading -> message("panel.workflow-runs.loading")
+                    workflowRunsLoader.listModel.isEmpty -> message("panel.workflow-runs.no-runs")
+                    else -> message(
+                        "panel.workflow-runs.loaded", workflowRunsLoader.listModel.size, workflowRunsLoader.totalCount
+                    )
                 }
             )
             return
         }
         LOG.warn("Got error when getting workflow-runs: $error")
         runListComponent.emptyText.setText(
-            "Can't load workflow runs - check that the token you set in GitHub settings have sufficient permissions",
-            SimpleTextAttributes.ERROR_ATTRIBUTES
+            message("panel.workflow-runs.error"), SimpleTextAttributes.ERROR_ATTRIBUTES
         ).appendLine(
-            getLoadingErrorText(workflowRunsLoader.url, error),
-            SimpleTextAttributes.ERROR_ATTRIBUTES,
-            null
+            getLoadingErrorText(workflowRunsLoader.url, error), SimpleTextAttributes.ERROR_ATTRIBUTES, null
         )
 
         errorHandler.getActionForError().let {
             runListComponent.emptyText.appendSecondaryText(
-                "\n${it.getValue("Name")}\n",
-                SimpleTextAttributes.LINK_PLAIN_ATTRIBUTES,
-                it
+                "\n${it.getValue("Name")}\n", SimpleTextAttributes.LINK_PLAIN_ATTRIBUTES, it
             )
         }
         runListComponent.emptyText.attachTo(runListComponent)
@@ -310,11 +287,9 @@ internal class WorkflowRunListLoaderPanel(
                     } else {
                         Pair("GithubWorkflowListPopup", "Github.Workflow.ToolWindow.List.Popup")
                     }
-                    val popupMenu: ActionPopupMenu =
-                        actionManager.createActionPopupMenu(
-                            place,
-                            actionManager.getAction(groupId) as ActionGroup
-                        )
+                    val popupMenu: ActionPopupMenu = actionManager.createActionPopupMenu(
+                        place, actionManager.getAction(groupId) as ActionGroup
+                    )
 
                     popupMenu.setTargetComponent(list)
                     popupMenu.component.show(comp, x, y)
@@ -325,14 +300,13 @@ internal class WorkflowRunListLoaderPanel(
         private fun getLoadingErrorText(url: String, error: Throwable, newLineSeparator: String = "\n"): String {
             if (error is GithubStatusCodeException && error.error != null) {
                 val githubError = error.error!!
-                val builder = StringBuilder("url: $url").append(newLineSeparator)
-                    .append(error.message).append(newLineSeparator)
+                val builder =
+                    StringBuilder("url: $url").append(newLineSeparator).append(error.message).append(newLineSeparator)
                 if (githubError.errors?.isNotEmpty()!!) {
                     builder.append(": ").append(newLineSeparator)
                     for (e in githubError.errors!!) {
                         builder.append(
-                            e.message
-                                ?: "${e.code} error in ${e.resource} field ${e.field}"
+                            e.message ?: "${e.code} error in ${e.resource} field ${e.field}"
                         ).append(newLineSeparator)
                     }
                 }
@@ -341,7 +315,7 @@ internal class WorkflowRunListLoaderPanel(
                 return res
             }
 
-            return error.message?.let { addDotIfNeeded(it) } ?: "Unknown loading error."
+            return error.message?.let { addDotIfNeeded(it) } ?: message("panel.workflow-runs.unknown-error")
         }
 
         private fun addDotIfNeeded(line: String) = if (line.endsWith('.')) line else "$line."
