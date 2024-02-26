@@ -8,7 +8,7 @@ import com.intellij.openapi.options.ShowSettingsUtil
 import com.intellij.openapi.project.DumbAwareAction
 
 class ShowPluginSettingsAction : DumbAwareAction(
-    "Open GHActions-Manager Settings",
+    message("action.name.show-settings"),
     null,
     AllIcons.General.Settings
 ) {

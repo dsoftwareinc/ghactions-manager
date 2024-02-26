@@ -4,6 +4,7 @@ import com.dsoftware.ghmanager.api.GithubApi
 import com.dsoftware.ghmanager.api.model.WorkflowType
 import com.dsoftware.ghmanager.data.RepositoryCoordinates
 import com.dsoftware.ghmanager.data.WorkflowRunSelectionContext
+import com.dsoftware.ghmanager.i18n.MessagesBundle.message
 import com.intellij.icons.AllIcons
 import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnActionEvent
@@ -46,7 +47,7 @@ abstract class PostUrlAction(
     }
 }
 
-class CancelWorkflowAction : PostUrlAction("Cancel Workflow", null, AllIcons.Actions.Cancel) {
+class CancelWorkflowAction : PostUrlAction(message("action.name.cancel-workflow"), null, AllIcons.Actions.Cancel) {
     override fun update(e: AnActionEvent) {
         val context = e.dataContext.getData(ActionKeys.SELECTED_WORKFLOW_RUN)
         val url = context?.cancelUrl
@@ -60,7 +61,7 @@ class CancelWorkflowAction : PostUrlAction("Cancel Workflow", null, AllIcons.Act
     }
 }
 
-class RerunWorkflowAction : PostUrlAction("Rerun Workflow", null, AllIcons.Actions.Rerun) {
+class RerunWorkflowAction : PostUrlAction(message("action.name.rerun-workflow"), null, AllIcons.Actions.Rerun) {
     override fun getUrl(dataContext: DataContext): String? {
         dataContext.getData(CommonDataKeys.PROJECT) ?: return null
         return dataContext.getData(ActionKeys.SELECTED_WORKFLOW_RUN)?.rerunUrl
@@ -68,7 +69,7 @@ class RerunWorkflowAction : PostUrlAction("Rerun Workflow", null, AllIcons.Actio
 }
 
 class WorkflowDispatchAction(private val workflowType: WorkflowType) :
-    PostUrlAction(workflowType.name, "Select workflow to dispatch", AllIcons.Actions.Execute) {
+    PostUrlAction(workflowType.name, message("action.description.dispatch-workflow"), AllIcons.Actions.Execute) {
     override fun getUrl(dataContext: DataContext): String? {
         val context = dataContext.getData(ActionKeys.ACTION_DATA_CONTEXT) ?: return null
         val fullPath = GithubUrlUtil.getUserAndRepositoryFromRemoteUrl(context.repositoryMapping.remote.url)

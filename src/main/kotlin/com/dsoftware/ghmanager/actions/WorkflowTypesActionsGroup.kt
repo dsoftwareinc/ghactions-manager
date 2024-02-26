@@ -2,6 +2,7 @@
 package com.dsoftware.ghmanager.actions
 
 import com.dsoftware.ghmanager.api.model.WorkflowType
+import com.dsoftware.ghmanager.i18n.MessagesBundle.message
 import com.intellij.openapi.actionSystem.ActionGroup
 import com.intellij.openapi.actionSystem.ActionPlaces
 import com.intellij.openapi.actionSystem.ActionUpdateThread
@@ -11,7 +12,7 @@ import com.intellij.openapi.actionSystem.impl.ActionMenu
 import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.ui.popup.JBPopupFactory
 
-class WorkflowTypesActionsGroup : ActionGroup("Select Workflow to Execute", true) {
+class WorkflowTypesActionsGroup : ActionGroup(message("action-group.name.select-workflow"), true) {
     override fun getActionUpdateThread(): ActionUpdateThread {
         return ActionUpdateThread.BGT
     }
