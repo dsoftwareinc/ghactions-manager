@@ -23,7 +23,7 @@ import org.jetbrains.plugins.github.util.GHHostedRepositoriesManager
 
 internal class GhActionsManagerConfigurable internal constructor(project: Project) :
     BoundConfigurable(MessagesBundle.message("settings.display.name"), "settings.ghactions-manager") {
-    private val ghActionsSettingsService = GhActionsSettingsService.getInstance(project)
+    private val ghActionsSettingsService = project.service<GhActionsSettingsService>()
     private val state = ghActionsSettingsService.state
     private val repoManager = project.service<GHHostedRepositoriesManager>()
 

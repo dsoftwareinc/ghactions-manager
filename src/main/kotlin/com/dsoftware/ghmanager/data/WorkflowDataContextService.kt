@@ -32,8 +32,8 @@ import java.util.concurrent.CompletableFuture
 data class RepositoryCoordinates(val serverPath: GithubServerPath, val repositoryPath: GHRepositoryPath)
 
 @Service(Service.Level.PROJECT)
-class WorkflowDataContextService(project: Project) {
-    private val settingsService = GhActionsSettingsService.getInstance(project)
+class WorkflowDataContextService(private val project: Project) {
+    private val settingsService = project.service<GhActionsSettingsService>()
     val repositories =
         mutableMapOf<GitRemoteUrlCoordinates, LazyCancellableBackgroundProcessValue<WorkflowRunSelectionContext>>()
 
@@ -93,10 +93,10 @@ class WorkflowDataContextService(project: Project) {
             singleRunDataLoader.invalidateAllData()
         }
         val runsLoader = WorkflowRunListLoader(
+            project,
             checkedDisposable,
             requestExecutor,
             repositoryCoordinates,
-            settingsService,
             WorkflowRunFilter(),
         )
 

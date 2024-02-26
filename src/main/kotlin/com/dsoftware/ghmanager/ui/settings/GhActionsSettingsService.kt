@@ -23,7 +23,7 @@ data class GithubActionsManagerSettings(
     )
 }
 
-@Service
+@Service(Service.Level.PROJECT)
 @State(
     name = "GhActionsManagerSettings",
     storages = [
@@ -40,9 +40,5 @@ class GhActionsSettingsService : PersistentStateComponent<GithubActionsManagerSe
 
     override fun loadState(state: GithubActionsManagerSettings) {
         this.state = state
-    }
-
-    companion object {
-        fun getInstance(project: Project): GhActionsSettingsService = project.service()
     }
 }

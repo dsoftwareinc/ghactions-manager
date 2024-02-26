@@ -15,6 +15,7 @@ import com.intellij.ide.DataManager
 import com.intellij.ide.actions.RefreshAction
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.actionSystem.ActionManager
+import com.intellij.openapi.components.service
 import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.util.CheckedDisposable
 import com.intellij.openapi.util.Disposer
@@ -42,7 +43,7 @@ class WorkflowToolWindowTabController(
     private val toolWindow: ToolWindow,
 ) {
     val loadingModel: GHCompletableFutureLoadingModel<WorkflowRunSelectionContext>
-    private val settingsService = GhActionsSettingsService.getInstance(toolWindow.project)
+    private val settingsService = toolWindow.project.service<GhActionsSettingsService>()
     private val actionManager = ActionManager.getInstance()
     val disposable: CheckedDisposable = Disposer.newCheckedDisposable("WorkflowToolWindowTabController")
     val panel: JComponent

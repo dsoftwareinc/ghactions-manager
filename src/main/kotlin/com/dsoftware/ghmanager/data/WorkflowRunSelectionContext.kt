@@ -6,6 +6,7 @@ import com.dsoftware.ghmanager.api.model.WorkflowRun
 import com.dsoftware.ghmanager.data.providers.JobLogDataProvider
 import com.dsoftware.ghmanager.data.providers.SingleRunDataLoader
 import com.dsoftware.ghmanager.data.providers.WorkflowRunJobsDataProvider
+import com.dsoftware.ghmanager.ui.ToolbarUtil
 import com.intellij.collaboration.ui.SingleValueModel
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.diagnostic.logger
@@ -13,13 +14,11 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.CheckedDisposable
 import com.intellij.openapi.util.Disposer
 import com.intellij.ui.CollectionListModel
-import com.intellij.util.concurrency.AppExecutorUtil
 import org.jetbrains.plugins.github.api.GithubApiRequestExecutor
 import org.jetbrains.plugins.github.api.data.GHUser
 import org.jetbrains.plugins.github.authentication.accounts.GithubAccount
 import org.jetbrains.plugins.github.util.GHGitRepositoryMapping
 import java.util.concurrent.ScheduledFuture
-import java.util.concurrent.TimeUnit
 
 
 class WorkflowRunSelectionContext internal constructor(
@@ -33,7 +32,6 @@ class WorkflowRunSelectionContext internal constructor(
     val runSelectionHolder: WorkflowRunListSelectionHolder = WorkflowRunListSelectionHolder(),
     val jobSelectionHolder: JobListSelectionHolder = JobListSelectionHolder(),
 ) : Disposable.Parent {
-    private val frequency: Long = runsListLoader.frequency()
     private val task: ScheduledFuture<*>
     val runsListModel: CollectionListModel<WorkflowRun>
         get() = runsListLoader.listModel
@@ -49,6 +47,7 @@ class WorkflowRunSelectionContext internal constructor(
     val jobLogDataProviderLoadModel: SingleValueModel<JobLogDataProvider?> = SingleValueModel(null)
     val logDataProvider: JobLogDataProvider?
         get() = selectedJob?.let { dataLoader.getJobLogDataProvider(it) }
+
     init {
         if (!parentDisposable.isDisposed) {
             Disposer.register(parentDisposable, this)
@@ -72,18 +71,18 @@ class WorkflowRunSelectionContext internal constructor(
             jobDataProviderLoadModel.value = null
             selectedRunDisposable.dispose()
         }
-        task = AppExecutorUtil.getAppScheduledExecutorService().scheduleWithFixedDelay({
+        task = ToolbarUtil.executeTaskAtSettingsFrequency(project) {
             if (selectedWfRun == null) {
-                return@scheduleWithFixedDelay
+                return@executeTaskAtSettingsFrequency
             }
             LOG.info("Checking updated status for $selectedWfRun.id")
             if (selectedWfRun?.status != "completed") {
                 jobsDataProvider?.reload()
             }
-            if(selectedJob?.status != "completed") {
+            if (selectedJob?.status != "completed") {
                 logDataProvider?.reload()
             }
-        }, 1, frequency, TimeUnit.SECONDS)
+        }
     }
 
     fun getCurrentAccountGHUser(): GHUser {

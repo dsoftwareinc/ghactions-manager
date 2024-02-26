@@ -3,11 +3,17 @@ package com.dsoftware.ghmanager.ui
 import com.dsoftware.ghmanager.api.model.Conclusion
 import com.dsoftware.ghmanager.api.model.Status
 import com.dsoftware.ghmanager.data.ListSelectionHolder
+import com.dsoftware.ghmanager.ui.settings.GhActionsSettingsService
 import com.intellij.icons.AllIcons
+import com.intellij.openapi.components.service
+import com.intellij.openapi.project.Project
 import com.intellij.ui.AnimatedIcon
 import com.intellij.ui.components.JBList
+import com.intellij.util.concurrency.AppExecutorUtil
 import com.intellij.util.text.DateFormatUtil
 import kotlinx.datetime.Instant
+import java.util.concurrent.ScheduledFuture
+import java.util.concurrent.TimeUnit
 import javax.swing.Icon
 import javax.swing.event.ListSelectionEvent
 
@@ -59,5 +65,16 @@ object ToolbarUtil {
                 }
             }
         }
+    }
+
+    fun executeTaskAtSettingsFrequency(project: Project, command: Runnable): ScheduledFuture<*> {
+        val settingsService = project.service<GhActionsSettingsService>()
+        val frequency = settingsService.state.frequency.toLong()
+        return executeTaskAtCustomFrequency(project, frequency, command)
+    }
+
+    fun executeTaskAtCustomFrequency(project: Project, frequency: Long, command: Runnable): ScheduledFuture<*> {
+        return AppExecutorUtil.getAppScheduledExecutorService()
+            .scheduleWithFixedDelay(command, 1, frequency, TimeUnit.SECONDS)
     }
 }

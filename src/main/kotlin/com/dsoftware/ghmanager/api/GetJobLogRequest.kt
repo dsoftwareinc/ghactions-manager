@@ -1,7 +1,9 @@
 package com.dsoftware.ghmanager.api
 
+import com.dsoftware.ghmanager.api.model.Conclusion
 import com.dsoftware.ghmanager.api.model.Job
 import com.dsoftware.ghmanager.api.model.JobStep
+import com.dsoftware.ghmanager.i18n.MessagesBundle.message
 import com.intellij.openapi.diagnostic.logger
 import kotlinx.datetime.Instant
 import org.jetbrains.plugins.github.api.GithubApiRequest
@@ -25,11 +27,11 @@ class GetJobLogRequest(private val job: Job) : GithubApiRequest.Get<String>(job.
     }
 
     fun extractJobLogFromStream(inputStream: InputStream): String {
-        val stepLogs = extractLogByStep(inputStream)
+        val stepLogs: JobLog = extractLogByStep(inputStream)
         return stepsAsLog(stepLogs)
     }
 
-    fun extractLogByStep(inputStream: InputStream): Map<Int, StringBuilder> {
+    fun extractLogByStep(inputStream: InputStream): JobLog {
         val contentBuilders = HashMap<Int, StringBuilder>()
         var lineNum = 0
         var currStep = 1
@@ -43,12 +45,7 @@ class GetJobLogRequest(private val job: Job) : GithubApiRequest.Get<String>(job.
                         || line.contains("Post job cleanup")
                         || line.contains("Cleaning up orphan processes"))
                 ) {
-                    val nextStep = findStep(currStep, lineNum, line)
-                    if (nextStep != currStep) {
-                        LOG.debug("Line $lineNum: step changed from $currStep to $nextStep")
-                    }
-                    currStep = nextStep
-
+                    currStep = findStep(currStep, lineNum, line)
                 }
                 contentBuilders.getOrPut(currStep) { StringBuilder(400_000) }.append(line + "\n")
             }
@@ -79,7 +76,7 @@ class GetJobLogRequest(private val job: Job) : GithubApiRequest.Get<String>(job.
         currStep += 1
         while (currStep < lastStepNumber) {
             stepsMap[currStep]?.let { step ->
-                if (step.conclusion != "skipped") {
+                if (step.conclusion != Conclusion.SKIPPED.value) {
                     return currStep
                 }
             }
@@ -98,16 +95,16 @@ class GetJobLogRequest(private val job: Job) : GithubApiRequest.Get<String>(job.
             val indexStr = "%3d".format(stepNumber)
             res.append(
                 when (stepInfo.conclusion) {
-                    "skipped" -> "\u001B[0m\u001B[37m---- Step ${indexStr}: ${stepInfo.name} (skipped) ----\u001b[0m\n"
-                    "failure" -> "\u001B[0m\u001B[31m---- Step ${indexStr}: ${stepInfo.name} (failed) ----\u001b[0m\n"
-                    else -> "\u001B[0m\u001B[32m---- Step ${indexStr}: ${stepInfo.name} ----\u001b[0m\n"
+                    "skipped" -> message("log.step.title.skipped", indexStr, stepInfo.name)
+                    "failure" -> message("log.step.title.failed", indexStr, stepInfo.name)
+                    else -> message("log.step.title.generic", indexStr, stepInfo.name)
                 }
             )
             if (stepInfo.conclusion != "skipped" && stepLogs.containsKey(stepNumber) && (res.length < 950_000)) {
                 if (res.length + (stepLogs[stepNumber]?.length ?: 0) < 990_000) {
                     res.append(stepLogs[stepNumber])
                 } else {
-                    res.append("Log is too big to display, showing only first 1mb")
+                    res.append(message("log.step.truncated"))
                 }
             }
         }

@@ -24,7 +24,6 @@ import com.intellij.ui.SimpleTextAttributes
 import com.intellij.ui.components.JBPanelWithEmptyText
 import com.intellij.ui.content.ContentManagerEvent
 import com.intellij.ui.content.ContentManagerListener
-import com.intellij.util.concurrency.AppExecutorUtil
 import com.intellij.util.ui.UIUtil
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
@@ -32,7 +31,6 @@ import kotlinx.coroutines.launch
 import org.jetbrains.plugins.github.authentication.accounts.GithubAccount
 import org.jetbrains.plugins.github.util.GHGitRepositoryMapping
 import java.awt.BorderLayout
-import java.util.concurrent.TimeUnit
 import javax.swing.JPanel
 
 
@@ -49,7 +47,7 @@ class GhActionsToolWindowFactory : ToolWindowFactory, DumbAware {
     override fun init(toolWindow: ToolWindow) {
         val project = toolWindow.project
         ghActionsService = project.service<GhActionsService>()
-        settingsService = GhActionsSettingsService.getInstance(project)
+        settingsService = project.service<GhActionsSettingsService>()
         if (!projectReposMap.containsKey(toolWindow.project)) {
             projectReposMap[toolWindow.project] = ProjectRepositories(toolWindow)
         }
@@ -238,15 +236,14 @@ class GhActionsToolWindowFactory : ToolWindowFactory, DumbAware {
                     }
                 }
             })
-            val scheduler = AppExecutorUtil.getAppScheduledExecutorService()
-            scheduler.schedule({
+            ToolbarUtil.executeTaskAtCustomFrequency(toolWindow.project, 5) {
                 toolWindow.contentManager.contents.forEach {
                     val controller = it.getUserData(WorkflowToolWindowTabController.KEY)
                     controller?.apply {
                         this.loadingModel.result?.runsListLoader?.refreshRuns = it.isSelected
                     }
                 }
-            }, 5, TimeUnit.SECONDS)
+            }
         }
 
     companion object {
