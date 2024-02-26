@@ -41,7 +41,10 @@ class ToolWindowFactoryTest : GitHubActionsManagerBaseTest() {
 
         TestCase.assertEquals(message("factory.empty-panel.no-account-configured"), panel.emptyText.text)
         val subComponents = panel.emptyText.wrappedFragmentsIterable.map { it as SimpleColoredComponent }.toList()
-        TestCase.assertEquals(message("factory.empty-panel.no-account-configured"), subComponents[0].getCharSequence(true))
+        TestCase.assertEquals(
+            message("factory.empty-panel.no-account-configured"),
+            subComponents[0].getCharSequence(true)
+        )
         TestCase.assertEquals(message("factory.go.to.github-settings"), subComponents[1].getCharSequence(true))
         TestCase.assertEquals(message("factory.go.to.ghmanager-settings"), subComponents[2].getCharSequence(true))
         verify {
@@ -112,7 +115,10 @@ class ToolWindowFactoryTest : GitHubActionsManagerBaseTest() {
 
         TestCase.assertEquals(message("factory.empty-panel.no-repos-configured"), panel.emptyText.text)
         val subComponents = panel.emptyText.wrappedFragmentsIterable.map { it as SimpleColoredComponent }.toList()
-        TestCase.assertEquals(message("factory.empty-panel.no-repos-configured"), subComponents[0].getCharSequence(true))
+        TestCase.assertEquals(
+            message("factory.empty-panel.no-repos-configured"),
+            subComponents[0].getCharSequence(true)
+        )
         TestCase.assertEquals(message("factory.go.to.ghmanager-settings"), subComponents[1].getCharSequence(true))
         verify {
             requestExecutorfactoryMock.create(token = any()) wasNot Called

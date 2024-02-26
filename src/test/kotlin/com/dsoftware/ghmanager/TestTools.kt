@@ -4,9 +4,13 @@ import com.dsoftware.ghmanager.api.model.Job
 import com.dsoftware.ghmanager.api.model.JobStep
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
-import java.util.Date
 
-fun Job.withStep(number: Int, conclusion: String, startedAt: Instant= Clock.System.now(), completedAt: Instant= Clock.System.now()): Job {
+fun Job.withStep(
+    number: Int,
+    conclusion: String,
+    startedAt: Instant = Clock.System.now(),
+    completedAt: Instant = Clock.System.now()
+): Job {
     val jobStep = JobStep(
         number = number,
         name = "step $number",
