@@ -9,7 +9,8 @@ import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.fileEditor.OpenFileDescriptor
 
 
-class OpenWorkflowFileAction : RefreshAction(message("action.name.open-workflow-file"), null, AllIcons.General.OpenDisk) {
+class OpenWorkflowFileAction :
+    RefreshAction(message("action.name.open-workflow-file"), null, AllIcons.General.OpenDisk) {
     override fun update(e: AnActionEvent) {
         val path = e.getData(ActionKeys.SELECTED_WORKFLOW_RUN_FILEPATH)
         e.presentation.isEnabled = path != null

@@ -130,6 +130,7 @@ class JobListComponent(
                                     startedAtLabel
                                 ) + " " + took
                             }
+
                             else -> ""
                         }
                     }

@@ -154,7 +154,7 @@ class WorkflowToolWindowTabController(
         val jobsPanel = GHLoadingPanelFactory(
             jobsLoadingModel.jobsLoadingModel,
             message("panel.jobs.not-loading"),
-            message("panel.jobs.loading-error",selectedRunContext.runSelectionHolder.selection?.name ?: ""),
+            message("panel.jobs.loading-error", selectedRunContext.runSelectionHolder.selection?.name ?: ""),
             GHApiLoadingErrorHandler(toolWindow.project, ghAccount) {}
         ).create { _, _ ->
             val (topInfoPanel, jobListPanel) = JobListComponent.createJobsListComponent(

@@ -35,7 +35,7 @@ internal class GhActionsManagerConfigurable internal constructor(project: Projec
     override fun createPanel(): DialogPanel {
         val knownRepositories = repoManager.knownRepositoriesState.value
         return panel {
-            group(MessagesBundle.message("settings.group.api-usage.title")){
+            group(MessagesBundle.message("settings.group.api-usage.title")) {
                 row {
                     intTextField(0..100).bindIntText(state::frequency, state::frequency::set)
                         .label(MessagesBundle.message("settings.group.api-usage.frequency.label"))

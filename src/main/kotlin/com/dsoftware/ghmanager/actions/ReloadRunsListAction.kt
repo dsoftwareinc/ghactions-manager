@@ -6,7 +6,8 @@ import com.intellij.ide.actions.RefreshAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.diagnostic.logger
 
-class ReloadRunsListAction : RefreshAction(message("action.name.refresh-workflow-runs"), null, AllIcons.Actions.Refresh) {
+class ReloadRunsListAction :
+    RefreshAction(message("action.name.refresh-workflow-runs"), null, AllIcons.Actions.Refresh) {
     override fun update(e: AnActionEvent) {
         val context = e.getData(ActionKeys.ACTION_DATA_CONTEXT)
         e.presentation.isEnabled = context != null
