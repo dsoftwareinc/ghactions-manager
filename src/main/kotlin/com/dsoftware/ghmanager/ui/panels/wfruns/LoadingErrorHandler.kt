@@ -1,4 +1,4 @@
-package com.dsoftware.ghmanager.ui.panels
+package com.dsoftware.ghmanager.ui.panels.wfruns
 
 import java.awt.event.ActionEvent
 import javax.swing.AbstractAction

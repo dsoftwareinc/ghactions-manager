@@ -7,9 +7,9 @@ import com.dsoftware.ghmanager.data.LogLoadingModelListener
 import com.dsoftware.ghmanager.data.WorkflowDataContextService
 import com.dsoftware.ghmanager.data.WorkflowRunSelectionContext
 import com.dsoftware.ghmanager.i18n.MessagesBundle.message
-import com.dsoftware.ghmanager.ui.panels.JobListComponent
-import com.dsoftware.ghmanager.ui.panels.WorkflowRunListLoaderPanel
+import com.dsoftware.ghmanager.ui.panels.JobsListPanel
 import com.dsoftware.ghmanager.ui.panels.createLogConsolePanel
+import com.dsoftware.ghmanager.ui.panels.wfruns.WorkflowRunsListLoaderPanel
 import com.dsoftware.ghmanager.ui.settings.GhActionsSettingsService
 import com.intellij.ide.DataManager
 import com.intellij.ide.actions.RefreshAction
@@ -24,14 +24,12 @@ import com.intellij.openapi.wm.ToolWindow
 import com.intellij.ui.AnimatedIcon
 import com.intellij.ui.ClientProperty
 import com.intellij.ui.OnePixelSplitter
-import com.intellij.ui.components.JBPanelWithEmptyText
 import com.intellij.util.ui.UIUtil
 import org.jetbrains.plugins.github.authentication.accounts.GithubAccount
 import org.jetbrains.plugins.github.pullrequest.ui.GHApiLoadingErrorHandler
 import org.jetbrains.plugins.github.pullrequest.ui.GHCompletableFutureLoadingModel
 import org.jetbrains.plugins.github.pullrequest.ui.GHLoadingPanelFactory
 import org.jetbrains.plugins.github.util.GHGitRepositoryMapping
-import java.awt.BorderLayout
 import javax.swing.JComponent
 import kotlin.properties.Delegates
 
@@ -89,7 +87,7 @@ class WorkflowToolWindowTabController(
     }
 
     private fun createContent(selectedRunContext: WorkflowRunSelectionContext): JComponent {
-        val workflowRunsListLoadingPanel = WorkflowRunListLoaderPanel(disposable, selectedRunContext)
+        val workflowRunsListLoadingPanel = WorkflowRunsListLoaderPanel(disposable, selectedRunContext)
         val jobLoadingPanel = createJobsPanel(selectedRunContext)
         val logLoadingPanel = createLogPanel(selectedRunContext)
 
@@ -157,16 +155,12 @@ class WorkflowToolWindowTabController(
             message("panel.jobs.loading-error", selectedRunContext.runSelectionHolder.selection?.name ?: ""),
             GHApiLoadingErrorHandler(toolWindow.project, ghAccount) {}
         ).create { _, _ ->
-            val (topInfoPanel, jobListPanel) = JobListComponent.createJobsListComponent(
-                jobsLoadingModel.jobsModel, selectedRunContext,
+            JobsListPanel(
+                disposable,
+                jobsLoadingModel.jobsModel,
+                selectedRunContext,
                 infoInNewLine = !settingsService.state.jobListAboveLogs,
             )
-            val panel = JBPanelWithEmptyText(BorderLayout()).apply {
-                isOpaque = false
-                add(topInfoPanel, BorderLayout.NORTH)
-                add(jobListPanel, BorderLayout.CENTER)
-            }
-            panel
         }
 
         return jobsPanel

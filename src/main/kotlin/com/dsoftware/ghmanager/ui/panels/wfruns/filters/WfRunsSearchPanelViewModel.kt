@@ -1,4 +1,4 @@
-package com.dsoftware.ghmanager.ui.panels.filters
+package com.dsoftware.ghmanager.ui.panels.wfruns.filters
 
 
 import com.dsoftware.ghmanager.data.WorkflowRunSelectionContext
