@@ -32,7 +32,7 @@ data class WfRunsListSearchValue(
     }
 
     fun toWorkflowRunFilter(): WorkflowRunFilter {
-        return WorkflowRunFilter(branch, status?.toString()?.lowercase(), actor?.shortName, "", workflowType?.id)
+        return WorkflowRunFilter(branch, status?.toString()?.lowercase(), actor?.shortName, event?.value, workflowType?.id)
     }
 
     enum class Status {
@@ -47,10 +47,10 @@ data class WfRunsListSearchValue(
         TIMED_OUT,
     }
 
-    enum class Event {
-        PULL_REQUEST,
-        PUSH,
-        PULL_REQUEST_TARGET,
-        RELEASE,
+    enum class Event(val value: String) {
+        PULL_REQUEST("pull_request"),
+        PUSH("push"),
+        PULL_REQUEST_TARGET("pull_request_target"),
+        RELEASE("release"),
     }
 }

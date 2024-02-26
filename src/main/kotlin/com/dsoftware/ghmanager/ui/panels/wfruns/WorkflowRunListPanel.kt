@@ -26,6 +26,7 @@ import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import org.jetbrains.annotations.VisibleForTesting
 import org.jetbrains.plugins.github.exceptions.GithubStatusCodeException
 import org.jetbrains.plugins.github.ui.HtmlInfoPanel
 import java.awt.BorderLayout
@@ -35,12 +36,14 @@ import javax.swing.event.ListDataEvent
 import javax.swing.event.ListDataListener
 
 
-internal class WorkflowRunsListLoaderPanel(
+class WorkflowRunsListPanel(
     parentDisposable: Disposable,
     private val context: WorkflowRunSelectionContext,
 ) : BorderLayoutPanel(), Disposable {
     private val scope = MainScope().also { Disposer.register(parentDisposable) { it.cancel() } }
-    private val runListComponent: WorkflowRunsListComponent = WorkflowRunsListComponent(context.runsListModel).apply {
+
+    @VisibleForTesting
+    val runListComponent: WorkflowRunsListComponent = WorkflowRunsListComponent(context.runsListModel).apply {
         emptyText.clear()
         installPopup(this)
         ToolbarUtil.installSelectionHolder(this, context.runSelectionHolder)
@@ -125,9 +128,9 @@ internal class WorkflowRunsListLoaderPanel(
             infoPanel.setInfo(
                 when {
                     workflowRunsLoader.loading -> message("panel.workflow-runs.loading")
-                    workflowRunsLoader.listModel.isEmpty -> message("panel.workflow-runs.no-runs")
+                    workflowRunsLoader.workflowRunsListModel.isEmpty -> message("panel.workflow-runs.no-runs")
                     else -> message(
-                        "panel.workflow-runs.loaded", workflowRunsLoader.listModel.size, workflowRunsLoader.totalCount
+                        "panel.workflow-runs.loaded", workflowRunsLoader.workflowRunsListModel.size, workflowRunsLoader.totalCount
                     )
                 }
             )
@@ -156,7 +159,7 @@ internal class WorkflowRunsListLoaderPanel(
     }
 
     companion object {
-        private val LOG = logger<WorkflowRunsListLoaderPanel>()
+        private val LOG = logger<WorkflowRunsListPanel>()
 
         private fun installPopup(list: WorkflowRunsListComponent) {
             val actionManager = ActionManager.getInstance()

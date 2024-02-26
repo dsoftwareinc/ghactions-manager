@@ -35,8 +35,9 @@ import javax.swing.ListCellRenderer
 import javax.swing.ListModel
 import javax.swing.ListSelectionModel
 
-class WorkflowRunsListComponent(model: ListModel<WorkflowRun>) : JBList<WorkflowRun>(model), DataProvider,
-    CopyProvider {
+class WorkflowRunsListComponent(
+    model: ListModel<WorkflowRun>
+) : JBList<WorkflowRun>(model), DataProvider, CopyProvider {
 
     init {
         selectionModel.selectionMode = ListSelectionModel.SINGLE_SELECTION

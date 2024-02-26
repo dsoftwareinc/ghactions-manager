@@ -34,12 +34,13 @@ data class RepositoryCoordinates(val serverPath: GithubServerPath, val repositor
 @Service(Service.Level.PROJECT)
 class WorkflowDataContextService(private val project: Project) {
     private val settingsService = project.service<GhActionsSettingsService>()
-    val repositories =
-        mutableMapOf<GitRemoteUrlCoordinates, LazyCancellableBackgroundProcessValue<WorkflowRunSelectionContext>>()
+    val repositories = mutableMapOf<String, LazyCancellableBackgroundProcessValue<WorkflowRunSelectionContext>>()
 
     @RequiresEdt
     fun clearContext(repositoryMapping: GHGitRepositoryMapping) {
-        repositories.remove(repositoryMapping.remote)?.drop()
+        LOG.debug("Clearing data context for ${repositoryMapping.remote.url}")
+
+        repositories.remove(repositoryMapping.remote.url)?.drop()
     }
 
     @RequiresEdt
@@ -49,8 +50,9 @@ class WorkflowDataContextService(private val project: Project) {
         account: GithubAccount,
         toolWindow: ToolWindow,
     ): CompletableFuture<WorkflowRunSelectionContext> {
-        return repositories.getOrPut(repositoryMapping.remote) {
+        return repositories.getOrPut(repositoryMapping.remote.url) {
             LazyCancellableBackgroundProcessValue.create { indicator ->
+                LOG.debug("Creating data context for ${repositoryMapping.remote.url}")
                 ProgressManager.getInstance().submitIOTask(indicator) {
                     try {
                         getContext(disposable, account, repositoryMapping, toolWindow)
@@ -60,6 +62,7 @@ class WorkflowDataContextService(private val project: Project) {
                         throw e
                     }
                 }.successOnEdt { ctx ->
+                    LOG.debug("Registering context for ${repositoryMapping.remote.url}")
                     Disposer.register(disposable, ctx)
                     ctx
                 }
@@ -75,11 +78,6 @@ class WorkflowDataContextService(private val project: Project) {
         repositoryMapping: GHGitRepositoryMapping,
         toolWindow: ToolWindow,
     ): WorkflowRunSelectionContext {
-        val fullPath = GithubUrlUtil.getUserAndRepositoryFromRemoteUrl(repositoryMapping.remote.url)
-            ?: throw IllegalArgumentException(
-                "Invalid GitHub Repository URL - ${repositoryMapping.remote.url} is not a GitHub repository"
-            )
-        val repositoryCoordinates = RepositoryCoordinates(account.server, fullPath)
         val token = if (settingsService.state.useGitHubSettings) {
             GHCompatibilityUtil.getOrRequestToken(account, toolWindow.project)
                 ?: throw GithubMissingTokenException(account)
@@ -92,20 +90,11 @@ class WorkflowDataContextService(private val project: Project) {
         requestExecutor.addListener(singleRunDataLoader) {
             singleRunDataLoader.invalidateAllData()
         }
-        val runsLoader = WorkflowRunListLoader(
-            project,
-            checkedDisposable,
-            requestExecutor,
-            repositoryCoordinates,
-            WorkflowRunFilter(),
-        )
-
         return WorkflowRunSelectionContext(
             checkedDisposable,
             toolWindow.project,
             account,
             singleRunDataLoader,
-            runsLoader,
             repositoryMapping,
             requestExecutor,
         )

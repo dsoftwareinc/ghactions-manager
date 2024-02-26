@@ -60,7 +60,7 @@ object GithubApi : GithubApiRequests.Entity("/repos") {
                 param("branch", filter.branch)
                 param(pagination)
             })
-        return get<WorkflowRuns>(url, "Get workflow runs", pagination)
+        return get<WorkflowRuns>(url, "Get workflow runs")
     }
 
 

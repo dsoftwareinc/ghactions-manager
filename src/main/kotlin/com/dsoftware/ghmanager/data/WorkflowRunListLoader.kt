@@ -17,7 +17,6 @@ import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.util.CheckedDisposable
 import com.intellij.openapi.util.Disposer
 import com.intellij.ui.CollectionListModel
 import com.intellij.util.EventDispatcher
@@ -32,13 +31,13 @@ import kotlin.properties.Delegates
 
 class WorkflowRunListLoader(
     project: Project,
-    parentDisposable: CheckedDisposable,
+    parentDisposable: Disposable,
     private val requestExecutor: GithubApiRequestExecutor,
     private val repositoryCoordinates: RepositoryCoordinates,
     private var filter: WorkflowRunFilter,
 ) : Disposable {
     private val settingsService = project.service<GhActionsSettingsService>()
-    val listModel = CollectionListModel<WorkflowRun>()
+    val workflowRunsListModel = CollectionListModel<WorkflowRun>()
     val repoCollaborators = ArrayList<GHUser>()
     val repoBranches = ArrayList<String>()
     val workflowTypes = ArrayList<WorkflowType>()
@@ -61,12 +60,13 @@ class WorkflowRunListLoader(
     }
 
     init {
+        LOG.debug("Initialize WorkflowRunListLoader for ${repositoryCoordinates.repositoryPath}")
         Disposer.register(parentDisposable, this)
         task = ToolbarUtil.executeTaskAtSettingsFrequency(project) {
             if (refreshRuns && error == null) loadMore(update = true)
         }
-        LOG.debug("Create CollectionListModel<WorkflowRun>() and loader")
-        listModel.removeAll()
+        LOG.debug("emptying workflowRunsListModel")
+        workflowRunsListModel.removeAll()
     }
 
     fun loadMore(update: Boolean = false) {
@@ -78,8 +78,9 @@ class WorkflowRunListLoader(
                 if (error != null) {
                     if (!CompletableFutureUtil.isCancellation(error)) this.error = error
                 } else if (!list.isNullOrEmpty()) {
-                    listModel.addAll(0, list.sorted())
+                    workflowRunsListModel.addAll(0, list.sorted())
                 }
+                LOG.debug("workflowRunsListModel has ${workflowRunsListModel.size} runs")
             }
         }
     }
@@ -177,7 +178,7 @@ class WorkflowRunListLoader(
         progressIndicator = NonReusableEmptyProgressIndicator()
         error = null
         loading = false
-        listModel.removeAll()
+        workflowRunsListModel.removeAll()
         repoCollaborators.clear()
         repoBranches.clear()
         workflowTypes.clear()
@@ -193,19 +194,25 @@ class WorkflowRunListLoader(
             pagination = GithubRequestPagination(page, settingsService.state.pageSize),
         )
         LOG.info("Calling ${request.url}")
-        val wfRunsResponse = requestExecutor.execute(indicator, request)
+        val wfRunsResponse = try {
+            requestExecutor.execute(indicator, request)
+        } catch (e: Exception) {
+            LOG.error("Error loading workflow runs", e)
+            e.printStackTrace()
+            throw e
+        }
         totalCount = wfRunsResponse.totalCount
         val workflowRuns = wfRunsResponse.workflowRuns
         if (update) {
-            val existingRunIds = listModel.items.mapIndexed { idx, it -> it.id to idx }.toMap()
+            val existingRunIds = workflowRunsListModel.items.mapIndexed { idx, it -> it.id to idx }.toMap()
             val newRuns = workflowRuns.filter { !existingRunIds.contains(it.id) }
 
             workflowRuns
                 .filter { existingRunIds.contains(it.id) }
                 .forEach { // Update
                     val index = existingRunIds.getOrDefault(it.id, null)
-                    if (index != null && listModel.getElementAt(index) != it) {
-                        listModel.setElementAt(it, index)
+                    if (index != null && workflowRunsListModel.getElementAt(index) != it) {
+                        workflowRunsListModel.setElementAt(it, index)
                     }
                 }
             return newRuns

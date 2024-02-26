@@ -9,7 +9,7 @@ import com.dsoftware.ghmanager.data.WorkflowRunSelectionContext
 import com.dsoftware.ghmanager.i18n.MessagesBundle.message
 import com.dsoftware.ghmanager.ui.panels.JobsListPanel
 import com.dsoftware.ghmanager.ui.panels.createLogConsolePanel
-import com.dsoftware.ghmanager.ui.panels.wfruns.WorkflowRunsListLoaderPanel
+import com.dsoftware.ghmanager.ui.panels.wfruns.WorkflowRunsListPanel
 import com.dsoftware.ghmanager.ui.settings.GhActionsSettingsService
 import com.intellij.ide.DataManager
 import com.intellij.ide.actions.RefreshAction
@@ -43,7 +43,8 @@ class WorkflowToolWindowTabController(
     val loadingModel: GHCompletableFutureLoadingModel<WorkflowRunSelectionContext>
     private val settingsService = toolWindow.project.service<GhActionsSettingsService>()
     private val actionManager = ActionManager.getInstance()
-    val disposable: CheckedDisposable = Disposer.newCheckedDisposable("WorkflowToolWindowTabController")
+    val disposable: CheckedDisposable =
+        Disposer.newCheckedDisposable(parentDisposable, "WorkflowToolWindowTabController")
     val panel: JComponent
     private var contentDisposable by Delegates.observable<Disposable?>(null) { _, oldValue, newValue ->
         if (oldValue != null) Disposer.dispose(oldValue)
@@ -51,10 +52,9 @@ class WorkflowToolWindowTabController(
     }
 
     init {
-        Disposer.register(parentDisposable, disposable)
+        LOG.debug("Create WorkflowToolWindowTabController for ${repositoryMapping.remote.url}")
         contentDisposable = Disposable {
             dataContextRepository.clearContext(repositoryMapping)
-            Disposer.dispose(disposable)
         }
         loadingModel = GHCompletableFutureLoadingModel<WorkflowRunSelectionContext>(disposable).apply {
             future = dataContextRepository.acquireContext(
@@ -87,7 +87,7 @@ class WorkflowToolWindowTabController(
     }
 
     private fun createContent(selectedRunContext: WorkflowRunSelectionContext): JComponent {
-        val workflowRunsListLoadingPanel = WorkflowRunsListLoaderPanel(disposable, selectedRunContext)
+        val workflowRunsListLoadingPanel = WorkflowRunsListPanel(disposable, selectedRunContext)
         val jobLoadingPanel = createJobsPanel(selectedRunContext)
         val logLoadingPanel = createLogPanel(selectedRunContext)
 
