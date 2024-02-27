@@ -1,24 +1,25 @@
 package com.dsoftware.ghmanager.data
 
+import ai.grazie.utils.applyIf
 import com.dsoftware.ghmanager.api.GithubApi
 import com.dsoftware.ghmanager.api.WorkflowRunFilter
 import com.dsoftware.ghmanager.api.model.WorkflowRun
 import com.dsoftware.ghmanager.api.model.WorkflowType
+import com.dsoftware.ghmanager.ui.ToolbarUtil
 import com.dsoftware.ghmanager.ui.settings.GhActionsSettingsService
 import com.intellij.collaboration.async.CompletableFutureUtil
 import com.intellij.collaboration.async.CompletableFutureUtil.handleOnEdt
 import com.intellij.collaboration.async.CompletableFutureUtil.submitIOTask
 import com.intellij.collaboration.ui.SimpleEventListener
 import com.intellij.openapi.Disposable
+import com.intellij.openapi.components.service
 import com.intellij.openapi.diagnostic.logger
-import com.intellij.openapi.observable.util.whenDisposed
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.progress.ProgressManager
-import com.intellij.openapi.util.CheckedDisposable
+import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Disposer
 import com.intellij.ui.CollectionListModel
 import com.intellij.util.EventDispatcher
-import com.intellij.util.concurrency.AppExecutorUtil
 import org.jetbrains.plugins.github.api.GithubApiRequestExecutor
 import org.jetbrains.plugins.github.api.GithubApiRequests
 import org.jetbrains.plugins.github.api.data.GHUser
@@ -26,17 +27,17 @@ import org.jetbrains.plugins.github.api.data.request.GithubRequestPagination
 import org.jetbrains.plugins.github.util.NonReusableEmptyProgressIndicator
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ScheduledFuture
-import java.util.concurrent.TimeUnit
 import kotlin.properties.Delegates
 
 class WorkflowRunListLoader(
-    parentDisposable: CheckedDisposable,
+    project: Project,
+    parentDisposable: Disposable,
     private val requestExecutor: GithubApiRequestExecutor,
     private val repositoryCoordinates: RepositoryCoordinates,
-    private val settingsService: GhActionsSettingsService,
     private var filter: WorkflowRunFilter,
 ) : Disposable {
-    val listModel = CollectionListModel<WorkflowRun>()
+    private val settingsService = project.service<GhActionsSettingsService>()
+    val workflowRunsListModel = CollectionListModel<WorkflowRun>()
     val repoCollaborators = ArrayList<GHUser>()
     val repoBranches = ArrayList<String>()
     val workflowTypes = ArrayList<WorkflowType>()
@@ -58,16 +59,14 @@ class WorkflowRunListLoader(
         loadingStateChangeEventDispatcher.multicaster.eventOccurred()
     }
 
-    fun frequency() = settingsService.state.frequency.toLong()
-
     init {
+        LOG.debug("Initialize WorkflowRunListLoader for ${repositoryCoordinates.repositoryPath}")
         Disposer.register(parentDisposable, this)
-        val scheduler = AppExecutorUtil.getAppScheduledExecutorService()
-        task = scheduler.scheduleWithFixedDelay({
+        task = ToolbarUtil.executeTaskAtSettingsFrequency(project) {
             if (refreshRuns && error == null) loadMore(update = true)
-        }, 1, frequency(), TimeUnit.SECONDS)
-        LOG.debug("Create CollectionListModel<WorkflowRun>() and loader")
-        listModel.removeAll()
+        }
+        LOG.debug("emptying workflowRunsListModel")
+        workflowRunsListModel.removeAll()
     }
 
     fun loadMore(update: Boolean = false) {
@@ -79,39 +78,29 @@ class WorkflowRunListLoader(
                 if (error != null) {
                     if (!CompletableFutureUtil.isCancellation(error)) this.error = error
                 } else if (!list.isNullOrEmpty()) {
-                    listModel.addAll(0, list.sorted())
+                    workflowRunsListModel.addAll(0, list.sorted())
                 }
+                LOG.debug("workflowRunsListModel has ${workflowRunsListModel.size} runs")
             }
         }
     }
 
     private fun requestLoadMore(indicator: ProgressIndicator, update: Boolean): CompletableFuture<List<WorkflowRun>> {
-        if (repoCollaborators.isEmpty()) {
-            progressManager.submitIOTask(NonReusableEmptyProgressIndicator()) {
-                updateCollaborators(it)
-            }
+        applyIf(repoCollaborators.isEmpty()) {
+            progressManager.submitIOTask(NonReusableEmptyProgressIndicator()) { updateCollaborators(it) }
+        }.applyIf(repoBranches.isEmpty()) {
+            progressManager.submitIOTask(NonReusableEmptyProgressIndicator()) { updateBranches(it) }
+        }.applyIf(workflowTypes.isEmpty()) {
+            progressManager.submitIOTask(NonReusableEmptyProgressIndicator()) { updateWorkflowTypes(it) }
         }
-        if (repoBranches.isEmpty()) {
-            progressManager.submitIOTask(NonReusableEmptyProgressIndicator()) {
-                updateBranches(it)
-            }
-        }
-        if (workflowTypes.isEmpty()) {
-            progressManager.submitIOTask(NonReusableEmptyProgressIndicator()) {
-                updateWorkflowTypes(it)
-            }
-        }
-
         lastFuture = lastFuture.thenCompose {
-            progressManager.submitIOTask(indicator) {
-                doLoadMore(indicator, update)
-            }
+            progressManager.submitIOTask(indicator) { doLoadMore(indicator, update) }
         }
         return lastFuture
     }
 
     private fun updateCollaborators(indicator: ProgressIndicator) {
-        val collaboratorSet = HashSet<GHUser>()
+        val collaboratorSet = mutableSetOf<GHUser>()
         var nextLink: String? = null
         do {
             val request = if (nextLink == null) {
@@ -126,9 +115,9 @@ class WorkflowRunListLoader(
             }
             LOG.info("Calling ${request.url}")
             val response = requestExecutor.execute(indicator, request)
-            collaboratorSet.addAll(
-                response.items.map { GHUser(it.nodeId, it.login, it.htmlUrl, it.avatarUrl ?: "", null) }
-            )
+            response.items.map {
+                collaboratorSet.add(GHUser(it.nodeId, it.login, it.htmlUrl, it.avatarUrl ?: "", null))
+            }
             nextLink = response.nextLink
         } while (nextLink != null)
         repoCollaborators.clear()
@@ -136,7 +125,7 @@ class WorkflowRunListLoader(
     }
 
     private fun updateBranches(indicator: ProgressIndicator) {
-        val branchSet = HashSet<String>()
+        val branchSet = mutableSetOf<String>()
         var nextLink: String? = null
         do {
             val request = if (nextLink == null) {
@@ -151,7 +140,7 @@ class WorkflowRunListLoader(
             }
             LOG.info("Calling ${request.url}")
             val response = requestExecutor.execute(indicator, request)
-            branchSet.addAll(response.items.map { it.name })
+            response.items.map { branchSet.add(it.name) }
             nextLink = response.nextLink
         } while (response.hasNext)
         repoBranches.clear()
@@ -159,7 +148,7 @@ class WorkflowRunListLoader(
     }
 
     private fun updateWorkflowTypes(indicator: ProgressIndicator) {
-        val workflowTypesSet = HashSet<WorkflowType>()
+        val workflowTypesSet = mutableSetOf<WorkflowType>()
         var nextPage: Int = 0
         do {
             nextPage += 1
@@ -189,7 +178,7 @@ class WorkflowRunListLoader(
         progressIndicator = NonReusableEmptyProgressIndicator()
         error = null
         loading = false
-        listModel.removeAll()
+        workflowRunsListModel.removeAll()
         repoCollaborators.clear()
         repoBranches.clear()
         workflowTypes.clear()
@@ -205,19 +194,25 @@ class WorkflowRunListLoader(
             pagination = GithubRequestPagination(page, settingsService.state.pageSize),
         )
         LOG.info("Calling ${request.url}")
-        val wfRunsResponse = requestExecutor.execute(indicator, request)
+        val wfRunsResponse = try {
+            requestExecutor.execute(indicator, request)
+        } catch (e: Exception) {
+            LOG.error("Error loading workflow runs", e)
+            e.printStackTrace()
+            throw e
+        }
         totalCount = wfRunsResponse.totalCount
         val workflowRuns = wfRunsResponse.workflowRuns
         if (update) {
-            val existingRunIds = listModel.items.mapIndexed { idx, it -> it.id to idx }.toMap()
+            val existingRunIds = workflowRunsListModel.items.mapIndexed { idx, it -> it.id to idx }.toMap()
             val newRuns = workflowRuns.filter { !existingRunIds.contains(it.id) }
 
             workflowRuns
                 .filter { existingRunIds.contains(it.id) }
                 .forEach { // Update
                     val index = existingRunIds.getOrDefault(it.id, null)
-                    if (index != null && listModel.getElementAt(index) != it) {
-                        listModel.setElementAt(it, index)
+                    if (index != null && workflowRunsListModel.getElementAt(index) != it) {
+                        workflowRunsListModel.setElementAt(it, index)
                     }
                 }
             return newRuns

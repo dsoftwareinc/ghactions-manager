@@ -1,5 +1,6 @@
 package com.dsoftware.ghmanager
 
+import com.dsoftware.ghmanager.i18n.MessagesBundle.message
 import com.dsoftware.ghmanager.ui.settings.GithubActionsManagerSettings
 import com.intellij.ui.SimpleColoredComponent
 import com.intellij.ui.components.JBPanelWithEmptyText
@@ -38,11 +39,14 @@ class ToolWindowFactoryTest : GitHubActionsManagerBaseTest() {
         TestCase.assertTrue(component is JBPanelWithEmptyText)
         val panel = component as JBPanelWithEmptyText
 
-        TestCase.assertEquals("GitHub account not configured and no API Token", panel.emptyText.text)
+        TestCase.assertEquals(message("factory.empty-panel.no-account-configured"), panel.emptyText.text)
         val subComponents = panel.emptyText.wrappedFragmentsIterable.map { it as SimpleColoredComponent }.toList()
-        TestCase.assertEquals("GitHub account not configured and no API Token", subComponents[0].getCharSequence(true))
-        TestCase.assertEquals("Go to GitHub settings", subComponents[1].getCharSequence(true))
-        TestCase.assertEquals("Go to GitHub-actions-manager plugin settings", subComponents[2].getCharSequence(true))
+        TestCase.assertEquals(
+            message("factory.empty-panel.no-account-configured"),
+            subComponents[0].getCharSequence(true)
+        )
+        TestCase.assertEquals(message("factory.go.to.github-settings"), subComponents[1].getCharSequence(true))
+        TestCase.assertEquals(message("factory.go.to.ghmanager-settings"), subComponents[2].getCharSequence(true))
         verify {
             requestExecutorfactoryMock.create(token = any()) wasNot Called
         }
@@ -56,10 +60,10 @@ class ToolWindowFactoryTest : GitHubActionsManagerBaseTest() {
 
         TestCase.assertEquals(1, toolWindow.contentManager.contentCount)
         val component = toolWindow.contentManager.contents[0].component
-        TestCase.assertEquals("Workflows", toolWindow.contentManager.contents[0].displayName)
+        TestCase.assertEquals(message("factory.default-tab-title"), toolWindow.contentManager.contents[0].displayName)
         TestCase.assertTrue(component is JBPanelWithEmptyText)
         val panel = component as JBPanelWithEmptyText
-        TestCase.assertEquals("No git repositories in project", panel.emptyText.text)
+        TestCase.assertEquals(message("factory.empty-panel.no-repos-in-project"), panel.emptyText.text)
         verify {
             requestExecutorfactoryMock.create(token = any()) wasNot Called
         }
@@ -69,6 +73,7 @@ class ToolWindowFactoryTest : GitHubActionsManagerBaseTest() {
         mockkStatic(GHCompatibilityUtil::class)
         every { GHCompatibilityUtil.getOrRequestToken(any(), any()) } returns "token"
         mockGhActionsService(setOf("http://github.com/owner/repo"), setOf("account1"))
+        mockSettingsService(GithubActionsManagerSettings(useCustomRepos = false))
 
         factory.init(toolWindow)
         executeSomeCoroutineTasksAndDispatchAllInvocationEvents(project)
@@ -90,6 +95,7 @@ class ToolWindowFactoryTest : GitHubActionsManagerBaseTest() {
         mockGhActionsService(setOf("http://github.com/owner/repo"), setOf("account1"))
         mockSettingsService(
             GithubActionsManagerSettings(
+                useCustomRepos = true,
                 customRepos = mutableMapOf(
                     "http://github.com/owner/repo" to
                         GithubActionsManagerSettings.RepoSettings(false, "customName")
@@ -101,16 +107,19 @@ class ToolWindowFactoryTest : GitHubActionsManagerBaseTest() {
         executeSomeCoroutineTasksAndDispatchAllInvocationEvents(project)
 
         val content = toolWindow.contentManager.contents[0]
-        TestCase.assertEquals("Workflows", content.displayName)
+        TestCase.assertEquals(message("factory.default-tab-title"), content.displayName)
         TestCase.assertEquals(1, toolWindow.contentManager.contentCount)
         val component = toolWindow.contentManager.contents[0].component
         TestCase.assertTrue(component is JBPanelWithEmptyText)
         val panel = component as JBPanelWithEmptyText
 
-        TestCase.assertEquals("No repositories configured for GitHub-Actions-Manager", panel.emptyText.text)
+        TestCase.assertEquals(message("factory.empty-panel.no-repos-configured"), panel.emptyText.text)
         val subComponents = panel.emptyText.wrappedFragmentsIterable.map { it as SimpleColoredComponent }.toList()
-        TestCase.assertEquals("No repositories configured for GitHub-Actions-Manager", subComponents[0].getCharSequence(true))
-        TestCase.assertEquals("Go to GitHub-actions-manager plugin settings", subComponents[1].getCharSequence(true))
+        TestCase.assertEquals(
+            message("factory.empty-panel.no-repos-configured"),
+            subComponents[0].getCharSequence(true)
+        )
+        TestCase.assertEquals(message("factory.go.to.ghmanager-settings"), subComponents[1].getCharSequence(true))
         verify {
             requestExecutorfactoryMock.create(token = any()) wasNot Called
         }

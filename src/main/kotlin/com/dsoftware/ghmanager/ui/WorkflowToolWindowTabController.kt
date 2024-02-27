@@ -6,14 +6,16 @@ import com.dsoftware.ghmanager.data.JobsLoadingModelListener
 import com.dsoftware.ghmanager.data.LogLoadingModelListener
 import com.dsoftware.ghmanager.data.WorkflowDataContextService
 import com.dsoftware.ghmanager.data.WorkflowRunSelectionContext
-import com.dsoftware.ghmanager.ui.panels.JobListComponent
-import com.dsoftware.ghmanager.ui.panels.WorkflowRunListLoaderPanel
+import com.dsoftware.ghmanager.i18n.MessagesBundle.message
+import com.dsoftware.ghmanager.ui.panels.JobsListPanel
 import com.dsoftware.ghmanager.ui.panels.createLogConsolePanel
+import com.dsoftware.ghmanager.ui.panels.wfruns.WorkflowRunsListPanel
 import com.dsoftware.ghmanager.ui.settings.GhActionsSettingsService
 import com.intellij.ide.DataManager
 import com.intellij.ide.actions.RefreshAction
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.actionSystem.ActionManager
+import com.intellij.openapi.components.service
 import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.util.CheckedDisposable
 import com.intellij.openapi.util.Disposer
@@ -22,14 +24,12 @@ import com.intellij.openapi.wm.ToolWindow
 import com.intellij.ui.AnimatedIcon
 import com.intellij.ui.ClientProperty
 import com.intellij.ui.OnePixelSplitter
-import com.intellij.ui.components.JBPanelWithEmptyText
 import com.intellij.util.ui.UIUtil
 import org.jetbrains.plugins.github.authentication.accounts.GithubAccount
 import org.jetbrains.plugins.github.pullrequest.ui.GHApiLoadingErrorHandler
 import org.jetbrains.plugins.github.pullrequest.ui.GHCompletableFutureLoadingModel
 import org.jetbrains.plugins.github.pullrequest.ui.GHLoadingPanelFactory
 import org.jetbrains.plugins.github.util.GHGitRepositoryMapping
-import java.awt.BorderLayout
 import javax.swing.JComponent
 import kotlin.properties.Delegates
 
@@ -41,9 +41,10 @@ class WorkflowToolWindowTabController(
     private val toolWindow: ToolWindow,
 ) {
     val loadingModel: GHCompletableFutureLoadingModel<WorkflowRunSelectionContext>
-    private val settingsService = GhActionsSettingsService.getInstance(toolWindow.project)
+    private val settingsService = toolWindow.project.service<GhActionsSettingsService>()
     private val actionManager = ActionManager.getInstance()
-    val disposable: CheckedDisposable = Disposer.newCheckedDisposable("WorkflowToolWindowTabController")
+    val disposable: CheckedDisposable =
+        Disposer.newCheckedDisposable(parentDisposable, "WorkflowToolWindowTabController")
     val panel: JComponent
     private var contentDisposable by Delegates.observable<Disposable?>(null) { _, oldValue, newValue ->
         if (oldValue != null) Disposer.dispose(oldValue)
@@ -51,10 +52,9 @@ class WorkflowToolWindowTabController(
     }
 
     init {
-        Disposer.register(parentDisposable, disposable)
+        LOG.debug("Create WorkflowToolWindowTabController for ${repositoryMapping.remote.url}")
         contentDisposable = Disposable {
             dataContextRepository.clearContext(repositoryMapping)
-            Disposer.dispose(disposable)
         }
         loadingModel = GHCompletableFutureLoadingModel<WorkflowRunSelectionContext>(disposable).apply {
             future = dataContextRepository.acquireContext(
@@ -76,8 +76,8 @@ class WorkflowToolWindowTabController(
         }
         panel = GHLoadingPanelFactory(
             loadingModel,
-            "Not loading workflow runs",
-            "Can't load workflow runs from GitHub",
+            message("panel.workflow-runs.not-loading"),
+            message("panel.workflow-runs.loading-error"),
             errorHandler,
         ).create { _, result ->
             val content = createContent(result)
@@ -87,7 +87,7 @@ class WorkflowToolWindowTabController(
     }
 
     private fun createContent(selectedRunContext: WorkflowRunSelectionContext): JComponent {
-        val workflowRunsListLoadingPanel = WorkflowRunListLoaderPanel(disposable, selectedRunContext)
+        val workflowRunsListLoadingPanel = WorkflowRunsListPanel(disposable, selectedRunContext)
         val jobLoadingPanel = createJobsPanel(selectedRunContext)
         val logLoadingPanel = createLogPanel(selectedRunContext)
 
@@ -133,8 +133,8 @@ class WorkflowToolWindowTabController(
         )
         val panel = GHLoadingPanelFactory(
             model.logsLoadingModel,
-            "Select a job to show logs",
-            "Can't load logs from GitHub for run ${selectedRunContext.runSelectionHolder.selection?.name ?: ""}",
+            message("panel.log.not-loading"),
+            message("panel.log.loading-error", selectedRunContext.jobSelectionHolder.selection?.name ?: ""),
             GHApiLoadingErrorHandler(toolWindow.project, ghAccount) {}
         ).create { _, _ ->
             createLogConsolePanel(toolWindow.project, model, selectedRunContext.selectedRunDisposable)
@@ -151,20 +151,16 @@ class WorkflowToolWindowTabController(
 
         val jobsPanel = GHLoadingPanelFactory(
             jobsLoadingModel.jobsLoadingModel,
-            "Select a workflow to show list of jobs",
-            "Can't load jobs list from GitHub for run ${selectedRunContext.runSelectionHolder.selection?.name ?: ""}",
+            message("panel.jobs.not-loading"),
+            message("panel.jobs.loading-error", selectedRunContext.runSelectionHolder.selection?.name ?: ""),
             GHApiLoadingErrorHandler(toolWindow.project, ghAccount) {}
         ).create { _, _ ->
-            val (topInfoPanel, jobListPanel) = JobListComponent.createJobsListComponent(
-                jobsLoadingModel.jobsModel, selectedRunContext,
+            JobsListPanel(
+                disposable,
+                jobsLoadingModel.jobsModel,
+                selectedRunContext,
                 infoInNewLine = !settingsService.state.jobListAboveLogs,
             )
-            val panel = JBPanelWithEmptyText(BorderLayout()).apply {
-                isOpaque = false
-                add(topInfoPanel, BorderLayout.NORTH)
-                add(jobListPanel, BorderLayout.CENTER)
-            }
-            panel
         }
 
         return jobsPanel

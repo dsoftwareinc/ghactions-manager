@@ -5,11 +5,9 @@ import com.intellij.openapi.components.Service
 import com.intellij.openapi.components.State
 import com.intellij.openapi.components.Storage
 import com.intellij.openapi.components.StoragePathMacros
-import com.intellij.openapi.components.service
-import com.intellij.openapi.project.Project
 
 data class GithubActionsManagerSettings(
-    var useCustomRepos: Boolean = true,
+    var useCustomRepos: Boolean = false,
     var customRepos: MutableMap<String, RepoSettings> = mutableMapOf(),
     var jobListAboveLogs: Boolean = true,
     var frequency: Int = 30,
@@ -23,7 +21,7 @@ data class GithubActionsManagerSettings(
     )
 }
 
-@Service
+@Service(Service.Level.PROJECT)
 @State(
     name = "GhActionsManagerSettings",
     storages = [
@@ -40,9 +38,5 @@ class GhActionsSettingsService : PersistentStateComponent<GithubActionsManagerSe
 
     override fun loadState(state: GithubActionsManagerSettings) {
         this.state = state
-    }
-
-    companion object {
-        fun getInstance(project: Project): GhActionsSettingsService = project.service()
     }
 }

@@ -6,6 +6,7 @@ import com.dsoftware.ghmanager.api.model.WorkflowRun
 import com.dsoftware.ghmanager.data.providers.JobLogDataProvider
 import com.dsoftware.ghmanager.data.providers.SingleRunDataLoader
 import com.dsoftware.ghmanager.data.providers.WorkflowRunJobsDataProvider
+import com.dsoftware.ghmanager.ui.ToolbarUtil
 import com.intellij.collaboration.ui.SingleValueModel
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.diagnostic.logger
@@ -13,13 +14,12 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.CheckedDisposable
 import com.intellij.openapi.util.Disposer
 import com.intellij.ui.CollectionListModel
-import com.intellij.util.concurrency.AppExecutorUtil
 import org.jetbrains.plugins.github.api.GithubApiRequestExecutor
 import org.jetbrains.plugins.github.api.data.GHUser
 import org.jetbrains.plugins.github.authentication.accounts.GithubAccount
 import org.jetbrains.plugins.github.util.GHGitRepositoryMapping
+import org.jetbrains.plugins.github.util.GithubUrlUtil
 import java.util.concurrent.ScheduledFuture
-import java.util.concurrent.TimeUnit
 
 
 class WorkflowRunSelectionContext internal constructor(
@@ -27,18 +27,29 @@ class WorkflowRunSelectionContext internal constructor(
     val project: Project,
     val account: GithubAccount,
     val dataLoader: SingleRunDataLoader,
-    val runsListLoader: WorkflowRunListLoader,
     val repositoryMapping: GHGitRepositoryMapping,
     val requestExecutor: GithubApiRequestExecutor,
     val runSelectionHolder: WorkflowRunListSelectionHolder = WorkflowRunListSelectionHolder(),
     val jobSelectionHolder: JobListSelectionHolder = JobListSelectionHolder(),
 ) : Disposable.Parent {
-    private val frequency: Long = runsListLoader.frequency()
+
     private val task: ScheduledFuture<*>
-    val runsListModel: CollectionListModel<WorkflowRun>
-        get() = runsListLoader.listModel
+    private val fullPath = GithubUrlUtil.getUserAndRepositoryFromRemoteUrl(repositoryMapping.remote.url)
+        ?: throw IllegalArgumentException(
+            "Invalid GitHub Repository URL - ${repositoryMapping.remote.url} is not a GitHub repository"
+        )
     private val selectedWfRun: WorkflowRun?
         get() = runSelectionHolder.selection
+    val runsListLoader: WorkflowRunListLoader = WorkflowRunListLoader(
+        project,
+        this,
+        requestExecutor,
+        RepositoryCoordinates(account.server, fullPath),
+        WorkflowRunFilter(),
+    )
+    val runsListModel: CollectionListModel<WorkflowRun>
+        get() = runsListLoader.workflowRunsListModel
+
     var selectedRunDisposable = Disposer.newDisposable("Selected run disposable")
     val jobDataProviderLoadModel: SingleValueModel<WorkflowRunJobsDataProvider?> = SingleValueModel(null)
     val jobsDataProvider: WorkflowRunJobsDataProvider?
@@ -49,18 +60,19 @@ class WorkflowRunSelectionContext internal constructor(
     val jobLogDataProviderLoadModel: SingleValueModel<JobLogDataProvider?> = SingleValueModel(null)
     val logDataProvider: JobLogDataProvider?
         get() = selectedJob?.let { dataLoader.getJobLogDataProvider(it) }
+
     init {
         if (!parentDisposable.isDisposed) {
             Disposer.register(parentDisposable, this)
         }
-        runSelectionHolder.addSelectionChangeListener(parentDisposable) {
+        runSelectionHolder.addSelectionChangeListener(this) {
             LOG.debug("runSelectionHolder selection change listener")
             setNewJobsProvider()
             setNewLogProvider()
             selectedRunDisposable.dispose()
             selectedRunDisposable = Disposer.newDisposable("Selected run disposable")
         }
-        jobSelectionHolder.addSelectionChangeListener(parentDisposable) {
+        jobSelectionHolder.addSelectionChangeListener(this) {
             LOG.debug("jobSelectionHolder selection change listener")
             setNewLogProvider()
             selectedJobDisposable.dispose()
@@ -72,19 +84,18 @@ class WorkflowRunSelectionContext internal constructor(
             jobDataProviderLoadModel.value = null
             selectedRunDisposable.dispose()
         }
-        task = AppExecutorUtil.getAppScheduledExecutorService().scheduleWithFixedDelay({
+        task = ToolbarUtil.executeTaskAtSettingsFrequency(project) {
             if (selectedWfRun == null) {
-                return@scheduleWithFixedDelay
+                return@executeTaskAtSettingsFrequency
             }
             LOG.info("Checking updated status for $selectedWfRun.id")
-            val status = selectedWfRun?.status
-            if (selectedWfRun != null && status != "completed") {
+            if (selectedWfRun?.status != "completed") {
                 jobsDataProvider?.reload()
             }
-            if(selectedJob != null && selectedJob?.status != "completed") {
+            if (selectedJob?.status != "completed") {
                 logDataProvider?.reload()
             }
-        }, 1, frequency, TimeUnit.SECONDS)
+        }
     }
 
     fun getCurrentAccountGHUser(): GHUser {
