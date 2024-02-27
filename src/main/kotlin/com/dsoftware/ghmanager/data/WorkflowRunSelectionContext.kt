@@ -78,7 +78,7 @@ class WorkflowRunSelectionContext internal constructor(
             selectedJobDisposable.dispose()
             selectedJobDisposable = Disposer.newDisposable("Selected job disposable")
         }
-        dataLoader.addInvalidationListener(this) {
+        dataLoader.addInvalidationListener(this) {// When wf-runs are invalidated, invalidate jobs and logs
             LOG.debug("invalidation listener")
             jobDataProviderLoadModel.value = null
             jobDataProviderLoadModel.value = null

@@ -197,8 +197,7 @@ class WorkflowRunListLoader(
         val wfRunsResponse = try {
             requestExecutor.execute(indicator, request)
         } catch (e: Exception) {
-            LOG.error("Error loading workflow runs", e)
-            e.printStackTrace()
+            LOG.error("Error loading workflow runs")
             throw e
         }
         totalCount = wfRunsResponse.totalCount

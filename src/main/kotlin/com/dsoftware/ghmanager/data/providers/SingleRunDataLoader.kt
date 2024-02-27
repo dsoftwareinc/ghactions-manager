@@ -16,9 +16,7 @@ class SingleRunDataLoader(private val requestExecutor: GithubApiRequestExecutor)
     private val invalidationEventDispatcher = EventDispatcher.create(DataInvalidatedListener::class.java)
 
     private val cache = CacheBuilder.newBuilder()
-        .removalListener<String, DataProvider<*>> {
-            invalidationEventDispatcher.multicaster.providerChanged(it.key!!)
-        }
+        .removalListener<String, DataProvider<*>> {}
         .maximumSize(200)
         .build<String, DataProvider<*>>()
 
@@ -41,12 +39,13 @@ class SingleRunDataLoader(private val requestExecutor: GithubApiRequestExecutor)
     @RequiresEdt
     fun invalidateAllData() {
         cache.invalidateAll()
+        invalidationEventDispatcher.multicaster.dataLoadeInvalidated()
     }
 
-    fun addInvalidationListener(disposable: Disposable, listener: (String) -> Unit) =
+    fun addInvalidationListener(disposable: Disposable, listener: () -> Unit) =
         invalidationEventDispatcher.addListener(object : DataInvalidatedListener {
-            override fun providerChanged(url: String) {
-                listener(url)
+            override fun dataLoadeInvalidated() {
+                listener()
             }
         }, disposable)
 
@@ -55,6 +54,6 @@ class SingleRunDataLoader(private val requestExecutor: GithubApiRequestExecutor)
     }
 
     private interface DataInvalidatedListener : EventListener {
-        fun providerChanged(url: String)
+        fun dataLoadeInvalidated()
     }
 }
