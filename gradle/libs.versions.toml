@@ -1,7 +1,8 @@
 [versions]
 # libraries
 annotations = "24.1.0"
-serialization = "1.6.0"
+kotlinxSerialization = "1.6.0"
+kotlinxCoroutines = "1.8.0"
 
 # plugins
 kotlin = "1.9.21"
@@ -9,16 +10,15 @@ changelog = "2.2.0"
 gradleIntelliJPlugin = "1.17.2"
 kover = "0.7.5"
 dokka = "1.8.10"
-coroutines = "1.8.0"
 
 # test libraries
 mockk = "1.13.9"
 
 [libraries]
 annotations = { group = "org.jetbrains", name = "annotations", version.ref = "annotations" }
-serialization = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "serialization" }
 mockk = { group = "io.mockk", name = "mockk-jvm", version.ref = "mockk" }
-coroutines = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-debug", version.ref = "coroutines" }
+serialization = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinxSerialization" }
+coroutines = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-debug", version.ref = "kotlinxCoroutines" }
 
 [plugins]
 changelog = { id = "org.jetbrains.changelog", version.ref = "changelog" }
