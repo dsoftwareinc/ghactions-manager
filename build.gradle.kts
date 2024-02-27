@@ -24,6 +24,7 @@ repositories {
 // Dependencies are managed with Gradle version catalog - read more: https://docs.gradle.org/current/userguide/platforms.html#sub:version-catalog
 dependencies {
     implementation(libs.annotations)
+    testImplementation(libs.coroutines)
     compileOnly(libs.serialization)
 }
 
@@ -65,6 +66,7 @@ koverReport {
 tasks {
     test {
         systemProperty("idea.log.debug.categories", "com.dsoftware.ghmanager")
+        systemProperty(kotlinx.coroutines.DEBUG_PROPERTY_NAME, kotlinx.coroutines.DEBUG_PROPERTY_VALUE_ON)
     }
 
     wrapper {

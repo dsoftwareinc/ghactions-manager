@@ -4,10 +4,20 @@
 
 ## Unreleased
 
-## 1.16.2
+## 1.17.0
+
+### 🚀 Features
+
+- Extract all messages to i18n file #114
+- Update info bar on jobs-panel
+
+### 🐛 Bug Fixes
+
+- Improve logic for identifying steps in job logs
 
 ### 🧰 Maintenance
 
+- Update dependencies to latest versions
 - Major code refactoring
 - Implement tests
 
