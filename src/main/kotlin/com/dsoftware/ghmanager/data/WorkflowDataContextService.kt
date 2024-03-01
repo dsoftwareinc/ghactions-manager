@@ -85,7 +85,7 @@ class WorkflowDataContextService(private val project: Project) {
             settingsService.state.apiToken
         }
 
-        val requestExecutor = GithubApiRequestExecutor.Factory.Companion.getInstance().create(token = token)
+        val requestExecutor = GithubApiRequestExecutor.Factory.getInstance().create(token = token)
         val singleRunDataLoader = SingleRunDataLoader(requestExecutor)
         return WorkflowRunSelectionContext(
             checkedDisposable,

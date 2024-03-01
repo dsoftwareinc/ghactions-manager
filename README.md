@@ -22,6 +22,11 @@ are passing on your changes.
 # Sponsor
 GitHub Actions Manager for JetBrains products is developed for free.
 
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://polar.sh/embed/subscribe.svg?org=cunla&label=Subscribe&darkmode">
+  <img alt="Subscribe on Polar" src="https://polar.sh/embed/subscribe.svg?org=polarsource&label=Subscribe">
+</picture>
+
 Support this project by becoming a sponsor using [this link](https://github.com/sponsors/cunla).
 
 
