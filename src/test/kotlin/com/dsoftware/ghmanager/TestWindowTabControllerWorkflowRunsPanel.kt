@@ -64,7 +64,7 @@ class TestWindowTabControllerWorkflowRunsPanel : GitHubActionsManagerBaseTest() 
 
         // assert
         val workflowRunsListPanel = assertTabsAndPanels()
-        TestCase.assertEquals(workflowRunsList.size, workflowRunSelectionContext.runsListModel.size)
+        TestCase.assertEquals(workflowRunsList.size, workflowRunsListPanel.runListComponent.model.size)
     }
 
 //    // todo: fix this test
