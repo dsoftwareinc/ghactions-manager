@@ -204,7 +204,7 @@ class WorkflowRunListLoader(
         val workflowRuns = wfRunsResponse.workflowRuns
         if (update) {
             val existingRunIds = workflowRunsListModel.items.mapIndexed { idx, it -> it.id to idx }.toMap()
-            val newRuns = workflowRuns.filter { !existingRunIds.contains(it.id) }
+            val newRuns = workflowRuns.filter { !existingRunIds.containsKey(it.id) }
 
             workflowRuns
                 .filter { existingRunIds.contains(it.id) }
