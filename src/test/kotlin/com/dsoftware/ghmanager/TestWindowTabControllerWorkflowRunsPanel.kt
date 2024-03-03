@@ -10,27 +10,27 @@ import com.dsoftware.ghmanager.ui.panels.wfruns.WorkflowRunsListPanel
 import com.intellij.openapi.components.service
 import com.intellij.ui.OnePixelSplitter
 import io.mockk.MockKMatcherScope
-import io.mockk.clearAllMocks
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkObject
 import io.mockk.mockkStatic
 import io.mockk.verify
 import junit.framework.TestCase
+import kotlinx.coroutines.runBlocking
 import org.jetbrains.plugins.github.api.GithubApiRequest
 import org.jetbrains.plugins.github.api.GithubApiRequestExecutor
 import org.jetbrains.plugins.github.api.data.GithubBranch
 import org.jetbrains.plugins.github.api.data.GithubResponsePage
 import org.jetbrains.plugins.github.api.data.GithubUserWithPermissions
 import org.jetbrains.plugins.github.util.GHCompatibilityUtil
-import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.TestInfo
 import javax.swing.JPanel
 
 class TestWindowTabControllerWorkflowRunsPanel : GitHubActionsManagerBaseTest() {
     private lateinit var executorMock: GithubApiRequestExecutor
-    lateinit var workflowRunSelectionContext: WorkflowRunSelectionContext
+    private lateinit var workflowRunSelectionContext: WorkflowRunSelectionContext
 
     init {
         mockkStatic(GHCompatibilityUtil::class)
@@ -38,8 +38,8 @@ class TestWindowTabControllerWorkflowRunsPanel : GitHubActionsManagerBaseTest() 
     }
 
     @BeforeEach
-    override fun setUp() {
-        super.setUp()
+    override fun setUp(testInfo: TestInfo) {
+        super.setUp(testInfo)
         mockGhActionsService(setOf("http://github.com/owner/repo"), setOf("account1"))
         executorMock = mockk<GithubApiRequestExecutor>(relaxed = true) {}
         mockkObject(GithubApiRequestExecutor.Factory)
@@ -50,14 +50,8 @@ class TestWindowTabControllerWorkflowRunsPanel : GitHubActionsManagerBaseTest() 
         executeSomeCoroutineTasksAndDispatchAllInvocationEvents(project)
     }
 
-    @AfterEach
-    override fun tearDown() {
-        clearAllMocks()
-        super.tearDown()
-    }
-
     @Test
-    fun `test repo with different workflow-runs`() {
+    fun `test repo with different workflow-runs`() = runBlocking {
         val workflowRunsList = listOf(
             createWorkflowRun(id = 1, status = "in_progress"),
             createWorkflowRun(id = 2, status = "completed"),
@@ -75,7 +69,7 @@ class TestWindowTabControllerWorkflowRunsPanel : GitHubActionsManagerBaseTest() 
 
     //    // todo: fix this test
 //    @Test
-//    fun `test repo without workflow-runs`() {
+//    fun `test repo without workflow-runs`() = runBlocking {
 //        mockGithubApiRequestExecutor(emptyList())
 //
 //        // act

@@ -15,14 +15,15 @@ import org.jetbrains.plugins.github.util.GHCompatibilityUtil
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.TestInfo
 import javax.swing.JPanel
 
 
 class ToolWindowFactoryTest : GitHubActionsManagerBaseTest() {
     private lateinit var requestExecutorfactoryMock: GithubApiRequestExecutor.Factory
     @BeforeEach
-    override fun setUp() {
-        super.setUp()
+    override fun setUp(testInfo: TestInfo) {
+        super.setUp(testInfo)
         requestExecutorfactoryMock = mockk<GithubApiRequestExecutor.Factory> {
             every { create(token = any()) } throws Exception("No executor")
         }

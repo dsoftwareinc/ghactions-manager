@@ -39,7 +39,6 @@ class WorkflowDataContextService(private val project: Project) {
     @RequiresEdt
     fun clearContext(repositoryMapping: GHGitRepositoryMapping) {
         LOG.debug("Clearing data context for ${repositoryMapping.remote.url}")
-
         repositories.remove(repositoryMapping.remote.url)?.drop()
     }
 
