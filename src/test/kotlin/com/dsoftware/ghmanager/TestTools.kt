@@ -20,7 +20,7 @@ fun Job.withStep(
         startedAt = startedAt,
         completedAt = completedAt
     )
-    return this.copy(steps = (this.steps ?: emptyList()).plus(jobStep))
+    return this.copy(steps = this.steps.plus(jobStep))
 }
 
 fun createJob(
