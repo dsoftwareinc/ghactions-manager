@@ -3,10 +3,12 @@ package com.dsoftware.ghmanager.api
 import com.dsoftware.ghmanager.api.model.WorkflowRunJobs
 import com.dsoftware.ghmanager.createJob
 import com.dsoftware.ghmanager.withStep
-import junit.framework.TestCase
 import org.jetbrains.plugins.github.api.GithubApiContentHelper
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Assertions.assertTrue
 
-class TestLogParsing : TestCase() {
+class LogParsingTests {
+    @Test
     fun `test steps' log showing with right color`() {
         // arrange
         val job = createJob()

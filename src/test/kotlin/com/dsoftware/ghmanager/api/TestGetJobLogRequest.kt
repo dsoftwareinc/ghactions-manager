@@ -3,21 +3,19 @@ package com.dsoftware.ghmanager.api
 import com.dsoftware.ghmanager.api.model.WorkflowRunJobs
 import org.jetbrains.plugins.github.api.GithubApiContentHelper
 import org.junit.Assert.assertEquals
-import org.junit.Test
-import org.junit.runner.RunWith
-import org.junit.runners.Parameterized
-import org.junit.runners.Parameterized.Parameters
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.MethodSource
 
 
-@RunWith(Parameterized::class)
-class TestGetJobLogRequest(
-    private val logContentFilename: String,
-    private val jobsJsonFilename: String,
-    private val expectedLogLinesCount: Map<Int, Int>,
-) {
+class TestGetJobLogRequest {
 
-    @Test
-    fun `test GetJobLogRequest should split log lines to steps`() {
+    @ParameterizedTest
+    @MethodSource("data")
+    fun `test GetJobLogRequest should split log lines to steps`(
+        logContentFilename: String,
+        jobsJsonFilename: String,
+        expectedLogLinesCount: Map<Int, Int>
+    ) {
         // arrange
         val logContent = TestGetJobLogRequest::class.java.getResource(logContentFilename)!!.readText()
         val wfJobsJson = TestGetJobLogRequest::class.java.getResource(jobsJsonFilename)!!.readText()
@@ -40,7 +38,6 @@ class TestGetJobLogRequest(
     companion object {
 
         @JvmStatic
-        @Parameters
         fun data() = listOf(
             arrayOf(
                 "/wf-run-7863783013-single-job-21454796844.log",

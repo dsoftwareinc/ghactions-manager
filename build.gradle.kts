@@ -31,6 +31,7 @@ dependencies {
 testing {
     dependencies {
         testImplementation(libs.mockk)
+        testImplementation(libs.junit5)
     }
 }
 
@@ -65,6 +66,7 @@ koverReport {
 
 tasks {
     test {
+        useJUnitPlatform()
         systemProperty("idea.log.debug.categories", "com.dsoftware.ghmanager")
         systemProperty(kotlinx.coroutines.DEBUG_PROPERTY_NAME, kotlinx.coroutines.DEBUG_PROPERTY_VALUE_ON)
     }
