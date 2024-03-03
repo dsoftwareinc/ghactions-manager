@@ -23,6 +23,9 @@ import org.jetbrains.plugins.github.api.data.GithubBranch
 import org.jetbrains.plugins.github.api.data.GithubResponsePage
 import org.jetbrains.plugins.github.api.data.GithubUserWithPermissions
 import org.jetbrains.plugins.github.util.GHCompatibilityUtil
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 import javax.swing.JPanel
 
 class TestWindowTabControllerWorkflowRunsPanel : GitHubActionsManagerBaseTest() {
@@ -34,6 +37,7 @@ class TestWindowTabControllerWorkflowRunsPanel : GitHubActionsManagerBaseTest() 
         every { GHCompatibilityUtil.getOrRequestToken(any(), any()) } returns "token"
     }
 
+    @BeforeEach
     override fun setUp() {
         super.setUp()
         mockGhActionsService(setOf("http://github.com/owner/repo"), setOf("account1"))
@@ -42,15 +46,17 @@ class TestWindowTabControllerWorkflowRunsPanel : GitHubActionsManagerBaseTest() 
         every { GithubApiRequestExecutor.Factory.getInstance() } returns mockk<GithubApiRequestExecutor.Factory> {
             every { create(token = any()) } returns executorMock
         }
-        factory.init(toolWindow)
+        toolWindowFactory.init(toolWindow)
         executeSomeCoroutineTasksAndDispatchAllInvocationEvents(project)
     }
 
-    public override fun tearDown() {
+    @AfterEach
+    override fun tearDown() {
         clearAllMocks()
         super.tearDown()
     }
 
+    @Test
     fun `test repo with different workflow-runs`() {
         val workflowRunsList = listOf(
             createWorkflowRun(id = 1, status = "in_progress"),
@@ -67,7 +73,8 @@ class TestWindowTabControllerWorkflowRunsPanel : GitHubActionsManagerBaseTest() 
         TestCase.assertEquals(workflowRunsList.size, workflowRunsListPanel.runListComponent.model.size)
     }
 
-//    // todo: fix this test
+    //    // todo: fix this test
+//    @Test
 //    fun `test repo without workflow-runs`() {
 //        mockGithubApiRequestExecutor(emptyList())
 //
@@ -75,8 +82,8 @@ class TestWindowTabControllerWorkflowRunsPanel : GitHubActionsManagerBaseTest() 
 //        executeSomeCoroutineTasksAndDispatchAllInvocationEvents(project)
 //
 //        // assert
-//        assertTabsAndPanels()
-//        TestCase.assertEquals(0, workflowRunSelectionContext.runsListModel.size)
+//        val workflowRunsListPanel = assertTabsAndPanels()
+//        TestCase.assertEquals(0, workflowRunsListPanel.runListComponent.model.size)
 //    }
 
 

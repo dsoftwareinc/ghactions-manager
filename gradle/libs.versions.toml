@@ -5,7 +5,7 @@ kotlinxSerialization = "1.6.0"
 kotlinxCoroutines = "1.8.0"
 
 # plugins
-kotlin = "1.9.21"
+kotlin = "1.9.22"
 changelog = "2.2.0"
 gradleIntelliJPlugin = "1.17.2"
 kover = "0.7.5"

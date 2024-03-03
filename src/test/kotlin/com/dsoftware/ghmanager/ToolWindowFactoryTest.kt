@@ -10,14 +10,17 @@ import io.mockk.mockk
 import io.mockk.mockkObject
 import io.mockk.mockkStatic
 import io.mockk.verify
-import junit.framework.TestCase
 import org.jetbrains.plugins.github.api.GithubApiRequestExecutor
 import org.jetbrains.plugins.github.util.GHCompatibilityUtil
+import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 import javax.swing.JPanel
 
 
 class ToolWindowFactoryTest : GitHubActionsManagerBaseTest() {
     private lateinit var requestExecutorfactoryMock: GithubApiRequestExecutor.Factory
+    @BeforeEach
     override fun setUp() {
         super.setUp()
         requestExecutorfactoryMock = mockk<GithubApiRequestExecutor.Factory> {
@@ -27,68 +30,72 @@ class ToolWindowFactoryTest : GitHubActionsManagerBaseTest() {
         every { GithubApiRequestExecutor.Factory.getInstance() } returns requestExecutorfactoryMock
     }
 
+    @Test
     fun `test Panel No GitHub Account`() {
         mockGhActionsService(emptySet(), emptySet())
 
-        factory.init(toolWindow)
+        toolWindowFactory.init(toolWindow)
         executeSomeCoroutineTasksAndDispatchAllInvocationEvents(project)
 
-        TestCase.assertEquals(1, toolWindow.contentManager.contentCount)
-        TestCase.assertEquals("Workflows", toolWindow.contentManager.contents[0].displayName)
+        Assertions.assertEquals(1, toolWindow.contentManager.contentCount)
+        Assertions.assertEquals("Workflows", toolWindow.contentManager.contents[0].displayName)
         val component = toolWindow.contentManager.contents[0].component
-        TestCase.assertTrue(component is JBPanelWithEmptyText)
+        Assertions.assertTrue(component is JBPanelWithEmptyText)
         val panel = component as JBPanelWithEmptyText
 
-        TestCase.assertEquals(message("factory.empty-panel.no-account-configured"), panel.emptyText.text)
+        Assertions.assertEquals(message("factory.empty-panel.no-account-configured"), panel.emptyText.text)
         val subComponents = panel.emptyText.wrappedFragmentsIterable.map { it as SimpleColoredComponent }.toList()
-        TestCase.assertEquals(
+        Assertions.assertEquals(
             message("factory.empty-panel.no-account-configured"),
             subComponents[0].getCharSequence(true)
         )
-        TestCase.assertEquals(message("factory.go.to.github-settings"), subComponents[1].getCharSequence(true))
-        TestCase.assertEquals(message("factory.go.to.ghmanager-settings"), subComponents[2].getCharSequence(true))
+        Assertions.assertEquals(message("factory.go.to.github-settings"), subComponents[1].getCharSequence(true))
+        Assertions.assertEquals(message("factory.go.to.ghmanager-settings"), subComponents[2].getCharSequence(true))
         verify {
             requestExecutorfactoryMock.create(token = any()) wasNot Called
         }
     }
 
+    @Test
     fun `test GitHub Account exists but no repositories configured`() {
         mockGhActionsService(emptySet(), setOf("account1"))
 
-        factory.init(toolWindow)
+        toolWindowFactory.init(toolWindow)
         executeSomeCoroutineTasksAndDispatchAllInvocationEvents(project)
 
-        TestCase.assertEquals(1, toolWindow.contentManager.contentCount)
+        Assertions.assertEquals(1, toolWindow.contentManager.contentCount)
         val component = toolWindow.contentManager.contents[0].component
-        TestCase.assertEquals(message("factory.default-tab-title"), toolWindow.contentManager.contents[0].displayName)
-        TestCase.assertTrue(component is JBPanelWithEmptyText)
+        Assertions.assertEquals(message("factory.default-tab-title"), toolWindow.contentManager.contents[0].displayName)
+        Assertions.assertTrue(component is JBPanelWithEmptyText)
         val panel = component as JBPanelWithEmptyText
-        TestCase.assertEquals(message("factory.empty-panel.no-repos-in-project"), panel.emptyText.text)
+        Assertions.assertEquals(message("factory.empty-panel.no-repos-in-project"), panel.emptyText.text)
         verify {
             requestExecutorfactoryMock.create(token = any()) wasNot Called
         }
     }
 
+    @Test
     fun `test GitHub Account and repos configured shows repo-panel`() {
         mockkStatic(GHCompatibilityUtil::class)
         every { GHCompatibilityUtil.getOrRequestToken(any(), any()) } returns "token"
         mockGhActionsService(setOf("http://github.com/owner/repo"), setOf("account1"))
         mockSettingsService(GithubActionsManagerSettings(useCustomRepos = false))
 
-        factory.init(toolWindow)
+        toolWindowFactory.init(toolWindow)
         executeSomeCoroutineTasksAndDispatchAllInvocationEvents(project)
 
-        TestCase.assertEquals(1, toolWindow.contentManager.contentCount)
+        Assertions.assertEquals(1, toolWindow.contentManager.contentCount)
         val content = toolWindow.contentManager.contents[0]
-        TestCase.assertEquals("owner/repo", content.displayName)
-        TestCase.assertTrue(content.component is JPanel)
+        Assertions.assertEquals("owner/repo", content.displayName)
+        Assertions.assertTrue(content.component is JPanel)
         val panel = content.component as JPanel
-        TestCase.assertEquals(1, panel.componentCount)
+        Assertions.assertEquals(1, panel.componentCount)
         verify {
             requestExecutorfactoryMock.create(token = any())
         }
     }
 
+    @Test
     fun `test when using settings custom repos + zero repos`() {
         mockkStatic(GHCompatibilityUtil::class)
         every { GHCompatibilityUtil.getOrRequestToken(any(), any()) } returns "token"
@@ -103,23 +110,23 @@ class ToolWindowFactoryTest : GitHubActionsManagerBaseTest() {
             )
         )
 
-        factory.init(toolWindow)
+        toolWindowFactory.init(toolWindow)
         executeSomeCoroutineTasksAndDispatchAllInvocationEvents(project)
 
         val content = toolWindow.contentManager.contents[0]
-        TestCase.assertEquals(message("factory.default-tab-title"), content.displayName)
-        TestCase.assertEquals(1, toolWindow.contentManager.contentCount)
+        Assertions.assertEquals(message("factory.default-tab-title"), content.displayName)
+        Assertions.assertEquals(1, toolWindow.contentManager.contentCount)
         val component = toolWindow.contentManager.contents[0].component
-        TestCase.assertTrue(component is JBPanelWithEmptyText)
+        Assertions.assertTrue(component is JBPanelWithEmptyText)
         val panel = component as JBPanelWithEmptyText
 
-        TestCase.assertEquals(message("factory.empty-panel.no-repos-configured"), panel.emptyText.text)
+        Assertions.assertEquals(message("factory.empty-panel.no-repos-configured"), panel.emptyText.text)
         val subComponents = panel.emptyText.wrappedFragmentsIterable.map { it as SimpleColoredComponent }.toList()
-        TestCase.assertEquals(
+        Assertions.assertEquals(
             message("factory.empty-panel.no-repos-configured"),
             subComponents[0].getCharSequence(true)
         )
-        TestCase.assertEquals(message("factory.go.to.ghmanager-settings"), subComponents[1].getCharSequence(true))
+        Assertions.assertEquals(message("factory.go.to.ghmanager-settings"), subComponents[1].getCharSequence(true))
         verify {
             requestExecutorfactoryMock.create(token = any()) wasNot Called
         }
