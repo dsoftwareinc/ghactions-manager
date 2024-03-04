@@ -13,6 +13,7 @@ import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.CheckedDisposable
 import com.intellij.openapi.util.Disposer
+import com.intellij.openapi.wm.ToolWindow
 import com.intellij.ui.CollectionListModel
 import org.jetbrains.plugins.github.api.GithubApiRequestExecutor
 import org.jetbrains.plugins.github.api.data.GHUser
@@ -24,7 +25,7 @@ import java.util.concurrent.ScheduledFuture
 
 class WorkflowRunSelectionContext internal constructor(
     parentDisposable: CheckedDisposable,
-    val project: Project,
+    val toolWindow: ToolWindow,
     val account: GithubAccount,
     val dataLoader: SingleRunDataLoader,
     val repositoryMapping: GHGitRepositoryMapping,
@@ -41,7 +42,7 @@ class WorkflowRunSelectionContext internal constructor(
     private val selectedWfRun: WorkflowRun?
         get() = runSelectionHolder.selection
     val runsListLoader: WorkflowRunListLoader = WorkflowRunListLoader(
-        project,
+        toolWindow,
         this,
         requestExecutor,
         RepositoryCoordinates(account.server, fullPath),
@@ -84,7 +85,7 @@ class WorkflowRunSelectionContext internal constructor(
             jobDataProviderLoadModel.value = null
             selectedRunDisposable.dispose()
         }
-        task = ToolbarUtil.executeTaskAtSettingsFrequency(project) {
+        task = ToolbarUtil.executeTaskAtSettingsFrequency(toolWindow.project) {
             if (selectedWfRun == null) {
                 return@executeTaskAtSettingsFrequency
             }

@@ -13,7 +13,7 @@ internal class WfRunsSearchPanelViewModel(
     val context: WorkflowRunSelectionContext,
 ) : ReviewListSearchPanelViewModelBase<WfRunsListSearchValue, WorkflowRunListQuickFilter>(
     scope,
-    WfRunsSearchHistoryModel(context.project.service<WfRunsListPersistentSearchHistory>()),
+    WfRunsSearchHistoryModel(context.toolWindow.project.service<WfRunsListPersistentSearchHistory>()),
     emptySearch = WfRunsListSearchValue.EMPTY,
     defaultQuickFilter = WorkflowRunListQuickFilter.All(),
 ) {

@@ -30,7 +30,6 @@ import javax.swing.JPanel
 
 class TestWindowTabControllerWorkflowRunsPanel : GitHubActionsManagerBaseTest() {
     private lateinit var executorMock: GithubApiRequestExecutor
-    private lateinit var workflowRunSelectionContext: WorkflowRunSelectionContext
 
     init {
         mockkStatic(GHCompatibilityUtil::class)
@@ -47,7 +46,7 @@ class TestWindowTabControllerWorkflowRunsPanel : GitHubActionsManagerBaseTest() 
             every { create(token = any()) } returns executorMock
         }
         toolWindowFactory.init(toolWindow)
-        executeSomeCoroutineTasksAndDispatchAllInvocationEvents(project)
+        executeSomeCoroutineTasksAndDispatchAllInvocationEvents(projectRule.project)
     }
 
     @Test
@@ -60,7 +59,7 @@ class TestWindowTabControllerWorkflowRunsPanel : GitHubActionsManagerBaseTest() 
         mockGithubApiRequestExecutor(workflowRunsList)
 
         // act
-        executeSomeCoroutineTasksAndDispatchAllInvocationEvents(project)
+        executeSomeCoroutineTasksAndDispatchAllInvocationEvents(projectRule.project)
 
         // assert
         val workflowRunsListPanel = assertTabsAndPanels()
@@ -73,7 +72,7 @@ class TestWindowTabControllerWorkflowRunsPanel : GitHubActionsManagerBaseTest() 
 //        mockGithubApiRequestExecutor(emptyList())
 //
 //        // act
-//        executeSomeCoroutineTasksAndDispatchAllInvocationEvents(project)
+//        executeSomeCoroutineTasksAndDispatchAllInvocationEvents(projectRule.project)
 //
 //        // assert
 //        val workflowRunsListPanel = assertTabsAndPanels()
@@ -124,9 +123,9 @@ class TestWindowTabControllerWorkflowRunsPanel : GitHubActionsManagerBaseTest() 
         TestCase.assertTrue(content.component is JPanel)
         val tabWrapPanel = content.component as JPanel
         TestCase.assertEquals(1, tabWrapPanel.componentCount)
-        val workflowDataContextService = project.service<WorkflowDataContextService>()
+        val workflowDataContextService = projectRule.project.service<WorkflowDataContextService>()
         TestCase.assertEquals(1, workflowDataContextService.repositories.size)
-        workflowRunSelectionContext = workflowDataContextService.repositories.values.first().value.get()
+        val workflowRunSelectionContext = workflowDataContextService.repositories.values.first().value.get()
         verify(atLeast = 1) {
             executorMock.execute(any(), matchApiRequestUrl<WorkflowTypes>("/actions/workflows"))
             executorMock.execute(

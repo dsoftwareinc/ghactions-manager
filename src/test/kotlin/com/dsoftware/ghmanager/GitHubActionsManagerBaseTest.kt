@@ -11,11 +11,10 @@ import com.intellij.platform.ide.progress.runWithModalProgressBlocking
 import com.intellij.testFramework.PlatformTestUtil
 import com.intellij.testFramework.TestApplicationManager
 import com.intellij.testFramework.common.waitForAppLeakingThreads
-import com.intellij.testFramework.fixtures.IdeaProjectTestFixture
-import com.intellij.testFramework.fixtures.IdeaTestFixtureFactory
 import com.intellij.testFramework.junit5.RunInEdt
 import com.intellij.testFramework.junit5.TestApplication
 import com.intellij.testFramework.registerServiceInstance
+import com.intellij.testFramework.rules.ProjectModelExtension
 import com.intellij.testFramework.runInEdtAndWait
 import com.intellij.toolWindow.ToolWindowHeadlessManagerImpl
 import com.intellij.util.concurrency.annotations.RequiresEdt
@@ -31,6 +30,7 @@ import org.jetbrains.plugins.github.util.GHGitRepositoryMapping
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.TestInfo
+import org.junit.jupiter.api.extension.RegisterExtension
 import java.util.concurrent.TimeUnit
 
 @RunInEdt(writeIntent = true)
@@ -40,27 +40,26 @@ abstract class GitHubActionsManagerBaseTest {
     private val host: GithubServerPath = GithubServerPath.from("github.com")
     protected val toolWindowFactory: GhActionsToolWindowFactory = GhActionsToolWindowFactory()
     private lateinit var testInfo: TestInfo
-    private lateinit var myFixture: IdeaProjectTestFixture
+
+
+    @JvmField
+    @RegisterExtension
+    protected val projectRule: ProjectModelExtension = ProjectModelExtension()
+    private lateinit var toolWindowManager: ToolWindowHeadlessManagerImpl
     protected lateinit var toolWindow: ToolWindow
-    protected lateinit var project: Project
 
     @BeforeEach
     open fun setUp(testInfo: TestInfo) {
         this.testInfo = testInfo
-        val fixtureBuilder =
-            IdeaTestFixtureFactory.getFixtureFactory().createLightFixtureBuilder(testInfo.displayName)
-        myFixture = fixtureBuilder.fixture
-        myFixture.setUp()
-        project = myFixture.project
-
-        toolWindow = ToolWindowHeadlessManagerImpl.MockToolWindow(project)
+        toolWindowManager = ToolWindowHeadlessManagerImpl(projectRule.project)
+        toolWindow = toolWindowManager.doRegisterToolWindow("test")
     }
 
     @AfterEach
     open fun tearDown() {
-        TestApplicationManager.tearDownProjectAndApp(project)
-        myFixture.tearDown()
-
+        toolWindowManager.unregisterToolWindow("test")
+        executeSomeCoroutineTasksAndDispatchAllInvocationEvents(projectRule.project)
+        TestApplicationManager.tearDownProjectAndApp(projectRule.project)
         waitForAppLeakingThreads(10, TimeUnit.SECONDS)
     }
 
@@ -83,7 +82,7 @@ abstract class GitHubActionsManagerBaseTest {
             }
         }.toSet()
 
-        project.registerServiceInstance(GhActionsService::class.java, object : GhActionsService {
+        projectRule.project.registerServiceInstance(GhActionsService::class.java, object : GhActionsService {
             override val knownRepositoriesState: StateFlow<Set<GHGitRepositoryMapping>>
                 get() = MutableStateFlow(repos)
             override val knownRepositories: Set<GHGitRepositoryMapping>
@@ -97,7 +96,7 @@ abstract class GitHubActionsManagerBaseTest {
         val settingsService = mockk<GhActionsSettingsService> {
             every { state } returns settings
         }
-        project.registerServiceInstance(GhActionsSettingsService::class.java, settingsService)
+        projectRule.project.registerServiceInstance(GhActionsSettingsService::class.java, settingsService)
     }
 
 }

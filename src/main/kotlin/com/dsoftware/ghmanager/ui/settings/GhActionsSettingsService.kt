@@ -1,5 +1,6 @@
 package com.dsoftware.ghmanager.ui.settings
 
+import com.intellij.openapi.Disposable
 import com.intellij.openapi.components.PersistentStateComponent
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.components.State
@@ -29,7 +30,7 @@ data class GithubActionsManagerSettings(
     ],
     reportStatistic = false,
 )
-class GhActionsSettingsService : PersistentStateComponent<GithubActionsManagerSettings> {
+class GhActionsSettingsService : PersistentStateComponent<GithubActionsManagerSettings>,Disposable {
     private var state = GithubActionsManagerSettings()
 
     override fun getState(): GithubActionsManagerSettings {
@@ -39,4 +40,6 @@ class GhActionsSettingsService : PersistentStateComponent<GithubActionsManagerSe
     override fun loadState(state: GithubActionsManagerSettings) {
         this.state = state
     }
+
+    override fun dispose() {}
 }

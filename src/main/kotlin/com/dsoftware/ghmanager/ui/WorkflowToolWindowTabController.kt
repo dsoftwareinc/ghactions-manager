@@ -41,11 +41,11 @@ class WorkflowToolWindowTabController(
     private val toolWindow: ToolWindow,
 ) {
     val loadingModel: GHCompletableFutureLoadingModel<WorkflowRunSelectionContext>
+    val panel: JComponent
     private val settingsService = toolWindow.project.service<GhActionsSettingsService>()
     private val actionManager = ActionManager.getInstance()
-    val disposable: CheckedDisposable =
+    private var checkedDisposable: CheckedDisposable =
         Disposer.newCheckedDisposable(parentDisposable, "WorkflowToolWindowTabController")
-    val panel: JComponent
     private var contentDisposable by Delegates.observable<Disposable?>(null) { _, oldValue, newValue ->
         if (oldValue != null) Disposer.dispose(oldValue)
         if (newValue != null) Disposer.register(parentDisposable, newValue)
@@ -56,19 +56,18 @@ class WorkflowToolWindowTabController(
         contentDisposable = Disposable {
             dataContextRepository.clearContext(repositoryMapping)
         }
-        loadingModel = GHCompletableFutureLoadingModel<WorkflowRunSelectionContext>(disposable).apply {
+        loadingModel = GHCompletableFutureLoadingModel<WorkflowRunSelectionContext>(checkedDisposable).apply {
             future = dataContextRepository.acquireContext(
-                disposable,
+                checkedDisposable,
                 repositoryMapping,
                 ghAccount,
                 toolWindow
             )
         }
-
         val errorHandler = GHApiLoadingErrorHandler(toolWindow.project, ghAccount) {
             dataContextRepository.clearContext(repositoryMapping)
             loadingModel.future = dataContextRepository.acquireContext(
-                disposable,
+                checkedDisposable,
                 repositoryMapping,
                 ghAccount,
                 toolWindow
@@ -84,10 +83,11 @@ class WorkflowToolWindowTabController(
             ClientProperty.put(content, AnimatedIcon.ANIMATION_IN_RENDERER_ALLOWED, true)
             content
         }
+
     }
 
     private fun createContent(selectedRunContext: WorkflowRunSelectionContext): JComponent {
-        val workflowRunsListLoadingPanel = WorkflowRunsListPanel(disposable, selectedRunContext)
+        val workflowRunsListLoadingPanel = WorkflowRunsListPanel(checkedDisposable, selectedRunContext)
         val jobLoadingPanel = createJobsPanel(selectedRunContext)
         val logLoadingPanel = createLogPanel(selectedRunContext)
 
@@ -103,7 +103,7 @@ class WorkflowToolWindowTabController(
             secondComponent = logLoadingPanel
                 .also {
                     (actionManager.getAction("Github.Workflow.Log.List.Reload") as RefreshAction)
-                        .registerCustomShortcutSet(it, disposable)
+                        .registerCustomShortcutSet(it, checkedDisposable)
                 }
         }
 
@@ -156,7 +156,7 @@ class WorkflowToolWindowTabController(
             GHApiLoadingErrorHandler(toolWindow.project, ghAccount) {}
         ).create { _, _ ->
             JobsListPanel(
-                disposable,
+                checkedDisposable,
                 jobsLoadingModel.jobsModel,
                 selectedRunContext,
                 infoInNewLine = !settingsService.state.jobListAboveLogs,

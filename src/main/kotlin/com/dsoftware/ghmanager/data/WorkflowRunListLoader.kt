@@ -18,6 +18,7 @@ import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Disposer
+import com.intellij.openapi.wm.ToolWindow
 import com.intellij.ui.CollectionListModel
 import com.intellij.util.EventDispatcher
 import org.jetbrains.plugins.github.api.GithubApiRequestExecutor
@@ -30,13 +31,13 @@ import java.util.concurrent.ScheduledFuture
 import kotlin.properties.Delegates
 
 class WorkflowRunListLoader(
-    project: Project,
+    toolWindow: ToolWindow,
     parentDisposable: Disposable,
     private val requestExecutor: GithubApiRequestExecutor,
     private val repositoryCoordinates: RepositoryCoordinates,
     private var filter: WorkflowRunFilter,
 ) : Disposable {
-    private val settingsService = project.service<GhActionsSettingsService>()
+    private val settingsService = toolWindow.project.service<GhActionsSettingsService>()
     val workflowRunsListModel = CollectionListModel<WorkflowRun>()
     val repoCollaborators = ArrayList<GHUser>()
     val repoBranches = ArrayList<String>()
@@ -62,7 +63,7 @@ class WorkflowRunListLoader(
     init {
         LOG.debug("Initialize WorkflowRunListLoader for ${repositoryCoordinates.repositoryPath}")
         Disposer.register(parentDisposable, this)
-        task = ToolbarUtil.executeTaskAtSettingsFrequency(project) {
+        task = ToolbarUtil.executeTaskAtSettingsFrequency(toolWindow.project) {
             if (refreshRuns && error == null) loadMore(update = true)
         }
         LOG.debug("emptying workflowRunsListModel")

@@ -1,6 +1,5 @@
 package com.dsoftware.ghmanager.data
 
-import com.dsoftware.ghmanager.api.WorkflowRunFilter
 import com.dsoftware.ghmanager.data.providers.SingleRunDataLoader
 import com.dsoftware.ghmanager.ui.settings.GhActionsSettingsService
 import com.intellij.collaboration.async.CompletableFutureUtil.submitIOTask
@@ -16,7 +15,6 @@ import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.wm.ToolWindow
 import com.intellij.util.concurrency.annotations.RequiresBackgroundThread
 import com.intellij.util.concurrency.annotations.RequiresEdt
-import git4idea.remote.GitRemoteUrlCoordinates
 import org.jetbrains.plugins.github.api.GHRepositoryPath
 import org.jetbrains.plugins.github.api.GithubApiRequestExecutor
 import org.jetbrains.plugins.github.api.GithubServerPath
@@ -24,7 +22,6 @@ import org.jetbrains.plugins.github.authentication.accounts.GithubAccount
 import org.jetbrains.plugins.github.exceptions.GithubMissingTokenException
 import org.jetbrains.plugins.github.util.GHCompatibilityUtil
 import org.jetbrains.plugins.github.util.GHGitRepositoryMapping
-import org.jetbrains.plugins.github.util.GithubUrlUtil
 import org.jetbrains.plugins.github.util.LazyCancellableBackgroundProcessValue
 import java.io.IOException
 import java.util.concurrent.CompletableFuture
@@ -44,7 +41,7 @@ class WorkflowDataContextService(private val project: Project) {
 
     @RequiresEdt
     fun acquireContext(
-        disposable: CheckedDisposable,
+        checkedDisposable: CheckedDisposable,
         repositoryMapping: GHGitRepositoryMapping,
         account: GithubAccount,
         toolWindow: ToolWindow,
@@ -54,7 +51,7 @@ class WorkflowDataContextService(private val project: Project) {
                 LOG.debug("Creating data context for ${repositoryMapping.remote.url}")
                 ProgressManager.getInstance().submitIOTask(indicator) {
                     try {
-                        getContext(disposable, account, repositoryMapping, toolWindow)
+                        getContext(checkedDisposable, account, repositoryMapping, toolWindow)
                     } catch (e: Exception) {
                         if (e !is ProcessCanceledException)
                             LOG.warn("Error occurred while creating data context", e)
@@ -62,7 +59,7 @@ class WorkflowDataContextService(private val project: Project) {
                     }
                 }.successOnEdt { ctx ->
                     LOG.debug("Registering context for ${repositoryMapping.remote.url}")
-                    Disposer.register(disposable, ctx)
+                    Disposer.register(toolWindow.disposable, ctx)
                     ctx
                 }
             }
@@ -86,9 +83,14 @@ class WorkflowDataContextService(private val project: Project) {
 
         val requestExecutor = GithubApiRequestExecutor.Factory.getInstance().create(token = token)
         val singleRunDataLoader = SingleRunDataLoader(requestExecutor)
+        if (checkedDisposable.isDisposed) {
+            throw ProcessCanceledException(
+                RuntimeException("Skipped creating data context for ${repositoryMapping.remote.url} because it was disposed")
+            )
+        }
         return WorkflowRunSelectionContext(
             checkedDisposable,
-            toolWindow.project,
+            toolWindow,
             account,
             singleRunDataLoader,
             repositoryMapping,

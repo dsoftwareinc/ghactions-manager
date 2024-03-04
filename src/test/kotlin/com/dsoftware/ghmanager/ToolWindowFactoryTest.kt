@@ -21,6 +21,7 @@ import javax.swing.JPanel
 
 class ToolWindowFactoryTest : GitHubActionsManagerBaseTest() {
     private lateinit var requestExecutorfactoryMock: GithubApiRequestExecutor.Factory
+
     @BeforeEach
     override fun setUp(testInfo: TestInfo) {
         super.setUp(testInfo)
@@ -34,9 +35,8 @@ class ToolWindowFactoryTest : GitHubActionsManagerBaseTest() {
     @Test
     fun `test Panel No GitHub Account`() {
         mockGhActionsService(emptySet(), emptySet())
-
         toolWindowFactory.init(toolWindow)
-        executeSomeCoroutineTasksAndDispatchAllInvocationEvents(project)
+        executeSomeCoroutineTasksAndDispatchAllInvocationEvents(projectRule.project)
 
         Assertions.assertEquals(1, toolWindow.contentManager.contentCount)
         Assertions.assertEquals("Workflows", toolWindow.contentManager.contents[0].displayName)
@@ -62,17 +62,21 @@ class ToolWindowFactoryTest : GitHubActionsManagerBaseTest() {
         mockGhActionsService(emptySet(), setOf("account1"))
 
         toolWindowFactory.init(toolWindow)
-        executeSomeCoroutineTasksAndDispatchAllInvocationEvents(project)
+        executeSomeCoroutineTasksAndDispatchAllInvocationEvents(projectRule.project)
 
         Assertions.assertEquals(1, toolWindow.contentManager.contentCount)
         val component = toolWindow.contentManager.contents[0].component
-        Assertions.assertEquals(message("factory.default-tab-title"), toolWindow.contentManager.contents[0].displayName)
+        Assertions.assertEquals(
+            message("factory.default-tab-title"),
+            toolWindow.contentManager.contents[0].displayName
+        )
         Assertions.assertTrue(component is JBPanelWithEmptyText)
         val panel = component as JBPanelWithEmptyText
         Assertions.assertEquals(message("factory.empty-panel.no-repos-in-project"), panel.emptyText.text)
         verify {
             requestExecutorfactoryMock.create(token = any()) wasNot Called
         }
+
     }
 
     @Test
@@ -83,7 +87,7 @@ class ToolWindowFactoryTest : GitHubActionsManagerBaseTest() {
         mockSettingsService(GithubActionsManagerSettings(useCustomRepos = false))
 
         toolWindowFactory.init(toolWindow)
-        executeSomeCoroutineTasksAndDispatchAllInvocationEvents(project)
+        executeSomeCoroutineTasksAndDispatchAllInvocationEvents(projectRule.project)
 
         Assertions.assertEquals(1, toolWindow.contentManager.contentCount)
         val content = toolWindow.contentManager.contents[0]
@@ -94,6 +98,8 @@ class ToolWindowFactoryTest : GitHubActionsManagerBaseTest() {
         verify {
             requestExecutorfactoryMock.create(token = any())
         }
+
+
     }
 
     @Test
@@ -110,9 +116,8 @@ class ToolWindowFactoryTest : GitHubActionsManagerBaseTest() {
                 )
             )
         )
-
         toolWindowFactory.init(toolWindow)
-        executeSomeCoroutineTasksAndDispatchAllInvocationEvents(project)
+        executeSomeCoroutineTasksAndDispatchAllInvocationEvents(projectRule.project)
 
         val content = toolWindow.contentManager.contents[0]
         Assertions.assertEquals(message("factory.default-tab-title"), content.displayName)
@@ -131,5 +136,6 @@ class ToolWindowFactoryTest : GitHubActionsManagerBaseTest() {
         verify {
             requestExecutorfactoryMock.create(token = any()) wasNot Called
         }
+
     }
 }
