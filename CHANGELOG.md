@@ -14,6 +14,10 @@
 
 - Major refactoring better performance and code quality
 
+### 🐛 Bug Fixes
+
+- Fix not allowing custom repositories on plugin settings
+
 ## 1.17.0
 
 ### 🚀 Features
