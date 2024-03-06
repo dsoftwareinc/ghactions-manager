@@ -130,7 +130,9 @@ class WorkflowRunsListPanel(
                     workflowRunsLoader.loading -> message("panel.workflow-runs.loading")
                     workflowRunsLoader.workflowRunsListModel.isEmpty -> message("panel.workflow-runs.no-runs")
                     else -> message(
-                        "panel.workflow-runs.loaded", workflowRunsLoader.workflowRunsListModel.size, workflowRunsLoader.totalCount
+                        "panel.workflow-runs.loaded",
+                        workflowRunsLoader.workflowRunsListModel.size,
+                        workflowRunsLoader.totalCount
                     )
                 }
             )

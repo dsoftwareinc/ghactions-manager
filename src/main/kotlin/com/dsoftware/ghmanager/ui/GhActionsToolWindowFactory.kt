@@ -22,8 +22,6 @@ import com.intellij.ui.components.JBPanelWithEmptyText
 import com.intellij.ui.content.ContentManagerEvent
 import com.intellij.ui.content.ContentManagerListener
 import com.intellij.util.ui.UIUtil
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import java.awt.BorderLayout
 import javax.swing.JPanel
@@ -32,18 +30,17 @@ import javax.swing.JPanel
 class GhActionsToolWindowFactory : ToolWindowFactory, DumbAware {
     private lateinit var settingsService: GhActionsSettingsService
     private lateinit var ghActionsService: GhActionsService
-    private val scope = CoroutineScope(SupervisorJob())
     override fun init(toolWindow: ToolWindow) {
         val project = toolWindow.project
         ghActionsService = project.service<GhActionsService>()
         settingsService = project.service<GhActionsSettingsService>()
 
-        scope.launch {
+        ghActionsService.coroutineScope.launch {
             ghActionsService.knownRepositoriesState.collect {
                 createToolWindowContent(toolWindow.project, toolWindow)
             }
         }
-        scope.launch {
+        ghActionsService.coroutineScope.launch {
             ghActionsService.accountsState.collect {
                 createToolWindowContent(toolWindow.project, toolWindow)
             }
@@ -56,9 +53,8 @@ class GhActionsToolWindowFactory : ToolWindowFactory, DumbAware {
     }
 
     override fun createToolWindowContent(project: Project, toolWindow: ToolWindow) {
-        val projectRepos = ghActionsService.knownRepositories
-
         ApplicationManager.getApplication().invokeLater {
+            val projectRepos = ghActionsService.knownRepositories
             toolWindow.contentManager.removeAllContents(true)
             val countRepos = projectRepos.count {
                 settingsService.state.customRepos[it.remote.url]?.included ?: false

@@ -32,7 +32,13 @@ data class WfRunsListSearchValue(
     }
 
     fun toWorkflowRunFilter(): WorkflowRunFilter {
-        return WorkflowRunFilter(branch, status?.toString()?.lowercase(), actor?.shortName, event?.value, workflowType?.id)
+        return WorkflowRunFilter(
+            branch,
+            status?.toString()?.lowercase(),
+            actor?.shortName,
+            event?.value,
+            workflowType?.id
+        )
     }
 
     enum class Status {
