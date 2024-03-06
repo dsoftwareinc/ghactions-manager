@@ -4,8 +4,10 @@ import ai.grazie.utils.applyIf
 import com.dsoftware.ghmanager.data.GhActionsService
 import com.dsoftware.ghmanager.data.WorkflowDataContextService
 import com.dsoftware.ghmanager.i18n.MessagesBundle
+import com.dsoftware.ghmanager.ui.settings.GhActionsManagerConfigurable
 import com.dsoftware.ghmanager.ui.settings.GhActionsSettingsService
 import com.dsoftware.ghmanager.ui.settings.GithubActionsManagerSettings
+import com.intellij.openapi.Disposable
 import com.intellij.openapi.actionSystem.ActionManager
 import com.intellij.openapi.actionSystem.ActionPlaces
 import com.intellij.openapi.actionSystem.DefaultActionGroup
@@ -32,7 +34,7 @@ enum class GhActionsMgrToolWindowState {
     REPOS,
 }
 
-class GhActionsMgrToolWindowContent(val toolWindow: ToolWindow) {
+class GhActionsMgrToolWindowContent(val toolWindow: ToolWindow) : Disposable {
     private val settingsService: GhActionsSettingsService
     private val ghActionsService: GhActionsService
 
@@ -43,10 +45,21 @@ class GhActionsMgrToolWindowContent(val toolWindow: ToolWindow) {
         val project = toolWindow.project
         ghActionsService = project.service<GhActionsService>()
         settingsService = project.service<GhActionsSettingsService>()
+        ApplicationManager.getApplication().messageBus.connect(this)
+            .subscribe(
+                GhActionsManagerConfigurable.SETTINGS_CHANGED,
+                object : GhActionsManagerConfigurable.SettingsChangedListener {
+                    override fun settingsChanged() = createContent()
+                })
+        Disposer.register(toolWindow.disposable, this)
     }
 
     fun init() {
         ghActionsService.registerToolWindow(this)
+    }
+
+    override fun dispose() {
+        ghActionsService.unregisterToolWindow(toolWindow)
     }
 
     fun createContent() {
@@ -64,8 +77,10 @@ class GhActionsMgrToolWindowContent(val toolWindow: ToolWindow) {
                 else -> GhActionsMgrToolWindowState.REPOS
             }
             if (state == nextState && nextState != GhActionsMgrToolWindowState.REPOS) {
+                LOG.debug("createContent: state is the same, not updating")
                 return@invokeLater
             }
+            LOG.debug("createContent: state changed from $state to $nextState")
             state = nextState
             currentReposWithPanels = emptySet()
             if (state == GhActionsMgrToolWindowState.NO_GITHUB_ACCOUNT) {
@@ -104,8 +119,11 @@ class GhActionsMgrToolWindowContent(val toolWindow: ToolWindow) {
                 || (settingsService.state.customRepos[it.remote.url]?.included ?: false)
         }.toSet()
         if (currentReposWithPanels == reposToHavePanel) {
+            LOG.debug("createRepoWorkflowsPanels: repos are the same, not updating")
             return
         }
+        val reposListAsString = reposToHavePanel.map { it.repositoryPath }.joinToString(separator = ",") { it }
+        LOG.debug("createRepoWorkflowsPanels: updating panels to $reposListAsString")
         currentReposWithPanels = reposToHavePanel
         toolWindow.contentManager.removeAllContents(true)
         currentReposWithPanels.forEach { repo ->

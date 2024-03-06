@@ -23,6 +23,7 @@ import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.yield
@@ -96,8 +97,8 @@ abstract class GitHubActionsManagerBaseTest {
                 get() = accounts
             override val accountsState: StateFlow<Collection<GithubAccount>>
                 get() = MutableStateFlow(accounts)
-            override val toolWindows: MutableSet<ToolWindow>
-                get() = mutableSetOf(toolWindow)
+            override val toolWindowsJobMap: MutableMap<ToolWindow,Job>
+                get() = mutableMapOf()
         })
     }
 

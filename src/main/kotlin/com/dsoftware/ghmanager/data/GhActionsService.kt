@@ -6,6 +6,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.wm.ToolWindow
 import git4idea.remote.hosting.knownRepositories
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import org.jetbrains.plugins.github.authentication.accounts.GHAccountManager
@@ -19,21 +20,26 @@ interface GhActionsService {
     val knownRepositories: Set<GHGitRepositoryMapping>
     val gitHubAccounts: Set<GithubAccount>
     val accountsState: StateFlow<Collection<GithubAccount>>
-    val toolWindows: MutableSet<ToolWindow>
+    val toolWindowsJobMap: MutableMap<ToolWindow, Job>
     fun guessAccountForRepository(repo: GHGitRepositoryMapping): GithubAccount? {
         return gitHubAccounts.firstOrNull { it.server.equals(repo.repository.serverPath, true) }
     }
 
     fun registerToolWindow(toolWindowContent: GhActionsMgrToolWindowContent) {
-        if (toolWindows.contains(toolWindowContent.toolWindow)) {
+        if (toolWindowsJobMap.containsKey(toolWindowContent.toolWindow)) {
             return
         }
-        toolWindows.add(toolWindowContent.toolWindow)
-        coroutineScope.launch {
-            knownRepositoriesState.collect { toolWindowContent.createContent() }
+        val job = coroutineScope.launch {
+            launch { knownRepositoriesState.collect { toolWindowContent.createContent() } }
+            launch { accountsState.collect { toolWindowContent.createContent() } }
         }
-        coroutineScope.launch {
-            accountsState.collect { toolWindowContent.createContent() }
+        toolWindowsJobMap[toolWindowContent.toolWindow] = job
+    }
+
+    fun unregisterToolWindow(toolWindow: ToolWindow){
+        if (toolWindowsJobMap.containsKey(toolWindow)) {
+            toolWindowsJobMap[toolWindow]?.cancel()
+            toolWindowsJobMap.remove(toolWindow)
         }
     }
 }
@@ -51,6 +57,6 @@ open class GhActionsServiceImpl(project: Project, override val coroutineScope: C
         get() = repositoriesManager.knownRepositories
     override val accountsState: StateFlow<Collection<GithubAccount>>
         get() = accountManager.accountsState
-    override val toolWindows: MutableSet<ToolWindow> = mutableSetOf()
+    override val toolWindowsJobMap: MutableMap<ToolWindow, Job> = mutableMapOf()
 
 }

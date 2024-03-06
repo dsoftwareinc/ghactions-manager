@@ -29,7 +29,7 @@ internal class GhActionsManagerConfigurable internal constructor(project: Projec
 
     override fun apply() {
         super.apply()
-        ApplicationManager.getApplication().messageBus.syncPublisher(Util.SETTINGS_CHANGED).settingsChanged()
+        ApplicationManager.getApplication().messageBus.syncPublisher(SETTINGS_CHANGED).settingsChanged()
     }
 
     override fun createPanel(): DialogPanel {
@@ -97,7 +97,7 @@ internal class GhActionsManagerConfigurable internal constructor(project: Projec
         fun settingsChanged()
     }
 
-    object Util {
+    companion object {
         @JvmField
         @Topic.AppLevel
         val SETTINGS_CHANGED = Topic(SettingsChangedListener::class.java, Topic.BroadcastDirection.NONE)
