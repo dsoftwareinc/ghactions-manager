@@ -4,8 +4,8 @@ import com.dsoftware.ghmanager.api.model.WorkflowRunJobs
 import com.dsoftware.ghmanager.createJob
 import com.dsoftware.ghmanager.withStep
 import org.jetbrains.plugins.github.api.GithubApiContentHelper
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.Test
 
 class LogParsingTests {
     @Test

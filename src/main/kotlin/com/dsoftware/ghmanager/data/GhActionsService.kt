@@ -38,7 +38,7 @@ interface GhActionsService {
         toolWindowsJobMap[toolWindowContent.toolWindow] = job
     }
 
-    fun unregisterToolWindow(toolWindow: ToolWindow){
+    fun unregisterToolWindow(toolWindow: ToolWindow) {
         if (toolWindowsJobMap.containsKey(toolWindow)) {
             toolWindowsJobMap[toolWindow]?.cancel()
             toolWindowsJobMap.remove(toolWindow)
@@ -46,7 +46,8 @@ interface GhActionsService {
     }
 }
 
-open class GhActionsServiceImpl(project: Project, override val coroutineScope: CoroutineScope) : GhActionsService, Disposable {
+open class GhActionsServiceImpl(project: Project, override val coroutineScope: CoroutineScope) : GhActionsService,
+    Disposable {
     private val repositoriesManager = project.service<GHHostedRepositoriesManager>()
     private val accountManager = service<GHAccountManager>()
 
