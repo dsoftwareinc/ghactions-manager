@@ -1,6 +1,7 @@
 package com.dsoftware.ghmanager
 
 import com.dsoftware.ghmanager.data.GhActionsService
+import com.dsoftware.ghmanager.ui.GhActionsMgrToolWindowContent
 import com.dsoftware.ghmanager.ui.GhActionsToolWindowFactory
 import com.dsoftware.ghmanager.ui.settings.GhActionsSettingsService
 import com.dsoftware.ghmanager.ui.settings.GithubActionsManagerSettings
@@ -21,6 +22,7 @@ import com.intellij.util.concurrency.annotations.RequiresEdt
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.yield
@@ -39,25 +41,25 @@ import java.util.concurrent.TimeUnit
 abstract class GitHubActionsManagerBaseTest {
 
     private val host: GithubServerPath = GithubServerPath.from("github.com")
-    protected val toolWindowFactory: GhActionsToolWindowFactory = GhActionsToolWindowFactory()
     private lateinit var testInfo: TestInfo
-
 
     @JvmField
     @RegisterExtension
     protected val projectRule: ProjectModelExtension = ProjectModelExtension()
-    private lateinit var toolWindowManager: ToolWindowHeadlessManagerImpl
+
     protected lateinit var toolWindow: ToolWindow
+    protected lateinit var toolWindowContent: GhActionsMgrToolWindowContent
 
     @BeforeEach
     open fun setUp(testInfo: TestInfo) {
         this.testInfo = testInfo
-        toolWindowManager = ToolWindowHeadlessManagerImpl(projectRule.project)
+        val toolWindowManager = ToolWindowHeadlessManagerImpl(projectRule.project)
         toolWindow = toolWindowManager.doRegisterToolWindow("test")
     }
 
     @AfterEach
     open fun tearDown() {
+        val toolWindowManager = ToolWindowHeadlessManagerImpl(projectRule.project)
         toolWindowManager.unregisterToolWindow("test")
         executeSomeCoroutineTasksAndDispatchAllInvocationEvents(projectRule.project)
         TestApplicationManager.tearDownProjectAndApp(projectRule.project)
@@ -74,7 +76,7 @@ abstract class GitHubActionsManagerBaseTest {
     }
 
     fun mockGhActionsService(repoUrls: Set<String>, accountNames: Collection<String>) {
-        val accounts = accountNames.map { GHAccountManager.createAccount(it, host) }
+        val accounts = accountNames.map { GHAccountManager.createAccount(it, host) }.toSet()
         val repos: Set<GHGitRepositoryMapping> = repoUrls.map {
             mockk<GHGitRepositoryMapping>().apply {
                 every { remote.url } returns it
@@ -85,17 +87,17 @@ abstract class GitHubActionsManagerBaseTest {
 
         projectRule.project.registerServiceInstance(GhActionsService::class.java, object : GhActionsService {
             override val coroutineScope: CoroutineScope
-                get() = TODO("Not yet implemented")
+                get() = CoroutineScope(Dispatchers.Default)
             override val knownRepositoriesState: StateFlow<Set<GHGitRepositoryMapping>>
                 get() = MutableStateFlow(repos)
             override val knownRepositories: Set<GHGitRepositoryMapping>
                 get() = repos
             override val gitHubAccounts: Set<GithubAccount>
-                get() = TODO("Not yet implemented")
+                get() = accounts
             override val accountsState: StateFlow<Collection<GithubAccount>>
                 get() = MutableStateFlow(accounts)
             override val toolWindows: MutableSet<ToolWindow>
-                get() = TODO("Not yet implemented")
+                get() = mutableSetOf(toolWindow)
         })
     }
 

@@ -1,6 +1,7 @@
 package com.dsoftware.ghmanager
 
 import com.dsoftware.ghmanager.i18n.MessagesBundle.message
+import com.dsoftware.ghmanager.ui.GhActionsMgrToolWindowContent
 import com.dsoftware.ghmanager.ui.settings.GithubActionsManagerSettings
 import com.intellij.ui.SimpleColoredComponent
 import com.intellij.ui.components.JBPanelWithEmptyText
@@ -35,7 +36,8 @@ class ToolWindowFactoryTest : GitHubActionsManagerBaseTest() {
     @Test
     fun `test Panel No GitHub Account`() {
         mockGhActionsService(emptySet(), emptySet())
-        toolWindowFactory.init(toolWindow)
+        toolWindowContent = GhActionsMgrToolWindowContent(toolWindow)
+        toolWindowContent.createContent()
         executeSomeCoroutineTasksAndDispatchAllInvocationEvents(projectRule.project)
 
         Assertions.assertEquals(1, toolWindow.contentManager.contentCount)
@@ -61,7 +63,8 @@ class ToolWindowFactoryTest : GitHubActionsManagerBaseTest() {
     fun `test GitHub Account exists but no repositories configured`() {
         mockGhActionsService(emptySet(), setOf("account1"))
 
-        toolWindowFactory.init(toolWindow)
+        toolWindowContent = GhActionsMgrToolWindowContent(toolWindow)
+        toolWindowContent.createContent()
         executeSomeCoroutineTasksAndDispatchAllInvocationEvents(projectRule.project)
 
         Assertions.assertEquals(1, toolWindow.contentManager.contentCount)
@@ -86,7 +89,8 @@ class ToolWindowFactoryTest : GitHubActionsManagerBaseTest() {
         mockGhActionsService(setOf("http://github.com/owner/repo"), setOf("account1"))
         mockSettingsService(GithubActionsManagerSettings(useCustomRepos = false))
 
-        toolWindowFactory.init(toolWindow)
+        toolWindowContent = GhActionsMgrToolWindowContent(toolWindow)
+        toolWindowContent.createContent()
         executeSomeCoroutineTasksAndDispatchAllInvocationEvents(projectRule.project)
 
         Assertions.assertEquals(1, toolWindow.contentManager.contentCount)
@@ -116,7 +120,8 @@ class ToolWindowFactoryTest : GitHubActionsManagerBaseTest() {
                 )
             )
         )
-        toolWindowFactory.init(toolWindow)
+        toolWindowContent = GhActionsMgrToolWindowContent(toolWindow)
+        toolWindowContent.createContent()
         executeSomeCoroutineTasksAndDispatchAllInvocationEvents(projectRule.project)
 
         val content = toolWindow.contentManager.contents[0]

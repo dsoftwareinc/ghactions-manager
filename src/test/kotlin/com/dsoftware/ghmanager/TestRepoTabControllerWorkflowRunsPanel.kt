@@ -5,7 +5,7 @@ import com.dsoftware.ghmanager.api.model.WorkflowRuns
 import com.dsoftware.ghmanager.api.model.WorkflowType
 import com.dsoftware.ghmanager.api.model.WorkflowTypes
 import com.dsoftware.ghmanager.data.WorkflowDataContextService
-import com.dsoftware.ghmanager.data.WorkflowRunSelectionContext
+import com.dsoftware.ghmanager.ui.GhActionsMgrToolWindowContent
 import com.dsoftware.ghmanager.ui.panels.wfruns.WorkflowRunsListPanel
 import com.intellij.openapi.components.service
 import com.intellij.ui.OnePixelSplitter
@@ -23,12 +23,13 @@ import org.jetbrains.plugins.github.api.data.GithubBranch
 import org.jetbrains.plugins.github.api.data.GithubResponsePage
 import org.jetbrains.plugins.github.api.data.GithubUserWithPermissions
 import org.jetbrains.plugins.github.util.GHCompatibilityUtil
+import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInfo
 import javax.swing.JPanel
 
-class TestWindowTabControllerWorkflowRunsPanel : GitHubActionsManagerBaseTest() {
+class TestRepoTabControllerWorkflowRunsPanel : GitHubActionsManagerBaseTest() {
     private lateinit var executorMock: GithubApiRequestExecutor
 
     init {
@@ -45,7 +46,6 @@ class TestWindowTabControllerWorkflowRunsPanel : GitHubActionsManagerBaseTest() 
         every { GithubApiRequestExecutor.Factory.getInstance() } returns mockk<GithubApiRequestExecutor.Factory> {
             every { create(token = any()) } returns executorMock
         }
-        toolWindowFactory.init(toolWindow)
         executeSomeCoroutineTasksAndDispatchAllInvocationEvents(projectRule.project)
     }
 
@@ -59,11 +59,13 @@ class TestWindowTabControllerWorkflowRunsPanel : GitHubActionsManagerBaseTest() 
         mockGithubApiRequestExecutor(workflowRunsList)
 
         // act
+        toolWindowContent = GhActionsMgrToolWindowContent(toolWindow)
+        toolWindowContent.createContent()
         executeSomeCoroutineTasksAndDispatchAllInvocationEvents(projectRule.project)
 
         // assert
         val workflowRunsListPanel = assertTabsAndPanels()
-        TestCase.assertEquals(workflowRunsList.size, workflowRunsListPanel.runListComponent.model.size)
+        Assertions.assertEquals(workflowRunsList.size, workflowRunsListPanel.runListComponent.model.size)
     }
 
     //    // todo: fix this test
@@ -76,7 +78,7 @@ class TestWindowTabControllerWorkflowRunsPanel : GitHubActionsManagerBaseTest() 
 //
 //        // assert
 //        val workflowRunsListPanel = assertTabsAndPanels()
-//        TestCase.assertEquals(0, workflowRunsListPanel.runListComponent.model.size)
+//        Assertions.assertEquals(0, workflowRunsListPanel.runListComponent.model.size)
 //    }
 
 
@@ -117,15 +119,14 @@ class TestWindowTabControllerWorkflowRunsPanel : GitHubActionsManagerBaseTest() 
     }
 
     fun assertTabsAndPanels(): WorkflowRunsListPanel {
-        TestCase.assertEquals(1, toolWindow.contentManager.contentCount)
+        Assertions.assertEquals(1, toolWindow.contentManager.contentCount)
         val content = toolWindow.contentManager.contents[0]
-        TestCase.assertEquals("owner/repo", content.displayName)
-        TestCase.assertTrue(content.component is JPanel)
+        Assertions.assertEquals("owner/repo", content.displayName)
+        Assertions.assertTrue(content.component is JPanel)
         val tabWrapPanel = content.component as JPanel
-        TestCase.assertEquals(1, tabWrapPanel.componentCount)
+        Assertions.assertEquals(1, tabWrapPanel.componentCount)
         val workflowDataContextService = projectRule.project.service<WorkflowDataContextService>()
-        TestCase.assertEquals(1, workflowDataContextService.repositories.size)
-        val workflowRunSelectionContext = workflowDataContextService.repositories.values.first().value.get()
+        Assertions.assertEquals(1, workflowDataContextService.repositories.size)
         verify(atLeast = 1) {
             executorMock.execute(any(), matchApiRequestUrl<WorkflowTypes>("/actions/workflows"))
             executorMock.execute(
@@ -134,12 +135,12 @@ class TestWindowTabControllerWorkflowRunsPanel : GitHubActionsManagerBaseTest() 
             executorMock.execute(any(), matchApiRequestUrl<GithubResponsePage<GithubBranch>>("/branches"))
             executorMock.execute(any(), matchApiRequestUrl<WorkflowTypes>("/actions/workflows"))
         }
-        TestCase.assertEquals(1, (tabWrapPanel.components[0] as JPanel).componentCount)
-        TestCase.assertTrue((tabWrapPanel.components[0] as JPanel).components[0] is OnePixelSplitter)
+        Assertions.assertEquals(1, (tabWrapPanel.components[0] as JPanel).componentCount)
+        Assertions.assertTrue((tabWrapPanel.components[0] as JPanel).components[0] is OnePixelSplitter)
         val splitterComponent = ((tabWrapPanel.components[0] as JPanel).components[0] as OnePixelSplitter)
-        TestCase.assertEquals(3, splitterComponent.componentCount)
-        TestCase.assertTrue(splitterComponent.firstComponent is WorkflowRunsListPanel)
-        TestCase.assertTrue(splitterComponent.secondComponent is OnePixelSplitter)
+        Assertions.assertEquals(3, splitterComponent.componentCount)
+        Assertions.assertTrue(splitterComponent.firstComponent is WorkflowRunsListPanel)
+        Assertions.assertTrue(splitterComponent.secondComponent is OnePixelSplitter)
         return splitterComponent.firstComponent as WorkflowRunsListPanel
     }
 

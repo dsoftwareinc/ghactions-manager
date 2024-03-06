@@ -33,7 +33,7 @@ import org.jetbrains.plugins.github.util.GHGitRepositoryMapping
 import javax.swing.JComponent
 import kotlin.properties.Delegates
 
-class WorkflowToolWindowTabController(
+class RepoTabController(
     repositoryMapping: GHGitRepositoryMapping,
     private val ghAccount: GithubAccount,
     private val dataContextRepository: WorkflowDataContextService,
@@ -169,7 +169,7 @@ class WorkflowToolWindowTabController(
 
 
     companion object {
-        val KEY = Key.create<WorkflowToolWindowTabController>("Github.Actions.ToolWindow.Tab.Controller")
-        private val LOG = logger<WorkflowToolWindowTabController>()
+        val KEY = Key.create<RepoTabController>("Github.Actions.ToolWindow.Tab.Controller")
+        private val LOG = logger<RepoTabController>()
     }
 }

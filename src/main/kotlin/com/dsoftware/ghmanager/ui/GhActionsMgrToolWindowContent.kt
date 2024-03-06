@@ -5,6 +5,7 @@ import com.dsoftware.ghmanager.data.GhActionsService
 import com.dsoftware.ghmanager.data.WorkflowDataContextService
 import com.dsoftware.ghmanager.i18n.MessagesBundle
 import com.dsoftware.ghmanager.ui.settings.GhActionsSettingsService
+import com.dsoftware.ghmanager.ui.settings.GithubActionsManagerSettings
 import com.intellij.openapi.actionSystem.ActionManager
 import com.intellij.openapi.actionSystem.ActionPlaces
 import com.intellij.openapi.actionSystem.DefaultActionGroup
@@ -57,6 +58,7 @@ class GhActionsMgrToolWindowContent(val toolWindow: ToolWindow) {
             val nextState = when {
                 (ghActionsService.gitHubAccounts.isEmpty() && settingsService.state.useGitHubSettings)
                     || (!settingsService.state.useGitHubSettings && settingsService.state.apiToken == "") -> GhActionsMgrToolWindowState.NO_GITHUB_ACCOUNT
+
                 projectRepos.isEmpty() -> GhActionsMgrToolWindowState.NO_REPOS_IN_PROJECT
                 settingsService.state.useCustomRepos && countRepos == 0 -> GhActionsMgrToolWindowState.NO_REPOS_CONFIGURED
                 else -> GhActionsMgrToolWindowState.REPOS
@@ -65,8 +67,8 @@ class GhActionsMgrToolWindowContent(val toolWindow: ToolWindow) {
                 return@invokeLater
             }
             state = nextState
-            currentReposWithPanels= emptySet()
-            if (state== GhActionsMgrToolWindowState.NO_GITHUB_ACCOUNT) {
+            currentReposWithPanels = emptySet()
+            if (state == GhActionsMgrToolWindowState.NO_GITHUB_ACCOUNT) {
                 addEmptyTextTabToWindow(
                     toolWindow,
                     MessagesBundle.message("factory.empty-panel.no-account-configured"),
@@ -110,7 +112,8 @@ class GhActionsMgrToolWindowContent(val toolWindow: ToolWindow) {
             val ghAccount = ghActionsService.guessAccountForRepository(repo)
             if (ghAccount != null) {
                 LOG.info("adding panel for repo: ${repo.repositoryPath}, ${ghAccount.name}")
-                val repoSettings = settingsService.state.customRepos[repo.remote.url]!!
+                val repoSettings =
+                    settingsService.state.customRepos.getOrPut(repo.remote.url) { GithubActionsManagerSettings.RepoSettings() }
                 val tab = toolWindow.contentManager.factory.createContent(
                     JPanel(null), repo.repositoryPath, false
                 ).apply {
@@ -120,7 +123,7 @@ class GhActionsMgrToolWindowContent(val toolWindow: ToolWindow) {
                     setDisposer(disposable)
                     displayName = repoSettings.customName.ifEmpty { repo.repositoryPath }
                 }
-                val controller = WorkflowToolWindowTabController(
+                val controller = RepoTabController(
                     repo, ghAccount, dataContextRepository, tab.disposer!!, toolWindow,
                 )
                 tab.component.apply {
@@ -131,7 +134,7 @@ class GhActionsMgrToolWindowContent(val toolWindow: ToolWindow) {
                     revalidate()
                     repaint()
                 }
-                tab.putUserData(WorkflowToolWindowTabController.KEY, controller)
+                tab.putUserData(RepoTabController.KEY, controller)
                 toolWindow.contentManager.addContent(tab)
             } else {
                 addEmptyTextTabToWindow(
@@ -145,7 +148,7 @@ class GhActionsMgrToolWindowContent(val toolWindow: ToolWindow) {
         toolWindow.contentManager.addContentManagerListener(object : ContentManagerListener {
             override fun selectionChanged(event: ContentManagerEvent) {
                 val content = event.content
-                val controller = content.getUserData(WorkflowToolWindowTabController.KEY)
+                val controller = content.getUserData(RepoTabController.KEY)
                 LOG.debug("Got selectionChanged event: ${content.displayName}: controller=${controller != null}, isSelected=${content.isSelected}")
                 controller?.apply {
                     this.loadingModel.result?.runsListLoader?.refreshRuns = content.isSelected
@@ -154,7 +157,7 @@ class GhActionsMgrToolWindowContent(val toolWindow: ToolWindow) {
         })
         ToolbarUtil.executeTaskAtCustomFrequency(toolWindow.project, 5) {
             toolWindow.contentManager.contents.forEach {
-                val controller = it.getUserData(WorkflowToolWindowTabController.KEY)
+                val controller = it.getUserData(RepoTabController.KEY)
                 controller?.apply {
                     this.loadingModel.result?.runsListLoader?.refreshRuns = it.isSelected
                 }
