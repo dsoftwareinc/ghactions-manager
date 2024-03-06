@@ -15,9 +15,8 @@ internal class WfRunsSearchPanelViewModel(
     scope,
     WfRunsSearchHistoryModel(context.toolWindow.project.service<WfRunsListPersistentSearchHistory>()),
     emptySearch = WfRunsListSearchValue.EMPTY,
-    defaultQuickFilter = WorkflowRunListQuickFilter.All(),
+    defaultQuickFilter = WorkflowRunListQuickFilter.CurrentBranch(context),
 ) {
-
     val branches
         get() = context.runsListLoader.repoBranches
     val collaborators
@@ -27,7 +26,9 @@ internal class WfRunsSearchPanelViewModel(
 
     override fun WfRunsListSearchValue.withQuery(query: String?) = copy(searchQuery = query)
 
-    override val quickFilters: List<WorkflowRunListQuickFilter> = listOf(
+    override var quickFilters: List<WorkflowRunListQuickFilter> = listOf(
+        WorkflowRunListQuickFilter.CurrentBranch(context),
+        WorkflowRunListQuickFilter.CurrentUser(context),
         WorkflowRunListQuickFilter.All(),
         WorkflowRunListQuickFilter.InProgres(),
     )
@@ -39,7 +40,8 @@ internal class WfRunsSearchPanelViewModel(
     val workflowType = searchState.partialState(WfRunsListSearchValue::workflowType) { copy(workflowType = it) }
 }
 
-sealed class WorkflowRunListQuickFilter(val title: String) : ReviewListQuickFilter<WfRunsListSearchValue> {
+sealed class WorkflowRunListQuickFilter(val title: String) :
+    ReviewListQuickFilter<WfRunsListSearchValue> {
 
 
     class All : WorkflowRunListQuickFilter("All workflow runs") {
@@ -49,4 +51,19 @@ sealed class WorkflowRunListQuickFilter(val title: String) : ReviewListQuickFilt
     class InProgres : WorkflowRunListQuickFilter("Runs in progress") {
         override val filter = WfRunsListSearchValue(status = WfRunsListSearchValue.Status.IN_PROGRESS)
     }
+
+    class CurrentUser(
+        private val context: WorkflowRunSelectionContext
+    ) : WorkflowRunListQuickFilter("Started by me") {
+        override val filter
+            get() = WfRunsListSearchValue(actor = context.getCurrentAccountGHUser())
+    }
+
+    class CurrentBranch(
+        private val context: WorkflowRunSelectionContext
+    ) : WorkflowRunListQuickFilter("Runs for current branch") {
+        override val filter
+            get() = WfRunsListSearchValue(branch = context.currentBranch)
+    }
+
 }

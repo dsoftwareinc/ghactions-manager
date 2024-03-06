@@ -32,7 +32,6 @@ class WorkflowRunSelectionContext internal constructor(
     val runSelectionHolder: WorkflowRunListSelectionHolder = WorkflowRunListSelectionHolder(),
     val jobSelectionHolder: JobListSelectionHolder = JobListSelectionHolder(),
 ) : Disposable.Parent {
-
     private val task: ScheduledFuture<*>
     private val fullPath = GithubUrlUtil.getUserAndRepositoryFromRemoteUrl(repositoryMapping.remote.url)
         ?: throw IllegalArgumentException(
@@ -60,6 +59,9 @@ class WorkflowRunSelectionContext internal constructor(
     val jobLogDataProviderLoadModel: SingleValueModel<JobLogDataProvider?> = SingleValueModel(null)
     val logDataProvider: JobLogDataProvider?
         get() = selectedJob?.let { dataLoader.getJobLogDataProvider(it) }
+
+    val currentBranch: String?
+        get() = repositoryMapping.gitRepository.currentBranchName
 
     init {
         Disposer.register(parentDisposable, this)
@@ -94,7 +96,6 @@ class WorkflowRunSelectionContext internal constructor(
             jobDataProviderLoadModel.value = null
             selectedRunDisposable.dispose()
         }
-
     }
 
     fun getCurrentAccountGHUser(): GHUser {
