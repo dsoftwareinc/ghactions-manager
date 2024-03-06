@@ -20,6 +20,7 @@ import com.intellij.toolWindow.ToolWindowHeadlessManagerImpl
 import com.intellij.util.concurrency.annotations.RequiresEdt
 import io.mockk.every
 import io.mockk.mockk
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.yield
@@ -83,12 +84,18 @@ abstract class GitHubActionsManagerBaseTest {
         }.toSet()
 
         projectRule.project.registerServiceInstance(GhActionsService::class.java, object : GhActionsService {
+            override val coroutineScope: CoroutineScope
+                get() = TODO("Not yet implemented")
             override val knownRepositoriesState: StateFlow<Set<GHGitRepositoryMapping>>
                 get() = MutableStateFlow(repos)
             override val knownRepositories: Set<GHGitRepositoryMapping>
                 get() = repos
+            override val gitHubAccounts: Set<GithubAccount>
+                get() = TODO("Not yet implemented")
             override val accountsState: StateFlow<Collection<GithubAccount>>
                 get() = MutableStateFlow(accounts)
+            override val toolWindows: MutableSet<ToolWindow>
+                get() = TODO("Not yet implemented")
         })
     }
 
