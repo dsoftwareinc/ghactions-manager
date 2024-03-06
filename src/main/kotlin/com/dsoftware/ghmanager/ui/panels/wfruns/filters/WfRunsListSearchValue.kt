@@ -15,6 +15,7 @@ data class WfRunsListSearchValue(
     val status: Status? = null,
     val event: Event? = null,
     val workflowType: WorkflowType? = null,
+    val currentBranchFilter: Boolean = false,
 ) : ReviewListSearchValue {
 
     fun getShortText(): String {

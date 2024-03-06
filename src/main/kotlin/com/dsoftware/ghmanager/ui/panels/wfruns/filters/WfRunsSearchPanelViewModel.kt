@@ -15,7 +15,7 @@ internal class WfRunsSearchPanelViewModel(
     scope,
     WfRunsSearchHistoryModel(context.toolWindow.project.service<WfRunsListPersistentSearchHistory>()),
     emptySearch = WfRunsListSearchValue.EMPTY,
-    defaultQuickFilter = WorkflowRunListQuickFilter.CurrentBranch(context),
+    defaultQuickFilter = WorkflowRunListQuickFilter.CurrentBranch(context.currentBranchName),
 ) {
     val branches
         get() = context.runsListLoader.repoBranches
@@ -27,7 +27,7 @@ internal class WfRunsSearchPanelViewModel(
     override fun WfRunsListSearchValue.withQuery(query: String?) = copy(searchQuery = query)
 
     override var quickFilters: List<WorkflowRunListQuickFilter> = listOf(
-        WorkflowRunListQuickFilter.CurrentBranch(context),
+        WorkflowRunListQuickFilter.CurrentBranch(context.currentBranchName),
         WorkflowRunListQuickFilter.CurrentUser(context),
         WorkflowRunListQuickFilter.All(),
         WorkflowRunListQuickFilter.InProgres(),
@@ -40,8 +40,7 @@ internal class WfRunsSearchPanelViewModel(
     val workflowType = searchState.partialState(WfRunsListSearchValue::workflowType) { copy(workflowType = it) }
 }
 
-sealed class WorkflowRunListQuickFilter(val title: String) :
-    ReviewListQuickFilter<WfRunsListSearchValue> {
+sealed class WorkflowRunListQuickFilter(val title: String) : ReviewListQuickFilter<WfRunsListSearchValue> {
 
 
     class All : WorkflowRunListQuickFilter("All workflow runs") {
@@ -59,11 +58,8 @@ sealed class WorkflowRunListQuickFilter(val title: String) :
             get() = WfRunsListSearchValue(actor = context.getCurrentAccountGHUser())
     }
 
-    class CurrentBranch(
-        private val context: WorkflowRunSelectionContext
-    ) : WorkflowRunListQuickFilter("Runs for current branch") {
-        override val filter
-            get() = WfRunsListSearchValue(branch = context.currentBranch)
+    class CurrentBranch(branch: String?) : WorkflowRunListQuickFilter("Runs for current branch") {
+        override val filter = WfRunsListSearchValue(branch = branch, currentBranchFilter = true)
     }
 
 }

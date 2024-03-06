@@ -7,6 +7,7 @@ import com.dsoftware.ghmanager.i18n.MessagesBundle.message
 import com.dsoftware.ghmanager.ui.ToolbarUtil
 import com.dsoftware.ghmanager.ui.panels.wfruns.filters.WfRunsFiltersFactory
 import com.dsoftware.ghmanager.ui.panels.wfruns.filters.WfRunsSearchPanelViewModel
+import com.dsoftware.ghmanager.ui.panels.wfruns.filters.WorkflowRunListQuickFilter
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.actionSystem.ActionGroup
 import com.intellij.openapi.actionSystem.ActionManager
@@ -22,9 +23,12 @@ import com.intellij.ui.SimpleTextAttributes
 import com.intellij.util.ui.JBUI
 import com.intellij.util.ui.components.BorderLayoutPanel
 import com.intellij.vcs.log.ui.frame.ProgressStripe
+import git4idea.repo.GitRepository
+import git4idea.repo.GitRepositoryChangeListener
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.jetbrains.annotations.VisibleForTesting
 import org.jetbrains.plugins.github.exceptions.GithubStatusCodeException
@@ -69,10 +73,29 @@ class WorkflowRunsListPanel(
         val searchVm = WfRunsSearchPanelViewModel(scope, context)
         scope.launch {
             searchVm.searchState.collectLatest {
-                context.updateFilter(it.toWorkflowRunFilter())
+//                context.updateFilter(it.toWorkflowRunFilter())
             }
         }
+
         val searchPanel = WfRunsFiltersFactory(searchVm).createWfRunsFiltersPanel(scope)
+        context.toolWindow.project.messageBus
+            .connect(this)
+            .subscribe(GitRepository.GIT_REPO_CHANGE, GitRepositoryChangeListener {repo->
+                val currentFilter = searchVm.searchState.value
+                val currentBranchName = repo.currentBranchName
+                if (currentFilter.currentBranchFilter && currentBranchName != currentFilter.branch) {
+                    searchVm.searchState.update {
+                        it.copy(branch = currentBranchName)
+                    }
+                }
+                searchVm.quickFilters = listOf(
+                    WorkflowRunListQuickFilter.All(),
+                    WorkflowRunListQuickFilter.InProgres(),
+                    WorkflowRunListQuickFilter.CurrentUser(context),
+                    WorkflowRunListQuickFilter.CurrentBranch(repo.currentBranchName),
+                )
+            })
+
 
         progressStripe = ProgressStripe(
             JBUI.Panels.simplePanel(scrollPane).addToTop(infoPanel).addToTop(searchPanel).apply {

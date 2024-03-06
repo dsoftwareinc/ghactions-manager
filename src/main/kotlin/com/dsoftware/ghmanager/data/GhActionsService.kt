@@ -66,5 +66,4 @@ open class GhActionsServiceImpl(project: Project, override val coroutineScope: C
     override val accountsState: StateFlow<Collection<GithubAccount>>
         get() = accountManager.accountsState
     override val toolWindowsJobMap: MutableMap<ToolWindow, Job> = mutableMapOf()
-
 }

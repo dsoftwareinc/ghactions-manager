@@ -60,7 +60,7 @@ class WorkflowRunSelectionContext internal constructor(
     val logDataProvider: JobLogDataProvider?
         get() = selectedJob?.let { dataLoader.getJobLogDataProvider(it) }
 
-    val currentBranch: String?
+    val currentBranchName: String?
         get() = repositoryMapping.gitRepository.currentBranchName
 
     init {
