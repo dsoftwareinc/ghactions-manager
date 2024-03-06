@@ -30,7 +30,7 @@ data class GithubActionsManagerSettings(
     ],
     reportStatistic = false,
 )
-class GhActionsSettingsService : PersistentStateComponent<GithubActionsManagerSettings>,Disposable {
+class GhActionsSettingsService : PersistentStateComponent<GithubActionsManagerSettings>, Disposable {
     private var state = GithubActionsManagerSettings()
 
     override fun getState(): GithubActionsManagerSettings {

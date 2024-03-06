@@ -12,13 +12,19 @@ import org.jetbrains.plugins.github.util.GHHostedRepositoriesManager
 interface GhActionsService {
     val knownRepositoriesState: StateFlow<Set<GHGitRepositoryMapping>>
     val knownRepositories: Set<GHGitRepositoryMapping>
+    val gitHubAccounts: Set<GithubAccount>
     val accountsState: StateFlow<Collection<GithubAccount>>
+    fun guessAccountForRepository(repo: GHGitRepositoryMapping): GithubAccount? {
+        return gitHubAccounts.firstOrNull { it.server.equals(repo.repository.serverPath, true) }
+    }
 }
 
 open class GhActionsServiceImpl(project: Project) : GhActionsService {
     private val repositoriesManager = project.service<GHHostedRepositoriesManager>()
     private val accountManager = service<GHAccountManager>()
 
+    override val gitHubAccounts: Set<GithubAccount>
+        get() = accountManager.accountsState.value
     override val knownRepositoriesState: StateFlow<Set<GHGitRepositoryMapping>>
         get() = repositoriesManager.knownRepositoriesState
     override val knownRepositories: Set<GHGitRepositoryMapping>
