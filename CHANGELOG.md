@@ -4,6 +4,12 @@
 
 ## Unreleased
 
+## 1.18.0
+
+### 🚀 Features
+
+- Add quick-filter to show runs based on the current branch (updates when branch is updated) #115
+
 ## 1.17.0
 
 ### 🚀 Features
