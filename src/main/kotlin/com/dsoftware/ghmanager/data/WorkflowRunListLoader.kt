@@ -93,9 +93,7 @@ class WorkflowRunListLoader(
         }.applyIf(workflowTypes.isEmpty()) {
             progressManager.submitIOTask(NonReusableEmptyProgressIndicator()) { updateWorkflowTypes(it) }
         }
-        lastFuture = lastFuture.thenCompose {
-            progressManager.submitIOTask(indicator) { doLoadMore(indicator, update) }
-        }
+        lastFuture = progressManager.submitIOTask(indicator) { doLoadMore(indicator, update) }
         return lastFuture
     }
 

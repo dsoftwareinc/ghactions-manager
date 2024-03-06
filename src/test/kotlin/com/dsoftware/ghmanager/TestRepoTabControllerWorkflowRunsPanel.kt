@@ -11,12 +11,12 @@ import com.intellij.openapi.components.service
 import com.intellij.ui.OnePixelSplitter
 import io.mockk.MockKMatcherScope
 import io.mockk.every
+import io.mockk.impl.annotations.MockK
+import io.mockk.junit5.MockKExtension
 import io.mockk.mockk
 import io.mockk.mockkObject
 import io.mockk.mockkStatic
 import io.mockk.verify
-import junit.framework.TestCase
-import kotlinx.coroutines.runBlocking
 import org.jetbrains.plugins.github.api.GithubApiRequest
 import org.jetbrains.plugins.github.api.GithubApiRequestExecutor
 import org.jetbrains.plugins.github.api.data.GithubBranch
@@ -27,10 +27,13 @@ import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInfo
+import org.junit.jupiter.api.extension.ExtendWith
 import javax.swing.JPanel
 
+@ExtendWith(MockKExtension::class)
 class TestRepoTabControllerWorkflowRunsPanel : GitHubActionsManagerBaseTest() {
-    private lateinit var executorMock: GithubApiRequestExecutor
+    @MockK
+    lateinit var executorMock: GithubApiRequestExecutor
 
     init {
         mockkStatic(GHCompatibilityUtil::class)
@@ -41,16 +44,12 @@ class TestRepoTabControllerWorkflowRunsPanel : GitHubActionsManagerBaseTest() {
     override fun setUp(testInfo: TestInfo) {
         super.setUp(testInfo)
         mockGhActionsService(setOf("http://github.com/owner/repo"), setOf("account1"))
-        executorMock = mockk<GithubApiRequestExecutor>(relaxed = true) {}
-        mockkObject(GithubApiRequestExecutor.Factory)
-        every { GithubApiRequestExecutor.Factory.getInstance() } returns mockk<GithubApiRequestExecutor.Factory> {
-            every { create(token = any()) } returns executorMock
-        }
+
         executeSomeCoroutineTasksAndDispatchAllInvocationEvents(projectRule.project)
     }
 
     @Test
-    fun `test repo with different workflow-runs`() = runBlocking {
+    fun `test repo with different workflow-runs`() {
         val workflowRunsList = listOf(
             createWorkflowRun(id = 1, status = "in_progress"),
             createWorkflowRun(id = 2, status = "completed"),
@@ -115,7 +114,10 @@ class TestRepoTabControllerWorkflowRunsPanel : GitHubActionsManagerBaseTest() {
                 execute(any(), matchApiRequestUrl<WorkflowTypes>("/actions/workflows"))
             } returns workflowTypesResponse
         }
-
+        mockkObject(GithubApiRequestExecutor.Factory)
+        every { GithubApiRequestExecutor.Factory.getInstance() } returns mockk<GithubApiRequestExecutor.Factory>{
+            every { create(token = any()) } returns executorMock
+        }
     }
 
     fun assertTabsAndPanels(): WorkflowRunsListPanel {
@@ -128,7 +130,7 @@ class TestRepoTabControllerWorkflowRunsPanel : GitHubActionsManagerBaseTest() {
         val workflowDataContextService = projectRule.project.service<WorkflowDataContextService>()
         Assertions.assertEquals(1, workflowDataContextService.repositories.size)
         verify(atLeast = 1) {
-            executorMock.execute(any(), matchApiRequestUrl<WorkflowTypes>("/actions/workflows"))
+            executorMock.execute(any(), matchApiRequestUrl<WorkflowRuns>("/actions/runs")).hint(WorkflowRuns::class)
             executorMock.execute(
                 any(), matchApiRequestUrl<GithubResponsePage<GithubUserWithPermissions>>("/collaborators")
             )

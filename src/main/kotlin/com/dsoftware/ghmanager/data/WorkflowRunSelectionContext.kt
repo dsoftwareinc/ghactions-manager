@@ -62,9 +62,7 @@ class WorkflowRunSelectionContext internal constructor(
         get() = selectedJob?.let { dataLoader.getJobLogDataProvider(it) }
 
     init {
-        if (!parentDisposable.isDisposed) {
-            Disposer.register(parentDisposable, this)
-        }
+        Disposer.register(parentDisposable, this)
         runSelectionHolder.addSelectionChangeListener(this) {
             LOG.debug("runSelectionHolder selection change listener")
             setNewJobsProvider()

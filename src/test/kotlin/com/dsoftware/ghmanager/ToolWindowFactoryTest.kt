@@ -7,6 +7,7 @@ import com.intellij.ui.SimpleColoredComponent
 import com.intellij.ui.components.JBPanelWithEmptyText
 import io.mockk.Called
 import io.mockk.every
+import io.mockk.junit5.MockKExtension
 import io.mockk.mockk
 import io.mockk.mockkObject
 import io.mockk.mockkStatic
@@ -17,9 +18,11 @@ import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInfo
+import org.junit.jupiter.api.extension.ExtendWith
 import javax.swing.JPanel
 
 
+@ExtendWith(MockKExtension::class)
 class ToolWindowFactoryTest : GitHubActionsManagerBaseTest() {
     private lateinit var requestExecutorfactoryMock: GithubApiRequestExecutor.Factory
 

@@ -67,7 +67,8 @@ koverReport {
 tasks {
     test {
         useJUnitPlatform()
-        systemProperty("idea.log.debug.categories", "com.dsoftware.ghmanager")
+        systemProperty("idea.log.debug.categories", "com.dsoftware.ghmanager,org.jetbrains.plugins.github")
+        systemProperty("idea.log.trace.categories", "com.dsoftware.ghmanager,org.jetbrains.plugins.github")
         systemProperty(kotlinx.coroutines.DEBUG_PROPERTY_NAME, kotlinx.coroutines.DEBUG_PROPERTY_VALUE_ON)
     }
 

@@ -1,12 +1,14 @@
 package com.dsoftware.ghmanager.data
 
 import com.dsoftware.ghmanager.ui.GhActionsMgrToolWindowContent
+import com.intellij.openapi.Disposable
 import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.wm.ToolWindow
 import git4idea.remote.hosting.knownRepositories
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import org.jetbrains.plugins.github.authentication.accounts.GHAccountManager
@@ -44,10 +46,15 @@ interface GhActionsService {
     }
 }
 
-open class GhActionsServiceImpl(project: Project, override val coroutineScope: CoroutineScope) : GhActionsService {
+open class GhActionsServiceImpl(project: Project, override val coroutineScope: CoroutineScope) : GhActionsService, Disposable {
     private val repositoriesManager = project.service<GHHostedRepositoriesManager>()
     private val accountManager = service<GHAccountManager>()
 
+    override fun dispose() {
+        toolWindowsJobMap.forEach { it.value.cancel() }
+        toolWindowsJobMap.clear()
+        coroutineScope.cancel()
+    }
 
     override val gitHubAccounts: Set<GithubAccount>
         get() = accountManager.accountsState.value

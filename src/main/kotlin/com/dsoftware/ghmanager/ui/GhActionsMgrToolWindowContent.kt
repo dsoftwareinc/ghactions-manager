@@ -22,6 +22,7 @@ import com.intellij.ui.components.JBPanelWithEmptyText
 import com.intellij.ui.content.ContentManagerEvent
 import com.intellij.ui.content.ContentManagerListener
 import com.intellij.util.ui.UIUtil
+import com.intellij.vcs.log.runInEdtAsync
 import org.jetbrains.plugins.github.util.GHGitRepositoryMapping
 import java.awt.BorderLayout
 import javax.swing.JPanel
@@ -40,6 +41,7 @@ class GhActionsMgrToolWindowContent(val toolWindow: ToolWindow) : Disposable {
 
     private var state: GhActionsMgrToolWindowState = GhActionsMgrToolWindowState.UNINITIALIZED
     private var currentReposWithPanels: Set<GHGitRepositoryMapping> = emptySet()
+    private val checkedDisposable = Disposer.newCheckedDisposable(this, "GhActionsMgrToolWindowContent")
 
     init {
         val project = toolWindow.project
@@ -58,12 +60,11 @@ class GhActionsMgrToolWindowContent(val toolWindow: ToolWindow) : Disposable {
         ghActionsService.registerToolWindow(this)
     }
 
-    override fun dispose() {
-        ghActionsService.unregisterToolWindow(toolWindow)
-    }
+    override fun dispose() = ghActionsService.unregisterToolWindow(toolWindow)
+
 
     fun createContent() {
-        ApplicationManager.getApplication().invokeLater {
+        runInEdtAsync(checkedDisposable) {
             val projectRepos = ghActionsService.knownRepositories
             val countRepos = projectRepos.count {
                 settingsService.state.customRepos[it.remote.url]?.included ?: false
@@ -78,7 +79,7 @@ class GhActionsMgrToolWindowContent(val toolWindow: ToolWindow) : Disposable {
             }
             if (state == nextState && nextState != GhActionsMgrToolWindowState.REPOS) {
                 LOG.debug("createContent: state is the same, not updating")
-                return@invokeLater
+                return@runInEdtAsync
             }
             LOG.debug("createContent: state changed from $state to $nextState")
             state = nextState
@@ -108,6 +109,7 @@ class GhActionsMgrToolWindowContent(val toolWindow: ToolWindow) : Disposable {
                 createRepoWorkflowsPanels(toolWindow)
             }
         }
+
     }
 
     private fun createRepoWorkflowsPanels(toolWindow: ToolWindow) {
