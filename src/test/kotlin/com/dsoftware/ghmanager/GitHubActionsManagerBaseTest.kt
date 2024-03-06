@@ -2,21 +2,18 @@ package com.dsoftware.ghmanager
 
 import com.dsoftware.ghmanager.data.GhActionsService
 import com.dsoftware.ghmanager.ui.GhActionsMgrToolWindowContent
-import com.dsoftware.ghmanager.ui.GhActionsToolWindowFactory
 import com.dsoftware.ghmanager.ui.settings.GhActionsSettingsService
 import com.dsoftware.ghmanager.ui.settings.GithubActionsManagerSettings
-import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.wm.ToolWindow
 import com.intellij.platform.ide.progress.runWithModalProgressBlocking
 import com.intellij.testFramework.PlatformTestUtil
 import com.intellij.testFramework.TestApplicationManager
-import com.intellij.testFramework.common.waitForAppLeakingThreads
 import com.intellij.testFramework.junit5.RunInEdt
 import com.intellij.testFramework.junit5.TestApplication
 import com.intellij.testFramework.registerServiceInstance
 import com.intellij.testFramework.rules.ProjectModelExtension
-import com.intellij.testFramework.runInEdtAndWait
 import com.intellij.toolWindow.ToolWindowHeadlessManagerImpl
 import com.intellij.util.concurrency.annotations.RequiresEdt
 import io.mockk.every
@@ -35,7 +32,6 @@ import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.TestInfo
 import org.junit.jupiter.api.extension.RegisterExtension
-import java.util.concurrent.TimeUnit
 
 @RunInEdt(writeIntent = true)
 @TestApplication
@@ -52,29 +48,21 @@ abstract class GitHubActionsManagerBaseTest {
     protected lateinit var toolWindowContent: GhActionsMgrToolWindowContent
 
     @BeforeEach
-    open fun setUp(testInfo: TestInfo) {
+    open fun beforeEach(testInfo: TestInfo) {
         this.testInfo = testInfo
         val toolWindowManager = ToolWindowHeadlessManagerImpl(projectRule.project)
-        toolWindow = toolWindowManager.doRegisterToolWindow("test")
+        toolWindow = toolWindowManager.doRegisterToolWindow("GitHub Actions")
+        Disposer.register(projectRule.project, toolWindow.disposable)
     }
 
     @AfterEach
     open fun tearDown() {
         val toolWindowManager = ToolWindowHeadlessManagerImpl(projectRule.project)
-        toolWindowManager.unregisterToolWindow("test")
+        toolWindowManager.unregisterToolWindow("GitHub Actions")
         executeSomeCoroutineTasksAndDispatchAllInvocationEvents(projectRule.project)
         TestApplicationManager.tearDownProjectAndApp(projectRule.project)
-        waitForAppLeakingThreads(10, TimeUnit.SECONDS)
     }
 
-    private fun waitForAppLeakingThreads(timeout: Long, timeUnit: TimeUnit) {
-        runInEdtAndWait {
-            val app = ApplicationManager.getApplication()
-            if (app != null && !app.isDisposed) {
-                waitForAppLeakingThreads(app, timeout, timeUnit)
-            }
-        }
-    }
 
     fun mockGhActionsService(repoUrls: Set<String>, accountNames: Collection<String>) {
         val accounts = accountNames.map { GHAccountManager.createAccount(it, host) }.toSet()
@@ -97,7 +85,7 @@ abstract class GitHubActionsManagerBaseTest {
                 get() = accounts
             override val accountsState: StateFlow<Collection<GithubAccount>>
                 get() = MutableStateFlow(accounts)
-            override val toolWindowsJobMap: MutableMap<ToolWindow,Job>
+            override val toolWindowsJobMap: MutableMap<ToolWindow, Job>
                 get() = mutableMapOf()
         })
     }

@@ -63,6 +63,18 @@ class WorkflowRunSelectionContext internal constructor(
 
     init {
         Disposer.register(parentDisposable, this)
+        task = ToolbarUtil.executeTaskAtSettingsFrequency(toolWindow.project) {
+            if (selectedWfRun == null) {
+                return@executeTaskAtSettingsFrequency
+            }
+            LOG.info("Checking updated status for $selectedWfRun.id")
+            if (selectedWfRun?.status != "completed") {
+                jobsDataProvider?.reload()
+            }
+            if (selectedJob?.status != "completed") {
+                logDataProvider?.reload()
+            }
+        }
         runSelectionHolder.addSelectionChangeListener(this) {
             LOG.debug("runSelectionHolder selection change listener")
             setNewJobsProvider()
@@ -82,18 +94,7 @@ class WorkflowRunSelectionContext internal constructor(
             jobDataProviderLoadModel.value = null
             selectedRunDisposable.dispose()
         }
-        task = ToolbarUtil.executeTaskAtSettingsFrequency(toolWindow.project) {
-            if (selectedWfRun == null) {
-                return@executeTaskAtSettingsFrequency
-            }
-            LOG.info("Checking updated status for $selectedWfRun.id")
-            if (selectedWfRun?.status != "completed") {
-                jobsDataProvider?.reload()
-            }
-            if (selectedJob?.status != "completed") {
-                logDataProvider?.reload()
-            }
-        }
+
     }
 
     fun getCurrentAccountGHUser(): GHUser {

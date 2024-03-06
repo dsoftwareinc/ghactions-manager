@@ -7,8 +7,8 @@ import com.intellij.ui.SimpleColoredComponent
 import com.intellij.ui.components.JBPanelWithEmptyText
 import io.mockk.Called
 import io.mockk.every
+import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
-import io.mockk.mockk
 import io.mockk.mockkObject
 import io.mockk.mockkStatic
 import io.mockk.verify
@@ -24,12 +24,13 @@ import javax.swing.JPanel
 
 @ExtendWith(MockKExtension::class)
 class ToolWindowFactoryTest : GitHubActionsManagerBaseTest() {
+    @MockK
     private lateinit var requestExecutorfactoryMock: GithubApiRequestExecutor.Factory
 
     @BeforeEach
-    override fun setUp(testInfo: TestInfo) {
-        super.setUp(testInfo)
-        requestExecutorfactoryMock = mockk<GithubApiRequestExecutor.Factory> {
+    override fun beforeEach(testInfo: TestInfo) {
+        super.beforeEach(testInfo)
+        requestExecutorfactoryMock.apply {
             every { create(token = any()) } throws Exception("No executor")
         }
         mockkObject(GithubApiRequestExecutor.Factory)
