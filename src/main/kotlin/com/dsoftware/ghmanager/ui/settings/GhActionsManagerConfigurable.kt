@@ -2,7 +2,6 @@
 package com.dsoftware.ghmanager.ui.settings
 
 import com.dsoftware.ghmanager.data.GhActionsService
-import com.dsoftware.ghmanager.i18n.MessagesBundle
 import com.dsoftware.ghmanager.i18n.MessagesBundle.message
 import com.dsoftware.ghmanager.ui.settings.GithubActionsManagerSettings.RepoSettings
 import com.intellij.openapi.application.ApplicationManager
@@ -63,7 +62,7 @@ internal class GhActionsManagerConfigurable internal constructor(project: Projec
 
                 row {
                     intTextField(0..100).bindIntText(state::pageSize, state::pageSize::set)
-                        .label(message("settings.group.visual-settings.wfruns-number"))
+                        .label(message("settings.group.visual-settings.number-of-runs"))
                 }
             }
             lateinit var projectRepos: Cell<JBCheckBox>
