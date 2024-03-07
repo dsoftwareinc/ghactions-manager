@@ -65,4 +65,4 @@ labeled with `Help wanted`.
 
 #  
 
-Based on [Otanikotani's github-actions-tab](https://github.com/Otanikotani/view-github-actions-idea-plugin).
+Inspired by [Otanikotani's github-actions-tab](https://github.com/Otanikotani/view-github-actions-idea-plugin).
