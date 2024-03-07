@@ -41,7 +41,6 @@ class GhActionsMgrToolWindowContent(val toolWindow: ToolWindow) : Disposable {
 
     private var state: GhActionsMgrToolWindowState = GhActionsMgrToolWindowState.UNINITIALIZED
     private var currentReposWithPanels: Set<GHGitRepositoryMapping> = emptySet()
-    private val checkedDisposable = Disposer.newCheckedDisposable(this, "GhActionsMgrToolWindowContent")
 
     init {
         val project = toolWindow.project
@@ -64,7 +63,7 @@ class GhActionsMgrToolWindowContent(val toolWindow: ToolWindow) : Disposable {
 
 
     fun createContent() {
-        runInEdtAsync(checkedDisposable) {
+        ApplicationManager.getApplication().invokeLater {
             val projectRepos = ghActionsService.knownRepositories
             val countRepos = projectRepos.count {
                 settingsService.state.customRepos[it.remote.url]?.included ?: false
@@ -79,7 +78,7 @@ class GhActionsMgrToolWindowContent(val toolWindow: ToolWindow) : Disposable {
             }
             if (state == nextState && nextState != GhActionsMgrToolWindowState.REPOS) {
                 LOG.debug("createContent: state is the same, not updating")
-                return@runInEdtAsync
+                return@invokeLater
             }
             LOG.debug("createContent: state changed from $state to $nextState")
             state = nextState

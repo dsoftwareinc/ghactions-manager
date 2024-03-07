@@ -28,8 +28,8 @@ class ToolWindowFactoryTest : GitHubActionsManagerBaseTest() {
     private lateinit var requestExecutorfactoryMock: GithubApiRequestExecutor.Factory
 
     @BeforeEach
-    override fun beforeEach(testInfo: TestInfo) {
-        super.beforeEach(testInfo)
+    override fun setUp(testInfo: TestInfo) {
+        super.setUp(testInfo)
         requestExecutorfactoryMock.apply {
             every { create(token = any()) } throws Exception("No executor")
         }

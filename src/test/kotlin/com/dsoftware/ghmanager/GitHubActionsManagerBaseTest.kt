@@ -10,12 +10,14 @@ import com.intellij.openapi.wm.ToolWindow
 import com.intellij.platform.ide.progress.runWithModalProgressBlocking
 import com.intellij.testFramework.PlatformTestUtil
 import com.intellij.testFramework.TestApplicationManager
+import com.intellij.testFramework.common.initTestApplication
 import com.intellij.testFramework.junit5.RunInEdt
-import com.intellij.testFramework.junit5.TestApplication
 import com.intellij.testFramework.registerServiceInstance
 import com.intellij.testFramework.rules.ProjectModelExtension
+import com.intellij.testFramework.waitUntil
 import com.intellij.toolWindow.ToolWindowHeadlessManagerImpl
 import com.intellij.util.concurrency.annotations.RequiresEdt
+import com.intellij.util.ui.UIUtil
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.CoroutineScope
@@ -23,6 +25,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.yield
 import org.jetbrains.plugins.github.api.GithubServerPath
 import org.jetbrains.plugins.github.authentication.accounts.GHAccountManager
@@ -34,8 +37,10 @@ import org.junit.jupiter.api.TestInfo
 import org.junit.jupiter.api.extension.RegisterExtension
 
 @RunInEdt(writeIntent = true)
-@TestApplication
 abstract class GitHubActionsManagerBaseTest {
+    init {
+        initTestApplication()
+    }
 
     private val host: GithubServerPath = GithubServerPath.from("github.com")
     private lateinit var testInfo: TestInfo
@@ -48,7 +53,7 @@ abstract class GitHubActionsManagerBaseTest {
     protected lateinit var toolWindowContent: GhActionsMgrToolWindowContent
 
     @BeforeEach
-    open fun beforeEach(testInfo: TestInfo) {
+    open fun setUp(testInfo: TestInfo) {
         this.testInfo = testInfo
         val toolWindowManager = ToolWindowHeadlessManagerImpl(projectRule.project)
         toolWindow = toolWindowManager.doRegisterToolWindow("GitHub Actions")
@@ -106,6 +111,7 @@ fun executeSomeCoroutineTasksAndDispatchAllInvocationEvents(project: Project) {
         runWithModalProgressBlocking(project, "") {
             yield()
         }
+        UIUtil.dispatchAllInvocationEvents()
         PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue()
     }
 }

@@ -8,6 +8,7 @@ import com.dsoftware.ghmanager.data.WorkflowDataContextService
 import com.dsoftware.ghmanager.ui.GhActionsMgrToolWindowContent
 import com.dsoftware.ghmanager.ui.panels.wfruns.WorkflowRunsListPanel
 import com.intellij.openapi.components.service
+import com.intellij.testFramework.waitUntil
 import com.intellij.ui.OnePixelSplitter
 import io.mockk.MockKMatcherScope
 import io.mockk.every
@@ -41,8 +42,8 @@ class TestRepoTabControllerWorkflowRunsPanel : GitHubActionsManagerBaseTest() {
     }
 
     @BeforeEach
-    override fun beforeEach(testInfo: TestInfo) {
-        super.beforeEach(testInfo)
+    override fun setUp(testInfo: TestInfo) {
+        super.setUp(testInfo)
         mockGhActionsService(setOf("http://github.com/owner/repo"), setOf("account1"))
         toolWindowContent = GhActionsMgrToolWindowContent(toolWindow)
         executeSomeCoroutineTasksAndDispatchAllInvocationEvents(projectRule.project)
@@ -132,7 +133,7 @@ class TestRepoTabControllerWorkflowRunsPanel : GitHubActionsManagerBaseTest() {
         val workflowDataContextService = projectRule.project.service<WorkflowDataContextService>()
         Assertions.assertEquals(1, workflowDataContextService.repositories.size)
         executeSomeCoroutineTasksAndDispatchAllInvocationEvents(projectRule.project)
-        verify(atLeast = 1) {
+        verify(atLeast = 1, timeout = 3000) {
             executorMock.execute(any(), matchApiRequestUrl<WorkflowRuns>("/actions/runs")).hint(WorkflowRuns::class)
             executorMock.execute(
                 any(), matchApiRequestUrl<GithubResponsePage<GithubUserWithPermissions>>("/collaborators")
@@ -140,8 +141,10 @@ class TestRepoTabControllerWorkflowRunsPanel : GitHubActionsManagerBaseTest() {
             executorMock.execute(any(), matchApiRequestUrl<GithubResponsePage<GithubBranch>>("/branches"))
             executorMock.execute(any(), matchApiRequestUrl<WorkflowTypes>("/actions/workflows"))
         }
+        executeSomeCoroutineTasksAndDispatchAllInvocationEvents(projectRule.project)
+        executeSomeCoroutineTasksAndDispatchAllInvocationEvents(projectRule.project)
         Assertions.assertEquals(1, (tabWrapPanel.components[0] as JPanel).componentCount)
-        Assertions.assertTrue((tabWrapPanel.components[0] as JPanel).components[0] is OnePixelSplitter)
+        Assertions.assertTrue((tabWrapPanel.components[0] as JPanel).components[0] is OnePixelSplitter, "Expected tab to have OnePixelSplitter")
         val splitterComponent = ((tabWrapPanel.components[0] as JPanel).components[0] as OnePixelSplitter)
         Assertions.assertEquals(3, splitterComponent.componentCount)
         Assertions.assertTrue(splitterComponent.firstComponent is WorkflowRunsListPanel)

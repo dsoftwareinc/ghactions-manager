@@ -73,7 +73,7 @@ class WorkflowRunsListPanel(
         val searchVm = WfRunsSearchPanelViewModel(scope, context)
         scope.launch {
             searchVm.searchState.collectLatest {
-//                context.updateFilter(it.toWorkflowRunFilter())
+                context.updateFilter(it.toWorkflowRunFilter())
             }
         }
 

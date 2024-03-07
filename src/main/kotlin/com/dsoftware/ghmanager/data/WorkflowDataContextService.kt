@@ -47,55 +47,38 @@ class WorkflowDataContextService(private val project: Project) {
         toolWindow: ToolWindow,
     ): CompletableFuture<WorkflowRunSelectionContext> {
         return repositories.getOrPut(repositoryMapping.remote.url) {
-            LazyCancellableBackgroundProcessValue.create { indicator ->
+            LazyCancellableBackgroundProcessValue.create(ProgressManager.getInstance()) { indicator ->
                 LOG.debug("Creating data context for ${repositoryMapping.remote.url}")
-                ProgressManager.getInstance().submitIOTask(indicator) {
-                    try {
-                        getContext(checkedDisposable, account, repositoryMapping, toolWindow)
-                    } catch (e: Exception) {
-                        if (e !is ProcessCanceledException)
-                            LOG.warn("Error occurred while creating data context", e)
-                        throw e
+                try {
+                    val token = if (settingsService.state.useGitHubSettings) {
+                        GHCompatibilityUtil.getOrRequestToken(account, toolWindow.project)
+                            ?: throw GithubMissingTokenException(account)
+                    } else {
+                        settingsService.state.apiToken
                     }
-                }.successOnEdt { ctx ->
-                    LOG.debug("Registering context for ${repositoryMapping.remote.url}")
-                    Disposer.register(toolWindow.disposable, ctx)
-                    ctx
+
+                    val requestExecutor = GithubApiRequestExecutor.Factory.getInstance().create(token = token)
+                    val singleRunDataLoader = SingleRunDataLoader(requestExecutor)
+                    if (checkedDisposable.isDisposed) {
+                        throw ProcessCanceledException(
+                            RuntimeException("Skipped creating data context for ${repositoryMapping.remote.url} because it was disposed")
+                        )
+                    }
+                    WorkflowRunSelectionContext(
+                        checkedDisposable,
+                        toolWindow,
+                        account,
+                        singleRunDataLoader,
+                        repositoryMapping,
+                        requestExecutor,
+                    )
+                } catch (e: Exception) {
+                    if (e !is ProcessCanceledException)
+                        LOG.warn("Error occurred while creating data context", e)
+                    throw e
                 }
             }
         }.value
-    }
-
-    @RequiresBackgroundThread
-    @Throws(IOException::class)
-    private fun getContext(
-        checkedDisposable: CheckedDisposable,
-        account: GithubAccount,
-        repositoryMapping: GHGitRepositoryMapping,
-        toolWindow: ToolWindow,
-    ): WorkflowRunSelectionContext {
-        val token = if (settingsService.state.useGitHubSettings) {
-            GHCompatibilityUtil.getOrRequestToken(account, toolWindow.project)
-                ?: throw GithubMissingTokenException(account)
-        } else {
-            settingsService.state.apiToken
-        }
-
-        val requestExecutor = GithubApiRequestExecutor.Factory.getInstance().create(token = token)
-        val singleRunDataLoader = SingleRunDataLoader(requestExecutor)
-        if (checkedDisposable.isDisposed) {
-            throw ProcessCanceledException(
-                RuntimeException("Skipped creating data context for ${repositoryMapping.remote.url} because it was disposed")
-            )
-        }
-        return WorkflowRunSelectionContext(
-            checkedDisposable,
-            toolWindow,
-            account,
-            singleRunDataLoader,
-            repositoryMapping,
-            requestExecutor,
-        )
     }
 
     companion object {

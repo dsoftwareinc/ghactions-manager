@@ -11,6 +11,7 @@ import com.intellij.collaboration.async.CompletableFutureUtil
 import com.intellij.collaboration.async.CompletableFutureUtil.handleOnEdt
 import com.intellij.collaboration.async.CompletableFutureUtil.submitIOTask
 import com.intellij.collaboration.ui.SimpleEventListener
+import com.intellij.collaboration.util.ProgressIndicatorsProvider
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.components.service
 import com.intellij.openapi.diagnostic.logger
@@ -24,7 +25,6 @@ import org.jetbrains.plugins.github.api.GithubApiRequestExecutor
 import org.jetbrains.plugins.github.api.GithubApiRequests
 import org.jetbrains.plugins.github.api.data.GHUser
 import org.jetbrains.plugins.github.api.data.request.GithubRequestPagination
-import org.jetbrains.plugins.github.util.NonReusableEmptyProgressIndicator
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ScheduledFuture
 import kotlin.properties.Delegates
@@ -35,6 +35,7 @@ class WorkflowRunListLoader(
     private val requestExecutor: GithubApiRequestExecutor,
     private val repositoryCoordinates: RepositoryCoordinates,
     private var filter: WorkflowRunFilter,
+    private val indicatorsProvider: ProgressIndicatorsProvider = ProgressIndicatorsProvider(),
 ) : Disposable {
     private val settingsService = toolWindow.project.service<GhActionsSettingsService>()
     val workflowRunsListModel = CollectionListModel<WorkflowRun>()
@@ -50,7 +51,6 @@ class WorkflowRunListLoader(
     private val page: Int = 1
     private val task: ScheduledFuture<*>
     var refreshRuns: Boolean = true
-    private var progressIndicator = NonReusableEmptyProgressIndicator()
     var error: Throwable? by Delegates.observable(null) { _, _, _ ->
         errorChangeEventDispatcher.multicaster.eventOccurred()
     }
@@ -62,6 +62,7 @@ class WorkflowRunListLoader(
     init {
         LOG.debug("Initialize WorkflowRunListLoader for ${repositoryCoordinates.repositoryPath}")
         Disposer.register(parentDisposable, this)
+        Disposer.register(this, indicatorsProvider)
         task = ToolbarUtil.executeTaskAtSettingsFrequency(toolWindow.project) {
             if (refreshRuns && error == null) loadMore(update = true)
         }
@@ -72,8 +73,7 @@ class WorkflowRunListLoader(
     fun loadMore(update: Boolean = false) {
         if (canLoadMore() || update) {
             loading = true
-            requestLoadMore(progressIndicator, update).handleOnEdt { list, error ->
-                if (progressIndicator.isCanceled) return@handleOnEdt
+            requestLoadMore(update).handleOnEdt { list, error ->
                 loading = false
                 if (error != null) {
                     if (!CompletableFutureUtil.isCancellation(error)) this.error = error
@@ -85,15 +85,15 @@ class WorkflowRunListLoader(
         }
     }
 
-    private fun requestLoadMore(indicator: ProgressIndicator, update: Boolean): CompletableFuture<List<WorkflowRun>> {
+    private fun requestLoadMore(update: Boolean): CompletableFuture<List<WorkflowRun>> {
         applyIf(repoCollaborators.isEmpty()) {
-            progressManager.submitIOTask(NonReusableEmptyProgressIndicator()) { updateCollaborators(it) }
+            progressManager.submitIOTask(indicatorsProvider) { updateCollaborators(it) }
         }.applyIf(repoBranches.isEmpty()) {
-            progressManager.submitIOTask(NonReusableEmptyProgressIndicator()) { updateBranches(it) }
+            progressManager.submitIOTask(indicatorsProvider) { updateBranches(it) }
         }.applyIf(workflowTypes.isEmpty()) {
-            progressManager.submitIOTask(NonReusableEmptyProgressIndicator()) { updateWorkflowTypes(it) }
+            progressManager.submitIOTask(indicatorsProvider) { updateWorkflowTypes(it) }
         }
-        lastFuture = progressManager.submitIOTask(indicator) { doLoadMore(indicator, update) }
+        lastFuture = progressManager.submitIOTask(indicatorsProvider) { doLoadMore(it, update) }
         return lastFuture
     }
 
@@ -163,7 +163,6 @@ class WorkflowRunListLoader(
     }
 
     override fun dispose() {
-        progressIndicator.cancel()
         task.cancel(true)
     }
 
@@ -172,8 +171,6 @@ class WorkflowRunListLoader(
         lastFuture = lastFuture.handle { _, _ ->
             listOf()
         }
-        progressIndicator.cancel()
-        progressIndicator = NonReusableEmptyProgressIndicator()
         error = null
         loading = false
         workflowRunsListModel.removeAll()
