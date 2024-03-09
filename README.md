@@ -53,6 +53,9 @@ Alternatively, register to @cunla's feed on polar.sh:
 
 <!-- Plugin description end -->
 
+# Repository activity
+![Alt](https://repobeats.axiom.co/api/embed/756410507b3575fdcf5b04cc7acc32148f3481b5.svg "Repobeats analytics image")
+
 # Contributions
 
 Contributions are welcome. Please see the
