@@ -36,13 +36,13 @@ import kotlin.properties.Delegates
 class RepoTabController(
     repositoryMapping: GHGitRepositoryMapping,
     private val ghAccount: GithubAccount,
-    private val dataContextRepository: WorkflowDataContextService,
     parentDisposable: Disposable,
     private val toolWindow: ToolWindow,
 ) {
+    private val dataContextRepository = toolWindow.project.service<WorkflowDataContextService>()
+    private val settingsService = toolWindow.project.service<GhActionsSettingsService>()
     val loadingModel: GHCompletableFutureLoadingModel<WorkflowRunSelectionContext>
     val panel: JComponent
-    private val settingsService = toolWindow.project.service<GhActionsSettingsService>()
     private val actionManager = ActionManager.getInstance()
     private var checkedDisposable: CheckedDisposable =
         Disposer.newCheckedDisposable(parentDisposable, "WorkflowToolWindowTabController")
@@ -58,21 +58,12 @@ class RepoTabController(
             dataContextRepository.clearContext(repositoryMapping)
         }
         loadingModel = GHCompletableFutureLoadingModel<WorkflowRunSelectionContext>(checkedDisposable).apply {
-            future = dataContextRepository.acquireContext(
-                checkedDisposable,
-                repositoryMapping,
-                ghAccount,
-                toolWindow
-            )
+            future = dataContextRepository.acquireContext(checkedDisposable, repositoryMapping, ghAccount, toolWindow)
         }
         val errorHandler = GHApiLoadingErrorHandler(toolWindow.project, ghAccount) {
             dataContextRepository.clearContext(repositoryMapping)
-            loadingModel.future = dataContextRepository.acquireContext(
-                checkedDisposable,
-                repositoryMapping,
-                ghAccount,
-                toolWindow
-            )
+            loadingModel.future =
+                dataContextRepository.acquireContext(checkedDisposable, repositoryMapping, ghAccount, toolWindow)
         }
         panel = GHLoadingPanelFactory(
             loadingModel,

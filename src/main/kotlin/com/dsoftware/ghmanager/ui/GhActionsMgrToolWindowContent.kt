@@ -114,7 +114,6 @@ class GhActionsMgrToolWindowContent(val toolWindow: ToolWindow) : Disposable {
     private fun createRepoWorkflowsPanels(toolWindow: ToolWindow) {
         val actionManager = ActionManager.getInstance()
         toolWindow.setAdditionalGearActions(DefaultActionGroup(actionManager.getAction("Github.Actions.Manager.Settings.Open")))
-        val dataContextRepository = toolWindow.project.service<WorkflowDataContextService>()
         val reposToHavePanel = ghActionsService.knownRepositories.filter {
             !settingsService.state.useCustomRepos
                 || (settingsService.state.customRepos[it.remote.url]?.included ?: false)
@@ -143,7 +142,7 @@ class GhActionsMgrToolWindowContent(val toolWindow: ToolWindow) : Disposable {
                     displayName = repoSettings.customName.ifEmpty { repo.repositoryPath }
                 }
                 val controller = RepoTabController(
-                    repo, ghAccount, dataContextRepository, tab.disposer!!, toolWindow,
+                    repo, ghAccount, tab.disposer!!, toolWindow,
                 )
                 tab.component.apply {
                     layout = BorderLayout()

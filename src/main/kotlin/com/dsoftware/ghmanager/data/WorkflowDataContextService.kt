@@ -56,9 +56,6 @@ class WorkflowDataContextService(private val project: Project) {
                     } else {
                         settingsService.state.apiToken
                     }
-
-                    val requestExecutor = GithubApiRequestExecutor.Factory.getInstance().create(token = token)
-                    val singleRunDataLoader = SingleRunDataLoader(requestExecutor)
                     if (checkedDisposable.isDisposed) {
                         throw ProcessCanceledException(
                             RuntimeException("Skipped creating data context for ${repositoryMapping.remote.url} because it was disposed")
@@ -68,9 +65,8 @@ class WorkflowDataContextService(private val project: Project) {
                         checkedDisposable,
                         toolWindow,
                         account,
-                        singleRunDataLoader,
                         repositoryMapping,
-                        requestExecutor,
+                        token,
                     )
                 } catch (e: Exception) {
                     if (e !is ProcessCanceledException)

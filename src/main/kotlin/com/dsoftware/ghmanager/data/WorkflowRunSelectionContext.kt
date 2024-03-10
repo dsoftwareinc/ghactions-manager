@@ -26,54 +26,54 @@ class WorkflowRunSelectionContext internal constructor(
     parentDisposable: CheckedDisposable,
     val toolWindow: ToolWindow,
     val account: GithubAccount,
-    val dataLoader: SingleRunDataLoader,
     val repositoryMapping: GHGitRepositoryMapping,
-    val requestExecutor: GithubApiRequestExecutor,
+    token:String,
     val runSelectionHolder: WorkflowRunListSelectionHolder = WorkflowRunListSelectionHolder(),
     val jobSelectionHolder: JobListSelectionHolder = JobListSelectionHolder(),
 ) : Disposable.Parent {
     private val task: ScheduledFuture<*>
-    private val fullPath = GithubUrlUtil.getUserAndRepositoryFromRemoteUrl(repositoryMapping.remote.url)
-        ?: throw IllegalArgumentException(
-            "Invalid GitHub Repository URL - ${repositoryMapping.remote.url} is not a GitHub repository"
-        )
-    private val selectedWfRun: WorkflowRun?
-        get() = runSelectionHolder.selection
-    val runsListLoader: WorkflowRunListLoader = WorkflowRunListLoader(
-        toolWindow,
-        this,
-        requestExecutor,
-        RepositoryCoordinates(account.server, fullPath),
-        WorkflowRunFilter(),
-    )
+    val runsListLoader: WorkflowRunListLoader
     val runsListModel: CollectionListModel<WorkflowRun>
         get() = runsListLoader.workflowRunsListModel
 
+    val requestExecutor = GithubApiRequestExecutor.Factory.getInstance().create(token = token)
     var selectedRunDisposable = Disposer.newDisposable("Selected run disposable")
     val jobDataProviderLoadModel: SingleValueModel<WorkflowRunJobsDataProvider?> = SingleValueModel(null)
     val jobsDataProvider: WorkflowRunJobsDataProvider?
-        get() = selectedWfRun?.let { dataLoader.getJobsDataProvider(it) }
+        get() = runSelectionHolder.selection?.let { dataLoader.getJobsDataProvider(it) }
+
     var selectedJobDisposable = Disposer.newDisposable("Selected job disposable")
-    private val selectedJob: Job?
-        get() = jobSelectionHolder.selection
     val jobLogDataProviderLoadModel: SingleValueModel<JobLogDataProvider?> = SingleValueModel(null)
+
+    val dataLoader = SingleRunDataLoader(requestExecutor)
     val logDataProvider: JobLogDataProvider?
-        get() = selectedJob?.let { dataLoader.getJobLogDataProvider(it) }
+        get() = jobSelectionHolder.selection?.let { dataLoader.getJobLogDataProvider(it) }
 
     val currentBranchName: String?
         get() = repositoryMapping.gitRepository.currentBranchName
 
     init {
         Disposer.register(parentDisposable, this)
+        val fullPath = GithubUrlUtil.getUserAndRepositoryFromRemoteUrl(repositoryMapping.remote.url)
+            ?: throw IllegalArgumentException(
+                "Invalid GitHub Repository URL - ${repositoryMapping.remote.url} is not a GitHub repository"
+            )
+        runsListLoader = WorkflowRunListLoader(
+            toolWindow,
+            this,
+            requestExecutor,
+            RepositoryCoordinates(account.server, fullPath),
+            WorkflowRunFilter(),
+        )
         task = ToolbarUtil.executeTaskAtSettingsFrequency(toolWindow.project) {
-            if (selectedWfRun == null) {
+            if (runSelectionHolder.selection == null) {
                 return@executeTaskAtSettingsFrequency
             }
-            LOG.info("Checking updated status for $selectedWfRun.id")
-            if (selectedWfRun?.status != "completed") {
+            LOG.info("Checking updated status for $runSelectionHolder.selection.id")
+            if (runSelectionHolder.selection?.status != "completed") {
                 jobsDataProvider?.reload()
             }
-            if (selectedJob?.status != "completed") {
+            if (jobSelectionHolder.selection?.status != "completed") {
                 logDataProvider?.reload()
             }
         }
