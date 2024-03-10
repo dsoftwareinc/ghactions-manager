@@ -7,10 +7,9 @@ GitHub Actions Manager for JetBrains IDEs
 
 # Screenshots
 
-![](docs/screenshot-new-ui-dark.png)
-
-![](docs/screenshot-new-ui-light.png)
-
+Horizontal                                 |  Vertical
+:--------------------------------------------------------------------------:|:-------------------------:
+ ![](docs/screenshot-new-ui-light.png) ![](docs/screenshot-new-ui-dark.png) |  ![](docs/screenshot-vertical.jpg)
 
 <!-- Plugin description -->
 This plugin creates a toolbar on JetBrains products (IntelliJ, PyCharm, ...)
@@ -34,7 +33,6 @@ Alternatively, register to @cunla's feed on polar.sh:
     </picture>
 </a>
 
-
 # Installation
 
 - Using IDE built-in plugin system:
@@ -54,6 +52,7 @@ Alternatively, register to @cunla's feed on polar.sh:
 <!-- Plugin description end -->
 
 # Repository activity
+
 ![Alt](https://repobeats.axiom.co/api/embed/756410507b3575fdcf5b04cc7acc32148f3481b5.svg "Repobeats analytics image")
 
 # Contributions
@@ -66,6 +65,6 @@ best way to get a bug fixed is to contribute a pull request.
 If you'd like to help out, you can start with any of the issues
 labeled with `Help wanted`.
 
-#  
+#   
 
 Inspired by [Otanikotani's github-actions-tab](https://github.com/Otanikotani/view-github-actions-idea-plugin).

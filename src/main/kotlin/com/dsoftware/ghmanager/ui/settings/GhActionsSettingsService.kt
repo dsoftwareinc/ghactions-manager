@@ -10,6 +10,7 @@ import com.intellij.openapi.components.StoragePathMacros
 data class GithubActionsManagerSettings(
     var useCustomRepos: Boolean = false,
     var customRepos: MutableMap<String, RepoSettings> = mutableMapOf(),
+    var runsListAboveJobs: Boolean = false,
     var jobListAboveLogs: Boolean = true,
     var frequency: Int = 30,
     var pageSize: Int = 30,

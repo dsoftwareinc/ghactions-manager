@@ -99,7 +99,11 @@ class RepoTabController(
                 }
         }
 
-        return OnePixelSplitter("GitHub.Workflows.Component", 0.3f).apply {
+        return OnePixelSplitter(
+            settingsService.state.runsListAboveJobs,
+            "GitHub.Workflows.Component",
+            0.3f
+        ).apply {
             background = UIUtil.getListBackground()
             isOpaque = true
             isFocusCycleRoot = true

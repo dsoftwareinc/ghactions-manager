@@ -55,6 +55,9 @@ internal class GhActionsManagerConfigurable internal constructor(project: Projec
 
             group(message("settings.group.visual-settings.title")) {
                 row {
+                    checkBox(message("settings.group.visual-settings.runs-vertical"))
+                        .comment(message("settings.group.visual-settings.runs-vertical.comment"))
+                        .bindSelected(state::runsListAboveJobs, state::runsListAboveJobs::set)
                     checkBox(message("settings.group.visual-settings.jobs-vertical"))
                         .comment(message("settings.group.visual-settings.jobs-vertical.comment"))
                         .bindSelected(state::jobListAboveLogs, state::jobListAboveLogs::set)
