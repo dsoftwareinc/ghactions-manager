@@ -6,6 +6,7 @@ import com.dsoftware.ghmanager.api.model.JobStep
 import com.dsoftware.ghmanager.i18n.MessagesBundle.message
 import com.intellij.openapi.diagnostic.logger
 import kotlinx.datetime.Instant
+import org.jetbrains.annotations.VisibleForTesting
 import org.jetbrains.plugins.github.api.GithubApiRequest
 import org.jetbrains.plugins.github.api.GithubApiResponse
 import java.io.BufferedReader
@@ -85,7 +86,8 @@ class GetJobLogRequest(private val job: Job) : GithubApiRequest.Get<String>(job.
         return currStep
     }
 
-    private fun stepsAsLog(stepLogs: JobLog): String {
+    @VisibleForTesting
+    internal fun stepsAsLog(stepLogs: JobLog): String {
         val stepsResult: Map<Int, JobStep> = job.steps.associateBy { it.number }
         val stepNumbers = stepsResult.keys.sorted()
 
@@ -104,7 +106,7 @@ class GetJobLogRequest(private val job: Job) : GithubApiRequest.Get<String>(job.
                 if (res.length + (stepLogs[stepNumber]?.length ?: 0) < 990_000) {
                     res.append(stepLogs[stepNumber])
                 } else {
-                    res.append(message("log.step.truncated"))
+                    res.append(message("log.step.truncated", job.htmlUrl+"?#step:$stepNumber"))
                 }
             }
         }
