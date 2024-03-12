@@ -10,6 +10,7 @@
 
 - Add quick-filter to show runs based on the current branch (updates when branch is updated) #115
 - Add ability to position workflow runs list on top of jobs list #116
+- Show link to step log when log is too large #118
 
 ### 🧰 Maintenance
 
