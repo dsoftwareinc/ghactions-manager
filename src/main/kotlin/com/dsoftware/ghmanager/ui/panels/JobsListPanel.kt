@@ -64,20 +64,27 @@ class JobsListPanel(
 
     private fun infoTitleString(jobs: List<Job>): String {
         val statusCounter = jobs.groupingBy { job -> job.status }.eachCount()
-        val conclusionCounter = jobs.groupingBy { job -> job.conclusion }.eachCount()
+        val res = mutableListOf<String>()
+        if (statusCounter.getOrDefault(Status.COMPLETED.value, 0) != 0) {
+            val completedStr = "${statusCounter[Status.COMPLETED.value]} completed"
+            val statusStrList = mutableListOf<String>()
+            val conclusionCounter = jobs.groupingBy { job -> job.conclusion }.eachCount()
+            if (conclusionCounter.containsKey("success")) {
+                statusStrList.add("${conclusionCounter["success"]} successful")
+            }
+            if (conclusionCounter.containsKey("failure")) {
+                statusStrList.add("""<span style="color:red">${conclusionCounter["failure"]} failed</span>""")
+            }
+            res.add(completedStr + " (" + statusStrList.joinToString(", ") + ")")
+        }
+        if (statusCounter.getOrDefault(Status.IN_PROGRESS.value, 0) != 0) {
+            res.add("${statusCounter[Status.IN_PROGRESS.value]} in progress")
+        }
+        if (statusCounter.getOrDefault(Status.QUEUED.value, 0) != 0) {
+            res.add("${statusCounter[Status.QUEUED.value]} queued")
+        }
 
-        val (statusCount, status) = if (statusCounter.containsKey(Status.QUEUED.value)) {
-            Pair(statusCounter[Status.QUEUED.value]!!, "queued")
-        } else if (statusCounter.containsKey(Status.IN_PROGRESS.value)) {
-            Pair(statusCounter[Status.IN_PROGRESS.value]!!, "in progress")
-        } else {
-            Pair(statusCounter[Status.COMPLETED.value] ?: jobs.size, "completed")
-        }
-        val res = message("panel.jobs.info.title", statusCount, jobs.size, status)
-        if (conclusionCounter.containsKey("failure")) {
-            return res + message("panel.jobs.info.jobs-failed", conclusionCounter["failure"]!!)
-        }
-        return res
+        return res.joinToString(", ")
     }
 
     private fun createListComponent(): JobListComponent {
