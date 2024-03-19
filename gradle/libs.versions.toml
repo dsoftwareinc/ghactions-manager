@@ -1,26 +1,27 @@
 [versions]
 # libraries
 annotations = "24.1.0"
-kotlinxSerialization = "1.6.0"
+kotlinxSerialization = "1.6.3"
 kotlinxCoroutines = "1.8.0"
 
 # plugins
 kotlin = "1.9.23"
 changelog = "2.2.0"
 gradleIntelliJPlugin = "1.17.2"
+gradleVersionsPlugin = "0.51.0"
 kover = "0.7.6"
 dokka = "1.8.10"
 
 # test libraries
-mockk = "1.13.9"
-junit5 = "5.8.1"
+mockk = "1.13.10"
+junit5 = "5.10.2"
 
 [libraries]
 annotations = { group = "org.jetbrains", name = "annotations", version.ref = "annotations" }
 mockk = { group = "io.mockk", name = "mockk-jvm", version.ref = "mockk" }
 serialization = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinxSerialization" }
 coroutines = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-debug", version.ref = "kotlinxCoroutines" }
-junit5 = {group="org.junit.jupiter", name="junit-jupiter", version.ref="junit5"}
+junit5 = { group = "org.junit.jupiter", name = "junit-jupiter", version.ref = "junit5" }
 
 [plugins]
 changelog = { id = "org.jetbrains.changelog", version.ref = "changelog" }
@@ -29,3 +30,4 @@ gradleIntelliJPlugin = { id = "org.jetbrains.intellij", version.ref = "gradleInt
 kotlin = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 kover = { id = "org.jetbrains.kotlinx.kover", version.ref = "kover" }
+gradleVersionsUpdatePlugin = { id = "com.github.ben-manes.versions", version.ref = "gradleVersionsPlugin" }

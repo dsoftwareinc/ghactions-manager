@@ -11,6 +11,7 @@ plugins {
     alias(libs.plugins.gradleIntelliJPlugin) // Gradle IntelliJ Plugin
     alias(libs.plugins.changelog) // Gradle Changelog Plugin
     alias(libs.plugins.kover) // Gradle Kover Plugin
+    alias(libs.plugins.gradleVersionsUpdatePlugin)
 }
 
 group = properties("pluginGroup").get()
@@ -131,4 +132,13 @@ tasks {
         // https://plugins.jetbrains.com/docs/intellij/deployment.html#specifying-a-release-channel
         channels = properties("pluginVersion").map { listOf(it.split('-').getOrElse(1) { "default" }.split('.')[0]) }
     }
+
+    dependencyUpdates {
+        revision = "release"
+        checkForGradleUpdate = true
+        outputFormatter = "plain"
+        outputDir = "build/dependencyUpdates"
+        reportfileName = "report"
+    }
+
 }
