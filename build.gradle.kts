@@ -25,14 +25,15 @@ repositories {
 // Dependencies are managed with Gradle version catalog - read more: https://docs.gradle.org/current/userguide/platforms.html#sub:version-catalog
 dependencies {
     implementation(libs.annotations)
-    testImplementation(libs.coroutines)
     compileOnly(libs.serialization)
 }
 
 testing {
     dependencies {
+        testImplementation(libs.coroutines)
         testImplementation(libs.mockk)
         testImplementation(libs.junit5)
+        testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     }
 }
 
