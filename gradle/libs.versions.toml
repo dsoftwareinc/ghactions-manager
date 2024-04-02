@@ -7,7 +7,7 @@ kotlinxCoroutines = "1.8.0"
 # plugins
 kotlin = "1.9.23"
 changelog = "2.2.0"
-gradleIntelliJPlugin = "1.17.2"
+gradleIntelliJPlugin = "1.17.3"
 gradleVersionsPlugin = "0.51.0"
 kover = "0.7.6"
 dokka = "1.8.10"
