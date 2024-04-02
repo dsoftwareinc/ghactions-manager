@@ -1,7 +1,7 @@
 package com.dsoftware.ghmanager.ui.panels.wfruns.filters
 
 import com.dsoftware.ghmanager.ui.ToolbarUtil
-import com.intellij.collaboration.ui.codereview.list.search.ChooserPopupUtil.PopupItemPresentation.Simple
+import com.intellij.collaboration.ui.codereview.list.search.ChooserPopupUtil.PopupItemPresentation
 import com.intellij.collaboration.ui.codereview.list.search.DropDownComponentFactory
 import com.intellij.collaboration.ui.codereview.list.search.ReviewListSearchPanelFactory
 import com.intellij.collaboration.ui.icon.AsyncImageIconsProvider
@@ -54,7 +54,7 @@ internal class WfRunsFiltersFactory(vm: WfRunsSearchPanelViewModel) :
                     onSelect = {},
                     valuePresenter = { it.name },
                     popupItemPresenter = {
-                        Simple(it.name)
+                        PopupItemPresentation.Simple(it.name)
                     }),
             DropDownComponentFactory(vm.userFilterState)
                 .create(viewScope,
@@ -63,7 +63,7 @@ internal class WfRunsFiltersFactory(vm: WfRunsSearchPanelViewModel) :
                     onSelect = {},
                     valuePresenter = { it.shortName },
                     popupItemPresenter = {
-                        Simple(
+                        PopupItemPresentation.Simple(
                             it.shortName, avatarIconsProvider.getIcon(it.avatarUrl, AVATAR_SIZE), it.name
                         )
                     }),
@@ -74,7 +74,7 @@ internal class WfRunsFiltersFactory(vm: WfRunsSearchPanelViewModel) :
                     onSelect = {},
                     valuePresenter = Companion::getStatusText,
                     popupItemPresenter = {
-                        Simple(
+                        PopupItemPresentation.Simple(
                             getStatusText(it), ToolbarUtil.statusIcon(it.name.lowercase(), null)
                         )
                     }),
@@ -84,7 +84,7 @@ internal class WfRunsFiltersFactory(vm: WfRunsSearchPanelViewModel) :
                     items = vm.branches,
                     onSelect = {},
                     popupItemPresenter = {
-                        Simple(it)
+                        PopupItemPresentation.Simple(it)
                     }),
             DropDownComponentFactory(vm.eventFilterState)
                 .create(viewScope,
@@ -93,7 +93,7 @@ internal class WfRunsFiltersFactory(vm: WfRunsSearchPanelViewModel) :
                     onSelect = {},
                     valuePresenter = Companion::getEventText,
                     popupItemPresenter = {
-                        Simple(getEventText(it))
+                        PopupItemPresentation.Simple(getEventText(it))
                     }),
         )
     }
