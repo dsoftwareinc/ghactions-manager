@@ -68,7 +68,6 @@ class TestRepoTabControllerWorkflowRunsPanel : GitHubActionsManagerBaseTest() {
         Assertions.assertEquals(workflowRunsList.size, workflowRunsListPanel.runListComponent.model.size)
     }
 
-    //    // todo: fix this test
     @Test
     fun `test repo without workflow-runs`() {
         mockGithubApiRequestExecutor(emptyList())
