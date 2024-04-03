@@ -12,10 +12,8 @@ import com.intellij.testFramework.PlatformTestUtil
 import com.intellij.testFramework.TestApplicationManager
 import com.intellij.testFramework.common.initTestApplication
 import com.intellij.testFramework.junit5.RunInEdt
-import com.intellij.testFramework.junit5.TestApplication
 import com.intellij.testFramework.registerServiceInstance
 import com.intellij.testFramework.rules.ProjectModelExtension
-import com.intellij.testFramework.waitUntil
 import com.intellij.toolWindow.ToolWindowHeadlessManagerImpl
 import com.intellij.util.concurrency.annotations.RequiresEdt
 import com.intellij.util.ui.UIUtil
@@ -26,7 +24,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.yield
 import org.jetbrains.plugins.github.api.GithubServerPath
 import org.jetbrains.plugins.github.authentication.accounts.GHAccountManager
@@ -75,8 +72,15 @@ abstract class GitHubActionsManagerBaseTest {
         val accounts = accountNames.map { GHAccountManager.createAccount(it, host) }.toSet()
         val repos: Set<GHGitRepositoryMapping> = repoUrls.map {
             mockk<GHGitRepositoryMapping>().apply {
-                every { remote.url } returns it
-                every { repository.serverPath } returns host
+                every { remote } returns mockk {
+                    every { url } returns it
+                }
+                every { repository } returns mockk {
+                    every { serverPath } returns host
+                }
+                every { gitRepository } returns mockk {
+                    every { currentBranchName } returns "main"
+                }
                 every { repositoryPath } returns it.replace("http://github.com/", "")
             }
         }.toSet()

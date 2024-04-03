@@ -45,9 +45,10 @@ class WorkflowRunsListPanel(
     private val context: WorkflowRunSelectionContext,
 ) : BorderLayoutPanel(), Disposable {
     private val scope = MainScope().also { Disposer.register(parentDisposable) { it.cancel() } }
-
+    private val workflowRunsLoader: WorkflowRunListLoader
+        get() = context.runsListLoader
     @VisibleForTesting
-    val runListComponent: WorkflowRunsListComponent = WorkflowRunsListComponent(context.runsListModel).apply {
+    val runListComponent = WorkflowRunsListComponent(workflowRunsLoader.workflowRunsListModel).apply {
         emptyText.clear()
         installPopup(this)
         ToolbarUtil.installSelectionHolder(this, context.runSelectionHolder)
@@ -63,8 +64,7 @@ class WorkflowRunsListPanel(
     }
     private val progressStripe: ProgressStripe
     private val infoPanel = HtmlInfoPanel()
-    private val workflowRunsLoader: WorkflowRunListLoader
-        get() = context.runsListLoader
+
 
     private val errorHandler = LoadingErrorHandler { workflowRunsLoader.reset() }
 
@@ -80,7 +80,7 @@ class WorkflowRunsListPanel(
         val searchPanel = WfRunsFiltersFactory(searchVm).createWfRunsFiltersPanel(scope)
         context.toolWindow.project.messageBus
             .connect(this)
-            .subscribe(GitRepository.GIT_REPO_CHANGE, GitRepositoryChangeListener {repo->
+            .subscribe(GitRepository.GIT_REPO_CHANGE, GitRepositoryChangeListener { repo ->
                 val currentFilter = searchVm.searchState.value
                 val currentBranchName = repo.currentBranchName
                 if (currentFilter.currentBranchFilter && currentBranchName != currentFilter.branch) {
@@ -103,7 +103,11 @@ class WorkflowRunsListPanel(
             }, this, ProgressWindow.DEFAULT_PROGRESS_DIALOG_POSTPONE_TIME_MILLIS
         )
         addToCenter(progressStripe)
-
+        workflowRunsLoader.workflowRunsListModel.addListDataListener(object : ListDataListener {
+            override fun intervalAdded(e: ListDataEvent) = updateInfoPanelAndEmptyText()
+            override fun contentsChanged(e: ListDataEvent) {}
+            override fun intervalRemoved(e: ListDataEvent) = updateInfoPanelAndEmptyText()
+        })
         workflowRunsLoader.addLoadingStateChangeListener(this) {
             setLoading(workflowRunsLoader.loading)
             updateInfoPanelAndEmptyText()
@@ -118,17 +122,6 @@ class WorkflowRunsListPanel(
         actionToolbar.targetComponent = this
 
         add(actionToolbar.component, BorderLayout.WEST)
-
-        runListComponent.model.addListDataListener(object : ListDataListener {
-            override fun intervalAdded(e: ListDataEvent) {
-                if (e.type == ListDataEvent.INTERVAL_ADDED) updateInfoPanelAndEmptyText()
-            }
-
-            override fun contentsChanged(e: ListDataEvent) {}
-            override fun intervalRemoved(e: ListDataEvent) {
-                if (e.type == ListDataEvent.INTERVAL_REMOVED) updateInfoPanelAndEmptyText()
-            }
-        })
     }
 
     private fun updateInfoPanelAndEmptyText() {

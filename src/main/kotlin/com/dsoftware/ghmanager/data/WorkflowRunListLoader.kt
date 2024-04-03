@@ -43,7 +43,6 @@ class WorkflowRunListLoader(
     val repoBranches = ArrayList<String>()
     val workflowTypes = ArrayList<WorkflowType>()
     private val progressManager = ProgressManager.getInstance()
-    private var lastFuture = CompletableFuture.completedFuture(emptyList<WorkflowRun>())
     private val loadingStateChangeEventDispatcher = EventDispatcher.create(SimpleEventListener::class.java)
     private val errorChangeEventDispatcher = EventDispatcher.create(SimpleEventListener::class.java)
     val url: String = GithubApi.getWorkflowRuns(repositoryCoordinates, filter).url
@@ -93,8 +92,7 @@ class WorkflowRunListLoader(
         }.applyIf(workflowTypes.isEmpty()) {
             progressManager.submitIOTask(indicatorsProvider) { updateWorkflowTypes(it) }
         }
-        lastFuture = progressManager.submitIOTask(indicatorsProvider) { doLoadMore(it, update) }
-        return lastFuture
+        return progressManager.submitIOTask(indicatorsProvider) { doLoadMore(it, update) }
     }
 
     private fun updateCollaborators(indicator: ProgressIndicator) {
@@ -168,9 +166,6 @@ class WorkflowRunListLoader(
 
     fun reset() {
         LOG.debug("Removing all from the list model")
-        lastFuture = lastFuture.handle { _, _ ->
-            listOf()
-        }
         error = null
         loading = false
         workflowRunsListModel.removeAll()
