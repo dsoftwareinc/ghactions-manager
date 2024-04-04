@@ -1,8 +1,6 @@
 package com.dsoftware.ghmanager.data
 
 import com.dsoftware.ghmanager.api.WorkflowRunFilter
-import com.dsoftware.ghmanager.api.model.Job
-import com.dsoftware.ghmanager.api.model.WorkflowRun
 import com.dsoftware.ghmanager.data.providers.JobLogDataProvider
 import com.dsoftware.ghmanager.data.providers.SingleRunDataLoader
 import com.dsoftware.ghmanager.data.providers.WorkflowRunJobsDataProvider
@@ -13,7 +11,6 @@ import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.util.CheckedDisposable
 import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.wm.ToolWindow
-import com.intellij.ui.CollectionListModel
 import org.jetbrains.plugins.github.api.GithubApiRequestExecutor
 import org.jetbrains.plugins.github.api.data.GHUser
 import org.jetbrains.plugins.github.authentication.accounts.GithubAccount
@@ -27,16 +24,15 @@ class WorkflowRunSelectionContext internal constructor(
     val toolWindow: ToolWindow,
     val account: GithubAccount,
     val repositoryMapping: GHGitRepositoryMapping,
-    token:String,
+    token: String,
     val runSelectionHolder: WorkflowRunListSelectionHolder = WorkflowRunListSelectionHolder(),
     val jobSelectionHolder: JobListSelectionHolder = JobListSelectionHolder(),
 ) : Disposable.Parent {
     private val task: ScheduledFuture<*>
-    val runsListLoader: WorkflowRunListLoader
-    val runsListModel: CollectionListModel<WorkflowRun>
-        get() = runsListLoader.workflowRunsListModel
-
     val requestExecutor = GithubApiRequestExecutor.Factory.getInstance().create(token = token)
+
+
+    val runsListLoader: WorkflowRunListLoader
     var selectedRunDisposable = Disposer.newDisposable("Selected run disposable")
     val jobDataProviderLoadModel: SingleValueModel<WorkflowRunJobsDataProvider?> = SingleValueModel(null)
     val jobsDataProvider: WorkflowRunJobsDataProvider?
