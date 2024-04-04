@@ -6,7 +6,7 @@
 
     <depends>com.intellij.modules.platform</depends>
     <depends>org.jetbrains.plugins.github</depends>
-    <idea-version since-build="233"/>
+    <idea-version since-build="241.8102.112"/>
     <resource-bundle>messages.messages</resource-bundle>
     <extensions defaultExtensionNs="com.intellij">
         <toolWindow

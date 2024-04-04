@@ -1,11 +1,11 @@
 package com.dsoftware.ghmanager.ui.panels.wfruns.filters
 
 import com.dsoftware.ghmanager.ui.ToolbarUtil
-import com.intellij.collaboration.ui.codereview.list.search.ChooserPopupUtil.PopupItemPresentation
 import com.intellij.collaboration.ui.codereview.list.search.DropDownComponentFactory
 import com.intellij.collaboration.ui.codereview.list.search.ReviewListSearchPanelFactory
 import com.intellij.collaboration.ui.icon.AsyncImageIconsProvider
 import com.intellij.collaboration.ui.icon.CachingIconsProvider
+import com.intellij.collaboration.ui.util.popup.PopupItemPresentation
 import com.intellij.util.IconUtil
 import com.intellij.util.ui.ImageUtil
 import icons.CollaborationToolsIcons
