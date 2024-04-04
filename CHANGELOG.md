@@ -4,6 +4,19 @@
 
 ## Unreleased
 
+## 1.19.0
+
+- Update license to GPL-3.0
+
+### 🚀 Features
+
+- Support for JetBrains IDEs v2024.1
+
+### 🧰 Maintenance
+
+- Improve tests and increase coverage
+- Update dependencies to latest versions
+
 ## 1.18.0
 
 ### 🚀 Features
