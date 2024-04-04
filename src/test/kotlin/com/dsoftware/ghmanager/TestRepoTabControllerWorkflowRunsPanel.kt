@@ -5,10 +5,10 @@ import com.dsoftware.ghmanager.api.model.WorkflowRuns
 import com.dsoftware.ghmanager.api.model.WorkflowType
 import com.dsoftware.ghmanager.api.model.WorkflowTypes
 import com.dsoftware.ghmanager.data.WorkflowDataContextService
+import com.dsoftware.ghmanager.i18n.MessagesBundle
 import com.dsoftware.ghmanager.ui.GhActionsMgrToolWindowContent
 import com.dsoftware.ghmanager.ui.panels.wfruns.WorkflowRunsListPanel
 import com.intellij.openapi.components.service
-import com.intellij.testFramework.waitUntil
 import com.intellij.ui.OnePixelSplitter
 import io.mockk.MockKMatcherScope
 import io.mockk.every
@@ -29,7 +29,9 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInfo
 import org.junit.jupiter.api.extension.ExtendWith
+import javax.swing.JComponent
 import javax.swing.JPanel
+import javax.swing.JTextPane
 
 @ExtendWith(MockKExtension::class)
 class TestRepoTabControllerWorkflowRunsPanel : GitHubActionsManagerBaseTest() {
@@ -64,8 +66,28 @@ class TestRepoTabControllerWorkflowRunsPanel : GitHubActionsManagerBaseTest() {
         executeSomeCoroutineTasksAndDispatchAllInvocationEvents(projectRule.project)
 
         // assert
-        val workflowRunsListPanel = assertTabsAndPanels()
-        Assertions.assertEquals(workflowRunsList.size, workflowRunsListPanel.runListComponent.model.size)
+        val (workflowRunsListPanel, jobsListPanel, logPanel) = assertTabsAndPanels(workflowRunsList.size)
+        workflowRunsListPanel.runListComponent.emptyText.apply {
+            Assertions.assertEquals(MessagesBundle.message("panel.workflow-runs.no-runs"), text)
+            Assertions.assertEquals(2, wrappedFragmentsIterable.count())
+            val fragments = wrappedFragmentsIterable.toList()
+            Assertions.assertEquals(MessagesBundle.message("panel.workflow-runs.no-runs"), fragments[0].toString())
+            Assertions.assertEquals(
+                MessagesBundle.message("panel.workflow-runs.no-runs.refresh"),
+                fragments[1].toString()
+            )
+        }
+        Assertions.assertEquals(1, jobsListPanel.componentCount)
+        Assertions.assertEquals(1, (jobsListPanel.components[0] as JPanel).componentCount)
+        ((jobsListPanel.components[0] as JPanel).components[0] as JTextPane).apply {
+            Assertions.assertTrue(text.contains(MessagesBundle.message("panel.jobs.not-loading")))
+        }
+
+        Assertions.assertEquals(1, logPanel.componentCount)
+        Assertions.assertEquals(1, (logPanel.components[0] as JPanel).componentCount)
+        ((logPanel.components[0] as JPanel).components[0] as JTextPane).apply {
+            Assertions.assertTrue(text.contains(MessagesBundle.message("panel.log.not-loading")))
+        }
     }
 
     @Test
@@ -77,9 +99,31 @@ class TestRepoTabControllerWorkflowRunsPanel : GitHubActionsManagerBaseTest() {
         toolWindowContent.createContent()
         executeSomeCoroutineTasksAndDispatchAllInvocationEvents(projectRule.project)
 
-        // assert
-        val workflowRunsListPanel = assertTabsAndPanels()
-        Assertions.assertEquals(0, workflowRunsListPanel.runListComponent.model.size)
+        val (workflowRunsListPanel, jobsListPanel, logPanel) = assertTabsAndPanels(0)
+
+        workflowRunsListPanel.runListComponent.emptyText.apply {
+            Assertions.assertEquals(MessagesBundle.message("panel.workflow-runs.no-runs"), text)
+            Assertions.assertEquals(2, wrappedFragmentsIterable.count())
+            val fragments = wrappedFragmentsIterable.toList()
+            Assertions.assertEquals(MessagesBundle.message("panel.workflow-runs.no-runs"), fragments[0].toString())
+            Assertions.assertEquals(
+                MessagesBundle.message("panel.workflow-runs.no-runs.refresh"),
+                fragments[1].toString()
+            )
+        }
+
+        Assertions.assertEquals(1, jobsListPanel.componentCount)
+        Assertions.assertEquals(1, (jobsListPanel.components[0] as JPanel).componentCount)
+        ((jobsListPanel.components[0] as JPanel).components[0] as JTextPane).apply {
+            Assertions.assertTrue(text.contains(MessagesBundle.message("panel.jobs.not-loading")))
+        }
+
+        Assertions.assertEquals(1, logPanel.componentCount)
+        Assertions.assertEquals(1, (logPanel.components[0] as JPanel).componentCount)
+        ((logPanel.components[0] as JPanel).components[0] as JTextPane).apply {
+            Assertions.assertTrue(text.contains(MessagesBundle.message("panel.log.not-loading")))
+        }
+
     }
 
 
@@ -122,7 +166,7 @@ class TestRepoTabControllerWorkflowRunsPanel : GitHubActionsManagerBaseTest() {
         }
     }
 
-    fun assertTabsAndPanels(): WorkflowRunsListPanel {
+    fun assertTabsAndPanels(expectedSize: Int): Triple<WorkflowRunsListPanel, JComponent, JComponent> {
         Assertions.assertEquals(1, toolWindow.contentManager.contentCount)
         val content = toolWindow.contentManager.contents[0]
         Assertions.assertEquals("owner/repo", content.displayName)
@@ -141,14 +185,20 @@ class TestRepoTabControllerWorkflowRunsPanel : GitHubActionsManagerBaseTest() {
             executorMock.execute(any(), matchApiRequestUrl<WorkflowTypes>("/actions/workflows"))
         }
         executeSomeCoroutineTasksAndDispatchAllInvocationEvents(projectRule.project)
-        executeSomeCoroutineTasksAndDispatchAllInvocationEvents(projectRule.project)
         Assertions.assertEquals(1, (tabWrapPanel.components[0] as JPanel).componentCount)
-        Assertions.assertTrue((tabWrapPanel.components[0] as JPanel).components[0] is OnePixelSplitter, "Expected tab to have OnePixelSplitter")
+        Assertions.assertTrue(
+            (tabWrapPanel.components[0] as JPanel).components[0] is OnePixelSplitter,
+            "Expected tab to have OnePixelSplitter"
+        )
         val splitterComponent = ((tabWrapPanel.components[0] as JPanel).components[0] as OnePixelSplitter)
         Assertions.assertEquals(3, splitterComponent.componentCount)
         Assertions.assertTrue(splitterComponent.firstComponent is WorkflowRunsListPanel)
         Assertions.assertTrue(splitterComponent.secondComponent is OnePixelSplitter)
-        return splitterComponent.firstComponent as WorkflowRunsListPanel
+        val workflowRunsListPanel = splitterComponent.firstComponent as WorkflowRunsListPanel
+        Assertions.assertEquals(expectedSize, workflowRunsListPanel.runListComponent.model.size)
+        val jobsListPanel = (splitterComponent.secondComponent as OnePixelSplitter).firstComponent
+        val logPanel = (splitterComponent.secondComponent as OnePixelSplitter).secondComponent
+        return Triple(workflowRunsListPanel, jobsListPanel, logPanel)
     }
 
     private fun <T> MockKMatcherScope.matchApiRequestUrl(url: String) =
