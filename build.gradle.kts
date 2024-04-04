@@ -1,8 +1,10 @@
+import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
 import org.jetbrains.changelog.Changelog
 import org.jetbrains.changelog.markdownToHTML
 
 fun properties(key: String) = providers.gradleProperty(key)
 fun environment(key: String) = providers.environmentVariable(key)
+
 
 plugins {
     id("java") // Java support
@@ -11,6 +13,7 @@ plugins {
     alias(libs.plugins.gradleIntelliJPlugin) // Gradle IntelliJ Plugin
     alias(libs.plugins.changelog) // Gradle Changelog Plugin
     alias(libs.plugins.kover) // Gradle Kover Plugin
+    alias(libs.plugins.gradleVersionsUpdatePlugin)
 }
 
 group = properties("pluginGroup").get()
@@ -29,7 +32,10 @@ dependencies {
 
 testing {
     dependencies {
+        testImplementation(libs.coroutines)
         testImplementation(libs.mockk)
+        testImplementation(libs.junit5)
+        testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     }
 }
 
@@ -64,7 +70,10 @@ koverReport {
 
 tasks {
     test {
-        systemProperty("idea.log.debug.categories", "com.dsoftware.ghmanager")
+        useJUnitPlatform()
+        systemProperty("idea.log.debug.categories", "com.dsoftware.ghmanager,org.jetbrains.plugins.github")
+        systemProperty("idea.log.trace.categories", "com.dsoftware.ghmanager,org.jetbrains.plugins.github")
+        systemProperty(kotlinx.coroutines.DEBUG_PROPERTY_NAME, kotlinx.coroutines.DEBUG_PROPERTY_VALUE_ON)
     }
 
     wrapper {
@@ -126,4 +135,24 @@ tasks {
         // https://plugins.jetbrains.com/docs/intellij/deployment.html#specifying-a-release-channel
         channels = properties("pluginVersion").map { listOf(it.split('-').getOrElse(1) { "default" }.split('.')[0]) }
     }
+}
+
+apply(plugin = "com.github.ben-manes.versions")
+
+fun String.isNonStable(): Boolean {
+    val stableKeyword = listOf("RELEASE", "FINAL", "GA").any { uppercase().contains(it) }
+    val regex = "^[0-9,.v-]+(-r)?$".toRegex()
+    val isStable = stableKeyword || regex.matches(this)
+    return isStable.not()
+}
+
+tasks.withType<DependencyUpdatesTask> {
+    rejectVersionIf {
+        candidate.version.isNonStable()
+    }
+    revision = "release"
+    checkForGradleUpdate = true
+    outputFormatter = "plain"
+    outputDir = "build/dependencyUpdates"
+    reportfileName = "report"
 }

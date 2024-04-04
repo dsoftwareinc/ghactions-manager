@@ -44,6 +44,10 @@ data class WorkflowRun(
     val repository: GitHubRepository,
     val pullRequests: List<PullRequest>? = emptyList(),
 ) : Comparable<WorkflowRun> {
+    override fun equals(other: Any?): Boolean {
+        if (other == null || other !is WorkflowRun) return false
+        return this.id == other.id
+    }
 
     /**
      * Compare workflows by their updated_at, or created_at (the newest first), or by id run_number both dates are null

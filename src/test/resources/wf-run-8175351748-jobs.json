@@ -1,0 +1,333 @@
+{
+    "total_count": 2,
+    "jobs": [
+        {
+            "id": 22352264016,
+            "run_id": 8175351748,
+            "workflow_name": "Build AspectJ",
+            "head_branch": "gh-288",
+            "run_url": "https://api.github.com/repos/eclipse-aspectj/aspectj/actions/runs/8175351748",
+            "run_attempt": 1,
+            "node_id": "CR_kwDOEOq1Ns8AAAAFNEx7UA",
+            "head_sha": "4414b42e3db6d1f3957820e968f4b414d7953197",
+            "url": "https://api.github.com/repos/eclipse-aspectj/aspectj/actions/jobs/22352264016",
+            "html_url": "https://github.com/eclipse-aspectj/aspectj/actions/runs/8175351748/job/22352264016",
+            "status": "completed",
+            "conclusion": "success",
+            "created_at": "2024-03-06T16:23:25Z",
+            "started_at": "2024-03-06T16:23:31Z",
+            "completed_at": "2024-03-06T16:40:06Z",
+            "name": "build (17)",
+            "steps": [
+                {
+                    "name": "Set up job",
+                    "status": "completed",
+                    "conclusion": "success",
+                    "number": 1,
+                    "started_at": "2024-03-06T16:23:30.000Z",
+                    "completed_at": "2024-03-06T16:23:32.000Z"
+                },
+                {
+                    "name": "Run actions/checkout@v4",
+                    "status": "completed",
+                    "conclusion": "success",
+                    "number": 2,
+                    "started_at": "2024-03-06T16:23:32.000Z",
+                    "completed_at": "2024-03-06T16:23:35.000Z"
+                },
+                {
+                    "name": "Set up JDK 17",
+                    "status": "completed",
+                    "conclusion": "success",
+                    "number": 3,
+                    "started_at": "2024-03-06T16:23:35.000Z",
+                    "completed_at": "2024-03-06T16:23:35.000Z"
+                },
+                {
+                    "name": "Print tool versions",
+                    "status": "completed",
+                    "conclusion": "success",
+                    "number": 4,
+                    "started_at": "2024-03-06T16:23:36.000Z",
+                    "completed_at": "2024-03-06T16:23:37.000Z"
+                },
+                {
+                    "name": "Set up cache for ~./m2/repository",
+                    "status": "completed",
+                    "conclusion": "success",
+                    "number": 5,
+                    "started_at": "2024-03-06T16:23:37.000Z",
+                    "completed_at": "2024-03-06T16:23:40.000Z"
+                },
+                {
+                    "name": "Compile + package code",
+                    "status": "completed",
+                    "conclusion": "success",
+                    "number": 6,
+                    "started_at": "2024-03-06T16:23:40.000Z",
+                    "completed_at": "2024-03-06T16:24:17.000Z"
+                },
+                {
+                    "name": "Attach aspectjrt to build",
+                    "status": "completed",
+                    "conclusion": "success",
+                    "number": 7,
+                    "started_at": "2024-03-06T16:24:18.000Z",
+                    "completed_at": "2024-03-06T16:24:18.000Z"
+                },
+                {
+                    "name": "Attach aspectjweaver to build",
+                    "status": "completed",
+                    "conclusion": "success",
+                    "number": 8,
+                    "started_at": "2024-03-06T16:24:18.000Z",
+                    "completed_at": "2024-03-06T16:24:19.000Z"
+                },
+                {
+                    "name": "Attach aspectjtools to build",
+                    "status": "completed",
+                    "conclusion": "success",
+                    "number": 9,
+                    "started_at": "2024-03-06T16:24:19.000Z",
+                    "completed_at": "2024-03-06T16:24:20.000Z"
+                },
+                {
+                    "name": "Attach installer to build",
+                    "status": "completed",
+                    "conclusion": "success",
+                    "number": 10,
+                    "started_at": "2024-03-06T16:24:20.000Z",
+                    "completed_at": "2024-03-06T16:24:21.000Z"
+                },
+                {
+                    "name": "Create docs",
+                    "status": "completed",
+                    "conclusion": "success",
+                    "number": 11,
+                    "started_at": "2024-03-06T16:24:22.000Z",
+                    "completed_at": "2024-03-06T16:26:01.000Z"
+                },
+                {
+                    "name": "Attach docs to build",
+                    "status": "completed",
+                    "conclusion": "success",
+                    "number": 12,
+                    "started_at": "2024-03-06T16:26:01.000Z",
+                    "completed_at": "2024-03-06T16:26:02.000Z"
+                },
+                {
+                    "name": "Run Tests",
+                    "status": "completed",
+                    "conclusion": "success",
+                    "number": 13,
+                    "started_at": "2024-03-06T16:26:02.000Z",
+                    "completed_at": "2024-03-06T16:40:02.000Z"
+                },
+                {
+                    "name": "Post Set up cache for ~./m2/repository",
+                    "status": "completed",
+                    "conclusion": "success",
+                    "number": 24,
+                    "started_at": "2024-03-06T16:40:03.000Z",
+                    "completed_at": "2024-03-06T16:40:04.000Z"
+                },
+                {
+                    "name": "Post Set up JDK 17",
+                    "status": "completed",
+                    "conclusion": "success",
+                    "number": 25,
+                    "started_at": "2024-03-06T16:40:04.000Z",
+                    "completed_at": "2024-03-06T16:40:04.000Z"
+                },
+                {
+                    "name": "Post Run actions/checkout@v4",
+                    "status": "completed",
+                    "conclusion": "success",
+                    "number": 26,
+                    "started_at": "2024-03-06T16:40:06.000Z",
+                    "completed_at": "2024-03-06T16:40:06.000Z"
+                },
+                {
+                    "name": "Complete job",
+                    "status": "completed",
+                    "conclusion": "success",
+                    "number": 27,
+                    "started_at": "2024-03-06T16:40:04.000Z",
+                    "completed_at": "2024-03-06T16:40:04.000Z"
+                }
+            ],
+            "check_run_url": "https://api.github.com/repos/eclipse-aspectj/aspectj/check-runs/22352264016",
+            "labels": [
+                "ubuntu-latest"
+            ],
+            "runner_id": 12985,
+            "runner_name": "GitHub Actions 363",
+            "runner_group_id": 2,
+            "runner_group_name": "GitHub Actions"
+        },
+        {
+            "id": 22352264355,
+            "run_id": 8175351748,
+            "workflow_name": "Build AspectJ",
+            "head_branch": "gh-288",
+            "run_url": "https://api.github.com/repos/eclipse-aspectj/aspectj/actions/runs/8175351748",
+            "run_attempt": 1,
+            "node_id": "CR_kwDOEOq1Ns8AAAAFNEx8ow",
+            "head_sha": "4414b42e3db6d1f3957820e968f4b414d7953197",
+            "url": "https://api.github.com/repos/eclipse-aspectj/aspectj/actions/jobs/22352264355",
+            "html_url": "https://github.com/eclipse-aspectj/aspectj/actions/runs/8175351748/job/22352264355",
+            "status": "completed",
+            "conclusion": "success",
+            "created_at": "2024-03-06T16:23:25Z",
+            "started_at": "2024-03-06T16:23:30Z",
+            "completed_at": "2024-03-06T16:40:06Z",
+            "name": "build (21)",
+            "steps": [
+                {
+                    "name": "Set up job",
+                    "status": "completed",
+                    "conclusion": "success",
+                    "number": 1,
+                    "started_at": "2024-03-06T16:23:29.000Z",
+                    "completed_at": "2024-03-06T16:23:31.000Z"
+                },
+                {
+                    "name": "Run actions/checkout@v4",
+                    "status": "completed",
+                    "conclusion": "success",
+                    "number": 2,
+                    "started_at": "2024-03-06T16:23:31.000Z",
+                    "completed_at": "2024-03-06T16:23:34.000Z"
+                },
+                {
+                    "name": "Set up JDK 21",
+                    "status": "completed",
+                    "conclusion": "success",
+                    "number": 3,
+                    "started_at": "2024-03-06T16:23:34.000Z",
+                    "completed_at": "2024-03-06T16:23:34.000Z"
+                },
+                {
+                    "name": "Print tool versions",
+                    "status": "completed",
+                    "conclusion": "success",
+                    "number": 4,
+                    "started_at": "2024-03-06T16:23:34.000Z",
+                    "completed_at": "2024-03-06T16:23:45.000Z"
+                },
+                {
+                    "name": "Set up cache for ~./m2/repository",
+                    "status": "completed",
+                    "conclusion": "success",
+                    "number": 5,
+                    "started_at": "2024-03-06T16:23:45.000Z",
+                    "completed_at": "2024-03-06T16:23:48.000Z"
+                },
+                {
+                    "name": "Compile + package code",
+                    "status": "completed",
+                    "conclusion": "success",
+                    "number": 6,
+                    "started_at": "2024-03-06T16:23:48.000Z",
+                    "completed_at": "2024-03-06T16:24:26.000Z"
+                },
+                {
+                    "name": "Attach aspectjrt to build",
+                    "status": "completed",
+                    "conclusion": "success",
+                    "number": 7,
+                    "started_at": "2024-03-06T16:24:26.000Z",
+                    "completed_at": "2024-03-06T16:24:26.000Z"
+                },
+                {
+                    "name": "Attach aspectjweaver to build",
+                    "status": "completed",
+                    "conclusion": "success",
+                    "number": 8,
+                    "started_at": "2024-03-06T16:24:27.000Z",
+                    "completed_at": "2024-03-06T16:24:27.000Z"
+                },
+                {
+                    "name": "Attach aspectjtools to build",
+                    "status": "completed",
+                    "conclusion": "success",
+                    "number": 9,
+                    "started_at": "2024-03-06T16:24:27.000Z",
+                    "completed_at": "2024-03-06T16:24:29.000Z"
+                },
+                {
+                    "name": "Attach installer to build",
+                    "status": "completed",
+                    "conclusion": "success",
+                    "number": 10,
+                    "started_at": "2024-03-06T16:24:29.000Z",
+                    "completed_at": "2024-03-06T16:24:30.000Z"
+                },
+                {
+                    "name": "Create docs",
+                    "status": "completed",
+                    "conclusion": "success",
+                    "number": 11,
+                    "started_at": "2024-03-06T16:24:30.000Z",
+                    "completed_at": "2024-03-06T16:26:04.000Z"
+                },
+                {
+                    "name": "Attach docs to build",
+                    "status": "completed",
+                    "conclusion": "success",
+                    "number": 12,
+                    "started_at": "2024-03-06T16:26:05.000Z",
+                    "completed_at": "2024-03-06T16:26:05.000Z"
+                },
+                {
+                    "name": "Run Tests",
+                    "status": "completed",
+                    "conclusion": "success",
+                    "number": 13,
+                    "started_at": "2024-03-06T16:26:06.000Z",
+                    "completed_at": "2024-03-06T16:40:02.000Z"
+                },
+                {
+                    "name": "Post Set up cache for ~./m2/repository",
+                    "status": "completed",
+                    "conclusion": "success",
+                    "number": 24,
+                    "started_at": "2024-03-06T16:40:02.000Z",
+                    "completed_at": "2024-03-06T16:40:04.000Z"
+                },
+                {
+                    "name": "Post Set up JDK 21",
+                    "status": "completed",
+                    "conclusion": "success",
+                    "number": 25,
+                    "started_at": "2024-03-06T16:40:06.000Z",
+                    "completed_at": "2024-03-06T16:40:06.000Z"
+                },
+                {
+                    "name": "Post Run actions/checkout@v4",
+                    "status": "completed",
+                    "conclusion": "success",
+                    "number": 26,
+                    "started_at": "2024-03-06T16:40:06.000Z",
+                    "completed_at": "2024-03-06T16:40:06.000Z"
+                },
+                {
+                    "name": "Complete job",
+                    "status": "completed",
+                    "conclusion": "success",
+                    "number": 27,
+                    "started_at": "2024-03-06T16:40:04.000Z",
+                    "completed_at": "2024-03-06T16:40:04.000Z"
+                }
+            ],
+            "check_run_url": "https://api.github.com/repos/eclipse-aspectj/aspectj/check-runs/22352264355",
+            "labels": [
+                "ubuntu-latest"
+            ],
+            "runner_id": 13031,
+            "runner_name": "GitHub Actions 411",
+            "runner_group_id": 2,
+            "runner_group_name": "GitHub Actions"
+        }
+    ]
+}

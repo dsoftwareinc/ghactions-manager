@@ -4,6 +4,43 @@
 
 ## Unreleased
 
+## 1.18.0
+
+### 🚀 Features
+
+- Add quick-filter to show runs based on the current branch (updates when branch is updated) #115
+- Add ability to position workflow runs list on top of jobs list #116
+- Show link to step log when log is too large #118
+
+### 🧰 Maintenance
+
+- Major refactoring better performance and code quality
+
+### 🐛 Bug Fixes
+
+- Fix not allowing custom repositories on plugin settings
+
+## 1.17.0
+
+### 🚀 Features
+
+- Extract all messages to i18n file #114
+- Update info bar on jobs-panel
+
+### 🐛 Bug Fixes
+
+- Improve logic for identifying steps in job logs
+
+### 🧰 Maintenance
+
+- Update dependencies to latest versions
+- Major code refactoring
+- Implement tests
+
+### 🐛 Bug Fixes
+
+- Minor bug when unable to parse Instant
+
 ## 1.16.1
 
 ### 🐛 Bug Fixes
@@ -24,7 +61,7 @@
 
 ## 1.15.1
 
-### Maintenance
+### 🧰 Maintenance
 
 - Update dependencies to latest versions
 
@@ -46,13 +83,13 @@
 
 - Filter by workflow type #98
 
-### Maintenance
+### 🧰 Maintenance
 
 - Improve filter behavior
 
 ## 1.13.5
 
-### Maintenance
+### 🧰 Maintenance
 
 - Add support for build 223.3 and fixed a few warnings. @wyatt-herkamp #97
 

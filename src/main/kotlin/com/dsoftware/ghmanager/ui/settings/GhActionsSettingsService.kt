@@ -1,16 +1,16 @@
 package com.dsoftware.ghmanager.ui.settings
 
+import com.intellij.openapi.Disposable
 import com.intellij.openapi.components.PersistentStateComponent
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.components.State
 import com.intellij.openapi.components.Storage
 import com.intellij.openapi.components.StoragePathMacros
-import com.intellij.openapi.components.service
-import com.intellij.openapi.project.Project
 
 data class GithubActionsManagerSettings(
-    var useCustomRepos: Boolean = true,
+    var useCustomRepos: Boolean = false,
     var customRepos: MutableMap<String, RepoSettings> = mutableMapOf(),
+    var runsListAboveJobs: Boolean = false,
     var jobListAboveLogs: Boolean = true,
     var frequency: Int = 30,
     var pageSize: Int = 30,
@@ -23,7 +23,7 @@ data class GithubActionsManagerSettings(
     )
 }
 
-@Service
+@Service(Service.Level.PROJECT)
 @State(
     name = "GhActionsManagerSettings",
     storages = [
@@ -31,7 +31,7 @@ data class GithubActionsManagerSettings(
     ],
     reportStatistic = false,
 )
-class GhActionsSettingsService : PersistentStateComponent<GithubActionsManagerSettings> {
+class GhActionsSettingsService : PersistentStateComponent<GithubActionsManagerSettings>, Disposable {
     private var state = GithubActionsManagerSettings()
 
     override fun getState(): GithubActionsManagerSettings {
@@ -42,7 +42,5 @@ class GhActionsSettingsService : PersistentStateComponent<GithubActionsManagerSe
         this.state = state
     }
 
-    companion object {
-        fun getInstance(project: Project): GhActionsSettingsService = project.service()
-    }
+    override fun dispose() {}
 }

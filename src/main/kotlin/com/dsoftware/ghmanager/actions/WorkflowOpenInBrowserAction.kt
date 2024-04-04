@@ -1,5 +1,6 @@
 package com.dsoftware.ghmanager.actions
 
+import com.dsoftware.ghmanager.i18n.MessagesBundle.message
 import com.intellij.icons.AllIcons
 import com.intellij.ide.BrowserUtil
 import com.intellij.openapi.actionSystem.ActionUpdateThread
@@ -11,7 +12,7 @@ import com.intellij.openapi.project.DumbAwareAction
 import javax.swing.Icon
 
 abstract class OpenInBrowserAction(
-    text: String = "Open GitHub Link in Browser",
+    text: String = message("action.name.open-in-browser"),
     description: String? = null,
     icon: Icon = AllIcons.Xml.Browsers.Chrome,
 ) : DumbAwareAction(text, description, icon) {

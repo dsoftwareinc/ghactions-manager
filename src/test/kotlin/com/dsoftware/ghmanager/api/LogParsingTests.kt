@@ -3,10 +3,12 @@ package com.dsoftware.ghmanager.api
 import com.dsoftware.ghmanager.api.model.WorkflowRunJobs
 import com.dsoftware.ghmanager.createJob
 import com.dsoftware.ghmanager.withStep
-import junit.framework.TestCase
 import org.jetbrains.plugins.github.api.GithubApiContentHelper
+import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.Test
 
-class TestLogParsing : TestCase() {
+class LogParsingTests {
+    @Test
     fun `test steps' log showing with right color`() {
         // arrange
         val job = createJob()
@@ -29,7 +31,7 @@ class TestLogParsing : TestCase() {
         val wfJobsJson = TestGetJobLogRequest::class.java.getResource("/wf-run-7863783013-jobs.json")!!.readText()
         val wfJobs: WorkflowRunJobs = GithubApiContentHelper.fromJson(wfJobsJson)
         val job = wfJobs.jobs.first()
-        val line = "2024-02-11T18:09:51.DDDDDDDZ LTS\n"
+        val line = "2024-02-11T18:09:51.DDDDDDDZ LTS ##[group]Run \n"
         //act
         val log = GetJobLogRequest(job).extractJobLogFromStream(line.byteInputStream())
 
