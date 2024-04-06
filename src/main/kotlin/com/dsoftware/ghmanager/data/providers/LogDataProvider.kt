@@ -5,7 +5,7 @@ import com.dsoftware.ghmanager.api.model.Job
 import com.intellij.openapi.progress.ProgressManager
 import org.jetbrains.plugins.github.api.GithubApiRequestExecutor
 
-class JobLogDataProvider(
+class LogDataProvider(
     progressManager: ProgressManager,
     requestExecutor: GithubApiRequestExecutor,
     job: Job

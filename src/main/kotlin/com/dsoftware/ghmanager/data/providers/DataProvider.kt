@@ -28,12 +28,12 @@ open class DataProvider<T>(
                 val request = githubApiRequest
                 val response = requestExecutor.execute(it, request)
                 response
-            } catch (ioe: IOException) {
-                LOG.warn("Error when getting $githubApiRequest.url: $ioe")
-                errorValue ?: throw ioe
             } catch (e: GithubStatusCodeException) {
                 LOG.warn("Error when getting $githubApiRequest.url: $e")
                 errorValue ?: throw e
+            } catch (ioe: IOException) {
+                LOG.warn("Error when getting $githubApiRequest.url: $ioe")
+                errorValue ?: throw ioe
             }
         }
 

@@ -75,7 +75,6 @@ class RepoTabController(
             ClientProperty.put(content, AnimatedIcon.ANIMATION_IN_RENDERER_ALLOWED, true)
             content
         }
-
     }
 
     private fun createContent(selectedRunContext: WorkflowRunSelectionContext): JComponent {
@@ -124,14 +123,14 @@ class RepoTabController(
         LOG.debug("Create log panel")
         val model = LogLoadingModelListener(
             selectedRunContext.selectedJobDisposable,
-            selectedRunContext.jobLogDataProviderLoadModel,
+            selectedRunContext.logDataProviderLoadModel,
             selectedRunContext.jobSelectionHolder
         )
         val panel = GHLoadingPanelFactory(
             model.logsLoadingModel,
             message("panel.log.not-loading"),
-            message("panel.log.loading-error", selectedRunContext.jobSelectionHolder.selection?.name ?: ""),
-            GHApiLoadingErrorHandler(toolWindow.project, ghAccount) {}
+            message("panel.log.loading-error"),
+            selectedRunContext.getLoadingErrorHandler { selectedRunContext.logDataProviderLoadModel.value = null }
         ).create { _, _ ->
             createLogConsolePanel(toolWindow.project, model, selectedRunContext.selectedRunDisposable)
         }
@@ -148,8 +147,8 @@ class RepoTabController(
         val jobsPanel = GHLoadingPanelFactory(
             jobsLoadingModel.jobsLoadingModel,
             message("panel.jobs.not-loading"),
-            message("panel.jobs.loading-error", selectedRunContext.runSelectionHolder.selection?.name ?: ""),
-            GHApiLoadingErrorHandler(toolWindow.project, ghAccount) {}
+            message("panel.jobs.loading-error"),
+            selectedRunContext.getLoadingErrorHandler { selectedRunContext.jobDataProviderLoadModel.value = null }
         ).create { _, _ ->
             JobsListPanel(
                 checkedDisposable,

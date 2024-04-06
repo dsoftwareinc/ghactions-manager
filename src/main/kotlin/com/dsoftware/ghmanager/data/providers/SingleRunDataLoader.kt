@@ -20,10 +20,10 @@ class SingleRunDataLoader(private val requestExecutor: GithubApiRequestExecutor)
         .maximumSize(200)
         .build<String, DataProvider<*>>()
 
-    fun getJobLogDataProvider(job: Job): JobLogDataProvider {
+    fun getJobLogDataProvider(job: Job): LogDataProvider {
         return cache.get("${job.url}/logs") {
-            JobLogDataProvider(progressManager, requestExecutor, job)
-        } as JobLogDataProvider
+            LogDataProvider(progressManager, requestExecutor, job)
+        } as LogDataProvider
     }
 
     fun getJobsDataProvider(workflowRun: WorkflowRun): WorkflowRunJobsDataProvider {

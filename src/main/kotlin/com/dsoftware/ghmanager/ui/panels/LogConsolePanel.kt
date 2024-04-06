@@ -123,12 +123,12 @@ fun createLogConsolePanel(
         }
     }
 
-    model.logModel.addAndInvokeListener {
+    model.logValueModel.addAndInvokeListener {
         runInEdt { addConsole(it) }
     }
     ApplicationManager.getApplication().messageBus.connect(parentDisposable)
         .subscribe(EditorColorsManager.TOPIC, EditorColorsListener {
-            runInEdt { addConsole(model.logModel.value) }
+            runInEdt { addConsole(model.logValueModel.value) }
         })
     return panel
 }

@@ -1,10 +1,11 @@
 package com.dsoftware.ghmanager.data
 
 import com.dsoftware.ghmanager.api.WorkflowRunFilter
-import com.dsoftware.ghmanager.data.providers.JobLogDataProvider
+import com.dsoftware.ghmanager.data.providers.LogDataProvider
 import com.dsoftware.ghmanager.data.providers.SingleRunDataLoader
 import com.dsoftware.ghmanager.data.providers.WorkflowRunJobsDataProvider
 import com.dsoftware.ghmanager.ui.ToolbarUtil
+import com.dsoftware.ghmanager.ui.panels.wfruns.LoadingErrorHandler
 import com.intellij.collaboration.ui.SingleValueModel
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.diagnostic.logger
@@ -31,7 +32,6 @@ class WorkflowRunSelectionContext internal constructor(
     private val task: ScheduledFuture<*>
     val requestExecutor = GithubApiRequestExecutor.Factory.getInstance().create(token = token)
 
-
     val runsListLoader: WorkflowRunListLoader
     var selectedRunDisposable = Disposer.newDisposable("Selected run disposable")
     val jobDataProviderLoadModel: SingleValueModel<WorkflowRunJobsDataProvider?> = SingleValueModel(null)
@@ -39,10 +39,10 @@ class WorkflowRunSelectionContext internal constructor(
         get() = runSelectionHolder.selection?.let { dataLoader.getJobsDataProvider(it) }
 
     var selectedJobDisposable = Disposer.newDisposable("Selected job disposable")
-    val jobLogDataProviderLoadModel: SingleValueModel<JobLogDataProvider?> = SingleValueModel(null)
+    val logDataProviderLoadModel: SingleValueModel<LogDataProvider?> = SingleValueModel(null)
 
     val dataLoader = SingleRunDataLoader(requestExecutor)
-    val logDataProvider: JobLogDataProvider?
+    val logDataProvider: LogDataProvider?
         get() = jobSelectionHolder.selection?.let { dataLoader.getJobLogDataProvider(it) }
 
     val currentBranchName: String?
@@ -108,10 +108,10 @@ class WorkflowRunSelectionContext internal constructor(
     }
 
     private fun setNewLogProvider() {
-        val oldValue = jobLogDataProviderLoadModel.value
+        val oldValue = logDataProviderLoadModel.value
         val newValue = logDataProvider
         if (oldValue != newValue && oldValue?.url() != newValue?.url()) {
-            jobLogDataProviderLoadModel.value = newValue
+            logDataProviderLoadModel.value = newValue
         }
     }
 
@@ -123,6 +123,10 @@ class WorkflowRunSelectionContext internal constructor(
 
     companion object {
         private val LOG = logger<WorkflowRunSelectionContext>()
+    }
+
+    fun getLoadingErrorHandler(resetRunnable: () -> Unit): LoadingErrorHandler {
+        return LoadingErrorHandler(toolWindow.project, account, resetRunnable)
     }
 
     override fun dispose() {}

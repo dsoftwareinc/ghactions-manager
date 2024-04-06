@@ -22,7 +22,7 @@ import com.intellij.ui.ScrollPaneFactory
 import com.intellij.ui.SimpleTextAttributes
 import com.intellij.util.ui.JBUI
 import com.intellij.util.ui.components.BorderLayoutPanel
-import com.intellij.vcs.log.ui.frame.ProgressStripe
+import com.intellij.vcs.ui.ProgressStripe
 import git4idea.repo.GitRepository
 import git4idea.repo.GitRepositoryChangeListener
 import kotlinx.coroutines.MainScope
@@ -47,6 +47,7 @@ class WorkflowRunsListPanel(
     private val scope = MainScope().also { Disposer.register(parentDisposable) { it.cancel() } }
     private val workflowRunsLoader: WorkflowRunListLoader
         get() = context.runsListLoader
+
     @VisibleForTesting
     val runListComponent = WorkflowRunsListComponent(workflowRunsLoader.workflowRunsListModel).apply {
         emptyText.clear()
@@ -65,9 +66,6 @@ class WorkflowRunsListPanel(
     private val progressStripe: ProgressStripe
     private val infoPanel = HtmlInfoPanel()
 
-
-    private val errorHandler = LoadingErrorHandler { workflowRunsLoader.reset() }
-
     init {
         Disposer.register(parentDisposable, this)
         val searchVm = WfRunsSearchPanelViewModel(scope, context)
@@ -78,8 +76,7 @@ class WorkflowRunsListPanel(
         }
 
         val searchPanel = WfRunsFiltersFactory(searchVm).createWfRunsFiltersPanel(scope)
-        context.toolWindow.project.messageBus
-            .connect(this)
+        context.toolWindow.project.messageBus.connect(this)
             .subscribe(GitRepository.GIT_REPO_CHANGE, GitRepositoryChangeListener { repo ->
                 val currentFilter = searchVm.searchState.value
                 val currentBranchName = repo.currentBranchName
@@ -161,11 +158,6 @@ class WorkflowRunsListPanel(
             getLoadingErrorText(workflowRunsLoader.url, error), SimpleTextAttributes.ERROR_ATTRIBUTES, null
         )
 
-        errorHandler.getActionForError().let {
-            runListComponent.emptyText.appendSecondaryText(
-                "\n${it.getValue("Name")}\n", SimpleTextAttributes.LINK_PLAIN_ATTRIBUTES, it
-            )
-        }
         runListComponent.emptyText.attachTo(runListComponent)
     }
 
