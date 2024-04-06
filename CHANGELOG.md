@@ -4,6 +4,16 @@
 
 ## Unreleased
 
+## 1.20.0
+
+### 🐛 Bug Fixes
+
+- Using new error handlers.
+
+### 🧰 Maintenance
+
+- Update deprecated code.
+
 ## 1.19.0
 
 - Update license to GPL-3.0
