@@ -39,21 +39,22 @@ class SingleRunDataLoader(private val requestExecutor: GithubApiRequestExecutor)
     @RequiresEdt
     fun invalidateAllData() {
         cache.invalidateAll()
-        invalidationEventDispatcher.multicaster.dataLoadeInvalidated()
+        invalidationEventDispatcher.multicaster.dataLoadersInvalidated()
     }
 
     fun addInvalidationListener(disposable: Disposable, listener: () -> Unit) =
         invalidationEventDispatcher.addListener(object : DataInvalidatedListener {
-            override fun dataLoadeInvalidated() {
+            override fun dataLoadersInvalidated() {
                 listener()
             }
         }, disposable)
 
     override fun dispose() {
+        invalidationEventDispatcher.listeners.clear()
         invalidateAllData()
     }
 
     private interface DataInvalidatedListener : EventListener {
-        fun dataLoadeInvalidated()
+        fun dataLoadersInvalidated()
     }
 }

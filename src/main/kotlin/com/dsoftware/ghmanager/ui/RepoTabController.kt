@@ -34,10 +34,10 @@ import javax.swing.JComponent
 import kotlin.properties.Delegates
 
 class RepoTabController(
-    repositoryMapping: GHGitRepositoryMapping,
-    private val ghAccount: GithubAccount,
-    parentDisposable: Disposable,
     private val toolWindow: ToolWindow,
+    private val ghAccount: GithubAccount,
+    repositoryMapping: GHGitRepositoryMapping,
+    parentDisposable: Disposable,
 ) {
     private val dataContextRepository = toolWindow.project.service<WorkflowDataContextService>()
     private val settingsService = toolWindow.project.service<GhActionsSettingsService>()

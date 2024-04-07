@@ -2,7 +2,6 @@ package com.dsoftware.ghmanager.ui
 
 import ai.grazie.utils.applyIf
 import com.dsoftware.ghmanager.data.GhActionsService
-import com.dsoftware.ghmanager.data.WorkflowDataContextService
 import com.dsoftware.ghmanager.i18n.MessagesBundle
 import com.dsoftware.ghmanager.ui.settings.GhActionsManagerConfigurable
 import com.dsoftware.ghmanager.ui.settings.GhActionsSettingsService
@@ -22,7 +21,6 @@ import com.intellij.ui.components.JBPanelWithEmptyText
 import com.intellij.ui.content.ContentManagerEvent
 import com.intellij.ui.content.ContentManagerListener
 import com.intellij.util.ui.UIUtil
-import com.intellij.vcs.log.runInEdtAsync
 import org.jetbrains.plugins.github.util.GHGitRepositoryMapping
 import java.awt.BorderLayout
 import javax.swing.JPanel
@@ -133,17 +131,15 @@ class GhActionsMgrToolWindowContent(val toolWindow: ToolWindow) : Disposable {
                 val repoSettings =
                     settingsService.state.customRepos.getOrPut(repo.remote.url) { GithubActionsManagerSettings.RepoSettings() }
                 val tab = toolWindow.contentManager.factory.createContent(
-                    JPanel(null), repo.repositoryPath, false
+                    JPanel(null), repoSettings.customName.ifEmpty { repo.repositoryPath }, false
                 ).apply {
                     isCloseable = false
                     val disposable = Disposer.newDisposable("gha-manager ${repo.repositoryPath} tab disposable")
                     Disposer.register(toolWindow.disposable, disposable)
                     setDisposer(disposable)
-                    displayName = repoSettings.customName.ifEmpty { repo.repositoryPath }
+                    description="repo:${repo.repository.repositoryPath} using account:${ghAccount.name}"
                 }
-                val controller = RepoTabController(
-                    repo, ghAccount, tab.disposer!!, toolWindow,
-                )
+                val controller = RepoTabController(toolWindow, ghAccount, repo, tab.disposer!!)
                 tab.component.apply {
                     layout = BorderLayout()
                     background = UIUtil.getListBackground()
