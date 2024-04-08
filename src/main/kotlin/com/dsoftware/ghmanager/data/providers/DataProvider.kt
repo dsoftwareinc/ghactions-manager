@@ -14,7 +14,6 @@ import java.util.concurrent.CompletableFuture
 import kotlin.properties.ReadOnlyProperty
 
 open class DataProvider<T>(
-    progressManager: ProgressManager,
     private val requestExecutor: GithubApiRequestExecutor,
     private val githubApiRequest: GithubApiRequest<T>,
     private val errorValue: T?,
@@ -22,7 +21,7 @@ open class DataProvider<T>(
     private val runChangesEventDispatcher = EventDispatcher.create(DataProviderChangeListener::class.java)
 
     private val processValue: LazyCancellableBackgroundProcessValue<T> =
-        LazyCancellableBackgroundProcessValue.create(progressManager) {
+        LazyCancellableBackgroundProcessValue.create(ProgressManager.getInstance()) {
             try {
                 LOG.info("Executing ${githubApiRequest.url}")
                 val request = githubApiRequest

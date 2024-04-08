@@ -1,22 +1,28 @@
 package com.dsoftware.ghmanager.data
 
 import com.dsoftware.ghmanager.api.WorkflowRunFilter
+import com.dsoftware.ghmanager.api.model.Job
+import com.dsoftware.ghmanager.api.model.WorkflowRun
+import com.dsoftware.ghmanager.data.providers.DataProvider
+import com.dsoftware.ghmanager.data.providers.JobsDataProvider
 import com.dsoftware.ghmanager.data.providers.LogDataProvider
-import com.dsoftware.ghmanager.data.providers.SingleRunDataLoader
-import com.dsoftware.ghmanager.data.providers.WorkflowRunJobsDataProvider
 import com.dsoftware.ghmanager.ui.ToolbarUtil
 import com.dsoftware.ghmanager.ui.panels.wfruns.LoadingErrorHandler
+import com.google.common.cache.CacheBuilder
 import com.intellij.collaboration.ui.SingleValueModel
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.util.CheckedDisposable
 import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.wm.ToolWindow
+import com.intellij.util.EventDispatcher
+import org.jetbrains.plugins.github.api.GithubApiRequest
 import org.jetbrains.plugins.github.api.GithubApiRequestExecutor
 import org.jetbrains.plugins.github.api.data.GHUser
 import org.jetbrains.plugins.github.authentication.accounts.GithubAccount
 import org.jetbrains.plugins.github.util.GHGitRepositoryMapping
 import org.jetbrains.plugins.github.util.GithubUrlUtil
+import java.util.EventListener
 import java.util.concurrent.ScheduledFuture
 
 
@@ -25,28 +31,33 @@ class WorkflowRunSelectionContext internal constructor(
     val toolWindow: ToolWindow,
     val account: GithubAccount,
     val repositoryMapping: GHGitRepositoryMapping,
-    token: String,
+    val requestExecutor: GithubApiRequestExecutor,
     val runSelectionHolder: WorkflowRunListSelectionHolder = WorkflowRunListSelectionHolder(),
     val jobSelectionHolder: JobListSelectionHolder = JobListSelectionHolder(),
 ) : Disposable.Parent {
     private val task: ScheduledFuture<*>
-    val requestExecutor = GithubApiRequestExecutor.Factory.getInstance().create(token = token)
-
-    val runsListLoader: WorkflowRunListLoader
-    var selectedRunDisposable = Disposer.newDisposable("Selected run disposable")
-    val jobDataProviderLoadModel: SingleValueModel<WorkflowRunJobsDataProvider?> = SingleValueModel(null)
-    val jobsDataProvider: WorkflowRunJobsDataProvider?
-        get() = runSelectionHolder.selection?.let { dataLoader.getJobsDataProvider(it) }
-
-    var selectedJobDisposable = Disposer.newDisposable("Selected job disposable")
-    val logDataProviderLoadModel: SingleValueModel<LogDataProvider?> = SingleValueModel(null)
-
-    val dataLoader = SingleRunDataLoader(requestExecutor)
-    val logDataProvider: LogDataProvider?
-        get() = jobSelectionHolder.selection?.let { dataLoader.getJobLogDataProvider(it) }
 
     val currentBranchName: String?
         get() = repositoryMapping.gitRepository.currentBranchName
+    val runsListLoader: WorkflowRunListLoader
+
+    private val invalidationEventDispatcher = EventDispatcher.create(DataInvalidatedListener::class.java)
+
+    private val cache = CacheBuilder.newBuilder()
+        .removalListener<String, DataProvider<*>> {}
+        .maximumSize(200)
+        .build<String, DataProvider<*>>()
+
+    var selectedRunDisposable = Disposer.newDisposable("Selected run disposable")
+    val jobDataProviderLoadModel: SingleValueModel<JobsDataProvider?> = SingleValueModel(null)
+    val jobsDataProvider: JobsDataProvider?
+        get() = runSelectionHolder.selection?.let { getJobsDataProvider(it) }
+
+    var selectedJobDisposable = Disposer.newDisposable("Selected job disposable")
+    val logDataProviderLoadModel: SingleValueModel<LogDataProvider?> = SingleValueModel(null)
+    val logDataProvider: LogDataProvider?
+        get() = jobSelectionHolder.selection?.let { getLogDataProvider(it) }
+
 
     init {
         Disposer.register(parentDisposable, this)
@@ -86,12 +97,22 @@ class WorkflowRunSelectionContext internal constructor(
             selectedJobDisposable.dispose()
             selectedJobDisposable = Disposer.newDisposable("Selected job disposable")
         }
-        dataLoader.addInvalidationListener(this) {// When wf-runs are invalidated, invalidate jobs and logs
-            LOG.debug("invalidation listener")
-            jobDataProviderLoadModel.value = null
-            jobDataProviderLoadModel.value = null
-            selectedRunDisposable.dispose()
-        }
+
+    }
+
+
+    private fun getLogDataProvider(job: Job): LogDataProvider {
+        return cache.get("${job.url}/logs") { LogDataProvider(requestExecutor, job) } as LogDataProvider
+    }
+
+    private fun getJobsDataProvider(workflowRun: WorkflowRun): JobsDataProvider {
+        return cache.get(workflowRun.jobsUrl) {
+            JobsDataProvider(requestExecutor, workflowRun.jobsUrl)
+        } as JobsDataProvider
+    }
+
+    fun <T> createDataProvider(request: GithubApiRequest<T>): DataProvider<T> {
+        return DataProvider(requestExecutor, request, null)
     }
 
     fun getCurrentAccountGHUser(): GHUser {
@@ -118,7 +139,9 @@ class WorkflowRunSelectionContext internal constructor(
     fun resetAllData() {
         runsListLoader.reset()
         runsListLoader.loadMore(true)
-        dataLoader.invalidateAllData()
+        jobDataProviderLoadModel.value = null
+        jobDataProviderLoadModel.value = null
+        selectedRunDisposable.dispose()
     }
 
     companion object {
@@ -138,5 +161,17 @@ class WorkflowRunSelectionContext internal constructor(
     fun updateFilter(filter: WorkflowRunFilter) {
         runsListLoader.setFilter(filter)
         resetAllData()
+    }
+
+
+    fun addInvalidationListener(disposable: Disposable, listener: () -> Unit) =
+        invalidationEventDispatcher.addListener(object : DataInvalidatedListener {
+            override fun dataLoadersInvalidated() {
+                listener()
+            }
+        }, disposable)
+
+    private interface DataInvalidatedListener : EventListener {
+        fun dataLoadersInvalidated()
     }
 }

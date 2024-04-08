@@ -5,6 +5,7 @@ import com.dsoftware.ghmanager.api.model.Job
 import com.dsoftware.ghmanager.api.model.JobStep
 import com.dsoftware.ghmanager.i18n.MessagesBundle.message
 import com.intellij.openapi.diagnostic.logger
+import com.intellij.util.io.HttpSecurityUtil
 import kotlinx.datetime.Instant
 import org.jetbrains.annotations.VisibleForTesting
 import org.jetbrains.plugins.github.api.GithubApiRequest
@@ -106,7 +107,7 @@ class GetJobLogRequest(private val job: Job) : GithubApiRequest.Get<String>(job.
                 if (res.length + (stepLogs[stepNumber]?.length ?: 0) < 990_000) {
                     res.append(stepLogs[stepNumber])
                 } else {
-                    res.append(message("log.step.truncated", job.htmlUrl+"?#step:$stepNumber"))
+                    res.append(message("log.step.truncated", job.htmlUrl + "?#step:$stepNumber"))
                 }
             }
         }
