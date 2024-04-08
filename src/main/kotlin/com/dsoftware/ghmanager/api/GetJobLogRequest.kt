@@ -5,7 +5,6 @@ import com.dsoftware.ghmanager.api.model.Job
 import com.dsoftware.ghmanager.api.model.JobStep
 import com.dsoftware.ghmanager.i18n.MessagesBundle.message
 import com.intellij.openapi.diagnostic.logger
-import com.intellij.util.io.HttpSecurityUtil
 import kotlinx.datetime.Instant
 import org.jetbrains.annotations.VisibleForTesting
 import org.jetbrains.plugins.github.api.GithubApiRequest
@@ -17,7 +16,8 @@ import java.io.InputStreamReader
 
 typealias JobLog = Map<Int, StringBuilder>
 
-class GetJobLogRequest(private val job: Job) : GithubApiRequest.Get<String>(job.url + "/logs") {
+class GetJobLogRequest(private val job: Job) :
+    GithubApiRequest.Get<String>(job.url + "/logs", acceptMimeType = "application/vnd.github+json") {
     private val stepsMap = job.steps.associateBy { step -> step.number }
     private val lastStepNumber: Int = stepsMap.keys.maxOrNull() ?: 0
 

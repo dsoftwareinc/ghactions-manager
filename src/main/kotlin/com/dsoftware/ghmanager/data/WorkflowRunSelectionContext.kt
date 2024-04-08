@@ -1,5 +1,6 @@
 package com.dsoftware.ghmanager.data
 
+import com.dsoftware.ghmanager.api.GhApiRequestExecutor
 import com.dsoftware.ghmanager.api.WorkflowRunFilter
 import com.dsoftware.ghmanager.api.model.Job
 import com.dsoftware.ghmanager.api.model.WorkflowRun
@@ -17,7 +18,6 @@ import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.wm.ToolWindow
 import com.intellij.util.EventDispatcher
 import org.jetbrains.plugins.github.api.GithubApiRequest
-import org.jetbrains.plugins.github.api.GithubApiRequestExecutor
 import org.jetbrains.plugins.github.api.data.GHUser
 import org.jetbrains.plugins.github.authentication.accounts.GithubAccount
 import org.jetbrains.plugins.github.util.GHGitRepositoryMapping
@@ -31,7 +31,7 @@ class WorkflowRunSelectionContext internal constructor(
     val toolWindow: ToolWindow,
     val account: GithubAccount,
     val repositoryMapping: GHGitRepositoryMapping,
-    val requestExecutor: GithubApiRequestExecutor,
+    val requestExecutor: GhApiRequestExecutor,
     val runSelectionHolder: WorkflowRunListSelectionHolder = WorkflowRunListSelectionHolder(),
     val jobSelectionHolder: JobListSelectionHolder = JobListSelectionHolder(),
 ) : Disposable.Parent {

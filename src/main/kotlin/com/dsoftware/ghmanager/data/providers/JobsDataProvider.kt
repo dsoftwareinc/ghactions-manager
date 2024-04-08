@@ -1,11 +1,11 @@
 package com.dsoftware.ghmanager.data.providers
 
+import com.dsoftware.ghmanager.api.GhApiRequestExecutor
 import com.dsoftware.ghmanager.api.GithubApi
 import com.dsoftware.ghmanager.api.model.WorkflowRunJobs
-import org.jetbrains.plugins.github.api.GithubApiRequestExecutor
 
 class JobsDataProvider(
-    requestExecutor: GithubApiRequestExecutor,
+    requestExecutor: GhApiRequestExecutor,
     jobsUrl: String
 ) : DataProvider<WorkflowRunJobs>(
     requestExecutor,

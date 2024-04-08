@@ -137,7 +137,7 @@ class GhActionsMgrToolWindowContent(val toolWindow: ToolWindow) : Disposable {
                     val disposable = Disposer.newDisposable("gha-manager ${repo.repositoryPath} tab disposable")
                     Disposer.register(toolWindow.disposable, disposable)
                     setDisposer(disposable)
-                    description="repo:${repo.repository.repositoryPath} using account:${ghAccount.name}"
+                    description = "repo:${repo.repository.repositoryPath} using account:${ghAccount.name}"
                 }
                 val controller = RepoTabController(toolWindow, ghAccount, repo, tab.disposer!!)
                 tab.component.apply {

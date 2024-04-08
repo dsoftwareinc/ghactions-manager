@@ -6,9 +6,15 @@
 
 ## 1.20.0
 
+### 🚀 Features
+
+- Tooltip on tab showing real repo and GitHub account
+- Prefer GitHub account that is the owner of the repository
+
 ### 🐛 Bug Fixes
 
 - Using new error handlers.
+- Create GitHub Request executor that supports redirects. # 119
 
 ### 🧰 Maintenance
 

@@ -1,5 +1,6 @@
 package com.dsoftware.ghmanager.data
 
+import com.dsoftware.ghmanager.api.GhApiRequestExecutor
 import com.dsoftware.ghmanager.ui.settings.GhActionsSettingsService
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.components.service
@@ -11,7 +12,6 @@ import com.intellij.openapi.util.CheckedDisposable
 import com.intellij.openapi.wm.ToolWindow
 import com.intellij.util.concurrency.annotations.RequiresEdt
 import org.jetbrains.plugins.github.api.GHRepositoryPath
-import org.jetbrains.plugins.github.api.GithubApiRequestExecutor
 import org.jetbrains.plugins.github.api.GithubServerPath
 import org.jetbrains.plugins.github.authentication.accounts.GithubAccount
 import org.jetbrains.plugins.github.exceptions.GithubMissingTokenException
@@ -50,8 +50,7 @@ class WorkflowDataContextService(private val project: Project) {
                     } else {
                         settingsService.state.apiToken
                     }
-
-                    val requestExecutor = GithubApiRequestExecutor.Factory.getInstance().create(token)
+                    val requestExecutor = GhApiRequestExecutor.create(token)
                     if (checkedDisposable.isDisposed) {
                         throw ProcessCanceledException(
                             RuntimeException("Skipped creating data context for ${repositoryMapping.remote.url} because it was disposed")

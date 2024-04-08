@@ -1,5 +1,6 @@
 package com.dsoftware.ghmanager
 
+import com.dsoftware.ghmanager.api.GhApiRequestExecutor
 import com.dsoftware.ghmanager.api.model.WorkflowRun
 import com.dsoftware.ghmanager.api.model.WorkflowRuns
 import com.dsoftware.ghmanager.api.model.WorkflowType
@@ -36,7 +37,7 @@ import javax.swing.JTextPane
 @ExtendWith(MockKExtension::class)
 class TestRepoTabControllerWorkflowRunsPanel : GitHubActionsManagerBaseTest() {
     @MockK
-    lateinit var executorMock: GithubApiRequestExecutor
+    lateinit var executorMock: GhApiRequestExecutor
 
     init {
         mockkStatic(GHCompatibilityUtil::class)
@@ -132,10 +133,8 @@ class TestRepoTabControllerWorkflowRunsPanel : GitHubActionsManagerBaseTest() {
                 execute(any(), matchApiRequestUrl<WorkflowTypes>("/actions/workflows"))
             } returns workflowTypesResponse
         }
-        mockkObject(GithubApiRequestExecutor.Factory)
-        every { GithubApiRequestExecutor.Factory.getInstance() } returns mockk<GithubApiRequestExecutor.Factory> {
-            every { create(token = any()) } returns executorMock
-        }
+        mockkObject(GhApiRequestExecutor)
+        every { GhApiRequestExecutor.create(token = any()) } returns executorMock
     }
 
     fun assertTabsAndPanels(): Triple<WorkflowRunsListPanel, JComponent, JComponent> {
