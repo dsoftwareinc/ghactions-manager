@@ -25,6 +25,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.yield
+import org.jetbrains.plugins.github.api.GHRepositoryPath
 import org.jetbrains.plugins.github.api.GithubServerPath
 import org.jetbrains.plugins.github.authentication.accounts.GHAccountManager
 import org.jetbrains.plugins.github.authentication.accounts.GithubAccount
@@ -70,18 +71,20 @@ abstract class GitHubActionsManagerBaseTest {
 
     fun mockGhActionsService(repoUrls: Set<String>, accountNames: Collection<String>) {
         val accounts = accountNames.map { GHAccountManager.createAccount(it, host) }.toSet()
-        val repos: Set<GHGitRepositoryMapping> = repoUrls.map {
+        val repos: Set<GHGitRepositoryMapping> = repoUrls.map { repoUrl ->
+            val (owner, repo) = repoUrl.replace("http://github.com/", "").split("/")
             mockk<GHGitRepositoryMapping>().apply {
                 every { remote } returns mockk {
-                    every { url } returns it
+                    every { url } returns repoUrl
                 }
                 every { repository } returns mockk {
                     every { serverPath } returns host
+                    every { repositoryPath } returns GHRepositoryPath(owner, repo)
                 }
                 every { gitRepository } returns mockk {
                     every { currentBranchName } returns "main"
                 }
-                every { repositoryPath } returns it.replace("http://github.com/", "")
+                every { repositoryPath } returns repoUrl.replace("http://github.com/", "")
             }
         }.toSet()
 

@@ -51,8 +51,7 @@ class WorkflowDataContextService(private val project: Project) {
                         settingsService.state.apiToken
                     }
 
-                    val requestExecutor =
-                        GithubApiRequestExecutor.Factory.getInstance().create { token }
+                    val requestExecutor = GithubApiRequestExecutor.Factory.getInstance().create(token)
                     if (checkedDisposable.isDisposed) {
                         throw ProcessCanceledException(
                             RuntimeException("Skipped creating data context for ${repositoryMapping.remote.url} because it was disposed")
