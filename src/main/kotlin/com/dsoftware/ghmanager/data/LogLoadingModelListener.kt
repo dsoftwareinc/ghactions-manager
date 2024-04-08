@@ -1,7 +1,7 @@
 package com.dsoftware.ghmanager.data
 
 import com.dsoftware.ghmanager.data.providers.DataProvider
-import com.dsoftware.ghmanager.data.providers.JobLogDataProvider
+import com.dsoftware.ghmanager.data.providers.LogDataProvider
 import com.intellij.collaboration.ui.SingleValueModel
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.diagnostic.logger
@@ -17,17 +17,23 @@ data class LogValue(val log: String?, val status: LogValueStatus, val jobName: S
 
 class LogLoadingModelListener(
     workflowRunDisposable: Disposable,
-    dataProviderModel: SingleValueModel<JobLogDataProvider?>,
+    logDataProvider: SingleValueModel<LogDataProvider?>,
     private val jobsSelectionHolder: JobListSelectionHolder,
 ) : GHLoadingModel.StateChangeListener {
-    val logModel = SingleValueModel<LogValue?>(null)
+    /*
+     * Model for log value.
+     * Provider = Execution of the http request to get the log.
+     * Value = Log value.
+     * When the provider is null, it means no workflow-run/job is selected.
+     */
+    val logValueModel = SingleValueModel<LogValue?>(null)
     val logsLoadingModel = GHCompletableFutureLoadingModel<String>(workflowRunDisposable)
 
     init {
         jobsSelectionHolder.addSelectionChangeListener(workflowRunDisposable, this::setLogValue)
         logsLoadingModel.addStateChangeListener(this)
         var listenerDisposable: Disposable? = null
-        dataProviderModel.addAndInvokeListener { provider ->
+        logDataProvider.addAndInvokeListener { provider ->
             logsLoadingModel.future = null
             logsLoadingModel.future = provider?.request
             listenerDisposable = listenerDisposable?.let {
@@ -35,17 +41,16 @@ class LogLoadingModelListener(
                 null
             }
             provider?.let {
-                val disposable2 = Disposer.newDisposable("Log listener disposable")
-                    .apply {
-                        Disposer.register(workflowRunDisposable, this)
-                    }
-                it.addRunChangesListener(disposable2,
+                val newDisposable = Disposer.newDisposable("Log listener disposable").apply {
+                    Disposer.register(workflowRunDisposable, this)
+                }
+                it.addRunChangesListener(newDisposable,
                     object : DataProvider.DataProviderChangeListener {
                         override fun changed() {
                             logsLoadingModel.future = it.request
                         }
                     })
-                listenerDisposable = disposable2
+                listenerDisposable = newDisposable
             }
         }
 
@@ -59,7 +64,7 @@ class LogLoadingModelListener(
                 null
             else
                 logsLoadingModel.result
-        logModel.value = when {
+        logValueModel.value = when {
             logsLoadingModel.result == null -> null
             jobSelection == null -> LogValue(null, LogValueStatus.NO_JOB_SELECTED)
             jobSelection.status == "in_progress" -> LogValue(null, LogValueStatus.JOB_IN_PROGRESS)

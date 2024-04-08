@@ -4,6 +4,35 @@
 
 ## Unreleased
 
+## 1.20.0
+
+### 🚀 Features
+
+- Tooltip on tab showing real repo and GitHub account
+- Prefer GitHub account that is the owner of the repository
+
+### 🐛 Bug Fixes
+
+- Using new error handlers.
+- Create GitHub Request executor that supports redirects. # 119
+
+### 🧰 Maintenance
+
+- Update deprecated code.
+
+## 1.19.0
+
+- Update license to GPL-3.0
+
+### 🚀 Features
+
+- Support for JetBrains IDEs v2024.1
+
+### 🧰 Maintenance
+
+- Improve tests and increase coverage
+- Update dependencies to latest versions
+
 ## 1.18.0
 
 ### 🚀 Features

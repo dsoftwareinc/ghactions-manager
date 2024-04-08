@@ -7,6 +7,7 @@ import com.dsoftware.ghmanager.ui.settings.GithubActionsManagerSettings.RepoSett
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.components.service
 import com.intellij.openapi.options.BoundConfigurable
+import com.intellij.openapi.options.ShowSettingsUtil
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.DialogPanel
 import com.intellij.ui.components.JBCheckBox
@@ -19,9 +20,10 @@ import com.intellij.ui.dsl.builder.panel
 import com.intellij.ui.dsl.builder.selected
 import com.intellij.ui.layout.not
 import com.intellij.util.messages.Topic
+import org.jetbrains.plugins.github.util.GithubUtil
 
 
-internal class GhActionsManagerConfigurable internal constructor(project: Project) :
+internal class GhActionsManagerConfigurable internal constructor(private val project: Project) :
     BoundConfigurable(message("settings.display.name"), "settings.ghactions-manager") {
     private val ghActionsSettingsService = project.service<GhActionsSettingsService>()
     private val state = ghActionsSettingsService.state
@@ -46,6 +48,9 @@ internal class GhActionsManagerConfigurable internal constructor(project: Projec
                     checkbox = checkBox(message("settings.group.github-settings.label"))
                         .comment(message("settings.group.github-settings.comment"))
                         .bindSelected(state::useGitHubSettings, state::useGitHubSettings::set)
+                    link(message("factory.go.to.github-settings")) {
+                        ShowSettingsUtil.getInstance().showSettingsDialog(project, GithubUtil.SERVICE_DISPLAY_NAME)
+                    }
                 }
                 row {
                     label(message("settings.group.github-api-token.label"))

@@ -1,11 +1,12 @@
 package com.dsoftware.ghmanager
 
+import com.dsoftware.ghmanager.api.GhApiRequestExecutor
 import com.dsoftware.ghmanager.api.model.WorkflowRun
 import com.dsoftware.ghmanager.api.model.WorkflowRuns
 import com.dsoftware.ghmanager.api.model.WorkflowType
 import com.dsoftware.ghmanager.api.model.WorkflowTypes
 import com.dsoftware.ghmanager.data.WorkflowDataContextService
-import com.dsoftware.ghmanager.i18n.MessagesBundle
+import com.dsoftware.ghmanager.i18n.MessagesBundle.message
 import com.dsoftware.ghmanager.ui.GhActionsMgrToolWindowContent
 import com.dsoftware.ghmanager.ui.panels.wfruns.WorkflowRunsListPanel
 import com.intellij.openapi.components.service
@@ -36,7 +37,7 @@ import javax.swing.JTextPane
 @ExtendWith(MockKExtension::class)
 class TestRepoTabControllerWorkflowRunsPanel : GitHubActionsManagerBaseTest() {
     @MockK
-    lateinit var executorMock: GithubApiRequestExecutor
+    lateinit var executorMock: GhApiRequestExecutor
 
     init {
         mockkStatic(GHCompatibilityUtil::class)
@@ -66,28 +67,15 @@ class TestRepoTabControllerWorkflowRunsPanel : GitHubActionsManagerBaseTest() {
         executeSomeCoroutineTasksAndDispatchAllInvocationEvents(projectRule.project)
 
         // assert
-        val (workflowRunsListPanel, jobsListPanel, logPanel) = assertTabsAndPanels(workflowRunsList.size)
+        val (workflowRunsListPanel, jobsListPanel, logPanel) = assertTabsAndPanels()
         workflowRunsListPanel.runListComponent.emptyText.apply {
-            Assertions.assertEquals(MessagesBundle.message("panel.workflow-runs.no-runs"), text)
+            Assertions.assertEquals(message("panel.workflow-runs.no-runs"), text)
             Assertions.assertEquals(2, wrappedFragmentsIterable.count())
             val fragments = wrappedFragmentsIterable.toList()
-            Assertions.assertEquals(MessagesBundle.message("panel.workflow-runs.no-runs"), fragments[0].toString())
-            Assertions.assertEquals(
-                MessagesBundle.message("panel.workflow-runs.no-runs.refresh"),
-                fragments[1].toString()
-            )
+            Assertions.assertEquals(message("panel.workflow-runs.no-runs"), fragments[0].toString())
+            Assertions.assertEquals(message("panel.workflow-runs.no-runs.refresh"), fragments[1].toString())
         }
-        Assertions.assertEquals(1, jobsListPanel.componentCount)
-        Assertions.assertEquals(1, (jobsListPanel.components[0] as JPanel).componentCount)
-        ((jobsListPanel.components[0] as JPanel).components[0] as JTextPane).apply {
-            Assertions.assertTrue(text.contains(MessagesBundle.message("panel.jobs.not-loading")))
-        }
-
-        Assertions.assertEquals(1, logPanel.componentCount)
-        Assertions.assertEquals(1, (logPanel.components[0] as JPanel).componentCount)
-        ((logPanel.components[0] as JPanel).components[0] as JTextPane).apply {
-            Assertions.assertTrue(text.contains(MessagesBundle.message("panel.log.not-loading")))
-        }
+        Assertions.assertEquals(workflowRunsList.size, workflowRunsListPanel.runListComponent.model.size)
     }
 
     @Test
@@ -99,31 +87,16 @@ class TestRepoTabControllerWorkflowRunsPanel : GitHubActionsManagerBaseTest() {
         toolWindowContent.createContent()
         executeSomeCoroutineTasksAndDispatchAllInvocationEvents(projectRule.project)
 
-        val (workflowRunsListPanel, jobsListPanel, logPanel) = assertTabsAndPanels(0)
+        val (workflowRunsListPanel, jobsListPanel, logPanel) = assertTabsAndPanels()
 
         workflowRunsListPanel.runListComponent.emptyText.apply {
-            Assertions.assertEquals(MessagesBundle.message("panel.workflow-runs.no-runs"), text)
+            Assertions.assertEquals(message("panel.workflow-runs.no-runs"), text)
             Assertions.assertEquals(2, wrappedFragmentsIterable.count())
             val fragments = wrappedFragmentsIterable.toList()
-            Assertions.assertEquals(MessagesBundle.message("panel.workflow-runs.no-runs"), fragments[0].toString())
-            Assertions.assertEquals(
-                MessagesBundle.message("panel.workflow-runs.no-runs.refresh"),
-                fragments[1].toString()
-            )
+            Assertions.assertEquals(message("panel.workflow-runs.no-runs"), fragments[0].toString())
+            Assertions.assertEquals(message("panel.workflow-runs.no-runs.refresh"), fragments[1].toString())
         }
-
-        Assertions.assertEquals(1, jobsListPanel.componentCount)
-        Assertions.assertEquals(1, (jobsListPanel.components[0] as JPanel).componentCount)
-        ((jobsListPanel.components[0] as JPanel).components[0] as JTextPane).apply {
-            Assertions.assertTrue(text.contains(MessagesBundle.message("panel.jobs.not-loading")))
-        }
-
-        Assertions.assertEquals(1, logPanel.componentCount)
-        Assertions.assertEquals(1, (logPanel.components[0] as JPanel).componentCount)
-        ((logPanel.components[0] as JPanel).components[0] as JTextPane).apply {
-            Assertions.assertTrue(text.contains(MessagesBundle.message("panel.log.not-loading")))
-        }
-
+        Assertions.assertEquals(0, workflowRunsListPanel.runListComponent.model.size)
     }
 
 
@@ -160,13 +133,11 @@ class TestRepoTabControllerWorkflowRunsPanel : GitHubActionsManagerBaseTest() {
                 execute(any(), matchApiRequestUrl<WorkflowTypes>("/actions/workflows"))
             } returns workflowTypesResponse
         }
-        mockkObject(GithubApiRequestExecutor.Factory)
-        every { GithubApiRequestExecutor.Factory.getInstance() } returns mockk<GithubApiRequestExecutor.Factory> {
-            every { create(token = any()) } returns executorMock
-        }
+        mockkObject(GhApiRequestExecutor)
+        every { GhApiRequestExecutor.create(token = any()) } returns executorMock
     }
 
-    fun assertTabsAndPanels(expectedSize: Int): Triple<WorkflowRunsListPanel, JComponent, JComponent> {
+    fun assertTabsAndPanels(): Triple<WorkflowRunsListPanel, JComponent, JComponent> {
         Assertions.assertEquals(1, toolWindow.contentManager.contentCount)
         val content = toolWindow.contentManager.contents[0]
         Assertions.assertEquals("owner/repo", content.displayName)
@@ -195,9 +166,19 @@ class TestRepoTabControllerWorkflowRunsPanel : GitHubActionsManagerBaseTest() {
         Assertions.assertTrue(splitterComponent.firstComponent is WorkflowRunsListPanel)
         Assertions.assertTrue(splitterComponent.secondComponent is OnePixelSplitter)
         val workflowRunsListPanel = splitterComponent.firstComponent as WorkflowRunsListPanel
-        Assertions.assertEquals(expectedSize, workflowRunsListPanel.runListComponent.model.size)
         val jobsListPanel = (splitterComponent.secondComponent as OnePixelSplitter).firstComponent
         val logPanel = (splitterComponent.secondComponent as OnePixelSplitter).secondComponent
+        Assertions.assertEquals(1, jobsListPanel.componentCount)
+        Assertions.assertEquals(1, (jobsListPanel.components[0] as JPanel).componentCount)
+        ((jobsListPanel.components[0] as JPanel).components[0] as JTextPane).apply {
+            Assertions.assertTrue(text.contains(message("panel.jobs.not-loading")))
+        }
+
+        Assertions.assertEquals(1, logPanel.componentCount)
+        Assertions.assertEquals(1, (logPanel.components[0] as JPanel).componentCount)
+        ((logPanel.components[0] as JPanel).components[0] as JTextPane).apply {
+            Assertions.assertTrue(text.contains(message("panel.log.not-loading")))
+        }
         return Triple(workflowRunsListPanel, jobsListPanel, logPanel)
     }
 

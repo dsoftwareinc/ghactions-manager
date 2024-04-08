@@ -22,7 +22,7 @@ data class WorkflowRunFilter(
 
 object GithubApi : GithubApiRequests.Entity("/repos") {
     private val LOG = logger<GithubApi>()
-    fun getJobLog(job: Job) = GetJobLogRequest(job).withOperationName("Get Job log ${job.id}")
+    fun getLogForSingleJob(job: Job) = GetJobLogRequest(job).withOperationName("Get Job log ${job.id}")
 
     fun postUrl(name: String, url: String, data: Any = Object()) =
         GithubApiRequest.Post.Json(url, data, Object::class.java, null).withOperationName(name)

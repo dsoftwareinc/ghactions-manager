@@ -2,7 +2,7 @@ package com.dsoftware.ghmanager.data
 
 import com.dsoftware.ghmanager.api.model.WorkflowRunJobs
 import com.dsoftware.ghmanager.data.providers.DataProvider
-import com.dsoftware.ghmanager.data.providers.WorkflowRunJobsDataProvider
+import com.dsoftware.ghmanager.data.providers.JobsDataProvider
 import com.intellij.collaboration.ui.SingleValueModel
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.util.Disposer
@@ -12,7 +12,7 @@ import org.jetbrains.plugins.github.pullrequest.ui.GHLoadingModel
 
 class JobsLoadingModelListener(
     workflowRunDisposable: Disposable,
-    dataProviderModel: SingleValueModel<WorkflowRunJobsDataProvider?>,
+    dataProviderModel: SingleValueModel<JobsDataProvider?>,
     runSelectionHolder: WorkflowRunListSelectionHolder,
 ) : GHLoadingModel.StateChangeListener {
     val jobsModel = SingleValueModel<WorkflowRunJobs?>(null)

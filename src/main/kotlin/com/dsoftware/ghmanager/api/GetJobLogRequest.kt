@@ -16,7 +16,8 @@ import java.io.InputStreamReader
 
 typealias JobLog = Map<Int, StringBuilder>
 
-class GetJobLogRequest(private val job: Job) : GithubApiRequest.Get<String>(job.url + "/logs") {
+class GetJobLogRequest(private val job: Job) :
+    GithubApiRequest.Get<String>(job.url + "/logs", acceptMimeType = "application/vnd.github+json") {
     private val stepsMap = job.steps.associateBy { step -> step.number }
     private val lastStepNumber: Int = stepsMap.keys.maxOrNull() ?: 0
 
@@ -106,7 +107,7 @@ class GetJobLogRequest(private val job: Job) : GithubApiRequest.Get<String>(job.
                 if (res.length + (stepLogs[stepNumber]?.length ?: 0) < 990_000) {
                     res.append(stepLogs[stepNumber])
                 } else {
-                    res.append(message("log.step.truncated", job.htmlUrl+"?#step:$stepNumber"))
+                    res.append(message("log.step.truncated", job.htmlUrl + "?#step:$stepNumber"))
                 }
             }
         }

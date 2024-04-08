@@ -1,5 +1,6 @@
 package com.dsoftware.ghmanager
 
+import com.dsoftware.ghmanager.api.GhApiRequestExecutor
 import com.dsoftware.ghmanager.i18n.MessagesBundle.message
 import com.dsoftware.ghmanager.ui.GhActionsMgrToolWindowContent
 import com.dsoftware.ghmanager.ui.settings.GithubActionsManagerSettings
@@ -7,12 +8,10 @@ import com.intellij.ui.SimpleColoredComponent
 import com.intellij.ui.components.JBPanelWithEmptyText
 import io.mockk.Called
 import io.mockk.every
-import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
 import io.mockk.mockkObject
 import io.mockk.mockkStatic
 import io.mockk.verify
-import org.jetbrains.plugins.github.api.GithubApiRequestExecutor
 import org.jetbrains.plugins.github.util.GHCompatibilityUtil
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeEach
@@ -24,17 +23,12 @@ import javax.swing.JPanel
 
 @ExtendWith(MockKExtension::class)
 class ToolWindowFactoryTest : GitHubActionsManagerBaseTest() {
-    @MockK
-    private lateinit var requestExecutorfactoryMock: GithubApiRequestExecutor.Factory
 
     @BeforeEach
     override fun setUp(testInfo: TestInfo) {
         super.setUp(testInfo)
-        requestExecutorfactoryMock.apply {
-            every { create(token = any()) } throws Exception("No executor")
-        }
-        mockkObject(GithubApiRequestExecutor.Factory)
-        every { GithubApiRequestExecutor.Factory.getInstance() } returns requestExecutorfactoryMock
+        mockkObject(GhApiRequestExecutor)
+        every { GhApiRequestExecutor.create(token = any()) } throws Exception("No executor")
     }
 
     @Test
@@ -59,7 +53,7 @@ class ToolWindowFactoryTest : GitHubActionsManagerBaseTest() {
         Assertions.assertEquals(message("factory.go.to.github-settings"), subComponents[1].getCharSequence(true))
         Assertions.assertEquals(message("factory.go.to.ghmanager-settings"), subComponents[2].getCharSequence(true))
         verify {
-            requestExecutorfactoryMock.create(token = any()) wasNot Called
+            GhApiRequestExecutor.create(token = any()) wasNot Called
         }
     }
 
@@ -81,7 +75,7 @@ class ToolWindowFactoryTest : GitHubActionsManagerBaseTest() {
         val panel = component as JBPanelWithEmptyText
         Assertions.assertEquals(message("factory.empty-panel.no-repos-in-project"), panel.emptyText.text)
         verify {
-            requestExecutorfactoryMock.create(token = any()) wasNot Called
+            GhApiRequestExecutor.create(token = any()) wasNot Called
         }
 
     }
@@ -104,7 +98,7 @@ class ToolWindowFactoryTest : GitHubActionsManagerBaseTest() {
         val panel = content.component as JPanel
         Assertions.assertEquals(1, panel.componentCount)
         verify {
-            requestExecutorfactoryMock.create(token = any())
+            GhApiRequestExecutor.create(token = any())
         }
 
 
@@ -143,7 +137,7 @@ class ToolWindowFactoryTest : GitHubActionsManagerBaseTest() {
         )
         Assertions.assertEquals(message("factory.go.to.ghmanager-settings"), subComponents[1].getCharSequence(true))
         verify {
-            requestExecutorfactoryMock.create(token = any()) wasNot Called
+            GhApiRequestExecutor.create(token = any()) wasNot Called
         }
 
     }
