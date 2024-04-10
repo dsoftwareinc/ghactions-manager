@@ -4,6 +4,8 @@ package com.dsoftware.ghmanager.ui
 import com.dsoftware.ghmanager.actions.ActionKeys
 import com.dsoftware.ghmanager.data.JobsLoadingModelListener
 import com.dsoftware.ghmanager.data.LogLoadingModelListener
+import com.dsoftware.ghmanager.data.LogValue
+import com.dsoftware.ghmanager.data.LogValueStatus
 import com.dsoftware.ghmanager.data.WorkflowDataContextService
 import com.dsoftware.ghmanager.data.WorkflowRunSelectionContext
 import com.dsoftware.ghmanager.i18n.MessagesBundle.message
@@ -139,9 +141,7 @@ class RepoTabController(
 
     private fun createJobsPanel(selectedRunContext: WorkflowRunSelectionContext): JComponent {
         val jobsLoadingModel = JobsLoadingModelListener(
-            selectedRunContext.selectedRunDisposable,
-            selectedRunContext.jobDataProviderLoadModel,
-            selectedRunContext.runSelectionHolder
+            selectedRunContext.selectedRunDisposable, selectedRunContext.jobDataProviderLoadModel
         )
 
         val jobsPanel = GHLoadingPanelFactory(
@@ -149,10 +149,10 @@ class RepoTabController(
             message("panel.jobs.not-loading"),
             message("panel.jobs.loading-error"),
             selectedRunContext.getLoadingErrorHandler { selectedRunContext.jobDataProviderLoadModel.value = null }
-        ).create { _, _ ->
+        ).create { _, jobs ->
             JobsListPanel(
                 checkedDisposable,
-                jobsLoadingModel.jobsModel,
+                jobs,
                 selectedRunContext,
                 infoInNewLine = !settingsService.state.jobListAboveLogs,
             )

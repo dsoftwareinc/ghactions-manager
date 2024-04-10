@@ -9,6 +9,5 @@ class LogDataProvider(
     job: Job
 ) : DataProvider<String>(
     requestExecutor,
-    GithubApi.getLogForSingleJob(job),
-    null
+    GithubApi.getLogForSingleJob(job)
 )

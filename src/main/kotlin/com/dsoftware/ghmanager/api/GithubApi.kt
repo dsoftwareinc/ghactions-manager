@@ -64,7 +64,10 @@ object GithubApi : GithubApiRequests.Entity("/repos") {
     }
 
 
-    fun getWorkflowRunJobs(url: String) = get<WorkflowRunJobs>(
+    fun getJobsForWorkFlowRun(url: String): GithubApiRequest<WorkflowRunJobs>
+//  {      throw GithubStatusCodeException("Not found", 404)
+//    }
+        = get<WorkflowRunJobs>(
         url, "Get workflow-run jobs", pagination = GithubRequestPagination(1)
     )
 

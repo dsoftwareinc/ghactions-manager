@@ -15,7 +15,6 @@ import java.util.EventListener
 open class DataProvider<T>(
     private val requestExecutor: GhApiRequestExecutor,
     private val githubApiRequest: GithubApiRequest<T>,
-    private val errorValue: T?,
 ) {
     private val runChangesEventDispatcher = EventDispatcher.create(DataProviderChangeListener::class.java)
     private val progressManager = ProgressManager.getInstance()
@@ -29,10 +28,10 @@ open class DataProvider<T>(
             response
         } catch (e: GithubStatusCodeException) {
             LOG.warn("Error when getting $githubApiRequest.url: status code ${e.statusCode}: ${e.message}")
-            errorValue ?: throw e
+            throw e
         } catch (ioe: IOException) {
             LOG.warn("Error when getting $githubApiRequest.url: $ioe")
-            errorValue ?: throw ioe
+            throw ioe
         }
     }
 

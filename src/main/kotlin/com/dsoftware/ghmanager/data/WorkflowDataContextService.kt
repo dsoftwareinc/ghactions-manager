@@ -41,7 +41,7 @@ class WorkflowDataContextService(private val project: Project) {
         toolWindow: ToolWindow,
     ): CompletableFuture<WorkflowRunSelectionContext> {
         return repositories.getOrPut(repositoryMapping.remote.url) {
-            LazyCancellableBackgroundProcessValue.create(ProgressManager.getInstance()) { indicator ->
+            LazyCancellableBackgroundProcessValue.create(ProgressManager.getInstance()) {
                 LOG.debug("Creating data context for ${repositoryMapping.remote.url}")
                 try {
                     val token = if (settingsService.state.useGitHubSettings) {
