@@ -35,7 +35,7 @@ class LogLoadingModelListener(
         var listenerDisposable: Disposable? = null
         logDataProvider.addAndInvokeListener { provider ->
             logsLoadingModel.future = null
-            logsLoadingModel.future = provider?.request
+            logsLoadingModel.future = provider?.processValue
             listenerDisposable = listenerDisposable?.let {
                 Disposer.dispose(it)
                 null
@@ -47,7 +47,7 @@ class LogLoadingModelListener(
                 it.addRunChangesListener(newDisposable,
                     object : DataProvider.DataProviderChangeListener {
                         override fun changed() {
-                            logsLoadingModel.future = it.request
+                            logsLoadingModel.future = it.processValue
                         }
                     })
                 listenerDisposable = newDisposable

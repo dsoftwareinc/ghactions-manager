@@ -24,14 +24,14 @@ class JobsLoadingModelListener(
             listenerDisposable = null
 
             provider?.let {
-                jobsLoadingModel.future = it.request
+                jobsLoadingModel.future = it.processValue
                 val disposable = Disposer.newDisposable().apply {
                     Disposer.register(jobsLoadingModel, this)
                 }
                 it.addRunChangesListener(disposable,
                     object : DataProvider.DataProviderChangeListener {
                         override fun changed() {
-                            jobsLoadingModel.future = it.request
+                            jobsLoadingModel.future = it.processValue
                         }
                     })
                 listenerDisposable = disposable
