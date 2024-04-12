@@ -20,10 +20,10 @@ import io.mockk.mockkObject
 import io.mockk.mockkStatic
 import io.mockk.verify
 import org.jetbrains.plugins.github.api.GithubApiRequest
-import org.jetbrains.plugins.github.api.GithubApiRequestExecutor
 import org.jetbrains.plugins.github.api.data.GithubBranch
 import org.jetbrains.plugins.github.api.data.GithubResponsePage
 import org.jetbrains.plugins.github.api.data.GithubUserWithPermissions
+import org.jetbrains.plugins.github.exceptions.GithubStatusCodeException
 import org.jetbrains.plugins.github.util.GHCompatibilityUtil
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeEach
@@ -95,6 +95,34 @@ class TestRepoTabControllerWorkflowRunsPanel : GitHubActionsManagerBaseTest() {
             val fragments = wrappedFragmentsIterable.toList()
             Assertions.assertEquals(message("panel.workflow-runs.no-runs"), fragments[0].toString())
             Assertions.assertEquals(message("panel.workflow-runs.no-runs.refresh"), fragments[1].toString())
+        }
+        Assertions.assertEquals(0, workflowRunsListPanel.runListComponent.model.size)
+    }
+
+    @Test
+    fun `test not able to get repo wf-runs - http404`() {
+        executorMock.apply {
+            every {// workflow runs
+                execute(any(), matchApiRequestUrl<WorkflowRuns>("/actions/runs")).hint(WorkflowRuns::class)
+            } throws GithubStatusCodeException("Not Found", 404)
+        }
+        mockkObject(GhApiRequestExecutor)
+        every { GhApiRequestExecutor.create(token = any()) } returns executorMock
+        executeSomeCoroutineTasksAndDispatchAllInvocationEvents(projectRule.project)
+
+        // act
+        toolWindowContent.createContent()
+        executeSomeCoroutineTasksAndDispatchAllInvocationEvents(projectRule.project)
+
+        // assert
+        val (workflowRunsListPanel, jobsListPanel, logPanel) = assertTabsAndPanels()
+
+        workflowRunsListPanel.runListComponent.emptyText.apply {
+            Assertions.assertEquals(message("panel.workflow-runs.error"), text)
+            Assertions.assertEquals(2, wrappedFragmentsIterable.count())
+            val fragments = wrappedFragmentsIterable.toList()
+            Assertions.assertEquals(message("panel.workflow-runs.error"), fragments[0].toString())
+            Assertions.assertEquals("Not Found.", fragments[1].toString())
         }
         Assertions.assertEquals(0, workflowRunsListPanel.runListComponent.model.size)
     }
