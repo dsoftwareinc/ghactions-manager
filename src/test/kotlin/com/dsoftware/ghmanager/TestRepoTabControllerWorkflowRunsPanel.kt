@@ -87,6 +87,7 @@ class TestRepoTabControllerWorkflowRunsPanel : GitHubActionsManagerBaseTest() {
         toolWindowContent.createContent()
         executeSomeCoroutineTasksAndDispatchAllInvocationEvents(projectRule.project)
 
+        // assert
         val (workflowRunsListPanel, jobsListPanel, logPanel) = assertTabsAndPanels()
 
         workflowRunsListPanel.runListComponent.emptyText.apply {
