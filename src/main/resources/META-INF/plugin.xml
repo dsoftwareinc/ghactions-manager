@@ -22,10 +22,15 @@
         <projectService
             serviceInterface="com.dsoftware.ghmanager.data.GhActionsService"
             serviceImplementation="com.dsoftware.ghmanager.data.GhActionsServiceImpl"/>
+        <errorHandler implementation="com.dsoftware.ghmanager.PluginErrorReportSubmitter"/>
+        <annotator language="yaml"
+                   implementationClass="com.dsoftware.ghmanager.psi.HighlightAnnotator"/>
+        <!-- ProjectStartup -->
+        <postStartupActivity implementation="com.dsoftware.ghmanager.psi.ProjectStartup"/>
+
     </extensions>
     <actions>
         <action id="ShowGithubSettings" class="com.dsoftware.ghmanager.actions.ShowGithubSettingsAction"/>
-
         <group id="GHWorkflows.ActionGroup" popup="false">
             <action id="Github.Workflow.List.Reload"
                     class="com.dsoftware.ghmanager.actions.ReloadRunsListAction"

@@ -36,6 +36,7 @@ import javax.swing.JTextPane
 
 @ExtendWith(MockKExtension::class)
 class TestRepoTabControllerWorkflowRunsPanel : GitHubActionsManagerBaseTest() {
+
     @MockK
     lateinit var executorMock: GhApiRequestExecutor
 
