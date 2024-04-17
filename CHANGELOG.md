@@ -4,6 +4,18 @@
 
 ## Unreleased
 
+## 1.21.0
+
+### 🚀 Features
+
+- Highlight outdated actions in workflow files. #122
+- Quick fix action to update to the latest major version of the action. #122
+- Error reporting directly to GitHub issues.
+
+### 🧰 Maintenance
+
+- Update bug-report template.
+
 ## 1.20.0
 
 ### 🚀 Features
