@@ -1,6 +1,9 @@
 package com.dsoftware.ghmanager.psi
 
 import com.dsoftware.ghmanager.psi.GitHubWorkflowConfig.FIELD_USES
+import com.dsoftware.ghmanager.psi.actions.UpdateActionVersionFix
+import com.intellij.codeInspection.InspectionManager
+import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.lang.annotation.AnnotationHolder
 import com.intellij.lang.annotation.Annotator
 import com.intellij.lang.annotation.HighlightSeverity
@@ -26,16 +29,26 @@ class HighlightAnnotator : Annotator {
         val currentVersion = yamlKeyValue.valueText.split("@").getOrNull(1)
         val latestVersion = gitHubActionCache.getAction(actionName)?.latestVersion
         if (VersionCompareTools.isActionOutdated(currentVersion, latestVersion)) {
-            holder.newAnnotation(
-                HighlightSeverity.WARNING,
-                "$currentVersion is outdated. Latest version is $latestVersion"
-            ).range(
-                TextRange.create(
-                    yamlKeyValue.textRange.startOffset
-                        + yamlKeyValue.text.indexOf("@") + 1,
-                    yamlKeyValue.textRange.endOffset
+            val message = "$currentVersion is outdated. Latest version is $latestVersion"
+            val annotationBuilder = holder
+                .newAnnotation(HighlightSeverity.WARNING, message)
+                .range(
+                    TextRange.create(
+                        yamlKeyValue.textRange.startOffset
+                            + yamlKeyValue.text.indexOf("@") + 1,
+                        yamlKeyValue.textRange.endOffset
+                    )
                 )
-            ).create()
+            val inspectionManager = yamlKeyValue.project.service<InspectionManager>()
+            val quickfix = UpdateActionVersionFix(actionName, latestVersion!!)
+            val problemDescriptor = inspectionManager.createProblemDescriptor(
+                yamlKeyValue, message, quickfix,
+                ProblemHighlightType.WEAK_WARNING, true
+            );
+            annotationBuilder
+                .newLocalQuickFix(quickfix, problemDescriptor)
+                .registerFix()
+            annotationBuilder.create()
         }
     }
 }
