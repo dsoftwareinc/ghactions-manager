@@ -23,11 +23,11 @@
             serviceInterface="com.dsoftware.ghmanager.data.GhActionsService"
             serviceImplementation="com.dsoftware.ghmanager.data.GhActionsServiceImpl"/>
         <errorHandler implementation="com.dsoftware.ghmanager.PluginErrorReportSubmitter"/>
+
+        <!-- PSI -->
+        <postStartupActivity implementation="com.dsoftware.ghmanager.psi.ProjectStartup"/>
         <annotator language="yaml"
                    implementationClass="com.dsoftware.ghmanager.psi.HighlightAnnotator"/>
-        <!-- ProjectStartup -->
-        <postStartupActivity implementation="com.dsoftware.ghmanager.psi.ProjectStartup"/>
-
     </extensions>
     <actions>
         <action id="ShowGithubSettings" class="com.dsoftware.ghmanager.actions.ShowGithubSettingsAction"/>
