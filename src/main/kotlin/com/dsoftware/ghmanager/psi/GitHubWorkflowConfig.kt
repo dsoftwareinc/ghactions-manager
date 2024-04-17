@@ -7,7 +7,6 @@ object GitHubWorkflowConfig {
         Pattern.compile("echo\\s+\"(\\w+)=(.*?)\"\\s*>>\\s*\"?\\$\\w*:?\\{?GITHUB_OUTPUT\\}?\"?")
     val PATTERN_GITHUB_ENV: Pattern =
         Pattern.compile("echo\\s+\"(\\w+)=(.*?)\"\\s*>>\\s*\"?\\$\\w*:?\\{?GITHUB_ENV\\}?\"?")
-    const val CACHE_ONE_DAY: Long = 24L * 60 * 60 * 1000
     const val FIELD_ON: String = "on"
     const val FIELD_IF: String = "if"
     const val FIELD_ID: String = "id"
