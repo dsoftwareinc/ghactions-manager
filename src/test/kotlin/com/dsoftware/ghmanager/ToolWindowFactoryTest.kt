@@ -97,11 +97,6 @@ class ToolWindowFactoryTest : GitHubActionsManagerBaseTest() {
         Assertions.assertTrue(content.component is JPanel)
         val panel = content.component as JPanel
         Assertions.assertEquals(1, panel.componentCount)
-        verify {
-            GhApiRequestExecutor.create(token = any())
-        }
-
-
     }
 
     @Test

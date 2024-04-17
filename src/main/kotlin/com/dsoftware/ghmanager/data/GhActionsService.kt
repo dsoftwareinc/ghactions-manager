@@ -1,6 +1,7 @@
 package com.dsoftware.ghmanager.data
 
 import com.dsoftware.ghmanager.ui.GhActionsMgrToolWindowContent
+import com.dsoftware.ghmanager.ui.settings.GhActionsSettingsService
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project
@@ -23,6 +24,8 @@ interface GhActionsService {
     val gitHubAccounts: Set<GithubAccount>
     val accountsState: StateFlow<Collection<GithubAccount>>
     val toolWindowsJobMap: MutableMap<ToolWindow, Job>
+
+
     fun guessAccountForRepository(repo: GHGitRepositoryMapping): GithubAccount? {
         return gitHubAccounts.firstOrNull { it.server.equals(repo.repository.serverPath, true) }
     }
@@ -46,8 +49,9 @@ interface GhActionsService {
     }
 }
 
-open class GhActionsServiceImpl(project: Project, override val coroutineScope: CoroutineScope) : GhActionsService,
-    Disposable {
+open class GhActionsServiceImpl(
+    project: Project, override val coroutineScope: CoroutineScope
+) : GhActionsService, Disposable {
     private val repositoriesManager = project.service<GHHostedRepositoriesManager>()
     private val accountManager = service<GHAccountManager>()
 

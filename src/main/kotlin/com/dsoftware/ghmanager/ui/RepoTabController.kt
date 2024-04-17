@@ -4,8 +4,6 @@ package com.dsoftware.ghmanager.ui
 import com.dsoftware.ghmanager.actions.ActionKeys
 import com.dsoftware.ghmanager.data.JobsLoadingModelListener
 import com.dsoftware.ghmanager.data.LogLoadingModelListener
-import com.dsoftware.ghmanager.data.LogValue
-import com.dsoftware.ghmanager.data.LogValueStatus
 import com.dsoftware.ghmanager.data.WorkflowDataContextService
 import com.dsoftware.ghmanager.data.WorkflowRunSelectionContext
 import com.dsoftware.ghmanager.i18n.MessagesBundle.message
