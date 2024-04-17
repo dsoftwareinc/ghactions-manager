@@ -10,7 +10,7 @@ class TimedCache(private var cacheTimeValidityInMillis: Long = 1000 * 60 * 60) :
     ConcurrentHashMap<String, GitHubAction>() {
 
     @Contextual
-    private val creationTimeMap = ConcurrentHashMap<String, Long>()
+    private val creationTimeMap: MutableMap<String, Long> = ConcurrentHashMap<String, Long>()
 
     fun cleanup() {
         this.forEach { (key, value) ->

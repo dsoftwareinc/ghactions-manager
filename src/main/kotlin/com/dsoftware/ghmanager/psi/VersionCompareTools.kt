@@ -22,11 +22,11 @@ object VersionCompareTools {
             latestVersion,
             currentVersion
         )
-        val majorLatest = latestVersion.split(".").dropLastWhile { it.isEmpty() }.toTypedArray()[0]
-        val majorCurrent = currentVersion.split(".").dropLastWhile { it.isEmpty() }.toTypedArray()[0]
         return try {
+            val majorLatest = latestVersion.split(".").dropLastWhile { it.isEmpty() }.toTypedArray()[0]
+            val majorCurrent = currentVersion.split(".").dropLastWhile { it.isEmpty() }.toTypedArray()[0]
             majorLatest.toInt() != majorCurrent.toInt()
-        } catch (e: NumberFormatException) {
+        } catch (e: RuntimeException) {
             false
         }
     }

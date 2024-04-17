@@ -109,7 +109,7 @@ class GitHubActionCache(private val project: Project) : PersistentStateComponent
         val actionOrg = fullActionName.split("/".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()[0]
         val actionName = fullActionName.split("/".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()[1]
         val query = ResourceUtil.getResource(
-            GhActionsService::class.java.classLoader, "graphql/query", "getLatestRelease.graphql"
+            GhActionsService::class.java.classLoader, "graphql", "getLatestRelease.graphql"
         )?.readText() ?: ""
 
         val request = TraversedParsed(
