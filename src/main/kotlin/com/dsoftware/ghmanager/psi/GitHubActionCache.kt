@@ -18,6 +18,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.util.ResourceUtil
 import com.intellij.util.ThrowableConvertor
 import com.intellij.util.concurrency.annotations.RequiresEdt
+import kotlinx.serialization.Serializable
 import org.jetbrains.plugins.github.api.GithubApiContentHelper
 import org.jetbrains.plugins.github.api.GithubApiRequest.Post
 import org.jetbrains.plugins.github.api.GithubApiResponse
@@ -59,9 +60,12 @@ class GitHubActionCache(private val project: Project) : PersistentStateComponent
         }
     }
 
+    @Serializable
     class State {
         val actions = TimedCache()
     }
+
+    override fun getState(): State = state
 
     override fun loadState(state: State) {
         this.state = state
@@ -69,6 +73,15 @@ class GitHubActionCache(private val project: Project) : PersistentStateComponent
 
     fun cleanup() {
         state.actions.cleanup()
+    }
+
+    fun getAction(fullActionName: String): GitHubAction? {
+        if (state.actions.containsKey(fullActionName)) {
+            return state.actions[fullActionName]
+        }
+        LOG.info("Action $fullActionName not found in cache, adding to resolve list")
+        actionsToResolve.add(fullActionName)
+        return null
     }
 
     private fun determineServerPath(): String {
@@ -80,15 +93,6 @@ class GitHubActionCache(private val project: Project) : PersistentStateComponent
             val mapping = mappings.iterator().next()
             return mapping.repository.serverPath.toGraphQLUrl()
         }
-    }
-
-    fun getAction(fullActionName: String): GitHubAction? {
-        if (state.actions.containsKey(fullActionName)) {
-            return state.actions[fullActionName]
-        }
-        LOG.info("Action $fullActionName not found in cache, adding to resolve list")
-        actionsToResolve.add(fullActionName)
-        return null
     }
 
     @RequiresEdt
@@ -105,9 +109,7 @@ class GitHubActionCache(private val project: Project) : PersistentStateComponent
         val actionOrg = fullActionName.split("/".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()[0]
         val actionName = fullActionName.split("/".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()[1]
         val query = ResourceUtil.getResource(
-            GhActionsService::class.java.classLoader,
-            "graphql/query",
-            "getLatestRelease.graphql"
+            GhActionsService::class.java.classLoader, "graphql/query", "getLatestRelease.graphql"
         )?.readText() ?: ""
 
         val request = TraversedParsed(
@@ -141,10 +143,13 @@ class GitHubActionCache(private val project: Project) : PersistentStateComponent
         override val body: String
             get() = GithubApiContentHelper.toJson(GraphQLRequestDTO(query, variablesObject), true)
 
-
-        protected fun throwException(errors: List<GHGQLError>): Nothing {
-            if (errors.any { it.type.equals("INSUFFICIENT_SCOPES", true) })
-                throw GithubAuthenticationException("Access token has not been granted the required scopes.")
+        private fun throwException(errors: List<GHGQLError>): Nothing {
+            if (errors.any {
+                    it.type.equals(
+                        "INSUFFICIENT_SCOPES",
+                        true
+                    )
+                }) throw GithubAuthenticationException("Access token has not been granted the required scopes.")
 
             if (errors.size == 1) throw GithubConfusingException(errors.single().toString())
             throw GithubConfusingException(errors.toString())
@@ -156,9 +161,7 @@ class GitHubActionCache(private val project: Project) : PersistentStateComponent
         }
 
         private fun <T> parseResponse(
-            response: GithubApiResponse,
-            clazz: Class<T>,
-            pathFromData: Array<out String>
+            response: GithubApiResponse, clazz: Class<T>, pathFromData: Array<out String>
         ): T? {
             val result: GraphQLResponseDTO<out JsonNode, GHGQLError> = parseGQLResponse(response, JsonNode::class.java)
             val data = result.data
@@ -175,20 +178,15 @@ class GitHubActionCache(private val project: Project) : PersistentStateComponent
         }
 
         private fun <T> parseGQLResponse(
-            response: GithubApiResponse,
-            dataClass: Class<out T>
+            response: GithubApiResponse, dataClass: Class<out T>
         ): GraphQLResponseDTO<out T, GHGQLError> {
             return response.readBody(ThrowableConvertor {
-                @Suppress("UNCHECKED_CAST")
-                GithubApiContentHelper.readJsonObject(
-                    it, GraphQLResponseDTO::class.java, dataClass, GHGQLError::class.java,
-                    gqlNaming = true
+                @Suppress("UNCHECKED_CAST") GithubApiContentHelper.readJsonObject(
+                    it, GraphQLResponseDTO::class.java, dataClass, GHGQLError::class.java, gqlNaming = true
                 ) as GraphQLResponseDTO<T, GHGQLError>
             })
         }
     }
-
-    override fun getState(): State = state
 
     companion object {
         private val LOG = logger<GitHubActionCache>()

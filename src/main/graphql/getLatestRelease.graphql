@@ -1,4 +1,4 @@
-query($owner:String!,$name:String!) {
+query LatestRelease($owner:String!,$name:String!) {
     repository(owner:$owner, name:$name){
         latestRelease{
             tag{
