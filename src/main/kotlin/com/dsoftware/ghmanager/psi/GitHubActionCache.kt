@@ -6,6 +6,8 @@ import com.dsoftware.ghmanager.psi.model.GitHubAction
 import com.dsoftware.ghmanager.ui.ToolbarUtil
 import com.dsoftware.ghmanager.ui.settings.GhActionsSettingsService
 import com.fasterxml.jackson.databind.JsonNode
+import com.google.common.cache.Cache
+import com.google.common.cache.CacheBuilder
 import com.intellij.collaboration.api.dto.GraphQLRequestDTO
 import com.intellij.collaboration.api.dto.GraphQLResponseDTO
 import com.intellij.openapi.components.PersistentStateComponent
@@ -28,12 +30,16 @@ import org.jetbrains.plugins.github.exceptions.GithubConfusingException
 import org.jetbrains.plugins.github.exceptions.GithubJsonException
 import org.jetbrains.plugins.github.util.GHCompatibilityUtil
 import java.io.IOException
+import java.time.Duration
 import java.util.concurrent.ScheduledFuture
 
 @Service(Service.Level.PROJECT)
 @State(name = "GitHubActionCache", storages = [Storage("githubActionCache.xml")])
 class GitHubActionCache(private val project: Project) : PersistentStateComponent<GitHubActionCache.State?> {
-    private var state = State()
+    val actionsCache: Cache<String, GitHubAction> = CacheBuilder.newBuilder()
+        .expireAfterWrite(Duration.ofHours(1))
+        .maximumSize(200)
+        .build()
     val actionsToResolve = mutableSetOf<String>()
     private val task: ScheduledFuture<*>
 
@@ -53,7 +59,7 @@ class GitHubActionCache(private val project: Project) : PersistentStateComponent
             requestExecutor = if (token == null) null else GhApiRequestExecutor.create(token)
         }
         task = ToolbarUtil.executeTaskAtCustomFrequency(project, 5) {
-            actionsToResolve.removeAll(state.actions.keys)
+            actionsToResolve.removeAll(actionsCache.asMap().keys)
             actionsToResolve.forEach {
                 resolveGithubAction(it)
             }
@@ -61,23 +67,18 @@ class GitHubActionCache(private val project: Project) : PersistentStateComponent
     }
 
     @Serializable
-    class State {
-        val actions = TimedCache()
-    }
+    data class State(val actions: List<GitHubAction>)
 
-    override fun getState(): State = state
+    override fun getState(): State = State(actionsCache.asMap().values.toList())
 
     override fun loadState(state: State) {
-        this.state = state
-    }
-
-    fun cleanup() {
-        state.actions.cleanup()
+        actionsCache.putAll(state.actions.associateBy { it.name })
     }
 
     fun getAction(fullActionName: String): GitHubAction? {
-        if (state.actions.containsKey(fullActionName)) {
-            return state.actions[fullActionName]
+        val action = actionsCache.getIfPresent(fullActionName)
+        if (action != null) {
+            return action
         }
         LOG.info("Action $fullActionName not found in cache, adding to resolve list")
         actionsToResolve.add(fullActionName)
@@ -97,37 +98,37 @@ class GitHubActionCache(private val project: Project) : PersistentStateComponent
 
     @RequiresEdt
     private fun resolveGithubAction(fullActionName: String) {
-        if (state.actions.containsKey(fullActionName)) {
-            return
-        }
-        val requestExecutor = this.requestExecutor
-        if (requestExecutor == null) {
-            LOG.warn("Failed to get latest version of action $fullActionName: no GitHub account found")
-            return
-        }
-        LOG.info("Resolving action $fullActionName")
-        val actionOrg = fullActionName.split("/".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()[0]
-        val actionName = fullActionName.split("/".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()[1]
-        val query = ResourceUtil.getResource(
-            GhActionsService::class.java.classLoader, "graphql", "getLatestRelease.graphql"
-        )?.readText() ?: ""
+        actionsCache.get(fullActionName) {
+            val requestExecutor = this.requestExecutor
+            if (requestExecutor == null) {
+                LOG.warn("Failed to get latest version of action $fullActionName: no GitHub account found")
+                return@get null
+            }
+            LOG.info("Resolving action $fullActionName")
+            val actionOrg = fullActionName.split("/".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()[0]
+            val actionName = fullActionName.split("/".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()[1]
+            val query = ResourceUtil.getResource(
+                GhActionsService::class.java.classLoader, "graphql", "getLatestRelease.graphql"
+            )?.readText() ?: ""
 
-        val request = TraversedParsed(
-            serverPath,
-            query,
-            mapOf("owner" to actionOrg, "name" to actionName),
-            JsonNode::class.java,
-            "repository",
-            "latestRelease",
-            "tag",
-            "name"
-        )
-        try {
-            val response = requestExecutor.execute(request)
-            val version = response.toString().replace("\"", "")
-            state.actions[fullActionName] = GitHubAction(actionName, version)
-        } catch (e: IOException) {
-            LOG.warn("Failed to get latest version of action $fullActionName", e)
+            val request = TraversedParsed(
+                serverPath,
+                query,
+                mapOf("owner" to actionOrg, "name" to actionName),
+                JsonNode::class.java,
+                "repository",
+                "latestRelease",
+                "tag",
+                "name"
+            )
+            try {
+                val response = requestExecutor.execute(request)
+                val version = response.toString().replace("\"", "")
+                GitHubAction(actionName, version)
+            } catch (e: IOException) {
+                LOG.warn("Failed to get latest version of action $fullActionName", e)
+                return@get null
+            }
         }
     }
 
