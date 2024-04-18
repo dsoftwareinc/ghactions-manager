@@ -99,7 +99,7 @@ fun createLogConsolePanel(
                 ContextMenuPopupHandler.Simple(
                     DefaultActionGroup().apply {
                         removeAll()
-                        add(actionManager.getAction("Github.Workflow.Log.List.Reload"))
+                        add(actionManager.getAction("GhActionsMgr.ReloadLog"))
                         add(object : ToggleUseSoftWrapsToolbarAction(SoftWrapAppliancePlaces.CONSOLE) {
                             override fun getEditor(e: AnActionEvent): Editor? = console.editor
                         })

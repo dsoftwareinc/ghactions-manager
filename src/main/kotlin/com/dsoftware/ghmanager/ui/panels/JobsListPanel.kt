@@ -96,9 +96,9 @@ class JobsListPanel(
         list.addMouseListener(object : PopupHandler() {
             override fun invokePopup(comp: Component, x: Int, y: Int) {
                 val (place, groupId) = if (ListUtil.isPointOnSelection(list, x, y)) {
-                    Pair("JobListPopupSelected", "Github.ToolWindow.JobList.Popup.Selected")
+                    Pair("JobListPopupSelected", "GhActionsMgr.ToolWindow.JobList.Popup.Selected")
                 } else {
-                    Pair("JobListPopup", "Github.ToolWindow.JobList.Popup")
+                    Pair("JobListPopup", "GhActionsMgr.ToolWindow.JobList.Popup")
                 }
                 val popupMenu: ActionPopupMenu = actionManager.createActionPopupMenu(
                     place, actionManager.getAction(groupId) as ActionGroup,

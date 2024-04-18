@@ -93,7 +93,7 @@ class RepoTabController(
             firstComponent = jobLoadingPanel
             secondComponent = logLoadingPanel
                 .also {
-                    (actionManager.getAction("Github.Workflow.Log.List.Reload") as RefreshAction)
+                    (actionManager.getAction("GhActionsMgr.ReloadLog") as RefreshAction)
                         .registerCustomShortcutSet(it, checkedDisposable)
                 }
         }

@@ -32,7 +32,7 @@
     <actions>
         <action id="ShowGithubSettings" class="com.dsoftware.ghmanager.actions.ShowGithubSettingsAction"/>
         <group id="GHWorkflows.ActionGroup" popup="false">
-            <action id="Github.Workflow.List.Reload"
+            <action id="GhActionsMgr.ToolWindow.WorkflowRuns.List.Reload"
                     class="com.dsoftware.ghmanager.actions.ReloadRunsListAction"
                     use-shortcut-of="Refresh"/>
             <action
@@ -46,11 +46,11 @@
 
         </group>
 
-        <group id="Github.Workflow.ToolWindow.List.Popup">
-            <reference id="Github.Workflow.List.Reload"/>
+        <group id="GhActionsMgr.ToolWindow.WorkflowRuns.List.Popup">
+            <reference id="GhActionsMgr.ToolWindow.WorkflowRuns.List.Reload"/>
         </group>
 
-        <group id="Github.Workflow.ToolWindow.List.Popup.Selected">
+        <group id="GhActionsMgr.ToolWindow.WorkflowRuns.List.Popup.Selected">
             <action id="Github.Workflow.Open.In.Browser"
                     class="com.dsoftware.ghmanager.actions.WorkflowOpenInBrowserAction"/>
             <action id="Github.Workflow.Rerun" class="com.dsoftware.ghmanager.actions.RerunWorkflowAction"/>
@@ -58,18 +58,16 @@
             <action id="Github.Workflow.OpenFile" class="com.dsoftware.ghmanager.actions.OpenWorkflowFileAction"/>
             <action id="Github.Workflow.Open.PullRequest"
                     class="com.dsoftware.ghmanager.actions.PullRequestOpenInBrowserAction"/>
-            <reference id="Github.Workflow.List.Reload"/>
+            <reference id="GhActionsMgr.ToolWindow.WorkflowRuns.List.Reload"/>
         </group>
-        <group id="Github.ToolWindow.JobList.Popup">
-            <action id="Github.Job.Open.In.Browser" class="com.dsoftware.ghmanager.actions.JobOpenInBrowserAction"/>
+        <group id="GhActionsMgr.ToolWindow.JobList.Popup">
+            <action id="GhActionsMgr.Job.OpenInBrowser" class="com.dsoftware.ghmanager.actions.JobOpenInBrowserAction"/>
         </group>
 
-        <group id="Github.ToolWindow.JobList.Popup.Selected">
-            <action id="Github.Workflow.Jobs.Open.In.Browser"
-                    class="com.dsoftware.ghmanager.actions.JobOpenInBrowserAction"/>
-            <action id="Github.Workflow.Job.List.Reload" class="com.dsoftware.ghmanager.actions.ReloadJobsAction"/>
-            <action id="Github.Workflow.Log.List.Reload" class="com.dsoftware.ghmanager.actions.ReloadJobLogAction"/>
-            <!--            <reference id="Github.Workflow.Jobs.List.Reload"/>-->
+        <group id="GhActionsMgr.ToolWindow.JobList.Popup.Selected">
+            <reference id="GhActionsMgr.Job.OpenInBrowser"/>
+            <action id="GhActionsMgr.ReloadJobs" class="com.dsoftware.ghmanager.actions.ReloadJobsAction"/>
+            <action id="GhActionsMgr.ReloadLog" class="com.dsoftware.ghmanager.actions.ReloadJobLogAction"/>
         </group>
 
         <group id="Github.Workflow.Log.ToolWindow.List.Popup">
