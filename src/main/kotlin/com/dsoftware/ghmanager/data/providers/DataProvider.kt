@@ -1,6 +1,9 @@
 package com.dsoftware.ghmanager.data.providers
 
 import com.dsoftware.ghmanager.api.GhApiRequestExecutor
+import com.dsoftware.ghmanager.api.GithubApi
+import com.dsoftware.ghmanager.api.model.Job
+import com.dsoftware.ghmanager.api.model.WorkflowRunJobs
 import com.intellij.collaboration.async.CompletableFutureUtil.submitIOTask
 import com.intellij.collaboration.util.ProgressIndicatorsProvider
 import com.intellij.openapi.Disposable
@@ -15,13 +18,12 @@ import java.util.EventListener
 open class DataProvider<T>(
     private val requestExecutor: GhApiRequestExecutor,
     private val githubApiRequest: GithubApiRequest<T>,
-    private val errorValue: T?,
 ) {
     private val runChangesEventDispatcher = EventDispatcher.create(DataProviderChangeListener::class.java)
     private val progressManager = ProgressManager.getInstance()
     private val indicatorsProvider: ProgressIndicatorsProvider = ProgressIndicatorsProvider()
 
-    private val processValue = progressManager.submitIOTask(indicatorsProvider, true) {
+    val processValue = progressManager.submitIOTask(indicatorsProvider, true) {
         try {
             LOG.info("Executing ${githubApiRequest.url}")
             val request = githubApiRequest
@@ -29,15 +31,12 @@ open class DataProvider<T>(
             response
         } catch (e: GithubStatusCodeException) {
             LOG.warn("Error when getting $githubApiRequest.url: status code ${e.statusCode}: ${e.message}")
-            errorValue ?: throw e
+            throw e
         } catch (ioe: IOException) {
             LOG.warn("Error when getting $githubApiRequest.url: $ioe")
-            errorValue ?: throw ioe
+            throw ioe
         }
     }
-
-    val request
-        get() = processValue
 
     fun url(): String = githubApiRequest.url
 
@@ -57,3 +56,13 @@ open class DataProvider<T>(
         private val LOG = thisLogger()
     }
 }
+
+
+class JobsDataProvider(requestExecutor: GhApiRequestExecutor, jobsUrl: String) : DataProvider<WorkflowRunJobs>(
+    requestExecutor, GithubApi.getJobsForWorkFlowRun(jobsUrl)
+)
+
+
+class LogDataProvider(requestExecutor: GhApiRequestExecutor, job: Job) : DataProvider<String>(
+    requestExecutor, GithubApi.getLogForSingleJob(job)
+)

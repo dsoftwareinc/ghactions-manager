@@ -4,10 +4,10 @@ package com.dsoftware.ghmanager.ui.panels
 import com.dsoftware.ghmanager.api.model.Job
 import com.dsoftware.ghmanager.api.model.Status
 import com.dsoftware.ghmanager.api.model.WorkflowRunJobs
+import com.dsoftware.ghmanager.data.JobsLoadingModelListener
 import com.dsoftware.ghmanager.data.WorkflowRunSelectionContext
 import com.dsoftware.ghmanager.i18n.MessagesBundle.message
 import com.dsoftware.ghmanager.ui.ToolbarUtil
-import com.intellij.collaboration.ui.SingleValueModel
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.actionSystem.ActionGroup
 import com.intellij.openapi.actionSystem.ActionManager
@@ -19,6 +19,8 @@ import com.intellij.ui.PopupHandler
 import com.intellij.ui.ScrollPaneFactory
 import com.intellij.util.ui.JBUI
 import com.intellij.util.ui.components.BorderLayoutPanel
+import org.jetbrains.plugins.github.pullrequest.ui.GHCompletableFutureLoadingModel
+import org.jetbrains.plugins.github.pullrequest.ui.GHLoadingModel
 import org.jetbrains.plugins.github.ui.HtmlInfoPanel
 import java.awt.BorderLayout
 import java.awt.Component
@@ -27,7 +29,7 @@ import javax.swing.ScrollPaneConstants
 
 class JobsListPanel(
     parentDisposable: Disposable,
-    jobValueModel: SingleValueModel<WorkflowRunJobs?>,
+    jobs: WorkflowRunJobs,
     private val runSelectionContext: WorkflowRunSelectionContext,
     private val infoInNewLine: Boolean
 ) : BorderLayoutPanel(), Disposable {
@@ -37,7 +39,6 @@ class JobsListPanel(
     init {
         Disposer.register(parentDisposable, this)
         jobsListModel.removeAll()
-        jobValueModel.addAndInvokeListener { updatePanel(it) }
         val scrollPane = ScrollPaneFactory.createScrollPane(
             createListComponent(),
             ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
@@ -51,15 +52,9 @@ class JobsListPanel(
         isOpaque = false
         add(topInfoPanel, BorderLayout.NORTH)
         add(scrollPane, BorderLayout.CENTER)
-    }
-
-    private fun updatePanel(newJobs: WorkflowRunJobs?) {
         jobsListModel.removeAll()
-        topInfoPanel.setInfo("")
-        newJobs?.let {
-            jobsListModel.add(it.jobs)
-            topInfoPanel.setInfo(infoTitleString(it.jobs))
-        }
+        jobsListModel.add(jobs.jobs)
+        topInfoPanel.setInfo(infoTitleString(jobs.jobs))
     }
 
     private fun infoTitleString(jobs: List<Job>): String {

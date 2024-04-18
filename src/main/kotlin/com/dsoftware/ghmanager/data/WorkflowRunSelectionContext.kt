@@ -112,7 +112,7 @@ class WorkflowRunSelectionContext internal constructor(
     }
 
     fun <T> createDataProvider(request: GithubApiRequest<T>): DataProvider<T> {
-        return DataProvider(requestExecutor, request, null)
+        return DataProvider(requestExecutor, request)
     }
 
     fun getCurrentAccountGHUser(): GHUser {
@@ -140,8 +140,10 @@ class WorkflowRunSelectionContext internal constructor(
         runsListLoader.reset()
         runsListLoader.loadMore(true)
         jobDataProviderLoadModel.value = null
-        jobDataProviderLoadModel.value = null
+        runSelectionHolder.selection = null
+        jobSelectionHolder.selection = null
         selectedRunDisposable.dispose()
+        selectedJobDisposable.dispose()
     }
 
     companion object {

@@ -12,15 +12,11 @@ import org.jetbrains.plugins.github.pullrequest.ui.GHLoadingModel
 
 class JobsLoadingModelListener(
     workflowRunDisposable: Disposable,
-    dataProviderModel: SingleValueModel<JobsDataProvider?>,
-    runSelectionHolder: WorkflowRunListSelectionHolder,
+    dataProviderModel: SingleValueModel<JobsDataProvider?>
 ) : GHLoadingModel.StateChangeListener {
-    val jobsModel = SingleValueModel<WorkflowRunJobs?>(null)
     val jobsLoadingModel = GHCompletableFutureLoadingModel<WorkflowRunJobs>(workflowRunDisposable)
 
     init {
-        runSelectionHolder.addSelectionChangeListener(workflowRunDisposable, this::setValue)
-        jobsLoadingModel.addStateChangeListener(this)
         var listenerDisposable: Disposable? = null
         dataProviderModel.addAndInvokeListener { provider ->
             jobsLoadingModel.future = null
@@ -28,14 +24,14 @@ class JobsLoadingModelListener(
             listenerDisposable = null
 
             provider?.let {
-                jobsLoadingModel.future = it.request
+                jobsLoadingModel.future = it.processValue
                 val disposable = Disposer.newDisposable().apply {
                     Disposer.register(jobsLoadingModel, this)
                 }
                 it.addRunChangesListener(disposable,
                     object : DataProvider.DataProviderChangeListener {
                         override fun changed() {
-                            jobsLoadingModel.future = it.request
+                            jobsLoadingModel.future = it.processValue
                         }
                     })
                 listenerDisposable = disposable
@@ -43,13 +39,5 @@ class JobsLoadingModelListener(
         }
 
     }
-
-    private fun setValue() {
-        jobsModel.value = jobsLoadingModel.result
-    }
-
-    override fun onLoadingCompleted() = setValue()
-    override fun onLoadingStarted() = setValue()
-    override fun onReset() = setValue()
 
 }

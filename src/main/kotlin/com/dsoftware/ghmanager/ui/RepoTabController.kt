@@ -139,9 +139,7 @@ class RepoTabController(
 
     private fun createJobsPanel(selectedRunContext: WorkflowRunSelectionContext): JComponent {
         val jobsLoadingModel = JobsLoadingModelListener(
-            selectedRunContext.selectedRunDisposable,
-            selectedRunContext.jobDataProviderLoadModel,
-            selectedRunContext.runSelectionHolder
+            selectedRunContext.selectedRunDisposable, selectedRunContext.jobDataProviderLoadModel
         )
 
         val jobsPanel = GHLoadingPanelFactory(
@@ -149,10 +147,10 @@ class RepoTabController(
             message("panel.jobs.not-loading"),
             message("panel.jobs.loading-error"),
             selectedRunContext.getLoadingErrorHandler { selectedRunContext.jobDataProviderLoadModel.value = null }
-        ).create { _, _ ->
+        ).create { _, jobs ->
             JobsListPanel(
                 checkedDisposable,
-                jobsLoadingModel.jobsModel,
+                jobs,
                 selectedRunContext,
                 infoInNewLine = !settingsService.state.jobListAboveLogs,
             )

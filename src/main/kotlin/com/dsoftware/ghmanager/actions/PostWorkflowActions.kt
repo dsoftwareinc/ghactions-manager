@@ -33,7 +33,7 @@ abstract class PostUrlAction(
         getUrl(e.dataContext)?.let {
             val request = GithubApi.postUrl(text, it, getData(e.dataContext))
             val context = e.getRequiredData(ActionKeys.ACTION_DATA_CONTEXT)
-            val future = context.createDataProvider(request).request
+            val future = context.createDataProvider(request).processValue
             future.thenApply {
                 afterPostUrl()
             }

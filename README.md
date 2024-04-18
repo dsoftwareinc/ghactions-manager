@@ -7,16 +7,35 @@ GitHub Actions Manager for JetBrains IDEs
 
 # Screenshots
 
-Horizontal                                 |  Vertical
+                                 Horizontal                                 |  Vertical
+
 :--------------------------------------------------------------------------:|:-------------------------:
- ![](docs/screenshot-new-ui-light.png) ![](docs/screenshot-new-ui-dark.png) |  ![](docs/screenshot-vertical.jpg)
+![](docs/screenshot-new-ui-light.png) ![](docs/screenshot-new-ui-dark.png) |  ![](docs/screenshot-vertical.jpg)
+
+![](docs/outdated-action-version.jpg)
+
+![](docs/quickfix-action.jpg)
+
 
 <!-- Plugin description -->
-This plugin creates a toolbar on JetBrains products (IntelliJ, PyCharm, ...)
-where you can view GitHub workflow runs of the repository.
-This plugin is a good alternative to alt-tabbing for every time you push
-some changes to the branch and want to see whether the repository's checks
-are passing on your changes.
+This plugin creates a tool-window on JetBrains products (IntelliJ, PyCharm, ...) where you can view GitHub workflow runs
+of the repository.
+This plugin is a good alternative to alt-tabbing for every time you push some changes to the branch and want to see
+whether the repository's checks are passing on your changes.
+
+# GitHub Actions Tool Window Features
+
+- View the latest workflow runs of the repository.
+- Filter the workflow runs by the current branch.
+- Filter the workflow runs by status, user who triggered the workflow, and the workflow name.
+- Trigger a workflow from the tool window.
+- Rerun a workflow run.
+- Open the workflow file in the project.
+
+# Editing GitHub Workflow files Features
+
+- Highlight outdated actions.
+- Update to latest major version of the action.
 
 # Sponsor
 
@@ -64,7 +83,3 @@ best way to get a bug fixed is to contribute a pull request.
 
 If you'd like to help out, you can start with any of the issues
 labeled with `Help wanted`.
-
-#   
-
-Inspired by [Otanikotani's github-actions-tab](https://github.com/Otanikotani/view-github-actions-idea-plugin).

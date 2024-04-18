@@ -5,19 +5,22 @@ title: ''
 labels: ''
 assignees: ''
 ---
-
-**Describe the bug**
-A clear and concise description of what the bug is.
+### Describe the bug
+A clear and concise description of what the bug is. 
 Add a screenshot if it is relevant.
 
 **Describe the bug:**
 <!-- A clear and concise description of what the bug is. -->
 
-**Steps to reproduce:** 
-<!-- Steps to reproduce the issue. -->
+### Steps to reproduce
 
-**Expected behavior:**
+<!-- Steps to reproduce the issue. -->
+### Expected behavior
+
 <!-- A clear and concise description of what you expected to happen. -->
 
-**Additional context:**
-<!-- Add any other context about the problem here. -->
+### Additional context
+
+Plugin version: 
+IDE: 
+OS:
