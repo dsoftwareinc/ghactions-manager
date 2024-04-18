@@ -14,6 +14,7 @@ import com.intellij.openapi.components.PersistentStateComponent
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.components.State
 import com.intellij.openapi.components.Storage
+import com.intellij.openapi.components.StoragePathMacros
 import com.intellij.openapi.components.service
 import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.project.Project
@@ -34,7 +35,7 @@ import java.time.Duration
 import java.util.concurrent.ScheduledFuture
 
 @Service(Service.Level.PROJECT)
-@State(name = "GitHubActionCache", storages = [Storage("githubActionCache.xml")])
+@State(name = "GhActionsManagerSettings.ActionsCache", storages = [Storage(StoragePathMacros.PRODUCT_WORKSPACE_FILE)])
 class GitHubActionCache(private val project: Project) : PersistentStateComponent<GitHubActionCache.State?> {
     val actionsCache: Cache<String, GitHubAction> = CacheBuilder.newBuilder()
         .expireAfterWrite(Duration.ofHours(1))
