@@ -4,6 +4,12 @@
 
 ## Unreleased
 
+## 1.21.1
+
+### 🐛 Bug Fixes
+
+- Storing action data in project settings instead of a separate file.
+
 ## 1.21.0
 
 ### 🚀 Features
