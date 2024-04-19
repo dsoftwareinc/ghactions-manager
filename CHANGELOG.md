@@ -4,6 +4,12 @@
 
 ## Unreleased
 
+## 1.21.2
+
+### 🐛 Bug Fixes
+
+- Fix bug scanning workflow files #126
+
 ## 1.21.1
 
 ### 🐛 Bug Fixes

@@ -12,7 +12,7 @@ object Tools {
     }
 
     fun isWorkflowFile(virtualFile: VirtualFile): Boolean {
-        val parentPath = virtualFile.parent.path
+        val parentPath = virtualFile.parent?.path ?: return false
         return parentPath.endsWith(".github/workflows") || parentPath.endsWith(".github/actions")
     }
 
