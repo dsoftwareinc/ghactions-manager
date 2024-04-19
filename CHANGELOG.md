@@ -8,7 +8,7 @@
 
 ### 🐛 Bug Fixes
 
-- Fix bug scanning workflow files #126
+- Fix bug scanning workflow files #126 #125
 
 ## 1.21.1
 

@@ -183,7 +183,8 @@ class GitHubActionCache(private val project: Project) : PersistentStateComponent
             response: GithubApiResponse, dataClass: Class<out T>
         ): GraphQLResponseDTO<out T, GHGQLError> {
             return response.readBody(ThrowableConvertor {
-                @Suppress("UNCHECKED_CAST") GithubApiContentHelper.readJsonObject(
+                @Suppress("UNCHECKED_CAST")
+                GithubApiContentHelper.readJsonObject(
                     it, GraphQLResponseDTO::class.java, dataClass, GHGQLError::class.java, gqlNaming = true
                 ) as GraphQLResponseDTO<T, GHGQLError>
             })
