@@ -5,18 +5,6 @@ GitHub Actions Manager for JetBrains IDEs
 [![Version](https://img.shields.io/jetbrains/plugin/v/com.dsoftware.ghtoolbar.svg)](https://plugins.jetbrains.com/plugin/19347-github-actions-toolbar)
 [![Downloads](https://img.shields.io/jetbrains/plugin/d/com.dsoftware.ghtoolbar.svg)](https://plugins.jetbrains.com/plugin/19347-github-actions-toolbar)
 
-# Screenshots
-
-                                 Horizontal                                 |  Vertical
-
-:--------------------------------------------------------------------------:|:-------------------------:
-![](docs/screenshot-new-ui-light.png) ![](docs/screenshot-new-ui-dark.png) |  ![](docs/screenshot-vertical.jpg)
-
-![](docs/outdated-action-version.jpg)
-
-![](docs/quickfix-action.jpg)
-
-
 <!-- Plugin description -->
 This plugin creates a tool-window on JetBrains products (IntelliJ, PyCharm, ...) where you can view GitHub workflow runs
 of the repository.
@@ -36,6 +24,15 @@ whether the repository's checks are passing on your changes.
 
 - Highlight outdated actions.
 - Update to latest major version of the action.
+
+# Screenshots
+
+|                                 Horizontal                                 |  Vertical        |
+:--------------------------------------------------------------------------:|:-------------------------:
+![](docs/screenshot-new-ui-light.png) ![](docs/screenshot-new-ui-dark.png) |  ![](docs/screenshot-vertical.jpg) |
+| ![](docs/outdated-action-version.jpg) |  |
+| ![](docs/quickfix-action.jpg) | | 
+
 
 # Sponsor
 
