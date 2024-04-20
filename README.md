@@ -27,12 +27,11 @@ whether the repository's checks are passing on your changes.
 
 # Screenshots
 
-|                                 Horizontal                                 |  Vertical        |
-:--------------------------------------------------------------------------:|:-------------------------:
-![](docs/screenshot-new-ui-light.png) ![](docs/screenshot-new-ui-dark.png) |  ![](docs/screenshot-vertical.jpg) |
-| ![](docs/outdated-action-version.jpg) |  |
-| ![](docs/quickfix-action.jpg) | | 
-
+|                                 Horizontal                                 |             Vertical              |
+|:--------------------------------------------------------------------------:|:---------------------------------:|
+| ![](docs/screenshot-new-ui-light.png) ![](docs/screenshot-new-ui-dark.png) | ![](docs/screenshot-vertical.jpg) |
+|                   ![](docs/outdated-action-version.jpg)                    |                                   |
+|                       ![](docs/quickfix-action.jpg)                        |                                   | 
 
 # Sponsor
 
