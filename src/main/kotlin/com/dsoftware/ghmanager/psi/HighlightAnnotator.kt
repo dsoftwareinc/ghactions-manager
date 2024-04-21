@@ -27,28 +27,31 @@ class HighlightAnnotator : Annotator {
         val gitHubActionCache = yamlKeyValue.project.service<GitHubActionCache>()
         val actionName = yamlKeyValue.valueText.split("@").firstOrNull() ?: return
         val currentVersion = yamlKeyValue.valueText.split("@").getOrNull(1)
-        val latestVersion = gitHubActionCache.getAction(actionName)?.latestVersion
-        if (VersionCompareTools.isActionOutdated(currentVersion, latestVersion)) {
-            val message = "$currentVersion is outdated. Latest version is $latestVersion"
-            val annotationBuilder = holder
-                .newAnnotation(HighlightSeverity.WARNING, message)
-                .range(
-                    TextRange.create(
-                        yamlKeyValue.textRange.startOffset
-                            + yamlKeyValue.text.indexOf("@") + 1,
-                        yamlKeyValue.textRange.endOffset
+        gitHubActionCache.whenActionsLoaded {
+            val latestVersion = gitHubActionCache.getAction(actionName)?.latestVersion
+            if (VersionCompareTools.isActionOutdated(currentVersion, latestVersion)) {
+                val message = "$currentVersion is outdated. Latest version is $latestVersion"
+                val annotationBuilder = holder
+                    .newAnnotation(HighlightSeverity.WARNING, message)
+                    .range(
+                        TextRange.create(
+                            yamlKeyValue.textRange.startOffset
+                                + yamlKeyValue.text.indexOf("@") + 1,
+                            yamlKeyValue.textRange.endOffset
+                        )
                     )
-                )
-            val inspectionManager = yamlKeyValue.project.service<InspectionManager>()
-            val quickfix = UpdateActionVersionFix(actionName, latestVersion!!)
-            val problemDescriptor = inspectionManager.createProblemDescriptor(
-                yamlKeyValue, message, quickfix,
-                ProblemHighlightType.WEAK_WARNING, true
-            );
-            annotationBuilder
-                .newLocalQuickFix(quickfix, problemDescriptor)
-                .registerFix()
-            annotationBuilder.create()
+                val inspectionManager = yamlKeyValue.project.service<InspectionManager>()
+                val quickfix = UpdateActionVersionFix(actionName, latestVersion!!)
+                val problemDescriptor = inspectionManager.createProblemDescriptor(
+                    yamlKeyValue, message, quickfix,
+                    ProblemHighlightType.WEAK_WARNING, true
+                );
+                annotationBuilder
+                    .newLocalQuickFix(quickfix, problemDescriptor)
+                    .registerFix()
+                annotationBuilder.create()
+            }
         }
+
     }
 }

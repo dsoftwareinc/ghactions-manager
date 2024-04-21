@@ -1,6 +1,5 @@
 package com.dsoftware.ghmanager.data
 
-import com.dsoftware.ghmanager.data.providers.DataProvider
 import com.dsoftware.ghmanager.data.providers.LogDataProvider
 import com.intellij.collaboration.ui.SingleValueModel
 import com.intellij.openapi.Disposable
@@ -44,12 +43,9 @@ class LogLoadingModelListener(
                 val newDisposable = Disposer.newDisposable("Log listener disposable").apply {
                     Disposer.register(workflowRunDisposable, this)
                 }
-                it.addRunChangesListener(newDisposable,
-                    object : DataProvider.DataProviderChangeListener {
-                        override fun changed() {
-                            logsLoadingModel.future = it.processValue
-                        }
-                    })
+                it.addRunChangesListener(newDisposable) {
+                    logsLoadingModel.future = it.processValue
+                }
                 listenerDisposable = newDisposable
             }
         }

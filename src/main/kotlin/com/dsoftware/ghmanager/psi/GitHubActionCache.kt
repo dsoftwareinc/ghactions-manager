@@ -18,6 +18,7 @@ import com.intellij.openapi.components.StoragePathMacros
 import com.intellij.openapi.components.service
 import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.project.Project
+import com.intellij.util.EventDispatcher
 import com.intellij.util.ResourceUtil
 import com.intellij.util.ThrowableConvertor
 import com.intellij.util.concurrency.annotations.RequiresEdt
@@ -32,22 +33,24 @@ import org.jetbrains.plugins.github.exceptions.GithubJsonException
 import org.jetbrains.plugins.github.util.GHCompatibilityUtil
 import java.io.IOException
 import java.time.Duration
+import java.util.EventListener
 import java.util.concurrent.ScheduledFuture
 
 @Service(Service.Level.PROJECT)
 @State(name = "GhActionsManagerSettings.ActionsCache", storages = [Storage(StoragePathMacros.PRODUCT_WORKSPACE_FILE)])
 class GitHubActionCache(private val project: Project) : PersistentStateComponent<GitHubActionCache.State?> {
-    val actionsCache: Cache<String, GitHubAction> = CacheBuilder.newBuilder()
-        .expireAfterWrite(Duration.ofHours(1))
-        .maximumSize(200)
-        .build()
+    val actionsCache: Cache<String, GitHubAction> =
+        CacheBuilder.newBuilder().expireAfterWrite(Duration.ofHours(1)).maximumSize(200).build()
+
     val actionsToResolve = mutableSetOf<String>()
     private val task: ScheduledFuture<*>
-
     private val ghActionsService = project.service<GhActionsService>()
+
     private val settingsService = project.service<GhActionsSettingsService>()
     private val serverPath: String
     private var requestExecutor: GhApiRequestExecutor? = null
+
+    private val actionsLoadedEventDispatcher = EventDispatcher.create(ActionsLoadedListener::class.java)
 
     init {
         this.serverPath = determineServerPath()
@@ -60,10 +63,7 @@ class GitHubActionCache(private val project: Project) : PersistentStateComponent
             requestExecutor = if (token == null) null else GhApiRequestExecutor.create(token)
         }
         task = ToolbarUtil.executeTaskAtCustomFrequency(project, 5) {
-            actionsToResolve.removeAll(actionsCache.asMap().keys)
-            actionsToResolve.forEach {
-                resolveGithubAction(it)
-            }
+            resolveActions()
         }
     }
 
@@ -76,6 +76,19 @@ class GitHubActionCache(private val project: Project) : PersistentStateComponent
         actionsCache.putAll(state.actions.associateBy { it.name })
     }
 
+    fun whenActionsLoaded(listenerMethod: () -> Unit) {
+        if(actionsToResolve.isEmpty()){
+            listenerMethod()
+            return
+        }
+        actionsLoadedEventDispatcher.addListener(object : ActionsLoadedListener {
+            override fun actionsLoaded() {
+                listenerMethod()
+            }
+        })
+        resolveActions()
+    }
+
     fun getAction(fullActionName: String): GitHubAction? {
         val action = actionsCache.getIfPresent(fullActionName)
         if (action != null) {
@@ -84,6 +97,14 @@ class GitHubActionCache(private val project: Project) : PersistentStateComponent
         LOG.info("Action $fullActionName not found in cache, adding to resolve list")
         actionsToResolve.add(fullActionName)
         return null
+    }
+
+    private fun resolveActions() {
+        actionsToResolve.removeAll(actionsCache.asMap().keys)
+        actionsToResolve.forEach {
+            resolveGithubAction(it)
+        }
+        actionsLoadedEventDispatcher.multicaster.actionsLoaded()
     }
 
     private fun determineServerPath(): String {
@@ -134,7 +155,7 @@ class GitHubActionCache(private val project: Project) : PersistentStateComponent
     }
 
 
-    class TraversedParsed<out T : Any>(
+    private class TraversedParsed<out T : Any>(
         url: String,
         private val query: String,
         private val variablesObject: Any,
@@ -148,8 +169,7 @@ class GitHubActionCache(private val project: Project) : PersistentStateComponent
         private fun throwException(errors: List<GHGQLError>): Nothing {
             if (errors.any {
                     it.type.equals(
-                        "INSUFFICIENT_SCOPES",
-                        true
+                        "INSUFFICIENT_SCOPES", true
                     )
                 }) throw GithubAuthenticationException("Access token has not been granted the required scopes.")
 
@@ -183,13 +203,18 @@ class GitHubActionCache(private val project: Project) : PersistentStateComponent
             response: GithubApiResponse, dataClass: Class<out T>
         ): GraphQLResponseDTO<out T, GHGQLError> {
             return response.readBody(ThrowableConvertor {
-                @Suppress("UNCHECKED_CAST")
-                GithubApiContentHelper.readJsonObject(
+                @Suppress("UNCHECKED_CAST") GithubApiContentHelper.readJsonObject(
                     it, GraphQLResponseDTO::class.java, dataClass, GHGQLError::class.java, gqlNaming = true
                 ) as GraphQLResponseDTO<T, GHGQLError>
             })
         }
     }
+
+
+    private interface ActionsLoadedListener : EventListener {
+        fun actionsLoaded() {}
+    }
+
 
     companion object {
         private val LOG = logger<GitHubActionCache>()

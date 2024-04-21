@@ -45,12 +45,17 @@ open class DataProvider<T>(
         runChangesEventDispatcher.multicaster.changed()
     }
 
-    fun addRunChangesListener(disposable: Disposable, listener: DataProviderChangeListener) =
-        runChangesEventDispatcher.addListener(listener, disposable)
-
     interface DataProviderChangeListener : EventListener {
         fun changed() {}
     }
+
+    fun addRunChangesListener(disposable: Disposable, listenerMethod: () -> Unit) =
+        runChangesEventDispatcher.addListener(object : DataProviderChangeListener {
+            override fun changed() {
+                listenerMethod()
+            }
+        }, disposable)
+
 
     companion object {
         private val LOG = thisLogger()

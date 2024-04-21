@@ -1,7 +1,6 @@
 package com.dsoftware.ghmanager.data
 
 import com.dsoftware.ghmanager.api.model.WorkflowRunJobs
-import com.dsoftware.ghmanager.data.providers.DataProvider
 import com.dsoftware.ghmanager.data.providers.JobsDataProvider
 import com.intellij.collaboration.ui.SingleValueModel
 import com.intellij.openapi.Disposable
@@ -28,12 +27,11 @@ class JobsLoadingModelListener(
                 val disposable = Disposer.newDisposable().apply {
                     Disposer.register(jobsLoadingModel, this)
                 }
-                it.addRunChangesListener(disposable,
-                    object : DataProvider.DataProviderChangeListener {
-                        override fun changed() {
-                            jobsLoadingModel.future = it.processValue
-                        }
-                    })
+
+                it.addRunChangesListener(disposable){
+                    jobsLoadingModel.future = it.processValue
+                }
+
                 listenerDisposable = disposable
             }
         }

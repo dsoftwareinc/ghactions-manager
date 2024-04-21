@@ -13,6 +13,7 @@ import com.intellij.openapi.actionSystem.ActionGroup
 import com.intellij.openapi.actionSystem.ActionManager
 import com.intellij.openapi.actionSystem.ActionPlaces
 import com.intellij.openapi.actionSystem.ActionPopupMenu
+import com.intellij.openapi.actionSystem.ex.ActionUtil
 import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.progress.util.ProgressWindow
 import com.intellij.openapi.util.Disposer
@@ -35,6 +36,7 @@ import org.jetbrains.plugins.github.exceptions.GithubStatusCodeException
 import org.jetbrains.plugins.github.ui.HtmlInfoPanel
 import java.awt.BorderLayout
 import java.awt.Component
+import java.net.UnknownHostException
 import javax.swing.ScrollPaneConstants
 import javax.swing.event.ListDataEvent
 import javax.swing.event.ListDataListener
@@ -152,10 +154,18 @@ class WorkflowRunsListPanel(
             return
         }
         LOG.warn("Got error when getting workflow-runs: $error")
-        runListComponent.emptyText.setText(
-            message("panel.workflow-runs.error"), SimpleTextAttributes.ERROR_ATTRIBUTES
+        runListComponent.emptyText.clear().appendLine(
+            message("panel.workflow-runs.error"), SimpleTextAttributes.ERROR_ATTRIBUTES, null
         ).appendLine(
             getLoadingErrorText(workflowRunsLoader.url, error), SimpleTextAttributes.ERROR_ATTRIBUTES, null
+        ).appendLine(
+            message("factory.go.to.github-settings"),
+            SimpleTextAttributes.LINK_ATTRIBUTES,
+            ActionUtil.createActionListener(
+                "ShowGithubSettings",
+                runListComponent,
+                ActionPlaces.UNKNOWN
+            )
         )
 
         runListComponent.emptyText.attachTo(runListComponent)
@@ -209,6 +219,11 @@ class WorkflowRunsListPanel(
                 val res = builder.toString()
                 LOG.warn("Error: $res when getting URL: $url")
                 return res
+            }
+            if (error is UnknownHostException) {
+                val message = "Error: Unknown host ${error.message} when getting URL: $url"
+                LOG.warn(message)
+                return message
             }
 
             return error.message?.let { addDotIfNeeded(it) } ?: message("panel.workflow-runs.unknown-error")

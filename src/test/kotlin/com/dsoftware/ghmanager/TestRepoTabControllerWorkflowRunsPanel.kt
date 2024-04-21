@@ -120,11 +120,11 @@ class TestRepoTabControllerWorkflowRunsPanel : GitHubActionsManagerBaseTest() {
         val (workflowRunsListPanel, jobsListPanel, logPanel) = assertTabsAndPanels()
 
         workflowRunsListPanel.runListComponent.emptyText.apply {
-            Assertions.assertEquals(message("panel.workflow-runs.error"), text)
-            Assertions.assertEquals(2, wrappedFragmentsIterable.count())
+            Assertions.assertEquals(3, wrappedFragmentsIterable.count())
             val fragments = wrappedFragmentsIterable.toList()
             Assertions.assertEquals(message("panel.workflow-runs.error"), fragments[0].toString())
             Assertions.assertEquals("Not Found.", fragments[1].toString())
+            Assertions.assertEquals(message("factory.go.to.github-settings"), fragments[2].toString())
         }
         Assertions.assertEquals(0, workflowRunsListPanel.runListComponent.model.size)
     }
