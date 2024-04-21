@@ -1,10 +1,11 @@
-package com.dsoftware.ghmanager
+package com.dsoftware.ghmanager.toolwindow
 
 import com.dsoftware.ghmanager.api.GhApiRequestExecutor
 import com.dsoftware.ghmanager.api.model.WorkflowRun
 import com.dsoftware.ghmanager.api.model.WorkflowRuns
 import com.dsoftware.ghmanager.api.model.WorkflowType
 import com.dsoftware.ghmanager.api.model.WorkflowTypes
+import com.dsoftware.ghmanager.createWorkflowRun
 import com.dsoftware.ghmanager.data.WorkflowDataContextService
 import com.dsoftware.ghmanager.i18n.MessagesBundle.message
 import com.dsoftware.ghmanager.ui.GhActionsMgrToolWindowContent
@@ -35,7 +36,7 @@ import javax.swing.JPanel
 import javax.swing.JTextPane
 
 @ExtendWith(MockKExtension::class)
-class TestRepoTabControllerWorkflowRunsPanel : GitHubActionsManagerBaseTest() {
+class TestRepoTabControllerWorkflowRunsPanel : GhActionsMgrBaseTest() {
 
     @MockK
     lateinit var executorMock: GhApiRequestExecutor

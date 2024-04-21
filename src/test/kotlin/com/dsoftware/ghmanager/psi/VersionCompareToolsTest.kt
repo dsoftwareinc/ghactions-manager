@@ -14,5 +14,4 @@ class VersionCompareToolsTest {
         Assertions.assertFalse(VersionCompareTools.isActionOutdated("v4.0.0", "master"))
         Assertions.assertTrue(VersionCompareTools.isActionOutdated("v4.0.0", "v5.0.0"))
     }
-
 }

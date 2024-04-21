@@ -1,4 +1,4 @@
-package com.dsoftware.ghmanager
+package com.dsoftware.ghmanager.toolwindow
 
 import com.dsoftware.ghmanager.api.GhApiRequestExecutor
 import com.dsoftware.ghmanager.i18n.MessagesBundle.message
@@ -22,7 +22,7 @@ import javax.swing.JPanel
 
 
 @ExtendWith(MockKExtension::class)
-class ToolWindowFactoryTest : GitHubActionsManagerBaseTest() {
+class ToolWindowFactoryTest : GhActionsMgrBaseTest() {
 
     @BeforeEach
     override fun setUp(testInfo: TestInfo) {

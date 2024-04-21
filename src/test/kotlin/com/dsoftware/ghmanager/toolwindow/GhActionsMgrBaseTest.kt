@@ -1,6 +1,5 @@
-package com.dsoftware.ghmanager
+package com.dsoftware.ghmanager.toolwindow
 
-import com.dsoftware.ghmanager.api.GhApiRequestExecutor
 import com.dsoftware.ghmanager.data.GhActionsService
 import com.dsoftware.ghmanager.ui.GhActionsMgrToolWindowContent
 import com.dsoftware.ghmanager.ui.settings.GhActionsSettingsService
@@ -19,7 +18,6 @@ import com.intellij.toolWindow.ToolWindowHeadlessManagerImpl
 import com.intellij.util.concurrency.annotations.RequiresEdt
 import com.intellij.util.ui.UIUtil
 import io.mockk.every
-import io.mockk.impl.annotations.MockK
 import io.mockk.mockk
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -39,7 +37,7 @@ import org.junit.jupiter.api.extension.RegisterExtension
 
 @RunInEdt(writeIntent = true)
 //@TestApplication
-abstract class GitHubActionsManagerBaseTest {
+abstract class GhActionsMgrBaseTest {
     init {
         initTestApplication()
     }
