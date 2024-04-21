@@ -1,7 +1,6 @@
 package com.dsoftware.ghmanager.data
 
 import com.dsoftware.ghmanager.ui.GhActionsMgrToolWindowContent
-import com.dsoftware.ghmanager.ui.settings.GhActionsSettingsService
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project

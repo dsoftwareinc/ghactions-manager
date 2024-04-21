@@ -38,7 +38,7 @@ class WorkflowTypesActionsGroup : ActionGroup(message("action-group.name.select-
 
     override fun getChildren(e: AnActionEvent?): Array<AnAction> {
         if (e == null) return EMPTY_ARRAY
-        val context = e.getData(ActionKeys.ACTION_DATA_CONTEXT) ?: return EMPTY_ARRAY
+        val context = e.getData(ActionKeys.SELECTED_WF_CONTEXT) ?: return EMPTY_ARRAY
         val workflowTypeList: List<WorkflowType> = context.runsListLoader.workflowTypes
         LOG.debug("Got ${workflowTypeList.size} workflow types")
 

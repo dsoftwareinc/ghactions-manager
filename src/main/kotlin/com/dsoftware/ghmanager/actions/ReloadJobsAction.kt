@@ -8,13 +8,13 @@ import com.intellij.openapi.diagnostic.logger
 
 class ReloadJobsAction : RefreshAction(message("action.name.refresh-jobs-list"), null, AllIcons.Actions.Refresh) {
     override fun update(e: AnActionEvent) {
-        val selection = e.getData(ActionKeys.ACTION_DATA_CONTEXT)?.jobsDataProvider
+        val selection = e.getData(ActionKeys.SELECTED_WF_CONTEXT)?.jobsDataProvider
         e.presentation.isEnabled = selection != null
     }
 
     override fun actionPerformed(e: AnActionEvent) {
         LOG.debug("ReloadJobsAction action performed")
-        e.getRequiredData(ActionKeys.ACTION_DATA_CONTEXT).jobsDataProvider?.reload()
+        e.getRequiredData(ActionKeys.SELECTED_WF_CONTEXT).jobsDataProvider?.reload()
     }
 
     companion object {

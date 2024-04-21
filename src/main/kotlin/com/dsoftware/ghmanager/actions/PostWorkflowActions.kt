@@ -32,7 +32,7 @@ abstract class PostUrlAction(
         e.dataContext.getData(CommonDataKeys.PROJECT) ?: return
         getUrl(e.dataContext)?.let {
             val request = GithubApi.postUrl(text, it, getData(e.dataContext))
-            val context = e.getRequiredData(ActionKeys.ACTION_DATA_CONTEXT)
+            val context = e.getRequiredData(ActionKeys.SELECTED_WF_CONTEXT)
             val future = context.createDataProvider(request).processValue
             future.thenApply {
                 afterPostUrl()
@@ -71,7 +71,7 @@ class RerunWorkflowAction : PostUrlAction(message("action.name.rerun-workflow"),
 class WorkflowDispatchAction(private val workflowType: WorkflowType) :
     PostUrlAction(workflowType.name, message("action.description.dispatch-workflow"), AllIcons.Actions.Execute) {
     override fun getUrl(dataContext: DataContext): String? {
-        val context = dataContext.getData(ActionKeys.ACTION_DATA_CONTEXT) ?: return null
+        val context = dataContext.getData(ActionKeys.SELECTED_WF_CONTEXT) ?: return null
         val fullPath = GithubUrlUtil.getUserAndRepositoryFromRemoteUrl(context.repositoryMapping.remote.url)
             ?: throw IllegalArgumentException(
                 "Invalid GitHub Repository URL - ${context.repositoryMapping.remote.url} is not a GitHub repository"
@@ -89,7 +89,7 @@ class WorkflowDispatchAction(private val workflowType: WorkflowType) :
     }
 
     override fun getData(dataContext: DataContext): Any {
-        val context = dataContext.getData(ActionKeys.ACTION_DATA_CONTEXT) ?: return Object()
+        val context = dataContext.getData(ActionKeys.SELECTED_WF_CONTEXT) ?: return Object()
         return mapOf("ref" to context.repositoryMapping.gitRepository.currentBranch?.name)
     }
 

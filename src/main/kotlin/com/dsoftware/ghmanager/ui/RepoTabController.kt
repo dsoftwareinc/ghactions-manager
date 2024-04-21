@@ -111,7 +111,7 @@ class RepoTabController(
         }.also {
             DataManager.registerDataProvider(it) { dataId ->
                 when {
-                    ActionKeys.ACTION_DATA_CONTEXT.`is`(dataId) -> selectedRunContext
+                    ActionKeys.SELECTED_WF_CONTEXT.`is`(dataId) -> selectedRunContext
                     else -> null
                 }
             }
@@ -147,7 +147,7 @@ class RepoTabController(
             message("panel.jobs.not-loading"),
             message("panel.jobs.loading-error"),
             selectedRunContext.getLoadingErrorHandler { selectedRunContext.jobDataProviderLoadModel.value = null }
-        ).create { _, jobs ->
+        ).createWithModel { _, jobs ->
             JobsListPanel(
                 checkedDisposable,
                 jobs,

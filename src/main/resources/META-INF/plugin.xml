@@ -61,12 +61,13 @@
             <reference id="GhActionsMgr.ToolWindow.WorkflowRuns.List.Reload"/>
         </group>
         <group id="GhActionsMgr.ToolWindow.JobList.Popup">
-            <action id="GhActionsMgr.Job.OpenInBrowser" class="com.dsoftware.ghmanager.actions.JobOpenInBrowserAction"/>
+
+            <action id="GhActionsMgr.ReloadJobs" class="com.dsoftware.ghmanager.actions.ReloadJobsAction"/>
         </group>
 
         <group id="GhActionsMgr.ToolWindow.JobList.Popup.Selected">
-            <reference id="GhActionsMgr.Job.OpenInBrowser"/>
-            <action id="GhActionsMgr.ReloadJobs" class="com.dsoftware.ghmanager.actions.ReloadJobsAction"/>
+            <action id="GhActionsMgr.Job.OpenInBrowser" class="com.dsoftware.ghmanager.actions.JobOpenInBrowserAction"/>
+            <reference id="GhActionsMgr.ReloadJobs"/>
             <action id="GhActionsMgr.ReloadLog" class="com.dsoftware.ghmanager.actions.ReloadJobLogAction"/>
         </group>
 

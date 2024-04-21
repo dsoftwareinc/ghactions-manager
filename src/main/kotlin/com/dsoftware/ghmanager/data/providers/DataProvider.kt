@@ -20,27 +20,27 @@ open class DataProvider<T>(
     private val githubApiRequest: GithubApiRequest<T>,
 ) {
     private val runChangesEventDispatcher = EventDispatcher.create(DataProviderChangeListener::class.java)
-    private val progressManager = ProgressManager.getInstance()
-    private val indicatorsProvider: ProgressIndicatorsProvider = ProgressIndicatorsProvider()
 
-    val processValue = progressManager.submitIOTask(indicatorsProvider, true) {
-        try {
-            LOG.info("Executing ${githubApiRequest.url}")
-            val request = githubApiRequest
-            val response = requestExecutor.execute(it, request)
-            response
-        } catch (e: GithubStatusCodeException) {
-            LOG.warn("Error when getting $githubApiRequest.url: status code ${e.statusCode}: ${e.message}")
-            throw e
-        } catch (ioe: IOException) {
-            LOG.warn("Error when getting $githubApiRequest.url: $ioe")
-            throw ioe
+    val processValue = ProgressManager.getInstance()
+        .submitIOTask(ProgressIndicatorsProvider(), true) {
+            try {
+                LOG.info("Executing ${githubApiRequest.url}")
+                val request = githubApiRequest
+                val response = requestExecutor.execute(it, request)
+                response
+            } catch (e: GithubStatusCodeException) {
+                LOG.warn("Error when getting $githubApiRequest.url: status code ${e.statusCode}: ${e.message}")
+                throw e
+            } catch (ioe: IOException) {
+                LOG.warn("Error when getting $githubApiRequest.url: $ioe")
+                throw ioe
+            }
         }
-    }
 
     fun url(): String = githubApiRequest.url
 
     fun reload() {
+        LOG.debug("Reloading data for ${githubApiRequest.url}")
         processValue.cancel(true)
         runChangesEventDispatcher.multicaster.changed()
     }

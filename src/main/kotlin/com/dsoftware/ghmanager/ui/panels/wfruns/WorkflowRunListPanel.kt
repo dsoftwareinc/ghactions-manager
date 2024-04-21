@@ -176,7 +176,10 @@ class WorkflowRunsListPanel(
             list.addMouseListener(object : PopupHandler() {
                 override fun invokePopup(comp: Component, x: Int, y: Int) {
                     val (place, groupId) = if (ListUtil.isPointOnSelection(list, x, y)) {
-                        Pair("GithubWorkflowListPopupSelected", "GhActionsMgr.ToolWindow.WorkflowRuns.List.Popup.Selected")
+                        Pair(
+                            "GithubWorkflowListPopupSelected",
+                            "GhActionsMgr.ToolWindow.WorkflowRuns.List.Popup.Selected"
+                        )
                     } else {
                         Pair("GithubWorkflowListPopup", "GhActionsMgr.ToolWindow.WorkflowRuns.List.Popup")
                     }

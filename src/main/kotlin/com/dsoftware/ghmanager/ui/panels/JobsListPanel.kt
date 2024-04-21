@@ -4,10 +4,10 @@ package com.dsoftware.ghmanager.ui.panels
 import com.dsoftware.ghmanager.api.model.Job
 import com.dsoftware.ghmanager.api.model.Status
 import com.dsoftware.ghmanager.api.model.WorkflowRunJobs
-import com.dsoftware.ghmanager.data.JobsLoadingModelListener
 import com.dsoftware.ghmanager.data.WorkflowRunSelectionContext
 import com.dsoftware.ghmanager.i18n.MessagesBundle.message
 import com.dsoftware.ghmanager.ui.ToolbarUtil
+import com.intellij.collaboration.ui.SingleValueModel
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.actionSystem.ActionGroup
 import com.intellij.openapi.actionSystem.ActionManager
@@ -19,8 +19,6 @@ import com.intellij.ui.PopupHandler
 import com.intellij.ui.ScrollPaneFactory
 import com.intellij.util.ui.JBUI
 import com.intellij.util.ui.components.BorderLayoutPanel
-import org.jetbrains.plugins.github.pullrequest.ui.GHCompletableFutureLoadingModel
-import org.jetbrains.plugins.github.pullrequest.ui.GHLoadingModel
 import org.jetbrains.plugins.github.ui.HtmlInfoPanel
 import java.awt.BorderLayout
 import java.awt.Component
@@ -29,7 +27,7 @@ import javax.swing.ScrollPaneConstants
 
 class JobsListPanel(
     parentDisposable: Disposable,
-    jobs: WorkflowRunJobs,
+    jobsValueModel: SingleValueModel<WorkflowRunJobs>,
     private val runSelectionContext: WorkflowRunSelectionContext,
     private val infoInNewLine: Boolean
 ) : BorderLayoutPanel(), Disposable {
@@ -53,8 +51,11 @@ class JobsListPanel(
         add(topInfoPanel, BorderLayout.NORTH)
         add(scrollPane, BorderLayout.CENTER)
         jobsListModel.removeAll()
-        jobsListModel.add(jobs.jobs)
-        topInfoPanel.setInfo(infoTitleString(jobs.jobs))
+        jobsValueModel.addAndInvokeListener {
+            jobsListModel.removeAll()
+            jobsListModel.add(it.jobs)
+            topInfoPanel.setInfo(infoTitleString(it.jobs))
+        }
     }
 
     private fun infoTitleString(jobs: List<Job>): String {
@@ -100,9 +101,8 @@ class JobsListPanel(
                 } else {
                     Pair("JobListPopup", "GhActionsMgr.ToolWindow.JobList.Popup")
                 }
-                val popupMenu: ActionPopupMenu = actionManager.createActionPopupMenu(
-                    place, actionManager.getAction(groupId) as ActionGroup,
-                )
+                val popupMenu: ActionPopupMenu = actionManager
+                    .createActionPopupMenu(place, actionManager.getAction(groupId) as ActionGroup)
 
                 popupMenu.setTargetComponent(list)
                 popupMenu.component.show(comp, x, y)

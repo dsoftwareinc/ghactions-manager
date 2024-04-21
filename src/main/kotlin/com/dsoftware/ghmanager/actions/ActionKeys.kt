@@ -19,6 +19,6 @@ object ActionKeys {
         DataKey.create<Job>("com.dsoftware.actions.workflow.jobs.selected")
 
     @JvmStatic
-    val ACTION_DATA_CONTEXT =
+    val SELECTED_WF_CONTEXT =
         DataKey.create<WorkflowRunSelectionContext>("com.dsoftware.ghactions.workflowrun.action.datacontext")
 }
