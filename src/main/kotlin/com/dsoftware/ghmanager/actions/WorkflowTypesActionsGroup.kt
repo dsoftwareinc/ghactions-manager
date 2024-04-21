@@ -27,7 +27,7 @@ class WorkflowTypesActionsGroup : ActionGroup(message("action-group.name.select-
     override fun actionPerformed(e: AnActionEvent) {
         JBPopupFactory.getInstance()
             .createActionGroupPopup(
-                "Select Workflow to Dispatch",
+                message("action.description.dispatch-workflow"),
                 this,
                 e.dataContext,
                 JBPopupFactory.ActionSelectionAid.SPEEDSEARCH,

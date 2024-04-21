@@ -1,7 +1,9 @@
 package com.dsoftware.ghmanager.toolwindow
 
 import com.dsoftware.ghmanager.api.GhApiRequestExecutor
+import com.dsoftware.ghmanager.api.model.Job
 import com.dsoftware.ghmanager.api.model.WorkflowRun
+import com.dsoftware.ghmanager.api.model.WorkflowRunJobs
 import com.dsoftware.ghmanager.api.model.WorkflowRuns
 import com.dsoftware.ghmanager.api.model.WorkflowType
 import com.dsoftware.ghmanager.api.model.WorkflowTypes
@@ -25,13 +27,14 @@ import org.jetbrains.plugins.github.api.data.GithubBranch
 import org.jetbrains.plugins.github.api.data.GithubResponsePage
 import org.jetbrains.plugins.github.api.data.GithubUserWithPermissions
 import org.jetbrains.plugins.github.exceptions.GithubStatusCodeException
+import org.jetbrains.plugins.github.ui.HtmlInfoPanel
 import org.jetbrains.plugins.github.util.GHCompatibilityUtil
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInfo
 import org.junit.jupiter.api.extension.ExtendWith
-import javax.swing.JComponent
+import javax.swing.JLabel
 import javax.swing.JPanel
 import javax.swing.JTextPane
 
@@ -69,7 +72,7 @@ class TestRepoTabControllerWorkflowRunsPanel : GhActionsMgrBaseTest() {
         executeSomeCoroutineTasksAndDispatchAllInvocationEvents(projectRule.project)
 
         // assert
-        val (workflowRunsListPanel, jobsListPanel, logPanel) = assertTabsAndPanels()
+        val (workflowRunsListPanel, selectedRunPanel) = assertTabsAndPanels()
         workflowRunsListPanel.runListComponent.emptyText.apply {
             Assertions.assertEquals(message("panel.workflow-runs.no-runs"), text)
             Assertions.assertEquals(2, wrappedFragmentsIterable.count())
@@ -78,6 +81,57 @@ class TestRepoTabControllerWorkflowRunsPanel : GhActionsMgrBaseTest() {
             Assertions.assertEquals(message("panel.workflow-runs.no-runs.refresh"), fragments[1].toString())
         }
         Assertions.assertEquals(workflowRunsList.size, workflowRunsListPanel.runListComponent.model.size)
+        // assert workflow run list selection
+        workflowRunsListPanel.runListComponent.setSelectedValue(
+            workflowRunsListPanel.runListComponent.model.getElementAt(0),
+            false
+        )
+        executeSomeCoroutineTasksAndDispatchAllInvocationEvents(projectRule.project)
+        Assertions.assertEquals(
+            workflowRunsListPanel.runListComponent.selectedValue,
+            workflowRunsListPanel.runListComponent.model.getElementAt(0)
+        )
+    }
+
+    @Test
+    fun `test selecting workflow-run shows jobs`() {
+        val workflowRunsList = listOf(
+            createWorkflowRun(id = 1, status = "in_progress"),
+            createWorkflowRun(id = 2, status = "completed"),
+            createWorkflowRun(id = 2, status = "queued"),
+        )
+        mockGithubApiRequestExecutor(workflowRunsList)
+        executeSomeCoroutineTasksAndDispatchAllInvocationEvents(projectRule.project)
+
+        // act
+        toolWindowContent.createContent()
+        executeSomeCoroutineTasksAndDispatchAllInvocationEvents(projectRule.project)
+
+        // assert wf-runs loaded
+        val (workflowRunsListPanel, selectedRunPanel) = assertTabsAndPanels()
+        Assertions.assertEquals(workflowRunsList.size, workflowRunsListPanel.runListComponent.model.size)
+
+        val jobsPanelEmptyText = (selectedRunPanel.firstComponent.components[0] as JPanel).components[0] as JTextPane
+        Assertions.assertTrue(jobsPanelEmptyText.text.contains(message("panel.jobs.not-loading")))
+
+        // assert workflow run selected => jobs listed
+        workflowRunsListPanel.runListComponent.setSelectedValue(
+            workflowRunsListPanel.runListComponent.model.getElementAt(0),
+            false
+        )
+        executeSomeCoroutineTasksAndDispatchAllInvocationEvents(projectRule.project)
+        Assertions.assertEquals(
+            workflowRunsListPanel.runListComponent.selectedValue,
+            workflowRunsListPanel.runListComponent.model.getElementAt(0)
+        )
+        Assertions.assertNotEquals(
+            jobsPanelEmptyText,
+            (selectedRunPanel.firstComponent.components[0] as JPanel).components[0]
+        )
+        val jobsPanel = ((selectedRunPanel.firstComponent.components[0] as JPanel).components[0] as HtmlInfoPanel)
+        Assertions.assertEquals("Loading...", jobsPanel)
+        executeSomeCoroutineTasksAndDispatchAllInvocationEvents(projectRule.project)
+
     }
 
     @Test
@@ -90,7 +144,7 @@ class TestRepoTabControllerWorkflowRunsPanel : GhActionsMgrBaseTest() {
         executeSomeCoroutineTasksAndDispatchAllInvocationEvents(projectRule.project)
 
         // assert
-        val (workflowRunsListPanel, jobsListPanel, logPanel) = assertTabsAndPanels()
+        val (workflowRunsListPanel, selectedRunPanel) = assertTabsAndPanels()
 
         workflowRunsListPanel.runListComponent.emptyText.apply {
             Assertions.assertEquals(message("panel.workflow-runs.no-runs"), text)
@@ -118,8 +172,7 @@ class TestRepoTabControllerWorkflowRunsPanel : GhActionsMgrBaseTest() {
         executeSomeCoroutineTasksAndDispatchAllInvocationEvents(projectRule.project)
 
         // assert
-        val (workflowRunsListPanel, jobsListPanel, logPanel) = assertTabsAndPanels()
-
+        val (workflowRunsListPanel, selectedRunPanel) = assertTabsAndPanels()
         workflowRunsListPanel.runListComponent.emptyText.apply {
             Assertions.assertEquals(3, wrappedFragmentsIterable.count())
             val fragments = wrappedFragmentsIterable.toList()
@@ -136,6 +189,7 @@ class TestRepoTabControllerWorkflowRunsPanel : GhActionsMgrBaseTest() {
         collaborators: Collection<String> = emptyList(),
         branches: Collection<String> = emptyList(),
         workflowTypes: Collection<WorkflowType> = emptyList(),
+        jobs: Collection<Job> = emptyList(),
     ) {
         val collaboratorsResponse = GithubResponsePage(collaborators.map {
             val user = mockk<GithubUserWithPermissions> {
@@ -151,6 +205,9 @@ class TestRepoTabControllerWorkflowRunsPanel : GhActionsMgrBaseTest() {
         })
         val workflowTypesResponse = WorkflowTypes(workflowTypes.size, workflowTypes.toList())
         executorMock.apply {
+            every {
+                execute(any(), matchApiRequestUrl<WorkflowRunJobs>("/jobs")).hint(WorkflowRunJobs::class)
+            } returns WorkflowRunJobs(jobs.size, jobs = jobs.toList())
             every {// workflow runs
                 execute(any(), matchApiRequestUrl<WorkflowRuns>("/actions/runs")).hint(WorkflowRuns::class)
             } returns WorkflowRuns(workflowRunsList.size, workflowRunsList.toList())
@@ -168,7 +225,7 @@ class TestRepoTabControllerWorkflowRunsPanel : GhActionsMgrBaseTest() {
         every { GhApiRequestExecutor.create(token = any()) } returns executorMock
     }
 
-    fun assertTabsAndPanels(): Triple<WorkflowRunsListPanel, JComponent, JComponent> {
+    fun assertTabsAndPanels(): Pair<WorkflowRunsListPanel, OnePixelSplitter> {
         Assertions.assertEquals(1, toolWindow.contentManager.contentCount)
         val content = toolWindow.contentManager.contents[0]
         Assertions.assertEquals("owner/repo", content.displayName)
@@ -210,10 +267,12 @@ class TestRepoTabControllerWorkflowRunsPanel : GhActionsMgrBaseTest() {
         ((logPanel.components[0] as JPanel).components[0] as JTextPane).apply {
             Assertions.assertTrue(text.contains(message("panel.log.not-loading")))
         }
-        return Triple(workflowRunsListPanel, jobsListPanel, logPanel)
+        return Pair(workflowRunsListPanel, splitterComponent.secondComponent as OnePixelSplitter)
     }
 
     private fun <T> MockKMatcherScope.matchApiRequestUrl(url: String) =
-        match<GithubApiRequest<T>> { it.url.contains(url) }
+        match<GithubApiRequest<T>> {
+            it.url.split('?')[0].endsWith(url)
+        }
 
 }

@@ -105,6 +105,7 @@ class GitHubActionCache(private val project: Project) : PersistentStateComponent
             resolveGithubAction(it)
         }
         actionsLoadedEventDispatcher.multicaster.actionsLoaded()
+        actionsLoadedEventDispatcher.listeners.clear()
     }
 
     private fun determineServerPath(): String {

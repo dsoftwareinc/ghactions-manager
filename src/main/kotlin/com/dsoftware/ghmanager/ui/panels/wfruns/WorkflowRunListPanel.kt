@@ -44,7 +44,7 @@ import javax.swing.event.ListDataListener
 
 class WorkflowRunsListPanel(
     parentDisposable: Disposable,
-    private val context: WorkflowRunSelectionContext,
+    @VisibleForTesting internal val context: WorkflowRunSelectionContext,
 ) : BorderLayoutPanel(), Disposable {
     private val scope = MainScope().also { Disposer.register(parentDisposable) { it.cancel() } }
     private val workflowRunsLoader: WorkflowRunListLoader
