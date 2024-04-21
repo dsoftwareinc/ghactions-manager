@@ -6,9 +6,6 @@ import com.dsoftware.ghmanager.api.model.Job
 import com.dsoftware.ghmanager.api.model.Status
 import com.dsoftware.ghmanager.i18n.MessagesBundle
 import com.dsoftware.ghmanager.ui.ToolbarUtil
-import com.intellij.ide.CopyProvider
-import com.intellij.openapi.actionSystem.ActionUpdateThread
-import com.intellij.openapi.actionSystem.DataContext
 import com.intellij.openapi.actionSystem.DataProvider
 import com.intellij.openapi.actionSystem.PlatformDataKeys
 import com.intellij.ui.AnimatedIcon
@@ -36,7 +33,7 @@ import javax.swing.ListSelectionModel
 
 class JobListComponent(
     model: ListModel<Job>, private val infoInNewLine: Boolean,
-) : JBList<Job>(model), DataProvider, CopyProvider {
+) : JBList<Job>(model), DataProvider {
 
     init {
         isEnabled = true
@@ -56,7 +53,6 @@ class JobListComponent(
     }
 
     override fun getData(dataId: String): Any? = when {
-        PlatformDataKeys.COPY_PROVIDER.`is`(dataId) -> this
         ActionKeys.SELECTED_JOB.`is`(dataId) -> selectedValue
         else -> null
     }
@@ -128,14 +124,5 @@ class JobListComponent(
             }
             return this
         }
-    }
-
-    override fun performCopy(dataContext: DataContext) = TODO("Not yet implemented")
-
-    override fun isCopyEnabled(dataContext: DataContext): Boolean = false
-
-    override fun isCopyVisible(dataContext: DataContext): Boolean = false
-    override fun getActionUpdateThread(): ActionUpdateThread {
-        return ActionUpdateThread.BGT
     }
 }

@@ -37,7 +37,7 @@ import javax.swing.ListSelectionModel
 
 class WorkflowRunsListComponent(
     model: ListModel<WorkflowRun>
-) : JBList<WorkflowRun>(model), DataProvider, CopyProvider {
+) : JBList<WorkflowRun>(model), DataProvider {
 
     init {
         selectionModel.selectionMode = ListSelectionModel.SINGLE_SELECTION
@@ -50,10 +50,6 @@ class WorkflowRunsListComponent(
         ClientProperty.put(this, AnimatedIcon.ANIMATION_IN_RENDERER_ALLOWED, true)
     }
 
-    override fun getActionUpdateThread(): ActionUpdateThread {
-        return ActionUpdateThread.BGT
-    }
-
     override fun getToolTipText(event: MouseEvent): String? {
         val childComponent = ListUtil.getDeepestRendererChildComponentAt(this, event.point)
         if (childComponent !is JComponent) return null
@@ -61,7 +57,6 @@ class WorkflowRunsListComponent(
     }
 
     override fun getData(dataId: String): Any? = when {
-        PlatformDataKeys.COPY_PROVIDER.`is`(dataId) -> this
         ActionKeys.SELECTED_WORKFLOW_RUN.`is`(dataId) -> selectedValue
         ActionKeys.SELECTED_WORKFLOW_RUN_FILEPATH.`is`(dataId) -> selectedValue?.path
         else -> null
@@ -123,7 +118,4 @@ class WorkflowRunsListComponent(
         }
     }
 
-    override fun performCopy(dataContext: DataContext) = TODO("Not yet implemented")
-    override fun isCopyEnabled(dataContext: DataContext): Boolean = false
-    override fun isCopyVisible(dataContext: DataContext): Boolean = false
 }
