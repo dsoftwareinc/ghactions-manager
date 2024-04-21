@@ -19,6 +19,7 @@ import com.intellij.ui.PopupHandler
 import com.intellij.ui.ScrollPaneFactory
 import com.intellij.util.ui.JBUI
 import com.intellij.util.ui.components.BorderLayoutPanel
+import org.jetbrains.annotations.VisibleForTesting
 import org.jetbrains.plugins.github.ui.HtmlInfoPanel
 import java.awt.BorderLayout
 import java.awt.Component
@@ -32,7 +33,8 @@ class JobsListPanel(
     private val infoInNewLine: Boolean
 ) : BorderLayoutPanel(), Disposable {
     private val topInfoPanel = HtmlInfoPanel()
-    private val jobsListModel = CollectionListModel<Job>()
+    @VisibleForTesting
+    internal val jobsListModel = CollectionListModel<Job>()
 
     init {
         Disposer.register(parentDisposable, this)

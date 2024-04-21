@@ -24,7 +24,8 @@ fun Job.withStep(
 }
 
 fun createJob(
-    id: Long = 21454796844, runId: Long = 7863783013, owner: String = "owner", repo: String = "repo"
+    id: Long = 21454796844, runId: Long = 7863783013, owner: String = "owner", repo: String = "repo",
+    name: String = "Job created for test",
 ): Job {
     return Job(
         id = id,
@@ -42,7 +43,7 @@ fun createJob(
         createdAt = Clock.System.now(),
         startedAt = Clock.System.now(),
         completedAt = Clock.System.now(),
-        name = "Analyze (python)",
+        name = name,
         steps = mutableListOf(),
         checkRunUrl = "https://api.github.com/repos/$owner/$repo/check-runs/21454796844",
         labels = arrayOf("ubuntu-latest"),
