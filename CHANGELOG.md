@@ -4,6 +4,14 @@
 
 ## Unreleased
 
+## 1.21.3
+
+### 🐛 Bug Fixes
+
+- Fix bug loading null value to cache #128
+- Show go to github actions when error occurs
+- Show reload jobs button
+
 ## 1.21.2
 
 ### 🐛 Bug Fixes
