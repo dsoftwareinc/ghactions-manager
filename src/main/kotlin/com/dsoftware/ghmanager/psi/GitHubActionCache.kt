@@ -39,8 +39,10 @@ import java.util.concurrent.ScheduledFuture
 @Service(Service.Level.PROJECT)
 @State(name = "GhActionsManagerSettings.ActionsCache", storages = [Storage(StoragePathMacros.PRODUCT_WORKSPACE_FILE)])
 class GitHubActionCache(private val project: Project) : PersistentStateComponent<GitHubActionCache.State?> {
-    val actionsCache: Cache<String, GitHubAction> =
-        CacheBuilder.newBuilder().expireAfterWrite(Duration.ofHours(1)).maximumSize(200).build()
+    val actionsCache: Cache<String, GitHubAction> = CacheBuilder.newBuilder()
+        .expireAfterWrite(Duration.ofHours(1))
+        .maximumSize(200)
+        .build()
 
     val actionsToResolve = mutableSetOf<String>()
     private val task: ScheduledFuture<*>
@@ -77,7 +79,7 @@ class GitHubActionCache(private val project: Project) : PersistentStateComponent
     }
 
     fun whenActionsLoaded(listenerMethod: () -> Unit) {
-        if(actionsToResolve.isEmpty()){
+        if (actionsToResolve.isEmpty()) {
             listenerMethod()
             return
         }
@@ -121,11 +123,11 @@ class GitHubActionCache(private val project: Project) : PersistentStateComponent
 
     @RequiresEdt
     private fun resolveGithubAction(fullActionName: String) {
-        actionsCache.get(fullActionName) {
+        if (actionsCache.getIfPresent(fullActionName) == null) {
             val requestExecutor = this.requestExecutor
             if (requestExecutor == null) {
                 LOG.warn("Failed to get latest version of action $fullActionName: no GitHub account found")
-                return@get null
+                return
             }
             LOG.info("Resolving action $fullActionName")
             val actionOrg = fullActionName.split("/".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()[0]
@@ -150,7 +152,7 @@ class GitHubActionCache(private val project: Project) : PersistentStateComponent
                 GitHubAction(actionName, version)
             } catch (e: IOException) {
                 LOG.warn("Failed to get latest version of action $fullActionName", e)
-                return@get null
+                return
             }
         }
     }
