@@ -11,10 +11,10 @@ import org.jetbrains.yaml.psi.YAMLKeyValue
 class UpdateActionVersionFix(
     private val actionName: String, fullLatestVersion: String,
 ) : LocalQuickFix {
-    private val latestVersion = fullLatestVersion.split(".").first()
+    private val latestMajorVersion = fullLatestVersion.split(".").first()
 
     override fun getFamilyName(): String {
-        return message("ghmanager.update.action.version.fix.family.name", actionName, latestVersion)
+        return message("ghmanager.update.action.version.fix.family.name", actionName, latestMajorVersion)
     }
 
 
@@ -23,8 +23,7 @@ class UpdateActionVersionFix(
         val actionName = yamlKeyValue.valueText.split("@").firstOrNull() ?: return
         val yamlElementGenerator = yamlKeyValue.project.service<YAMLElementGenerator>()
         val newYamlKeyValue =
-            yamlElementGenerator.createYamlKeyValue(yamlKeyValue.keyText, "$actionName@$latestVersion")
+            yamlElementGenerator.createYamlKeyValue(yamlKeyValue.keyText, "$actionName@$latestMajorVersion")
         yamlKeyValue.setValue(newYamlKeyValue.value!!)
     }
-
 }

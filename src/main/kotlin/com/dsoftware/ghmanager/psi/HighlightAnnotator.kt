@@ -26,7 +26,7 @@ class HighlightAnnotator : Annotator {
     private fun highlightAction(yamlKeyValue: YAMLKeyValue, holder: AnnotationHolder) {
         val gitHubActionCache = yamlKeyValue.project.service<GitHubActionCache>()
         val actionName = yamlKeyValue.valueText.split("@").firstOrNull() ?: return
-        val currentVersion = yamlKeyValue.valueText.split("@").getOrNull(1)
+        val currentVersion = yamlKeyValue.valueText.split("@").getOrNull(1) ?: return
         gitHubActionCache.whenActionsLoaded {
             val latestVersion = gitHubActionCache.getAction(actionName)?.latestVersion
             if (VersionCompareTools.isActionOutdated(currentVersion, latestVersion)) {

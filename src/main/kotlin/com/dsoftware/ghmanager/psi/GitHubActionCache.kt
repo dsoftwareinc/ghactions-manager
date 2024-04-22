@@ -18,6 +18,7 @@ import com.intellij.openapi.components.StoragePathMacros
 import com.intellij.openapi.components.service
 import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.util.Disposer
 import com.intellij.util.EventDispatcher
 import com.intellij.util.ResourceUtil
 import com.intellij.util.ThrowableConvertor
@@ -78,16 +79,22 @@ class GitHubActionCache(private val project: Project) : PersistentStateComponent
         actionsCache.putAll(state.actions.associateBy { it.name })
     }
 
+    fun whenActionLoaded(actionName: String, listenerMethod: () -> Unit) {
+        if (actionsCache.getIfPresent(actionName) != null) {
+            listenerMethod()
+            return
+        }
+        actionsToResolve.add(actionName)
+        addListener(listenerMethod)
+        resolveActions()
+    }
+
     fun whenActionsLoaded(listenerMethod: () -> Unit) {
         if (actionsToResolve.isEmpty()) {
             listenerMethod()
             return
         }
-        actionsLoadedEventDispatcher.addListener(object : ActionsLoadedListener {
-            override fun actionsLoaded() {
-                listenerMethod()
-            }
-        })
+        addListener(listenerMethod)
         resolveActions()
     }
 
@@ -99,6 +106,16 @@ class GitHubActionCache(private val project: Project) : PersistentStateComponent
         LOG.info("Action $fullActionName not found in cache, adding to resolve list")
         actionsToResolve.add(fullActionName)
         return null
+    }
+
+    private fun addListener(listenerMethod: () -> Unit) {
+        val listenerDisposable = Disposer.newDisposable()
+        actionsLoadedEventDispatcher.addListener(object : ActionsLoadedListener {
+            override fun actionsLoaded() {
+                listenerMethod()
+                listenerDisposable.dispose() // Ensure listener will only run once
+            }
+        }, listenerDisposable)
     }
 
     private fun resolveActions() {
@@ -123,40 +140,53 @@ class GitHubActionCache(private val project: Project) : PersistentStateComponent
 
     @RequiresEdt
     private fun resolveGithubAction(fullActionName: String) {
-        if (actionsCache.getIfPresent(fullActionName) == null) {
-            val requestExecutor = this.requestExecutor
-            if (requestExecutor == null) {
-                LOG.warn("Failed to get latest version of action $fullActionName: no GitHub account found")
-                return
-            }
-            LOG.info("Resolving action $fullActionName")
-            val actionOrg = fullActionName.split("/".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()[0]
-            val actionName = fullActionName.split("/".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()[1]
-            val query = ResourceUtil.getResource(
-                GhActionsService::class.java.classLoader, "graphql", "getLatestRelease.graphql"
-            )?.readText() ?: ""
-
-            val request = TraversedParsed(
-                serverPath,
-                query,
-                mapOf("owner" to actionOrg, "name" to actionName),
-                JsonNode::class.java,
-                "repository",
-                "latestRelease",
-                "tag",
-                "name"
-            )
-            try {
-                val response = requestExecutor.execute(request)
-                val version = response.toString().replace("\"", "")
-                GitHubAction(actionName, version)
-            } catch (e: IOException) {
-                LOG.warn("Failed to get latest version of action $fullActionName", e)
-                return
-            }
+        if (actionsCache.getIfPresent(fullActionName) != null) {
+            LOG.debug("Action $fullActionName already resolved")
+            return
         }
+        val requestExecutor = this.requestExecutor
+        if (requestExecutor == null) {
+            LOG.warn("No request executor available, skipping action resolution for $fullActionName")
+            return
+        }
+        LOG.debug("Resolving action $fullActionName")
+        val parts = fullActionName.split("/")
+        if (parts.size != 2) {
+            LOG.warn("Invalid action name $fullActionName")
+            return
+        }
+        if (Tools.isLocalAction(fullActionName)) { // TODO handle local actions
+            LOG.debug("Action $fullActionName is local, skipping resolution")
+            return
+        }
+        resolveActionData(requestExecutor, parts[0], parts[1])
     }
 
+
+    private fun resolveActionData(requestExecutor: GhApiRequestExecutor, actionOrg: String, actionName: String) {
+        val query = ResourceUtil.getResource(
+            GhActionsService::class.java.classLoader, "graphql", "getLatestRelease.graphql"
+        )?.readText() ?: ""
+
+        val request = TraversedParsed(
+            serverPath,
+            query,
+            mapOf("owner" to actionOrg, "name" to actionName),
+            JsonNode::class.java,
+            "repository",
+            "latestRelease",
+            "tag",
+            "name"
+        )
+        try {
+            val response = requestExecutor.execute(request)
+            val version = response.toString().replace("\"", "")
+            actionsCache.put("$actionOrg/$actionName", GitHubAction(actionName, version))
+        } catch (e: IOException) {
+            LOG.warn("Failed to get latest version of action $actionOrg/$actionName", e)
+            return
+        }
+    }
 
     private class TraversedParsed<out T : Any>(
         url: String,

@@ -293,10 +293,10 @@ class TestRepoTabControllerWorkflowRunsPanel : GhActionsMgrBaseTest() {
         })
         val workflowTypesResponse = WorkflowTypes(workflowTypes.size, workflowTypes.toList())
         executorMock.apply {
-            every {
+            every { // log
                 execute(any(), matchApiRequestUrl<String>("/logs")).hint(String::class)
             } returns log
-            every {
+            every { // jobs
                 execute(any(), matchApiRequestUrl<WorkflowRunJobs>("/jobs")).hint(WorkflowRunJobs::class)
             } returns WorkflowRunJobs(jobs.size, jobs = jobs.toList())
             every {// workflow runs

@@ -3,6 +3,7 @@ package com.dsoftware.ghmanager.psi
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiElement
 import org.jetbrains.yaml.psi.YAMLKeyValue
+import org.jetbrains.yaml.psi.YamlPsiElementVisitor
 import java.util.Collections
 
 object Tools {
@@ -15,7 +16,6 @@ object Tools {
         val parentPath = virtualFile.parent?.path ?: return false
         return parentPath.endsWith(".github/workflows") || parentPath.endsWith(".github/actions")
     }
-
 
     fun getYamlElementsWithKey(psiElement: PsiElement?, keyName: String?): List<YAMLKeyValue> {
         if (psiElement == null || keyName == null) {
@@ -36,5 +36,9 @@ object Tools {
             toExplore.addAll(currentElement.children)
         }
         return Collections.unmodifiableList(results)
+    }
+
+    fun isLocalAction(fullActionName: String): Boolean {
+        return fullActionName.startsWith("./") || fullActionName.startsWith("../")
     }
 }
