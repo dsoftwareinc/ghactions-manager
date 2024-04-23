@@ -199,8 +199,8 @@ class WorkflowRunListLoader(
             workflowRuns
                 .filter { existingRunIds.contains(it.id) }
                 .forEach { // Update
-                    val index = existingRunIds.getOrDefault(it.id, null)
-                    if (index != null && workflowRunsListModel.getElementAt(index) != it) {
+                    val index: Int = existingRunIds.getOrDefault(it.id, -1)
+                    if (index >= 0 && workflowRunsListModel.getElementAt(index).updatedAt != it.updatedAt) {
                         workflowRunsListModel.setElementAt(it, index)
                     }
                 }
