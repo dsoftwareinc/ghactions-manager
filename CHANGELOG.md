@@ -9,13 +9,14 @@
 ### 🐛 Bug Fixes
 
 - Fix memory leak with log panel
+- Workflow runs list is getting updated with the latest status
 
 ## 1.21.3
 
 ### 🐛 Bug Fixes
 
 - Fix bug loading null value to cache #128
-- Show go to github actions when error occurs
+- Show go to GitHub settings when error occurs
 - Show reload jobs button
 
 ## 1.21.2
