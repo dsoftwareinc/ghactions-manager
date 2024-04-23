@@ -38,12 +38,12 @@ class ProjectStartup : ProjectActivity {
         }
         runReadAction {
             val psiManager = project.service<PsiManager>()
-            val gitHubActionCache = project.service<GitHubActionCache>()
+            val gitHubActionDataService = project.service<GitHubActionDataService>()
             psiManager.findFile(workflowFile)?.let {
                 val actionNames = Tools.getYamlElementsWithKey(it, FIELD_USES).map { yamlKeyValue ->
                     yamlKeyValue.valueText.split("@").firstOrNull() ?: return@map null
                 }.filterNotNull()
-                gitHubActionCache.actionsToResolve.addAll(actionNames)
+                gitHubActionDataService.actionsToResolve.addAll(actionNames)
             }
         }
     }

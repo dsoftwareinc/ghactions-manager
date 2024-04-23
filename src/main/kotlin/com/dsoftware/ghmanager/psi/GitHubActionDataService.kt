@@ -10,6 +10,8 @@ import com.google.common.cache.Cache
 import com.google.common.cache.CacheBuilder
 import com.intellij.collaboration.api.dto.GraphQLRequestDTO
 import com.intellij.collaboration.api.dto.GraphQLResponseDTO
+import com.intellij.openapi.Disposable
+import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.components.PersistentStateComponent
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.components.State
@@ -22,7 +24,7 @@ import com.intellij.openapi.util.Disposer
 import com.intellij.util.EventDispatcher
 import com.intellij.util.ResourceUtil
 import com.intellij.util.ThrowableConvertor
-import com.intellij.util.concurrency.annotations.RequiresEdt
+import com.intellij.util.concurrency.annotations.RequiresBackgroundThread
 import kotlinx.serialization.Serializable
 import org.jetbrains.plugins.github.api.GithubApiContentHelper
 import org.jetbrains.plugins.github.api.GithubApiRequest.Post
@@ -38,8 +40,13 @@ import java.util.EventListener
 import java.util.concurrent.ScheduledFuture
 
 @Service(Service.Level.PROJECT)
-@State(name = "GhActionsManagerSettings.ActionsCache", storages = [Storage(StoragePathMacros.PRODUCT_WORKSPACE_FILE)])
-class GitHubActionCache(private val project: Project) : PersistentStateComponent<GitHubActionCache.State?> {
+@State(
+    name = "GhActionsManagerSettings.ActionsDataCache",
+    storages = [Storage(StoragePathMacros.PRODUCT_WORKSPACE_FILE)]
+)
+class GitHubActionDataService(
+    private val project: Project
+) : PersistentStateComponent<GitHubActionDataService.State?>, Disposable {
     val actionsCache: Cache<String, GitHubAction> = CacheBuilder.newBuilder()
         .expireAfterWrite(Duration.ofHours(1))
         .maximumSize(200)
@@ -86,7 +93,6 @@ class GitHubActionCache(private val project: Project) : PersistentStateComponent
         }
         actionsToResolve.add(actionName)
         addListener(listenerMethod)
-        resolveActions()
     }
 
     fun whenActionsLoaded(listenerMethod: () -> Unit) {
@@ -95,7 +101,6 @@ class GitHubActionCache(private val project: Project) : PersistentStateComponent
             return
         }
         addListener(listenerMethod)
-        resolveActions()
     }
 
     fun getAction(fullActionName: String): GitHubAction? {
@@ -110,15 +115,19 @@ class GitHubActionCache(private val project: Project) : PersistentStateComponent
 
     private fun addListener(listenerMethod: () -> Unit) {
         val listenerDisposable = Disposer.newDisposable()
+        Disposer.register(this, listenerDisposable)
         actionsLoadedEventDispatcher.addListener(object : ActionsLoadedListener {
             override fun actionsLoaded() {
-                listenerMethod()
+                runReadAction(listenerMethod)
                 listenerDisposable.dispose() // Ensure listener will only run once
             }
         }, listenerDisposable)
     }
 
     private fun resolveActions() {
+        if (actionsToResolve.isEmpty()) {
+            return
+        }
         actionsToResolve.removeAll(actionsCache.asMap().keys)
         actionsToResolve.forEach {
             resolveGithubAction(it)
@@ -138,7 +147,7 @@ class GitHubActionCache(private val project: Project) : PersistentStateComponent
         }
     }
 
-    @RequiresEdt
+    @RequiresBackgroundThread
     private fun resolveGithubAction(fullActionName: String) {
         if (actionsCache.getIfPresent(fullActionName) != null) {
             LOG.debug("Action $fullActionName already resolved")
@@ -250,6 +259,10 @@ class GitHubActionCache(private val project: Project) : PersistentStateComponent
 
 
     companion object {
-        private val LOG = logger<GitHubActionCache>()
+        private val LOG = logger<GitHubActionDataService>()
+    }
+
+    override fun dispose() {
+        task.cancel(true)
     }
 }

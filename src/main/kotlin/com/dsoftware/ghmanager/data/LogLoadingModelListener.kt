@@ -15,7 +15,7 @@ enum class LogValueStatus {
 data class LogValue(val log: String?, val status: LogValueStatus, val jobName: String? = null)
 
 class LogLoadingModelListener(
-    workflowRunDisposable: Disposable,
+    parentDisposable: Disposable,
     logDataProvider: SingleValueModel<LogDataProvider?>,
     private val jobsSelectionHolder: JobListSelectionHolder,
 ) : GHLoadingModel.StateChangeListener {
@@ -26,10 +26,10 @@ class LogLoadingModelListener(
      * When the provider is null, it means no workflow-run/job is selected.
      */
     val logValueModel = SingleValueModel<LogValue?>(null)
-    val logsLoadingModel = GHCompletableFutureLoadingModel<String>(workflowRunDisposable)
+    val logsLoadingModel = GHCompletableFutureLoadingModel<String>(parentDisposable)
 
     init {
-        jobsSelectionHolder.addSelectionChangeListener(workflowRunDisposable, this::setLogValue)
+        jobsSelectionHolder.addSelectionChangeListener(parentDisposable, this::setLogValue)
         logsLoadingModel.addStateChangeListener(this)
         var listenerDisposable: Disposable? = null
         logDataProvider.addAndInvokeListener { provider ->
@@ -41,7 +41,7 @@ class LogLoadingModelListener(
             }
             provider?.let {
                 val newDisposable = Disposer.newDisposable("Log listener disposable").apply {
-                    Disposer.register(workflowRunDisposable, this)
+                    Disposer.register(parentDisposable, this)
                 }
                 it.addRunChangesListener(newDisposable) {
                     logsLoadingModel.future = it.processValue

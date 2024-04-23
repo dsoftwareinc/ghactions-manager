@@ -4,6 +4,12 @@
 
 ## Unreleased
 
+## 1.21.4
+
+### 🐛 Bug Fixes
+
+- Fix memory leak with log panel
+
 ## 1.21.3
 
 ### 🐛 Bug Fixes

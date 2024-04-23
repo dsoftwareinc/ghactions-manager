@@ -90,12 +90,14 @@ class WorkflowRunSelectionContext internal constructor(
             setNewLogProvider()
             selectedRunDisposable.dispose()
             selectedRunDisposable = Disposer.newDisposable("Selected run disposable")
+            Disposer.register(this, selectedRunDisposable)
         }
         jobSelectionHolder.addSelectionChangeListener(this) {
             LOG.debug("jobSelectionHolder selection change listener")
             setNewLogProvider()
             selectedJobDisposable.dispose()
             selectedJobDisposable = Disposer.newDisposable("Selected job disposable")
+            Disposer.register(this, selectedJobDisposable)
         }
 
     }

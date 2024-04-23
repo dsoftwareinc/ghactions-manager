@@ -122,7 +122,7 @@ class RepoTabController(
     private fun createLogPanel(selectedRunContext: WorkflowRunSelectionContext): JComponent {
         LOG.debug("Create log panel")
         val model = LogLoadingModelListener(
-            selectedRunContext.selectedJobDisposable,
+            selectedRunContext,
             selectedRunContext.logDataProviderLoadModel,
             selectedRunContext.jobSelectionHolder
         )
@@ -139,7 +139,7 @@ class RepoTabController(
 
     private fun createJobsPanel(selectedRunContext: WorkflowRunSelectionContext): JComponent {
         val jobsLoadingModel = JobsLoadingModelListener(
-            selectedRunContext.selectedRunDisposable, selectedRunContext.jobDataProviderLoadModel
+            selectedRunContext, selectedRunContext.jobDataProviderLoadModel
         )
 
         val jobsPanel = GHLoadingPanelFactory(

@@ -10,10 +10,10 @@ import org.jetbrains.plugins.github.pullrequest.ui.GHLoadingModel
 
 
 class JobsLoadingModelListener(
-    workflowRunDisposable: Disposable,
+    parentDisposable: Disposable,
     dataProviderModel: SingleValueModel<JobsDataProvider?>
 ) : GHLoadingModel.StateChangeListener {
-    val jobsLoadingModel = GHCompletableFutureLoadingModel<WorkflowRunJobs>(workflowRunDisposable)
+    val jobsLoadingModel = GHCompletableFutureLoadingModel<WorkflowRunJobs>(parentDisposable)
 
     init {
         var listenerDisposable: Disposable? = null
