@@ -43,7 +43,6 @@ abstract class GhActionsMgrBaseTest {
     }
 
     private val host: GithubServerPath = GithubServerPath.from("github.com")
-    private lateinit var testInfo: TestInfo
 
     @JvmField
     @RegisterExtension
@@ -53,8 +52,7 @@ abstract class GhActionsMgrBaseTest {
     protected lateinit var toolWindowContent: GhActionsMgrToolWindowContent
 
     @BeforeEach
-    open fun setUp(testInfo: TestInfo) {
-        this.testInfo = testInfo
+    open fun setUp() {
         val toolWindowManager = ToolWindowHeadlessManagerImpl(projectRule.project)
         toolWindow = toolWindowManager.doRegisterToolWindow("GitHub Actions")
         Disposer.register(projectRule.project, toolWindow.disposable)

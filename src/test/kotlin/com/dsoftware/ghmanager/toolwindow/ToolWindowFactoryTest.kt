@@ -25,8 +25,8 @@ import javax.swing.JPanel
 class ToolWindowFactoryTest : GhActionsMgrBaseTest() {
 
     @BeforeEach
-    override fun setUp(testInfo: TestInfo) {
-        super.setUp(testInfo)
+    override fun setUp() {
+        super.setUp()
         mockkObject(GhApiRequestExecutor)
         every { GhApiRequestExecutor.create(token = any()) } throws Exception("No executor")
     }

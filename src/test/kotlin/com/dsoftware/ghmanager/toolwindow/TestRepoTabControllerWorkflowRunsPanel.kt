@@ -7,8 +7,7 @@ import com.dsoftware.ghmanager.api.model.WorkflowRunJobs
 import com.dsoftware.ghmanager.api.model.WorkflowRuns
 import com.dsoftware.ghmanager.api.model.WorkflowType
 import com.dsoftware.ghmanager.api.model.WorkflowTypes
-import com.dsoftware.ghmanager.createJob
-import com.dsoftware.ghmanager.createWorkflowRun
+import com.dsoftware.ghmanager.TestTools
 import com.dsoftware.ghmanager.data.WorkflowDataContextService
 import com.dsoftware.ghmanager.i18n.MessagesBundle.message
 import com.dsoftware.ghmanager.ui.GhActionsMgrToolWindowContent
@@ -38,7 +37,6 @@ import org.jetbrains.plugins.github.util.GHCompatibilityUtil
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.TestInfo
 import org.junit.jupiter.api.extension.ExtendWith
 import javax.swing.JPanel
 import javax.swing.JTextPane
@@ -55,8 +53,8 @@ class TestRepoTabControllerWorkflowRunsPanel : GhActionsMgrBaseTest() {
     }
 
     @BeforeEach
-    override fun setUp(testInfo: TestInfo) {
-        super.setUp(testInfo)
+    override fun setUp() {
+        super.setUp()
         mockGhActionsService(setOf("http://github.com/owner/repo"), setOf("account1"))
         toolWindowContent = GhActionsMgrToolWindowContent(toolWindow)
         executeSomeCoroutineTasksAndDispatchAllInvocationEvents(projectRule.project)
@@ -65,9 +63,9 @@ class TestRepoTabControllerWorkflowRunsPanel : GhActionsMgrBaseTest() {
     @Test
     fun `test repo with different workflow-runs`() {
         val workflowRunsList = listOf(
-            createWorkflowRun(id = 1, status = "in_progress"),
-            createWorkflowRun(id = 2, status = "completed"),
-            createWorkflowRun(id = 2, status = "queued"),
+            TestTools.createWorkflowRun(id = 1, status = "in_progress"),
+            TestTools.createWorkflowRun(id = 2, status = "completed"),
+            TestTools.createWorkflowRun(id = 2, status = "queued"),
         )
         mockGithubApiRequestExecutor(workflowRunsList)
         executeSomeCoroutineTasksAndDispatchAllInvocationEvents(projectRule.project)
@@ -88,8 +86,7 @@ class TestRepoTabControllerWorkflowRunsPanel : GhActionsMgrBaseTest() {
         Assertions.assertEquals(workflowRunsList.size, workflowRunsListPanel.runListComponent.model.size)
         // assert workflow run list selection
         workflowRunsListPanel.runListComponent.setSelectedValue(
-            workflowRunsListPanel.runListComponent.model.getElementAt(0),
-            false
+            workflowRunsListPanel.runListComponent.model.getElementAt(0), false
         )
         executeSomeCoroutineTasksAndDispatchAllInvocationEvents(projectRule.project)
         Assertions.assertEquals(
@@ -101,12 +98,12 @@ class TestRepoTabControllerWorkflowRunsPanel : GhActionsMgrBaseTest() {
     @Test
     fun `test selecting workflow-run shows jobs`() {
         val workflowRunsList = listOf(
-            createWorkflowRun(id = 1, status = "in_progress"),
-            createWorkflowRun(id = 2, status = "completed"),
-            createWorkflowRun(id = 2, status = "queued"),
+            TestTools.createWorkflowRun(id = 1, status = "in_progress"),
+            TestTools.createWorkflowRun(id = 2, status = "completed"),
+            TestTools.createWorkflowRun(id = 2, status = "queued"),
         )
         val jobsList = listOf(
-            createJob(id = 1, runId = 2, name = "job1"),
+            TestTools.createJob(id = 1, runId = 2, name = "job1"),
         )
         mockGithubApiRequestExecutor(workflowRunsList = workflowRunsList, jobs = jobsList)
         executeSomeCoroutineTasksAndDispatchAllInvocationEvents(projectRule.project)
@@ -124,8 +121,7 @@ class TestRepoTabControllerWorkflowRunsPanel : GhActionsMgrBaseTest() {
 
         // assert workflow run selected => jobs listed
         workflowRunsListPanel.runListComponent.setSelectedValue(
-            workflowRunsListPanel.runListComponent.model.getElementAt(0),
-            false
+            workflowRunsListPanel.runListComponent.model.getElementAt(0), false
         )
         executeSomeCoroutineTasksAndDispatchAllInvocationEvents(projectRule.project)
         Assertions.assertEquals(
@@ -133,8 +129,7 @@ class TestRepoTabControllerWorkflowRunsPanel : GhActionsMgrBaseTest() {
             workflowRunsListPanel.runListComponent.model.getElementAt(0)
         )
         Assertions.assertNotEquals(
-            jobsPanelEmptyText,
-            (selectedRunPanel.firstComponent.components[0] as JPanel).components[0]
+            jobsPanelEmptyText, (selectedRunPanel.firstComponent.components[0] as JPanel).components[0]
         )
         val jobsPanel = (selectedRunPanel.firstComponent.components[0] as JobsListPanel)
         Assertions.assertEquals(2, jobsPanel.componentCount)
@@ -154,12 +149,12 @@ class TestRepoTabControllerWorkflowRunsPanel : GhActionsMgrBaseTest() {
     @Test
     fun `test selecting job shows log for job`() {
         val workflowRunsList = listOf(
-            createWorkflowRun(id = 1, status = "in_progress"),
-            createWorkflowRun(id = 2, status = "completed"),
-            createWorkflowRun(id = 2, status = "queued"),
+            TestTools.createWorkflowRun(id = 1, status = "in_progress"),
+            TestTools.createWorkflowRun(id = 2, status = "completed"),
+            TestTools.createWorkflowRun(id = 2, status = "queued"),
         )
         val jobsList = listOf(
-            createJob(id = 1, runId = 2, name = "job1"),
+            TestTools.createJob(id = 1, runId = 2, name = "job1"),
         )
         val log = "log for job1"
         mockGithubApiRequestExecutor(workflowRunsList = workflowRunsList, jobs = jobsList, log = log)
@@ -178,8 +173,7 @@ class TestRepoTabControllerWorkflowRunsPanel : GhActionsMgrBaseTest() {
 
         // act workflow run selected => jobs listed
         workflowRunsListPanel.runListComponent.setSelectedValue(
-            workflowRunsListPanel.runListComponent.model.getElementAt(0),
-            false
+            workflowRunsListPanel.runListComponent.model.getElementAt(0), false
         )
         executeSomeCoroutineTasksAndDispatchAllInvocationEvents(projectRule.project)
 
@@ -189,8 +183,7 @@ class TestRepoTabControllerWorkflowRunsPanel : GhActionsMgrBaseTest() {
             workflowRunsListPanel.runListComponent.model.getElementAt(0)
         )
         Assertions.assertNotEquals(
-            jobsPanelEmptyText,
-            (selectedRunPanel.firstComponent.components[0] as JPanel).components[0]
+            jobsPanelEmptyText, (selectedRunPanel.firstComponent.components[0] as JPanel).components[0]
         )
         val jobsPanel = (selectedRunPanel.firstComponent.components[0] as JobsListPanel)
         Assertions.assertEquals(2, jobsPanel.componentCount)
@@ -211,8 +204,7 @@ class TestRepoTabControllerWorkflowRunsPanel : GhActionsMgrBaseTest() {
         executeSomeCoroutineTasksAndDispatchAllInvocationEvents(projectRule.project)
 
         Assertions.assertNotEquals(
-            logPanelEmptyText,
-            (selectedRunPanel.secondComponent.components[0] as JPanel).components[0]
+            logPanelEmptyText, (selectedRunPanel.secondComponent.components[0] as JPanel).components[0]
         )
         val logPanel =
             ((selectedRunPanel.secondComponent.components[0] as JBPanelWithEmptyText).components[0] as LogConsolePanel)
@@ -361,9 +353,8 @@ class TestRepoTabControllerWorkflowRunsPanel : GhActionsMgrBaseTest() {
         return Pair(workflowRunsListPanel, splitterComponent.secondComponent as OnePixelSplitter)
     }
 
-    private fun <T> MockKMatcherScope.matchApiRequestUrl(url: String) =
-        match<GithubApiRequest<T>> {
-            it.url.split('?')[0].endsWith(url)
-        }
+    private fun <T> MockKMatcherScope.matchApiRequestUrl(url: String) = match<GithubApiRequest<T>> {
+        it.url.split('?')[0].endsWith(url)
+    }
 
 }
