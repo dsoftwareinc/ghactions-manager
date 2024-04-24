@@ -35,21 +35,20 @@ open class DataProvider<T>(
     }
 
     private fun processRequest(): CompletableFuture<T> {
-        return ProgressManager.getInstance()
-            .submitIOTask(ProgressIndicatorsProvider(), true) {
-                try {
-                    LOG.info("Executing ${githubApiRequest.url}")
-                    val request = githubApiRequest
-                    val response = requestExecutor.execute(it, request)
-                    response
-                } catch (e: GithubStatusCodeException) {
-                    LOG.warn("Error when getting $githubApiRequest.url: status code ${e.statusCode}: ${e.message}")
-                    throw e
-                } catch (ioe: IOException) {
-                    LOG.warn("Error when getting $githubApiRequest.url: $ioe")
-                    throw ioe
-                }
+        return ProgressManager.getInstance().submitIOTask(ProgressIndicatorsProvider(), true) {
+            try {
+                LOG.info("Executing ${githubApiRequest.url}")
+                val request = githubApiRequest
+                val response = requestExecutor.execute(it, request)
+                response
+            } catch (e: GithubStatusCodeException) {
+                LOG.warn("Error when getting $githubApiRequest.url: status code ${e.statusCode}: ${e.message}")
+                throw e
+            } catch (ioe: IOException) {
+                LOG.warn("Error when getting $githubApiRequest.url: $ioe")
+                throw ioe
             }
+        }
     }
 
     interface DataProviderChangeListener : EventListener {
