@@ -139,6 +139,7 @@ class WorkflowRunSelectionContext internal constructor(
     }
 
     fun resetAllData() {
+        cache.invalidateAll()
         runsListLoader.reset()
         runsListLoader.loadMore(true)
         jobDataProviderLoadModel.value = null

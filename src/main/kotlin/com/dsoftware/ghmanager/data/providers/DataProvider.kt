@@ -4,16 +4,17 @@ import com.dsoftware.ghmanager.api.GhApiRequestExecutor
 import com.dsoftware.ghmanager.api.GithubApi
 import com.dsoftware.ghmanager.api.model.Job
 import com.dsoftware.ghmanager.api.model.WorkflowRunJobs
-import com.intellij.collaboration.async.CompletableFutureUtil.submitIOTask
-import com.intellij.collaboration.util.ProgressIndicatorsProvider
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.diagnostic.thisLogger
 import com.intellij.openapi.progress.ProgressManager
 import com.intellij.util.EventDispatcher
 import org.jetbrains.plugins.github.api.GithubApiRequest
 import org.jetbrains.plugins.github.exceptions.GithubStatusCodeException
+import org.jetbrains.plugins.github.util.LazyCancellableBackgroundProcessValue
 import java.io.IOException
 import java.util.EventListener
+import java.util.concurrent.CompletableFuture
+import kotlin.properties.ReadOnlyProperty
 
 open class DataProvider<T>(
     private val requestExecutor: GhApiRequestExecutor,
@@ -21,8 +22,8 @@ open class DataProvider<T>(
 ) {
     private val runChangesEventDispatcher = EventDispatcher.create(DataProviderChangeListener::class.java)
 
-    val processValue = ProgressManager.getInstance()
-        .submitIOTask(ProgressIndicatorsProvider(), true) {
+    private val processBackgroundProcess: LazyCancellableBackgroundProcessValue<T> =
+        LazyCancellableBackgroundProcessValue.create(ProgressManager.getInstance()) {
             try {
                 LOG.info("Executing ${githubApiRequest.url}")
                 val request = githubApiRequest
@@ -36,12 +37,17 @@ open class DataProvider<T>(
                 throw ioe
             }
         }
+    val processValue by backgroundProcessValue(processBackgroundProcess)
+
+    private fun <T> backgroundProcessValue(backingValue: LazyCancellableBackgroundProcessValue<T>)
+        : ReadOnlyProperty<Any?, CompletableFuture<T>> =
+        ReadOnlyProperty { _, _ -> backingValue.value }
 
     fun url(): String = githubApiRequest.url
 
     fun reload() {
         LOG.debug("Reloading data for ${githubApiRequest.url}")
-        processValue.cancel(true)
+        processBackgroundProcess.drop()
         runChangesEventDispatcher.multicaster.changed()
     }
 
