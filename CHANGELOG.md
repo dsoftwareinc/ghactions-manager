@@ -4,6 +4,12 @@
 
 ## Unreleased
 
+## 1.21.5
+
+### 🐛 Bug Fixes
+
+- Fix bug of jobs not being refreshed while workflow is running
+
 ## 1.21.4
 
 ### 🐛 Bug Fixes
