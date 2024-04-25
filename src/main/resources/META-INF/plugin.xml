@@ -27,7 +27,7 @@
         <!-- PSI -->
         <postStartupActivity implementation="com.dsoftware.ghmanager.psi.ProjectStartup"/>
         <annotator language="yaml"
-                   implementationClass="com.dsoftware.ghmanager.psi.HighlightAnnotator"/>
+                   implementationClass="com.dsoftware.ghmanager.psi.OutdatedVersionAnnotator"/>
     </extensions>
     <actions>
         <action id="ShowGithubSettings" class="com.dsoftware.ghmanager.actions.ShowGithubSettingsAction"/>

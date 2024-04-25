@@ -14,6 +14,7 @@ import org.jetbrains.plugins.github.api.GithubApiRequest
 import org.jetbrains.plugins.github.exceptions.GithubStatusCodeException
 import java.io.IOException
 import java.util.EventListener
+import java.util.concurrent.CompletableFuture
 
 open class DataProvider<T>(
     private val requestExecutor: GhApiRequestExecutor,
@@ -21,8 +22,20 @@ open class DataProvider<T>(
 ) {
     private val runChangesEventDispatcher = EventDispatcher.create(DataProviderChangeListener::class.java)
 
-    val processValue = ProgressManager.getInstance()
-        .submitIOTask(ProgressIndicatorsProvider(), true) {
+    var processValue = processRequest()
+
+    fun url(): String = githubApiRequest.url
+
+    fun reload() {
+        LOG.debug("Reloading data for ${githubApiRequest.url}")
+        if (processValue.isDone) {
+            processValue = processRequest()
+        }
+        runChangesEventDispatcher.multicaster.changed()
+    }
+
+    private fun processRequest(): CompletableFuture<T> {
+        return ProgressManager.getInstance().submitIOTask(ProgressIndicatorsProvider(), true) {
             try {
                 LOG.info("Executing ${githubApiRequest.url}")
                 val request = githubApiRequest
@@ -36,13 +49,6 @@ open class DataProvider<T>(
                 throw ioe
             }
         }
-
-    fun url(): String = githubApiRequest.url
-
-    fun reload() {
-        LOG.debug("Reloading data for ${githubApiRequest.url}")
-        processValue.cancel(true)
-        runChangesEventDispatcher.multicaster.changed()
     }
 
     interface DataProviderChangeListener : EventListener {
