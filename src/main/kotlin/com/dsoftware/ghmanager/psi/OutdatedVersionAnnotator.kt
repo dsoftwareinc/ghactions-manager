@@ -13,7 +13,7 @@ import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
 import org.jetbrains.yaml.psi.YAMLKeyValue
 
-class OutdatedVersionAnnotator : Annotator, DumbAware {
+class OutdatedVersionAnnotator : Annotator {
     override fun annotate(element: PsiElement, holder: AnnotationHolder) {
         if (!element.isValid || element !is YAMLKeyValue) {
             return
