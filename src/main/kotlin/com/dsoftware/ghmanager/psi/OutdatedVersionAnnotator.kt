@@ -1,5 +1,6 @@
 package com.dsoftware.ghmanager.psi
 
+import com.dsoftware.ghmanager.i18n.MessagesBundle
 import com.dsoftware.ghmanager.psi.GitHubWorkflowConfig.FIELD_USES
 import com.dsoftware.ghmanager.psi.actions.UpdateActionVersionFix
 import com.intellij.codeInspection.InspectionManager
@@ -8,7 +9,6 @@ import com.intellij.lang.annotation.AnnotationHolder
 import com.intellij.lang.annotation.Annotator
 import com.intellij.lang.annotation.HighlightSeverity
 import com.intellij.openapi.components.service
-import com.intellij.openapi.project.DumbAware
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
 import org.jetbrains.yaml.psi.YAMLKeyValue
@@ -31,13 +31,14 @@ class OutdatedVersionAnnotator : Annotator {
         gitHubActionDataService.whenActionLoaded(actionName) {
             val latestVersion = gitHubActionDataService.getAction(actionName)?.latestVersion
             if (VersionCompareTools.isActionOutdated(currentVersion, latestVersion)) {
-                val message = "$currentVersion is outdated. Latest version is $latestVersion"
+                val message =
+                    MessagesBundle.message("ghmanager.outdated.version.message", currentVersion, latestVersion!!)
                 val startIndex = yamlKeyValue.textRange.startOffset + yamlKeyValue.text.indexOf("@") + 1
                 val annotationBuilder = holder
                     .newAnnotation(HighlightSeverity.WARNING, message)
                     .range(TextRange.create(startIndex, yamlKeyValue.textRange.endOffset))
                 val inspectionManager = yamlKeyValue.project.service<InspectionManager>()
-                val quickfix = UpdateActionVersionFix(actionName, latestVersion!!)
+                val quickfix = UpdateActionVersionFix(actionName, latestVersion)
                 val problemDescriptor = inspectionManager.createProblemDescriptor(
                     yamlKeyValue, message, quickfix,
                     ProblemHighlightType.WEAK_WARNING, true

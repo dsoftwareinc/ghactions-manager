@@ -11,7 +11,7 @@ import com.google.common.cache.CacheBuilder
 import com.intellij.collaboration.api.dto.GraphQLRequestDTO
 import com.intellij.collaboration.api.dto.GraphQLResponseDTO
 import com.intellij.openapi.Disposable
-import com.intellij.openapi.application.runReadAction
+import com.intellij.openapi.application.runInEdt
 import com.intellij.openapi.components.PersistentStateComponent
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.components.State
@@ -59,6 +59,7 @@ class GitHubActionDataService(
 
     private val settingsService = project.service<GhActionsSettingsService>()
     private val serverPath: String
+
     @VisibleForTesting
     internal var requestExecutor: GhApiRequestExecutor? = null
 
@@ -119,8 +120,8 @@ class GitHubActionDataService(
         val listenerDisposable = Disposer.newDisposable()
         Disposer.register(this, listenerDisposable)
         actionsLoadedEventDispatcher.addListener(object : ActionsLoadedListener {
-            override fun actionsLoaded() {
-                runReadAction(listenerMethod)
+            override fun actionsLoaded() = runInEdt {
+                listenerMethod()
                 listenerDisposable.dispose() // Ensure listener will only run once
             }
         }, listenerDisposable)
