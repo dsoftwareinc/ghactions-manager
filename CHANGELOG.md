@@ -4,6 +4,10 @@
 
 ## Unreleased
 
+## 1.21.6
+
+- Fix bug failing to load annotator #131
+
 ## 1.21.5
 
 ### 🐛 Bug Fixes
