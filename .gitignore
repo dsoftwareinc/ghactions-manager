@@ -1,0 +1,10 @@
+.gradle
+.idea
+.qodana
+build
+notes.txt
+.fleet
+.DS_Store
+.run
+.env
+*.iml
