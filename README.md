@@ -19,9 +19,9 @@ $2 a month.
 ### Main use-case
 
 - View the latest workflow runs and their statuses.
-    - Automatically refreshes every 30 seconds.
-    - Can filter by: workflow-type, user who initiated, branch and event.
-    - Can filter by the current-branch, i.e., update workflow-runs when branch changes, and current user.
+  - Automatically refreshes every 30 seconds.
+  - Can filter by: workflow-type, user who initiated, branch and event.
+  - Can filter by the current-branch, i.e., update workflow-runs when branch changes, and current user.
 - View jobs of a workflow-run and their statuses.
 - View logs of a job, separated by each step result.
 - (Paid feature) View and download the workflow run's artifacts.
@@ -33,14 +33,14 @@ $2 a month.
 - Rerun a workflow run or a job.
 - Open the workflow file of the workflow-run.
 - Configuring settings
-    - Use a customized token instead of GitHub settings
-    - Frequency of auto-refresh.
-    - Customize repositories that should be presented/hidden.
+  - Use a customized token instead of GitHub settings
+  - Frequency of auto-refresh.
+  - Customize repositories that should be presented/hidden.
 
 ### Editing workflow files
 
 - Highlight outdated actions as warnings
-    - Generate quickfix: update them to the latest version.
+  - Generate quickfix: update them to the latest version.
 - Highlight unknown actions
 - Navigate to action repository for remote actions
 - Navigate to action file for local actions
