@@ -4,10 +4,7 @@ GitHub Actions Manager for JetBrains IDEs
 [![Version][1]][2]
 [![Downloads][3]][4]
 
-You can view a demo of all the features explained in this video: [YouTube][5]
-
-> There is a 50% discount for users who purchase the plugin before June 30, 2024.
-> Use this discount code: DWKJY-CEHXB-6FMZ3-PZ9B5-PP8WK.
+You can view a demo of most of the features explained in this video: [YouTube][5]
 
 <!-- Plugin description -->
 This plugin creates a tool-window on JetBrains products (IntelliJ, PyCharm, ...) where you can view GitHub workflow runs
@@ -22,12 +19,13 @@ $2 a month.
 ### Main use-case
 
 - View the latest workflow runs and their statuses.
-  - Automatically refreshes every 30 seconds.
-  - Can filter by: workflow-type, user who initiated, branch and event.
-  - Can filter by the current-branch, i.e., update workflow-runs when branch changes, and current user.
+    - Automatically refreshes every 30 seconds.
+    - Can filter by: workflow-type, user who initiated, branch and event.
+    - Can filter by the current-branch, i.e., update workflow-runs when branch changes, and current user.
 - View jobs of a workflow-run and their statuses.
 - View logs of a job, separated by each step result.
 - (Paid feature) View and download the workflow run's artifacts.
+- (Paid feature) Open pull-request that triggered workflow (in IDE/browser)..
 
 ### Additional use-cases
 
@@ -35,14 +33,14 @@ $2 a month.
 - Rerun a workflow run or a job.
 - Open the workflow file of the workflow-run.
 - Configuring settings
-  - Use a customized token instead of GitHub settings
-  - Frequency of auto-refresh.
-  - Customize repositories that should be presented/hidden.
+    - Use a customized token instead of GitHub settings
+    - Frequency of auto-refresh.
+    - Customize repositories that should be presented/hidden.
 
 ### Editing workflow files
 
 - Highlight outdated actions as warnings
-  - Generate quickfix: update them to the latest version.
+    - Generate quickfix: update them to the latest version.
 - Highlight unknown actions
 - Navigate to action repository for remote actions
 - Navigate to action file for local actions
