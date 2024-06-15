@@ -17,13 +17,47 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
-## 2024.1.2 - 2024-06-01
+## 2024.2.2 - 2024-06-15
+
+### 🐛 Bug Fixes
+
+- Fix issue with blocked user-agent #164
+
+## 2024.2.1 - 2024-06-06
+
+### 🐛 Bug Fixes
+
+- Fix saving settings issue
+
+## 2024.2.0 - 2024-06-01
+
+### 🚀 Features
+
+- (Paid feature) Open pull request from selected workflow run (when pull-request is open)
+
+### 🐛 Bug Fixes
+
+- Support for reusable workflows in workflow files
+- Showing download artifacts button only when relevant
+
+### Improvements
+
+- Using kotlin 2.0, IntelliJ Gradle Plugin v2, java 21
+
+## 2024.1.3 - 2024-05-27
+
+### 🐛 Bug Fixes
+
+- Fix crash when opening a GH actions file #160
+- Fix marking unkwown actions when GitHub settings are not set
+
+## 2024.1.2 - 2024-05-15
 
 ### 🐛 Bug Fixes
 
 - Using concurrent set to prevent concurrent modification exception #154
 
-## 2024.1.1 - 2024-05-15
+## 2024.1.1 - 2024-05-11
 
 ### 🚀 Features
 
