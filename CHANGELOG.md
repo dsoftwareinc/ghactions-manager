@@ -17,6 +17,13 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
+## 2024.2.3 - 2024-06-30
+
+### Improvements
+
+- Migrated to view-model for jobs-panel + logs-panel - significant performance improvement.
+- Improved error handling for GitHub API requests.
+
 ## 2024.2.2 - 2024-06-15
 
 ### 🐛 Bug Fixes
