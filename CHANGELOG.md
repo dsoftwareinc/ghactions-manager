@@ -24,6 +24,11 @@ All notable changes to this project will be documented in this file.
 - Migrated to view-model for jobs-panel + logs-panel - significant performance improvement.
 - Improved error handling for GitHub API requests.
 
+### 🐛 Bug Fixes
+
+- Issue with adding tab to disposed tool-window #166
+- Issue showing filter when there is no current user #167
+
 ## 2024.2.2 - 2024-06-15
 
 ### 🐛 Bug Fixes
