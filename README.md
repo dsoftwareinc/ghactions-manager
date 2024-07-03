@@ -25,7 +25,7 @@ $2 a month.
 - View jobs of a workflow-run and their statuses.
 - View logs of a job, separated by each step result.
 - (Paid feature) View and download the workflow run's artifacts.
-- (Paid feature) Open pull-request that triggered workflow (in IDE/browser)..
+- (Paid feature) Open pull-request that triggered workflow (in IDE/browser).
 
 ### Additional use-cases
 
