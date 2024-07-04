@@ -17,6 +17,12 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
+## 2024.2.4 - 2024-07-30
+
+### 🐛 Bug Fixes
+
+- Fix issue with RepositoryContext background task not cancelled properly #171
+
 ## 2024.2.3 - 2024-06-30
 
 ### Improvements
