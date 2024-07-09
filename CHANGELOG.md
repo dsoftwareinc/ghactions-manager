@@ -22,8 +22,9 @@ All notable changes to this project will be documented in this file.
 ### 🐛 Bug Fixes
 
 - Workflow dispatcher: Disable workflow types that can not be dispatched manually #172
+- Prevent API abuse when action with complex name fails resolving #173
 
-## 2024.2.4 - 2024-07-30
+## 2024.2.4 - 2024-07-08
 
 ### 🐛 Bug Fixes
 
