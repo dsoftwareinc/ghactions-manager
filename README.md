@@ -16,7 +16,7 @@ $2 a month.
 
 # Features
 
-### Main use-case
+### Main use-cases
 
 - View the latest workflow runs and their statuses.
   - Automatically refreshes every 30 seconds.
