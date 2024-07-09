@@ -19,7 +19,7 @@ $2 a month.
 ### Main use-cases
 
 - View the latest workflow runs and their statuses.
-  - Automatically refreshes every 30 seconds.
+  - Automatically refreshes every 30 seconds (configurable).
   - Can filter by: workflow-type, user who initiated, branch and event.
   - Can filter by the current-branch, i.e., update workflow-runs when branch changes, and current user.
 - View jobs of a workflow-run and their statuses.
