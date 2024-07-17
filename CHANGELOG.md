@@ -17,7 +17,13 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
-## 2024.2.5 - 2024-07-30
+## 2024.2.6 - 2024-07-30
+
+### 🐛 Bug Fixes
+
+- Workflow dispatcher: Disable workflow types that can not be dispatched manually #172
+
+## 2024.2.5 - 2024-07-15
 
 ### 🐛 Bug Fixes
 
