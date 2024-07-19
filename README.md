@@ -24,12 +24,13 @@ $2 a month.
   - Can filter by the current-branch, i.e., update workflow-runs when branch changes, and current user.
 - View jobs of a workflow-run and their statuses.
 - View logs of a job, separated by each step result.
-- (Paid feature) View and download the workflow run's artifacts.
-- (Paid feature) Open pull-request that triggered workflow (in IDE/browser).
+- (Feature requires license) View and download the workflow run's artifacts.
+- (Feature requires license) Open pull-request that triggered workflow (in IDE/browser).
 
 ### Additional use-cases
 
-- Trigger a workflow-run.
+- (Feature requires license) Trigger a workflow-run.
+  - (Feature requires license) open a window to enter inputs ([All GitHub supported input types supported][7]).
 - Rerun a workflow run or a job.
 - Open the workflow file of the workflow-run.
 - Configuring settings
@@ -54,21 +55,15 @@ $2 a month.
 | ![](docs/screenshot-new-ui-light.png) ![](docs/screenshot-new-ui-dark.png) | ![](docs/screenshot-vertical.jpg) |
 |                   ![](docs/outdated-action-version.jpg)                    |                                   |
 |                       ![](docs/quickfix-action.jpg)                        |                                   |
+|                      ![](docs/workflow-dispatch.jpg)                       |                                   |
 
 # Sponsor
 
-GitHub Actions Manager for JetBrains IDEs is developed for free.
+GitHub Actions Manager for JetBrains IDEs is free to use.
 
-Support this project by becoming a sponsor using [GitHub sponsors][6].
+You can purchase a license for $2 a month to support the development of the plugin and get a few extra features.
 
-Alternatively, register to @cunla's feed on polar.sh:
-
-<a href="https://polar.sh/cunla/subscribe">
-    <picture>
-      <source media="(prefers-color-scheme: dark)" srcset="https://polar.sh/embed/subscribe.svg?org=cunla&label=Subscribe&darkmode">
-      <img alt="Subscribe on Polar" src="https://polar.sh/embed/subscribe.svg?org=cunla&label=Subscribe">
-    </picture>
-</a>
+Or alternatively, support this project by becoming a sponsor using [GitHub sponsors][6].
 
 # Installation
 
@@ -82,8 +77,15 @@ Using IDE built-in plugin system:
 
 
 [1]:https://img.shields.io/jetbrains/plugin/v/com.dsoftware.ghtoolbar.svg
+
 [2]:https://plugins.jetbrains.com/plugin/19347-github-actions-toolbar
+
 [3]:https://img.shields.io/jetbrains/plugin/d/com.dsoftware.ghtoolbar.svg
+
 [4]:https://plugins.jetbrains.com/plugin/19347-github-actions-toolbar
+
 [5]:https://youtu.be/nFrs8W2gSC8
+
 [6]:https://github.com/sponsors/cunla
+
+[7]:https://docs.github.com/en/enterprise-cloud@latest/actions/using-workflows/workflow-syntax-for-github-actions#onworkflow_dispatchinputs
