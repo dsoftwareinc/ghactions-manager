@@ -17,11 +17,13 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
-## 2024.2.7 - 2024-07-30
+## 2024.2.7 - 2024-08-15
 
 ### 🚀 Features
 
 - Enter workflow inputs when triggering a workflow run.
+- View org/repository secrets.
+- Manage (view/edit/delete) org/repository variables.
 
 ## 2024.2.6 - 2024-07-21
 
