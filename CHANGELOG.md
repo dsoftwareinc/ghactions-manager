@@ -21,9 +21,20 @@ All notable changes to this project will be documented in this file.
 
 ### 🚀 Features
 
-- Enter workflow inputs when triggering a workflow run.
+- Dialog to enter workflow inputs when triggering a workflow run.
 - View org/repository secrets.
 - Manage (view/edit/delete) org/repository variables.
+
+### Improvements
+
+- Java 21 implementation.
+- Significant performance improvements.
+- Notifications on API errors.
+
+### 🐛 Bug Fixes
+
+- Workflow dispatcher: Mark currently workflows that can be manually dispatched.
+- Disposing LogConsolePanelWrapper before LogConsolePanel components #177
 
 ## 2024.2.6 - 2024-07-21
 
