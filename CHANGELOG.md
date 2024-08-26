@@ -17,6 +17,12 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
+## 2024.2.7 - 2024-08-31
+
+### 🚀 Features
+
+- Add missing statuses to workflow runs filters #178
+
 ## 2024.2.7 - 2024-08-15
 
 ### 🚀 Features
