@@ -17,7 +17,13 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
-## 2024.2.7 - 2024-08-31
+## 2024.2.9 - 2024-08-31
+
+### Improvements
+
+- Refactored using API scheduled for removal.
+
+## 2024.2.8 - 2024-08-31
 
 ### 🚀 Features
 
