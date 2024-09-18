@@ -19,6 +19,11 @@ All notable changes to this project will be documented in this file.
 
 ## 2024.2.9 - 2024-08-31
 
+### 🚀 Features
+
+- Add ability to review deployments for workflow-runs in waiting for deployment status #178
+- Add ability to sort jobs by showing in-progress jobs first
+
 ### Improvements
 
 - Refactored using API scheduled for removal.
