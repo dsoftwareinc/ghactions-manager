@@ -17,7 +17,17 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
-## 2024.2.9 - 2024-08-31
+## 2024.2.10 - 2024-09-24
+
+### 🚀 Features
+
+- Add ability to reject pending deployments for workflow-runs in waiting for deployment status
+
+### 🐛 Bug Fixes
+
+- Fixed error reporter to send relevant part of the stack trace
+
+## 2024.2.9 - 2024-09-20
 
 ### 🚀 Features
 
