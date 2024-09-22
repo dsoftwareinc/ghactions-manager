@@ -17,6 +17,12 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
+## 2024.2.11 - 2024-09-25
+
+### 🐛 Bug Fixes
+
+- Showing up to 100 jobs per workflow run #181
+
 ## 2024.2.10 - 2024-09-24
 
 ### 🚀 Features
