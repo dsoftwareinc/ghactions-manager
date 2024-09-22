@@ -22,6 +22,7 @@ All notable changes to this project will be documented in this file.
 ### 🐛 Bug Fixes
 
 - Showing up to 100 jobs per workflow run #181
+- Fix NPE when repo-context is refreshed #182
 
 ## 2024.2.10 - 2024-09-24
 
