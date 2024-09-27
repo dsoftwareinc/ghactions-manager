@@ -17,6 +17,13 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
+## 2024.2.12 - 2024-10-01
+
+### 🐛 Bug Fixes
+
+- Support for version 2024.3-EAP
+- Fixed using deprecated API
+
 ## 2024.2.11 - 2024-09-25
 
 ### 🐛 Bug Fixes
