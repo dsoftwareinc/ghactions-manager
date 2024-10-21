@@ -17,6 +17,17 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
+## 2024.2.13 - 2024-11-01
+
+### 🐛 Bug Fixes
+
+- Fix creating scope under disposed parent #183
+
+### 🧰 Maintenance
+
+- Remove usage of deprecated API
+- Update dependencies used
+
 ## 2024.2.12 - 2024-10-01
 
 ### 🐛 Bug Fixes
