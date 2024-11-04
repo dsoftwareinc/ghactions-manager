@@ -17,6 +17,12 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
+## 2024.2.14 - 2024-12-01
+
+### 🐛 Bug Fixes
+
+- Disable `Open workflow file` action when workflow does not have a file in the repository
+
 ## 2024.2.13 - 2024-11-01
 
 ### 🐛 Bug Fixes
