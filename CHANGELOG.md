@@ -17,11 +17,24 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
+## 2024.3.0 - 2024-12-04
+
+### 🚀 Features
+
+- Ability to control which GitHub account is used for which repository in the project using the plugin settings. #193
+
+### 🧰 Maintenance
+
+- Remove usage of deprecated API.
+
 ## 2024.2.14 - 2024-12-01
 
 ### 🐛 Bug Fixes
 
-- Disable `Open workflow file` action when workflow does not have a file in the repository
+- Disable `Open workflow file` action when workflow does not have a file in the repository.
+- Fix creating scope under disposed parent #184/#190
+- Improve the way action info is searched - scanning in different server paths #191
+- Annotate properly reusable workflows in the same repo (`./.github/workflows/...`) and not only remote workflows #192
 
 ## 2024.2.13 - 2024-11-01
 
