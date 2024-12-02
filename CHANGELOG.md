@@ -17,6 +17,12 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
+## 2024.3.1 - 2024-12-04
+
+### 🧰 Maintenance
+
+- Support for build 243.21565.180
+
 ## 2024.3.0 - 2024-12-04
 
 ### 🚀 Features
