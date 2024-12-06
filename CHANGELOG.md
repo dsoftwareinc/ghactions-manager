@@ -19,6 +19,10 @@ All notable changes to this project will be documented in this file.
 
 ## 2024.3.2 - 2024-12-09
 
+### 🚀 Features
+
+- Added ability to configure default filter for workflow runs #198
+
 ### 🐛 Bug Fixes
 
 - Issue getting actions info from different sources requiring different GitHub accounts #197
