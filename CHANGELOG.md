@@ -17,6 +17,12 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
+## 2024.3.2 - 2024-12-09
+
+### 🐛 Bug Fixes
+
+- Issue getting actions info from different sources requiring different GitHub accounts #197
+
 ## 2024.3.1 - 2024-12-04
 
 ### 🧰 Maintenance
