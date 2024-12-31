@@ -17,6 +17,23 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
+## 2024.3.4 - 2025-01-02
+
+### 🐛 Bug Fixes
+
+- Fix issue with updating log panel out of EDT #201
+- Fix issue when workflow is not in `.github/workflows` #200
+
+## 2024.3.3 - 2024-12-20
+
+### 🐛 Bug Fixes
+
+- Fixed ability to configure default filter for workflow runs #198
+
+### 🧰 Maintenance
+
+- Update to latest intellij platform gradle plugin
+
 ## 2024.3.2 - 2024-12-09
 
 ### 🚀 Features
