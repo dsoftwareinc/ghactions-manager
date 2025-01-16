@@ -17,6 +17,13 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
+## 2024.3.5 - 2025-01-20
+
+### 🧰 Maintenance
+
+- Update kotlin serialization to 1.8.0
+- Remove usage of API marked internal in 2025.1 EAP
+
 ## 2024.3.4 - 2025-01-02
 
 ### 🐛 Bug Fixes
