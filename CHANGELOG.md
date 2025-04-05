@@ -210,7 +210,7 @@ All notable changes to this project will be documented in this file.
 ### 🐛 Bug Fixes
 
 - Fix crash when opening a GH actions file #160
-- Fix marking unkwown actions when GitHub settings are not set
+- Fix marking unknown actions when GitHub settings are not set
 
 ## 2024.1.2 - 2024-05-15
 
@@ -291,7 +291,7 @@ All notable changes to this project will be documented in this file.
 
 - Fix bug scanning workflow files #126 #125
 
-## 1.21.1 - 2024-04-18
+## 1.21.1 - 2024-04-17
 
 ### 🚀 Features
 
@@ -307,7 +307,7 @@ All notable changes to this project will be documented in this file.
 
 - Update bug-report template.
 
-## 1.20.0
+## 1.20.0 - 2024-04-06
 
 ### 🚀 Features
 
@@ -323,7 +323,7 @@ All notable changes to this project will be documented in this file.
 
 - Update deprecated code.
 
-## 1.19.0
+## 1.19.0 - 2024-04-04
 
 - Update license to GPL-3.0
 
@@ -336,7 +336,7 @@ All notable changes to this project will be documented in this file.
 - Improve tests and increase coverage
 - Update dependencies to latest versions
 
-## 1.18.0
+## 1.18.0 - 2024-03-12
 
 ### 🚀 Features
 
@@ -352,7 +352,7 @@ All notable changes to this project will be documented in this file.
 
 - Fix not allowing custom repositories on plugin settings
 
-## 1.17.0
+## 1.17.0 - 2024-02-14
 
 ### 🚀 Features
 
@@ -369,19 +369,19 @@ All notable changes to this project will be documented in this file.
 - Major code refactoring
 - Implement tests
 
-## 1.16.1
+## 1.16.1 - 2024-02-14
 
 ### 🐛 Bug Fixes
 
 - Fix job log parsing dates #109
 
-## 1.16.0
+## 1.16.0 - 2024-02-14
 
 ### 🚀 Features
 
 - Downloading job logs instead of entire run logs #108
 
-## 1.15.2
+## 1.15.2 - 2023-12-04
 
 ### 🐛 Bug Fixes
 
