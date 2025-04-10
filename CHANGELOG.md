@@ -17,6 +17,17 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
+## 2025.1.0 - 2025-04-10
+
+### 🐛 Bug Fixes
+
+- Fix minor bugs using null checks
+
+### 🧰 Maintenance
+
+- Reverted kotlin serialization to 1.7.3
+- Updated dependencies
+
 ## 2024.3.5 - 2025-01-20
 
 ### 🧰 Maintenance
