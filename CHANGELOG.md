@@ -17,6 +17,13 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
+## 2025.1.1 - 2025-04-25
+
+### 🐛 Bug Fixes
+
+- ConcurrentModificationException happening on reset #213
+- Access is allowed from Event Dispatch Thread #212
+
 ## 2025.1.0 - 2025-04-10
 
 ### 🐛 Bug Fixes
