@@ -17,6 +17,17 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
+## 2025.1.2 - 2025-05-10
+
+### 🚀 Features
+
+- Show head commit of PR with different color for branch
+
+### 🐛 Bug Fixes
+
+- Fix: Workflow run artifacts icon not working properly #216
+- Fix: YAML exception in ActionsAnnotator #215
+
 ## 2025.1.1 - 2025-04-25
 
 ### 🐛 Bug Fixes
