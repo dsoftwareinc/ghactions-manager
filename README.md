@@ -19,15 +19,15 @@ You can support the development of the plugin and additional advanced features b
 ### Free Features (No license required)
 
 - View the latest workflow-runs and their statuses.
-  - Automatically refreshes every 30 seconds (configurable).
-  - Can filter by: workflow-type, user who initiated, branch and event.
-  - Can filter by the current-branch, i.e., update workflow-runs when branch changes, and current user.
+    - Automatically refreshes every 30 seconds (configurable).
+    - Can filter by: workflow-type, user who initiated, branch and event.
+    - Can filter by the current-branch, i.e., update workflow-runs when branch changes, and current user.
 - View jobs of a workflow-run and their statuses.
 - View logs of a job, separated by each step result.
 - Configuring settings
-  - Use a customized token instead of GitHub settings
-  - Frequency of auto-refresh.
-  - Customize repositories that should be presented/hidden.
+    - Use a customized token instead of GitHub settings
+    - Frequency of auto-refresh.
+    - Customize repositories that should be presented/hidden.
 
 ### Paid Features (License required)
 
@@ -35,28 +35,19 @@ You can support the development of the plugin and additional advanced features b
 - Open pull-request that triggered a workflow-run (in IDE/browser).
 - Approve deployments for workflow-runs that require approval.
 - Trigger a workflow-run for workflows that can be manually dispatched.
-  - open a window to enter inputs ([All GitHub supported input types supported][7]).
+    - Ability to provide inputs for workflow ([All GitHub supported input types supported][workflow-inputs]).
 - Rerun/Cancel a workflow-run or a specific job in a workflow-run.
 - Open the workflow file of the workflow-run.
 
 ### Editing workflow files
 
 - Highlight outdated actions as warnings
-  - Quickfix: update them to the latest version.
+    - Quickfix: update them to the latest version.
 - Highlight unknown actions
 - Navigate to action repository for remote actions
 - Navigate to action file for local actions
 
 <!-- Plugin description end -->
-
-# Screenshots
-
-|                                 Horizontal                                 |             Vertical              |
-|:--------------------------------------------------------------------------:|:---------------------------------:|
-| ![](docs/screenshot-new-ui-light.png) ![](docs/screenshot-new-ui-dark.png) | ![](docs/screenshot-vertical.jpg) |
-|                   ![](docs/outdated-action-version.jpg)                    |                                   |
-|                       ![](docs/quickfix-action.jpg)                        |                                   |
-|                      ![](docs/workflow-dispatch.jpg)                       |                                   |
 
 # Installation
 
@@ -68,6 +59,28 @@ Using IDE built-in plugin system:
 <kbd>Search for "GitHub Actions Manager"</kbd> >
 <kbd>Install Plugin</kbd>
 
+# Screenshots
+
+### View workflow-runs/jobs/logs
+
+![](docs/screenshot-new-ui-light.png) ![](docs/screenshot-new-ui-dark.png)
+![](docs/screenshot-vertical.jpg)
+
+### Dispatch a workflow that has inputs
+
+![](docs/workflow-dispatch.jpg)
+
+### See outdated action in workflow files
+
+![](docs/outdated-action-version.jpg)
+
+### Quickfix to update the action version in workflow files
+
+![](docs/quickfix-action.jpg)
+
+### Approve deployment
+
+![](docs/approve-deployment.gif)
 
 [version-badge]:https://img.shields.io/jetbrains/plugin/v/com.dsoftware.ghtoolbar.svg
 
@@ -78,3 +91,5 @@ Using IDE built-in plugin system:
 [gh-docs-workflow-inputs]:https://docs.github.com/en/enterprise-cloud@latest/actions/using-workflows/workflow-syntax-for-github-actions#onworkflow_dispatchinputs
 
 [marketplace]: https://plugins.jetbrains.com/plugin/19347-github-actions-manager
+
+[workflow-inputs]:https://docs.github.com/en/enterprise-cloud@latest/actions/using-workflows/workflow-syntax-for-github-actions#onworkflow_dispatchinputs
