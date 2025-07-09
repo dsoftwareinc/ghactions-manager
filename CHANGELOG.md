@@ -17,6 +17,31 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
+## 2025.1.3 - 2025-06-10
+
+### 🚀 Features
+
+- Show when logs are gone from the server
+- fix:allow max 999 secs between executions #219
+- fix: support for 2025.2 EAP
+
+### 🐛 Bug Fixes
+
+- null cast to YAMLMapping on workflow analysis #223
+- Wrapped log-model reset in runWriteAction #224
+- Respect using PAT instead of IDE GitHub settings for repo config #220
+
+## 2025.1.2 - 2025-05-10
+
+### 🚀 Features
+
+- Show head commit of PR with different color for branch
+
+### 🐛 Bug Fixes
+
+- Fix: Workflow run artifacts icon not working properly #216
+- Fix: YAML exception in ActionsAnnotator #215
+
 ## 2025.1.1 - 2025-04-25
 
 ### 🐛 Bug Fixes
@@ -259,8 +284,8 @@ All notable changes to this project will be documented in this file.
 
 - Highlighting unknown actions in workflow files
 - Clicking on action names:
-  - opens the browser to the action's GitHub page for remote actions
-  - opens the action file for local actions
+    - opens the browser to the action's GitHub page for remote actions
+    - opens the action file for local actions
 
 ### 🐛 Bug Fixes
 
