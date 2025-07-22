@@ -17,10 +17,24 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
+## 2025.1.5 - 2025-09-01
+
+### 🧰 Maintenance
+
+- Remove usage of deprecated API.
+
+## 2025.1.4 - 2025-08-01
+
+### 🐛 Bug Fixes
+
+- Download artifact is not blocking UI #226
+
 ## 2025.1.3 - 2025-06-10
 
 ### 🚀 Features
 
+- Disable workflows button when repository has no workflows
+- Skip workflow parameters popup when workflow has no parameters
 - Show when logs are gone from the server
 - fix:allow max 999 secs between executions #219
 - fix: support for 2025.2 EAP
