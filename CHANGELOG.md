@@ -19,6 +19,10 @@ All notable changes to this project will be documented in this file.
 
 ## 2025.1.5 - 2025-09-01
 
+### 🐛 Bug Fixes
+
+- Issue running on v2025.1.4 #234
+
 ### 🧰 Maintenance
 
 - Remove usage of deprecated API.
