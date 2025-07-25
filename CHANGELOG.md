@@ -22,6 +22,7 @@ All notable changes to this project will be documented in this file.
 ### 🐛 Bug Fixes
 
 - Issue running on v2025.1.4 #234
+- Disposing background job when service is disposed #236
 
 ### 🧰 Maintenance
 
