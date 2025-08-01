@@ -17,7 +17,13 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
-## 2025.1.5 - 2025-09-01
+## 2025.2.1 - 2025-08-02
+
+### 🐛 Bug Fixes
+
+- Issue with checklicense opening #250
+
+## 2025.2.0 - 2025-08-01
 
 ### 🐛 Bug Fixes
 
