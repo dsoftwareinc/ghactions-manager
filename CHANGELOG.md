@@ -17,6 +17,16 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
+## 2025.2.2 - 2025-08-15
+
+### 🚀 Features
+
+- Link from file lines to GitHub
+
+### 🧰 Maintenance
+
+- Updated test suites to run on 2025.2
+
 ## 2025.2.1 - 2025-08-02
 
 ### 🐛 Bug Fixes

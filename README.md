@@ -38,6 +38,7 @@ You can support the development of the plugin and additional advanced features b
     - Ability to provide inputs for workflow ([All GitHub supported input types supported][workflow-inputs]).
 - Rerun/Cancel a workflow-run or a specific job in a workflow-run.
 - Open the workflow file of the workflow-run.
+- Link from file lines to GitHub
 
 ### Editing workflow files
 
