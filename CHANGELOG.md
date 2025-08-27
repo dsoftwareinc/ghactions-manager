@@ -17,6 +17,12 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
+## 2025.2.3
+
+### 🐛 Bug Fixes
+
+- fix:handling Tools.getYamlElementsWithKey raising exception #255
+
 ## 2025.2.2 - 2025-08-15
 
 ### 🚀 Features
