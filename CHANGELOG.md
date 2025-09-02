@@ -19,6 +19,11 @@ All notable changes to this project will be documented in this file.
 
 ## 2025.2.3
 
+### 🚀 Features
+
+- Keyboard Shortcut alt+G/option+G to activate plugin window
+- When plugin window is activated, alt/option+E to open dispatch workflow popup
+
 ### 🐛 Bug Fixes
 
 - fix:handling Tools.getYamlElementsWithKey raising exception #255
