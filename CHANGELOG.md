@@ -17,6 +17,17 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
+## 2025.2.4
+
+### 🚀 Features
+
+- workflow input with `environment` type shows environments dropdown
+
+### 🐛 Bug Fixes
+
+- fix:workflow inputs are passing to dispatch workflow popup #258
+- fix:refresh jobs button is working
+
 ## 2025.2.3
 
 ### 🚀 Features
@@ -27,6 +38,11 @@ All notable changes to this project will be documented in this file.
 ### 🐛 Bug Fixes
 
 - fix:handling Tools.getYamlElementsWithKey raising exception #255
+
+### Maintenance
+
+- improve test coverage
+- Update to latest intellij platform gradle plugin (2.8.0)
 
 ## 2025.2.2 - 2025-08-15
 
