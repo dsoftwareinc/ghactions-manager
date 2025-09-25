@@ -18,35 +18,37 @@ You can support the development of the plugin and additional advanced features b
 
 ### Free Features (No license required)
 
-- View the latest workflow-runs and their statuses.
-    - Automatically refreshes every 30 seconds (configurable).
-    - Can filter by: workflow-type, user who initiated, branch and event.
-    - Can filter by the current-branch, i.e., update workflow-runs when branch changes, and current user.
-- View jobs of a workflow-run and their statuses.
-- View logs of a job, separated by each step result.
-- Configuring settings
-    - Use a customized token instead of GitHub settings
-    - Frequency of auto-refresh.
-    - Customize repositories that should be presented/hidden.
+- View Workflow Runs
+    - See real-time and historical workflow runs, jobs, and logs directly in the IDE.
+    - Logs are organized step-by-step for easier debugging.
+    - Track live runs as they progress or review past runs at a glance.
+    - Filter runs by branch, actor, event, or status—individually or in combination. Includes a current-branch filter
+      that updates automatically when you switch branches.
+    - New runs appear automatically (refreshes every 30s by default; configurable).
+    - Access all available workflow run details.-
+- Settings & Configuration
+    - Use a custom token instead of GitHub’s default authentication.
+    - Control auto-refresh frequency.
+    - Choose which repositories to show or hide.
+    - Assign a GitHub account per repository, and switch assignments anytime via plugin settings.-
 
 ### Paid Features (License required)
 
-- View and download the workflow-run's artifacts.
-- Open pull-request that triggered a workflow-run (in IDE/browser).
-- Approve deployments for workflow-runs that require approval.
-- Trigger a workflow-run for workflows that can be manually dispatched.
-    - Ability to provide inputs for workflow ([All GitHub supported input types supported][workflow-inputs]).
-- Rerun/Cancel a workflow-run or a specific job in a workflow-run.
-- Open the workflow file of the workflow-run.
-- Create a link of selected file lines in GitHub
+- View and download workflow run artifacts.
+- Open the pull request that triggered a run (in IDE or browser).
+- Approve workflow-run deployments that require approval.
+- Manually trigger workflow runs for dispatchable workflows, with full input
+  support ([all GitHub input types][workflow-inputs]).
+- Rerun or cancel a workflow run—or even just a specific job.
+- Open the workflow file associated with a run.
+- Generate GitHub links to specific file lines from the IDE.
 
 ### Editing workflow files
 
-- Highlight outdated actions as warnings
-    - Quickfix: update them to the latest version.
-- Highlight unknown actions
-- Navigate to action repository for remote actions
-- Navigate to action file for local actions
+- Highlight outdated GitHub Actions as warnings, with quick-fix support to update to the latest version.
+- Flag unknown actions.
+- Navigate directly to an action’s repository (for remote actions).
+- Jump to the action file (for local actions).
 
 <!-- Plugin description end -->
 
@@ -84,6 +86,7 @@ Using IDE built-in plugin system:
 ![](docs/approve-deployment.gif)
 
 ### Create a link of selected file lines in GitHub
+
 ![](docs/ghactions-mgr-link-to-gh.gif)
 
 [version-badge]:https://img.shields.io/jetbrains/plugin/v/com.dsoftware.ghtoolbar.svg
