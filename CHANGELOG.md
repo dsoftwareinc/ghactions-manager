@@ -17,6 +17,12 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
+## 2025.2.5
+
+### 🚀 Features
+
+- Removed timestamp from logs #259
+
 ## 2025.2.4
 
 ### 🚀 Features
