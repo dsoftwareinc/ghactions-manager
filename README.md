@@ -7,9 +7,9 @@ GitHub Actions Manager for JetBrains IDEs
 You can view a demo of most of the features explained in this video: [YouTube][youtube-video]
 
 <!-- Plugin description -->
-This plugin creates a tool-window on JetBrains products (IntelliJ, PyCharm, ...) where you can view GitHub Actions
-workflow-runs of the repository. This plugin is a good alternative to alt-tabbing for every time you push some changes
-to the branch and want to see whether the repository's checks are passing on your changes.
+This plugin brings GitHub Actions to JetBrains IDEs, so you don't have to jump back and forth between the IDE and
+the browser. It works with GitHub Enterprise Server, GitHub.com, and GitHub Cloud Server. In addition, it supports
+workflow-dispatch, workflow-run approval and other common use-cases with GitHub Actions.
 
 You can support the development of the plugin and additional advanced features by
 [purchasing the plugin on the JetBrains marketplace][marketplace].
