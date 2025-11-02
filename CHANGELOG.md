@@ -17,6 +17,13 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
+## 2025.2.6
+
+### 🚀 Features
+
+- Show starting time for jobs
+- Show steps when job is running (without logs due to GitHub API limitations)
+
 ## 2025.2.5
 
 ### 🚀 Features
