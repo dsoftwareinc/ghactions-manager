@@ -9,7 +9,7 @@ You can view a demo of most of the features explained in this video: [YouTube][y
 <!-- Plugin description -->
 This plugin brings GitHub Actions to JetBrains IDEs, so you don't have to jump back and forth between the IDE and
 the browser. It works with GitHub Enterprise Server, GitHub.com, and GitHub Cloud Server. In addition, it supports
-workflow-dispatch, workflow-run approval and other common use-cases with GitHub Actions.
+workflow-dispatch, workflow-run approval, and other common use-cases with GitHub Actions.
 
 You can support the development of the plugin and additional advanced features by
 [purchasing the plugin on the JetBrains marketplace][marketplace].
