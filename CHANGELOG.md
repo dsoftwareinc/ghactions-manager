@@ -24,6 +24,10 @@ All notable changes to this project will be documented in this file.
 - Show starting time for jobs
 - Show steps when job is running (without logs due to GitHub API limitations)
 
+### 🐛 Bug Fixes
+
+- Using EDT in LogConsolePanelWrapper.updateLogs #262
+
 ## 2025.2.5
 
 ### 🚀 Features
