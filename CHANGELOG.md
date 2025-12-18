@@ -19,6 +19,12 @@ All notable changes to this project will be documented in this file.
 
 ## 2025.2.7
 
+### 🐛 Bug Fixes
+
+- fix: Open dialog actions in BGT #268
+- fix: Catching index data initialization failed exception #267
+- fix: Ability to change keyboard shortcut for opening GitHub Actions Manager #260
+
 ### Maintenance
 
 - Update dependencies (IntelliJ Platform 2025.3, IntelliJ Platform Gradle Plugin 2.9.0, etc.)
