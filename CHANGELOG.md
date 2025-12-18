@@ -17,12 +17,24 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
+## 2025.2.7
+
+### Maintenance
+
+- Update dependencies (IntelliJ Platform 2025.3, IntelliJ Platform Gradle Plugin 2.9.0, etc.)
+- Improve test coverage
+
 ## 2025.2.6
 
 ### 🚀 Features
 
 - Show starting time for jobs
 - Show steps when job is running (without logs due to GitHub API limitations)
+
+### 🐛 Bug Fixes
+
+- Using EDT in LogConsolePanelWrapper.updateLogs #262
+- Change shortcut to open GitHub Actions Manager from alt-G #260
 
 ## 2025.2.5
 
