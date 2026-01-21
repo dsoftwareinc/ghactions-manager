@@ -17,6 +17,15 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
+## 2025.2.8
+
+### 🐛 Bug Fixes
+
+- Error when opening IDE settings #270
+- Allow having multiple repositories with the same name #274
+- Do not popup errors when requests keep failing #271
+- Support multiple GitHub accounts with the same alias #269
+
 ## 2025.2.7
 
 ### 🐛 Bug Fixes
