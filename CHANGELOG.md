@@ -23,7 +23,7 @@ All notable changes to this project will be documented in this file.
 
 - Error when opening IDE settings #270
 - Allow having multiple repositories with the same name #274
-- Do not popup errors when requests keep failing #271
+- Do not pop up errors when requests keep failing #271
 - Support multiple GitHub accounts with the same alias #269
 
 ## 2025.2.7
@@ -82,7 +82,7 @@ All notable changes to this project will be documented in this file.
 ### Maintenance
 
 - improve test coverage
-- Update to latest intellij platform gradle plugin (2.8.0)
+- Update to latest IntelliJ platform Gradle plugin (2.8.0)
 
 ## 2025.2.2 - 2025-08-15
 
@@ -98,7 +98,7 @@ All notable changes to this project will be documented in this file.
 
 ### 🐛 Bug Fixes
 
-- Issue with checklicense opening #250
+- Issue with checkLicense opening #250
 
 ## 2025.2.0 - 2025-08-01
 
@@ -150,7 +150,7 @@ All notable changes to this project will be documented in this file.
 
 - ConcurrentModificationException happening on reset #213
 - Access is allowed from Event Dispatch Thread #212
-- Update ToolWindow on updating github accounts
+- Update ToolWindow on updating GitHub accounts
 - Comparing repo-mapping using repo-path to avoid NoSuchElementException #210
 
 ## 2025.1.0 - 2025-04-10
@@ -186,7 +186,7 @@ All notable changes to this project will be documented in this file.
 
 ### 🧰 Maintenance
 
-- Update to latest intellij platform gradle plugin
+- Update to latest IntelliJ platform gradle plugin
 
 ## 2024.3.2 - 2024-12-09
 
@@ -699,7 +699,7 @@ All notable changes to this project will be documented in this file.
 
 ### 🚀 Features
 
-- Make ghactions-manager available during indexing (#66)
+- Make GitHub Actions Manager available during indexing (#66)
 - Sorting jobs by completed date, or started date, else run id (#61)
 
 ### 🐛 Bug Fixes
