@@ -17,6 +17,16 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
+## 2025.2.10
+
+### 🚀 Features
+
+- Update the open tab based on the file opened in the editor
+
+### Maintenance
+
+- Update dependencies
+
 ## 2025.2.9
 
 ### 🐛 Bug Fixes
