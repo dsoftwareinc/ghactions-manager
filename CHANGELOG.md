@@ -17,6 +17,12 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
+## 2025.2.11
+
+### 🐛 Bug Fixes
+
+- fix: exception when changing repo #279
+
 ## 2025.2.10
 
 ### 🚀 Features
