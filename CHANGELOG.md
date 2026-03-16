@@ -17,6 +17,16 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
+## 2025.2.12
+
+### 🐛 Bug Fixes
+
+- Opening GitHub Settings from the plugin causes exception #283
+
+### Maintenance
+
+- Remove usage of deprecated runReadAction #31
+
 ## 2025.2.11
 
 ### 🐛 Bug Fixes
