@@ -17,6 +17,13 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
+## 2025.2.13
+
+### 🐛 Bug Fixes
+
+- fix: Plugin freezes PhpStorm 2025.3: PhpStorm is not responding #287
+- fix: opening settings raises an exception #286
+
 ## 2025.2.12
 
 ### 🐛 Bug Fixes
