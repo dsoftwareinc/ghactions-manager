@@ -17,6 +17,12 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
+## 2025.2.14
+
+### 🐛 Bug Fixes
+
+- fix:access getContentManager from EDT only #292
+
 ## 2025.2.13
 
 ### 🐛 Bug Fixes
