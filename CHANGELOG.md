@@ -17,6 +17,13 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
+## 2025.2.15
+
+### 🐛 Bug Fixes
+
+- fix: getting actions data from GitHub
+- fix: do not notify about repeating errors
+
 ## 2025.2.14
 
 ### 🐛 Bug Fixes
