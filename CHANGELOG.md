@@ -17,6 +17,21 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
+## 2026.1
+
+### 🚀 Features
+
+- Add ability to dispatch workflow from the editor
+
+### 🐛 Bug Fixes
+
+- Crash when trying to open a pull-request in the IDE
+
+### Maintenance
+
+- Update dependencies
+- Add multiple test-cases
+
 ## 2025.2.15
 
 ### 🐛 Bug Fixes
