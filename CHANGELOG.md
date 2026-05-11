@@ -17,7 +17,7 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
-## 2026.1
+## 2026.1.0
 
 ### 🚀 Features
 
@@ -26,6 +26,7 @@ All notable changes to this project will be documented in this file.
 ### 🐛 Bug Fixes
 
 - Crash when trying to open a pull-request in the IDE
+- Error showing action is already taken #298
 
 ### Maintenance
 
@@ -841,8 +842,7 @@ All notable changes to this project will be documented in this file.
 - Refresh jobs + rerun workflow run by @cunla in #40
 - Update cancelled icon by @cunla in #44
 - Add cancel workflow action #43 by @cunla in #46
-- Guess GitHub account per repo when there are multiple GitHub accounts by @cunla
-  in #48
+- Guess GitHub account per repo when there are multiple GitHub accounts by @cunla in #48
 
 ## 1.2.0 - 2022-10-01
 
