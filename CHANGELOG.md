@@ -22,6 +22,7 @@ All notable changes to this project will be documented in this file.
 ### 🐛 Bug Fixes
 
 - fix:NPE on showRegisterDialog #299
+- remove usage of internal API PluginManagerCore.getPlugin
 
 ## 2026.1.0
 
