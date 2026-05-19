@@ -17,6 +17,12 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
+## 2026.1.1
+
+### 🐛 Bug Fixes
+
+- fix:NPE on showRegisterDialog #299
+
 ## 2026.1.0
 
 ### 🚀 Features
