@@ -17,6 +17,12 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
+## 2026.1.2
+
+### 🚀 Features
+
+- Job list is shown as a tree of jobs
+
 ## 2026.1.1
 
 ### 🐛 Bug Fixes
