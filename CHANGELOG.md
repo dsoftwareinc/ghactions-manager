@@ -17,6 +17,12 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
+## 2026.1.3
+
+### 🐛 Bug Fixes
+
+- Fix private workflow not resolved, jackson error in log #300
+
 ## 2026.1.2
 
 ### 🚀 Features
