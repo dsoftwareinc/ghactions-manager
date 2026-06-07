@@ -17,26 +17,37 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
-## 2026.1.3
+## 2026.1.4
+
+### 🐛 Bug Fixes
+
+- A completed job's log is now refreshed once when it finishes, so the final log lines are captured
+- A completed workflow-run's jobs and artifacts are refreshed once on completion instead of being polled indefinitely
+
+### 🧰 Maintenance
+
+- Cache the request executor per repository instead of re-resolving the account token on every access
+
+## 2026.1.3 - 2026-05-27
 
 ### 🐛 Bug Fixes
 
 - Fix private workflow not resolved, jackson error in log #300
 
-## 2026.1.2
+## 2026.1.2 - 2026-05-25
 
 ### 🚀 Features
 
 - Job list is shown as a tree of jobs
 
-## 2026.1.1
+## 2026.1.1 - 2026-05-19
 
 ### 🐛 Bug Fixes
 
 - fix:NPE on showRegisterDialog #299
 - remove usage of internal API PluginManagerCore.getPlugin
 
-## 2026.1.0
+## 2026.1.0 - 2026-05-11
 
 ### 🚀 Features
 
@@ -52,43 +63,38 @@ All notable changes to this project will be documented in this file.
 - Update dependencies
 - Add multiple test-cases
 
-## 2025.2.15
+## 2025.2.15 - 2026-04-21
 
 ### 🐛 Bug Fixes
 
 - fix: getting actions data from GitHub
 - fix: do not notify about repeating errors
 
-## 2025.2.14
+## 2025.2.14 - 2026-03-31
 
 ### 🐛 Bug Fixes
 
 - fix:access getContentManager from EDT only #292
 
-## 2025.2.13
+## 2025.2.13 - 2026-03-21
 
 ### 🐛 Bug Fixes
 
 - fix: Plugin freezes PhpStorm 2025.3: PhpStorm is not responding #287
 - fix: opening settings raises an exception #286
-
-## 2025.2.12
-
-### 🐛 Bug Fixes
-
 - Opening GitHub Settings from the plugin causes exception #283
 
 ### Maintenance
 
 - Remove usage of deprecated runReadAction #31
 
-## 2025.2.11
+## 2025.2.11 - 2026-02-25
 
 ### 🐛 Bug Fixes
 
 - fix: exception when changing repo #279
 
-## 2025.2.10
+## 2025.2.10 - 2026-02-17
 
 ### 🚀 Features
 
@@ -98,13 +104,13 @@ All notable changes to this project will be documented in this file.
 
 - Update dependencies
 
-## 2025.2.9
+## 2025.2.9 - 2026-01-30
 
 ### 🐛 Bug Fixes
 
 - Support multiple GitHub accounts with the same alias #269
 
-## 2025.2.8
+## 2025.2.8 - 2026-01-21
 
 ### 🐛 Bug Fixes
 
