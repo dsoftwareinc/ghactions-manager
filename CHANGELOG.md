@@ -17,12 +17,28 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
-## 2026.1.4
+### 🚀 Features
+
+- Manage repository collaborators (view/add/remove) from the repository-settings dialog
+- Manage repository environments (view/add/remove) from the repository-settings dialog
+
+### 🐛 Bug Fixes
+
+- Repository-settings panels (variables, collaborators, environments) no longer block the UI thread while loading from GitHub
+- Fix repository-secret deletion sending a malformed URL
+- Fix a possible error when removing or editing a variable with no row selected
+
+### 🧰 Maintenance
+
+- Make request retry-tracking thread-safe across concurrent API calls
+
+## 2026.1.4 -
 
 ### 🐛 Bug Fixes
 
 - A completed job's log is now refreshed once when it finishes, so the final log lines are captured
 - A completed workflow-run's jobs and artifacts are refreshed once on completion instead of being polled indefinitely
+- Using GitHub PAT works
 
 ### 🧰 Maintenance
 
