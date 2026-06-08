@@ -31,6 +31,9 @@ other common GitHub Actions use-cases.
 
 You can support the development of the plugin and unlock additional advanced features by
 [purchasing a license on the JetBrains Marketplace](https://plugins.jetbrains.com/plugin/19347-github-actions-manager).
+You can
+fill [this form](https://docs.google.com/forms/d/e/1FAIpQLSe7Nmpz8UcjQh493pwMnuKCdM17uOqIdCOhwEjWUc77wzwrHg/viewform?usp=header)
+to receive a discount code.
 
 ### Free features (no license required)
 
