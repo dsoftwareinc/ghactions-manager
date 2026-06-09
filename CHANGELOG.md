@@ -17,6 +17,8 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
+## 2026.1.5 -
+
 ### 🚀 Features
 
 - Manage repository collaborators (view/add/remove) from the repository-settings dialog
@@ -24,7 +26,8 @@ All notable changes to this project will be documented in this file.
 
 ### 🐛 Bug Fixes
 
-- Repository-settings panels (variables, collaborators, environments) no longer block the UI thread while loading from GitHub
+- Repository-settings panels (variables, collaborators, environments) no longer block the UI thread while loading from
+  GitHub
 - Fix repository-secret deletion sending a malformed URL
 - Fix a possible error when removing or editing a variable with no row selected
 
@@ -32,7 +35,7 @@ All notable changes to this project will be documented in this file.
 
 - Make request retry-tracking thread-safe across concurrent API calls
 
-## 2026.1.4 -
+## 2026.1.4 - 2026-06-08
 
 ### 🐛 Bug Fixes
 
