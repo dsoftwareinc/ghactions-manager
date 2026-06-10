@@ -22,7 +22,9 @@ All notable changes to this project will be documented in this file.
 ### 🚀 Features
 
 - Manage repository collaborators (view/add/remove) from the repository-settings dialog
-- Manage repository environments (view/add/remove) from the repository-settings dialog
+- Manage repository environments from the repository-settings dialog: environments appear as a tree, and selecting one
+  shows its deployment protection rules, environment secrets, and (editable) environment variables
+- Refresh button on the repository-settings panels, with a loading indicator shown while data reloads
 
 ### 🐛 Bug Fixes
 
