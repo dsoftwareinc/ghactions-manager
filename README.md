@@ -67,10 +67,11 @@ to receive a discount code.
 
 Manage a repository's GitHub Actions configuration from a dedicated settings dialog without opening the browser:
 
-- **Variables & secrets** – list, add, edit, and delete repository and organization variables; list and delete
-  secrets. Organization-level items are shown when the repository belongs to an organization, and you can choose a
-  new organization variable's visibility (all repositories, or private/internal only). (Creating or editing secret
-  values from the IDE is not supported yet.)
+- **Variables & secrets** – list, add, edit, and delete repository and organization variables and secrets.
+  Secret values are encrypted locally with the repository/organization public key (libsodium sealed box) before
+  upload, and are write-only: they can be replaced but never read back. Organization-level items are shown when the
+  repository belongs to an organization, and you can choose a new organization variable's or secret's visibility
+  (all repositories, or private/internal only).
 - **Collaborators** – view the repository's collaborators and add or remove them.
 - **Environments** – create and delete deployment environments. For each environment:
     - Edit environment variables (add, update, delete).
