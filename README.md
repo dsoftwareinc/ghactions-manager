@@ -15,6 +15,7 @@ workflows, approve deployments, and keep your workflow files up to date.
 - [Features](#features)
     - [Free features](#free-features-no-license-required)
     - [Paid features](#paid-features-license-required)
+    - [Repository settings](#repository-settings-license-required)
     - [Workflow file editing](#workflow-file-editing)
 - [Requirements](#requirements)
 - [Installation](#installation)
@@ -61,6 +62,17 @@ to receive a discount code.
 - Rerun or cancel a workflow run — or even just a single job.
 - Open the workflow file associated with a run.
 - Generate GitHub links to specific file lines from the IDE.
+
+### Repository settings (license required)
+
+Manage a repository's GitHub Actions configuration from a dedicated settings dialog, without opening the browser:
+
+- **Variables & secrets** — list, add, edit, and delete repository (and organization) variables and secrets.
+- **Collaborators** — view the repository's collaborators and add or remove them.
+- **Environments** — create and delete deployment environments. For each environment:
+    - Edit environment variables (add, update, delete).
+    - Review environment secrets and deployment protection rules.
+    - Manage deployment branch policies that control which branches can deploy.
 
 ### Workflow file editing
 
