@@ -5,7 +5,7 @@ GitHub Actions Manager for JetBrains IDEs
 [![Downloads][download-badge]][marketplace]
 [![Rating][rating-badge]][marketplace]
 
-Manage GitHub Actions without leaving your JetBrains IDE - watch workflow runs, read step-by-step logs, dispatch
+Manage GitHub Actions without leaving your JetBrains IDE – watch workflow runs, read step-by-step logs, dispatch
 workflows, approve deployments, and keep your workflow files up to date.
 
 📺 Watch a demo of most features in this [YouTube walkthrough][youtube-video].
@@ -27,7 +27,7 @@ workflows, approve deployments, and keep your workflow files up to date.
 
 <!-- Plugin description -->
 This plugin brings GitHub Actions to JetBrains IDEs, so you don't have to jump back and forth between the IDE and the
-browser. It works with GitHub.com and GitHub Enterprise Server, and supports workflow dispatch, deployment approval, and
+browser. It works with GitHub.com and GitHub Enterprise Server and supports workflow dispatch, deployment approval, and
 other common GitHub Actions use-cases.
 
 You can support the development of the plugin and unlock additional advanced features by
@@ -43,14 +43,14 @@ to receive a discount code.
     - Jobs are shown as a tree, grouping matrix and reusable-workflow jobs under their parent for easy scanning.
     - Logs are organized step-by-step for easier debugging.
     - Track live runs as they progress or review past runs at a glance.
-    - Filter runs by branch, actor, event, or status - individually or in combination. Includes a current-branch filter
+    - Filter runs by branch, actor, event, or status – individually or in combination. Includes a current-branch filter
       that updates automatically when you switch branches.
     - New runs appear automatically (refreshes every 30s by default; configurable).
 - **Settings & configuration**
     - Use a custom token instead of GitHub's default authentication.
     - Control the auto-refresh frequency.
     - Choose which repositories to show or hide.
-    - Assign a GitHub account per repository, and switch assignments anytime via plugin settings.
+    - Assign a GitHub account per repository and switch assignments anytime via plugin settings.
 
 ### Paid features (license required)
 
@@ -59,20 +59,20 @@ to receive a discount code.
 - Approve workflow-run deployments that require approval.
 - Manually trigger dispatchable workflows, with full input support
   ([all GitHub input types](https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#onworkflow_dispatchinputs)).
-- Rerun or cancel a workflow run - or even just a single job.
+- Rerun or cancel a workflow run – or even just a single job.
 - Open the workflow file associated with a run.
 - Generate GitHub links to specific file lines from the IDE.
 
 ### Repository settings (license required)
 
-Manage a repository's GitHub Actions configuration from a dedicated settings dialog, without opening the browser:
+Manage a repository's GitHub Actions configuration from a dedicated settings dialog without opening the browser:
 
-- **Variables & secrets** - list, add, edit, and delete repository and organization variables; list and delete
+- **Variables & secrets** – list, add, edit, and delete repository and organization variables; list and delete
   secrets. Organization-level items are shown when the repository belongs to an organization, and you can choose a
   new organization variable's visibility (all repositories, or private/internal only). (Creating or editing secret
   values from the IDE is not supported yet.)
-- **Collaborators** - view the repository's collaborators and add or remove them.
-- **Environments** - create and delete deployment environments. For each environment:
+- **Collaborators** – view the repository's collaborators and add or remove them.
+- **Environments** – create and delete deployment environments. For each environment:
     - Edit environment variables (add, update, delete).
     - Review environment secrets and deployment protection rules.
     - Manage which branches and tags are allowed to deploy: review the deployment branch policy and add or remove
@@ -80,7 +80,7 @@ Manage a repository's GitHub Actions configuration from a dedicated settings dia
 
 ### Workflow file editing
 
-- Highlight outdated GitHub Actions as warnings, with a quick-fix to update to the latest version.
+- Highlight outdated GitHub Actions as warnings with a quick-fix to update to the latest version.
 - Flag unknown actions.
 - Navigate directly to an action's repository (for remote actions).
 - Jump to the action file (for local actions).
@@ -107,8 +107,8 @@ Or install it directly from the [JetBrains Marketplace][marketplace].
 
 # Getting started
 
-1. Open a project that is hosted on GitHub (the plugin detects the repository from your git remotes).
-2. Make sure a GitHub account is configured, or set a custom token in
+1. Open a project hosted on GitHub (the plugin detects the repository from your git remotes).
+2. Make sure a GitHub account is configured or set a custom token in
    <kbd>Settings/Preferences</kbd> > <kbd>Tools</kbd> > <kbd>GitHub Actions Manager</kbd>.
 3. Open the **GitHub Actions** tool window to browse workflow runs, jobs, and logs.
 4. Use the filters at the top of the runs list to narrow down by branch, actor, event, or status.
