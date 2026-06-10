@@ -53,7 +53,7 @@ All notable changes to this project will be documented in this file.
 
 ### 🐛 Bug Fixes
 
-- Fix private workflow not resolved, jackson error in log #300
+- Fix private workflows hasn’t been resolved, jackson error in log #300
 
 ## 2026.1.2 - 2026-05-25
 
@@ -72,7 +72,7 @@ All notable changes to this project will be documented in this file.
 
 ### 🚀 Features
 
-- Add ability to dispatch workflow from the editor
+- Add the ability to dispatch workflow from the editor
 
 ### 🐛 Bug Fixes
 
@@ -163,7 +163,7 @@ All notable changes to this project will be documented in this file.
 ### 🐛 Bug Fixes
 
 - Using EDT in LogConsolePanelWrapper.updateLogs #262
-- Change shortcut to open GitHub Actions Manager from alt-G #260
+- Change the shortcut to open GitHub Actions Manager from alt-G #260
 
 ## 2025.2.5
 
@@ -186,8 +186,8 @@ All notable changes to this project will be documented in this file.
 
 ### 🚀 Features
 
-- Keyboard Shortcut alt+G/option+G to activate plugin window
-- When plugin window is activated, alt/option+E to open dispatch workflow popup
+- Keyboard Shortcut alt+G/option+G to activate the plugin window
+- When plugin window is activated, alt/option+E to open the dispatch workflow popup
 
 ### 🐛 Bug Fixes
 
@@ -196,7 +196,7 @@ All notable changes to this project will be documented in this file.
 ### Maintenance
 
 - improve test coverage
-- Update to latest intellij platform gradle plugin (2.8.0)
+- Update to latest intellij platform Gradle plugin (2.8.0)
 
 ## 2025.2.2 - 2025-08-15
 
@@ -206,7 +206,7 @@ All notable changes to this project will be documented in this file.
 
 ### 🧰 Maintenance
 
-- Updated test suites to run on 2025.2
+- Updated test suites to run in 2025.2
 
 ## 2025.2.1 - 2025-08-02
 
@@ -235,8 +235,8 @@ All notable changes to this project will be documented in this file.
 
 ### 🚀 Features
 
-- Disable workflows button when repository has no workflows
-- Skip workflow parameters popup when workflow has no parameters
+- Disable the workflows button when the repository has no workflows
+- Skip workflow parameters popup when the workflow has no parameters
 - Show when logs are gone from the server
 - fix:allow max 999 secs between executions #219
 - fix: support for 2025.2 EAP
@@ -251,11 +251,11 @@ All notable changes to this project will be documented in this file.
 
 ### 🚀 Features
 
-- Show head commit of PR with different color for branch
+- Show head commit of PR with different color for the branch
 
 ### 🐛 Bug Fixes
 
-- Fix: Workflow run artifacts icon not working properly #216
+- Fix: Workflow run artifacts icon is not working properly #216
 - Fix: YAML exception in ActionsAnnotator #215
 
 ## 2025.1.1 - 2025-04-25
@@ -289,24 +289,24 @@ All notable changes to this project will be documented in this file.
 
 ### 🐛 Bug Fixes
 
-- Fix issue with updating log panel out of EDT #201
-- Fix issue when workflow is not in `.github/workflows` #200
+- Fix the issue with updating log panel out of EDT #201
+- Fix the issue when the workflow is not in `.github/workflows` #200
 
 ## 2024.3.3 - 2024-12-20
 
 ### 🐛 Bug Fixes
 
-- Fixed ability to configure default filter for workflow runs #198
+- Fixed the ability to configure the default filter for workflow runs #198
 
 ### 🧰 Maintenance
 
-- Update to latest intellij platform gradle plugin
+- Update to latest intellij platform Gradle plugin
 
 ## 2024.3.2 - 2024-12-09
 
 ### 🚀 Features
 
-- Added ability to configure default filter for workflow runs #198
+- Added the ability to configure the default filter for workflow runs #198
 
 ### 🐛 Bug Fixes
 
@@ -332,7 +332,7 @@ All notable changes to this project will be documented in this file.
 
 ### 🐛 Bug Fixes
 
-- Disable `Open workflow file` action when workflow does not have a file in the repository.
+- Disable `Open workflow file` action when the workflow does not have a file in the repository.
 - Fix creating scope under disposed parent #184/#190
 - Improve the way action info is searched - scanning in different server paths #191
 - Annotate properly reusable workflows in the same repo (`./.github/workflows/...`) and not only remote workflows #192
@@ -366,18 +366,18 @@ All notable changes to this project will be documented in this file.
 
 ### 🚀 Features
 
-- Add ability to reject pending deployments for workflow-runs in waiting for deployment status
+- Add the ability to reject pending deployments for workflow-runs in waiting for deployment status
 
 ### 🐛 Bug Fixes
 
-- Fixed error reporter to send relevant part of the stack trace
+- Fixed the error reporter to send the relevant part of the stack trace
 
 ## 2024.2.9 - 2024-09-20
 
 ### 🚀 Features
 
-- Add ability to review deployments for workflow-runs in waiting for deployment status #178
-- Add ability to sort jobs by showing in-progress jobs first
+- Add the ability to review deployments for workflow-runs in waiting for deployment status #178
+- Add the ability to sort jobs by showing in-progress jobs first
 
 ### Improvements
 
@@ -405,27 +405,27 @@ All notable changes to this project will be documented in this file.
 
 ### 🐛 Bug Fixes
 
-- Workflow dispatcher: Mark currently workflows that can be manually dispatched.
+- Workflow dispatcher: Mark currently has workflows that can be manually dispatched.
 - Disposing LogConsolePanelWrapper before LogConsolePanel components #177
 
 ## 2024.2.6 - 2024-07-21
 
 ### 🐛 Bug Fixes
 
-- Workflow dispatcher: Disable workflow types that can not be dispatched manually #172
+- Workflow dispatcher: Disable workflow types that cannot be dispatched manually #172
 
 ## 2024.2.5 - 2024-07-15
 
 ### 🐛 Bug Fixes
 
-- Workflow dispatcher: Disable workflow types that can not be dispatched manually #172
-- Prevent API abuse when action with complex name fails resolving #173
+- Workflow dispatcher: Disable workflow types that cannot be dispatched manually #172
+- Prevent API abuse when action with a complex name fails resolving #173
 
 ## 2024.2.4 - 2024-07-08
 
 ### 🐛 Bug Fixes
 
-- Fix issue with RepositoryContext background task not cancelled properly #171
+- Fix the issue with RepositoryContext background task not canceled properly #171
 
 ## 2024.2.3 - 2024-06-30
 
@@ -455,12 +455,12 @@ All notable changes to this project will be documented in this file.
 
 ### 🚀 Features
 
-- (Paid feature) Open pull request from selected workflow run (when pull-request is open)
+- (Paid feature) Open a pull request from a selected workflow run (when pull-request is open)
 
 ### 🐛 Bug Fixes
 
 - Support for reusable workflows in workflow files
-- Showing download artifacts button only when relevant
+- Showing the download artifacts button only when relevant
 
 ### Improvements
 
@@ -483,16 +483,16 @@ All notable changes to this project will be documented in this file.
 
 ### 🚀 Features
 
-- Add ability to download artifacts from jobs panel (Paid feature)
+- Add the ability to download artifacts from jobs panel (Paid feature)
 
 ### Improvements
 
 - Highlighting action names only in the `uses` field
-- Update actions cache when GitHub settings changes.
+- Update the actions cache when GitHub settings change.
 
 ### 🧰 Maintenance
 
-- Update to latest dependencies
+- Update to the latest dependencies
 
 ## 1.22.0 - 2024-05-15
 
@@ -506,8 +506,8 @@ All notable changes to this project will be documented in this file.
 ### 🐛 Bug Fixes
 
 - Fix identifying composite action files
-- Fix opening file in root directory #142
-- Fix bug with concurrent adding/removing actions to resolve #150
+- Fix opening file in the root directory # 142
+- Fix the bug with concurrent adding/removing actions to resolve #150
 
 ### 🧰 Maintenance
 
@@ -517,7 +517,7 @@ All notable changes to this project will be documented in this file.
 
 ### 🐛 Bug Fixes
 
-- Fix bug failing to load annotator #131
+- Fix the bug failing to load annotator #131
 - Fix scanning actions in composite action files
 
 ### 🧰 Maintenance
@@ -529,7 +529,7 @@ All notable changes to this project will be documented in this file.
 
 ### 🐛 Bug Fixes
 
-- Fix bug of jobs not being refreshed while workflow is running
+- Fix the bug of jobs not being refreshed while the workflow is running
 
 ## 1.21.4 - 2024-04-23
 
@@ -542,15 +542,15 @@ All notable changes to this project will be documented in this file.
 
 ### 🐛 Bug Fixes
 
-- Fix bug loading null value to cache #128
-- Show go to GitHub settings when error occurs
-- Show reload jobs button
+- Fix the bug loading null value to cache #128
+- Show go to GitHub settings when an error occurs
+- Show the reload jobs button
 
 ## 1.21.2 - 2024-04-18
 
 ### 🐛 Bug Fixes
 
-- Fix bug scanning workflow files #126 #125
+- Fix a bug scanning workflow files #126 #125
 
 ## 1.21.1 - 2024-04-17
 
@@ -572,13 +572,13 @@ All notable changes to this project will be documented in this file.
 
 ### 🚀 Features
 
-- Tooltip on tab showing real repo and GitHub account
-- Prefer GitHub account that is the owner of the repository
+- Tooltip on the tab showing real repo and GitHub account
+- Prefer a GitHub account that is the owner of the repository
 
 ### 🐛 Bug Fixes
 
 - Using new error handlers.
-- Create GitHub Request executor that supports redirects. # 119
+- Create a GitHub Request executor that supports redirects. # 119
 
 ### 🧰 Maintenance
 
@@ -595,15 +595,15 @@ All notable changes to this project will be documented in this file.
 ### 🧰 Maintenance
 
 - Improve tests and increase coverage
-- Update dependencies to latest versions
+- Update dependencies to the latest versions
 
 ## 1.18.0 - 2024-03-12
 
 ### 🚀 Features
 
-- Add quick-filter to show runs based on the current branch (updates when branch is updated) #115
-- Add ability to position workflow runs list on top of jobs list #116
-- Show link to step log when log is too large #118
+- Add quick-filter to show runs based on the current branch (updates when the branch is updated) #115
+- Add the ability to position workflow runs list on top of jobs list #116
+- Show a link to the step log when the log is too large #118
 
 ### 🧰 Maintenance
 
@@ -611,7 +611,7 @@ All notable changes to this project will be documented in this file.
 
 ### 🐛 Bug Fixes
 
-- Fix not allowing custom repositories on plugin settings
+- Fix not allowing custom repositories in plugin settings
 
 ## 1.17.0 - 2024-02-14
 
@@ -626,7 +626,7 @@ All notable changes to this project will be documented in this file.
 
 ### 🧰 Maintenance
 
-- Update dependencies to latest versions
+- Update dependencies to the latest versions
 - Major code refactoring
 - Implement tests
 
@@ -652,7 +652,7 @@ All notable changes to this project will be documented in this file.
 
 ### 🧰 Maintenance
 
-- Update dependencies to latest versions
+- Update dependencies to the latest versions
 
 ## 1.15.0
 
@@ -728,7 +728,7 @@ All notable changes to this project will be documented in this file.
 ### 🐛 Bug Fixes
 
 - Fix times for workflow-runs #91
-- Showing right status for jobs that haven't started
+- Showing the right status for jobs that haven't started
 - Improved filters behavior
 
 ## 1.12.0
@@ -736,17 +736,17 @@ All notable changes to this project will be documented in this file.
 ### 🚀 Features
 
 - Simplified Jobs panel logic
-- Add ability to filter workflow runs by actor, branch and status.
+- Add the ability to filter workflow runs by actor, branch and status.
 
 ## 1.11.0
 
 ### 🚀 Features
 
-- Add info bar with number of jobs loaded
+- Add an info bar with the number of jobs loaded
 
 ### 🐛 Bug Fixes
 
-- Fix bug showing seconds without padding #88
+- Fix the bug showing seconds without padding #88
 - Fix jobs request pagination, now pagesize=100 #89
 - Fix updating job logs during theme change #85
 
@@ -754,34 +754,34 @@ All notable changes to this project will be documented in this file.
 
 ### 🐛 Bug Fixes
 
-- Fix bug when step does not have logs #83
+- Fix the bug when step does not have logs #83
 - Support for 2023.2-EAP
 
 ## 1.10.3
 
 ### 🐛 Bug Fixes
 
-- Fix icons for new UI look
+- Fix icons for a new UI look
 
 ## 1.10.2
 
 ### 🐛 Bug Fixes
 
-- Fix error when using IntelliJ 2023.1.RC #83
-- Using GHAccountManager instead of deprecated GithubAuthenticationManager
+- Fix the error when using IntelliJ 2023.1.RC #83
+- Using GHAccountManager instead of the deprecated GithubAuthenticationManager
 
 ## 1.10.1
 
 ### 🐛 Bug Fixes
 
-- Fix bug requiring to pick job after logs are loaded.
+- Fix the bug requiring to pick job after logs are loaded.
 
 ## 1.10.0
 
 ### 🚀 Features
 
-- Add ability to configure number of workflow runs on list.
-- Add ability to configure GitHub token instead of using IDE GitHub settings.
+- Add the ability to configure the number of workflow runs on list.
+- Add the ability to configure GitHub token instead of using IDE GitHub settings.
 
 ### Changed
 
@@ -792,14 +792,14 @@ All notable changes to this project will be documented in this file.
 ### Changed
 
 - Fix bugs refreshing workflow runs #81
-- Fix bugs calling getComponent from non dispatch thread #78
-- Add icon for action_required conclusion.
+- Fix bugs calling getComponent from non-dispatch thread #78
+- Add an icon for action_required conclusion.
 
 ## 1.9.1
 
 ### Changed
 
-- Upgrade gradle to `7.6`
+- Upgrade Gradle to `7.6`
 - Upgrade `org.jetbrains.kotlin.jvm` from 1.7.22 to 1.8.0
 
 ## 1.9.0
@@ -814,26 +814,26 @@ All notable changes to this project will be documented in this file.
 ### 🚀 Features
 
 - Make ghactions-manager available during indexing (#66)
-- Sorting jobs by completed date, or started date, else run id (#61)
+- Sorting jobs by completed date or started date, else run id (#61)
 
 ### 🐛 Bug Fixes
 
-- Fix deadlock when refreshing workflow runs (#64)
+- Fix the deadlock when refreshing workflow runs (#64)
 
 ## 1.6.1
 
 ### Fixed
 
 - Link to pull-request
-- Reset log when workflow-run unselected
+- Reset log when the workflow runs unselected
 - Keep workflow-run selected after refresh
 
 ## 1.6.0
 
 ### Added
 
-- Step logs - Showing failed step title in red
-- Refresh of runs only for active tab
+- Step logs – Showing failed step title in red
+- Refresh of runs only for the active tab
 
 ### Changed
 
@@ -841,7 +841,7 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 
-- Update jobs panel and log panel to loading state when a new run is selected
+- Update the jobs panel and log panel to loading state when a new run is selected
 - Clean up more code
 
 ## 1.5.4
@@ -852,13 +852,13 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 
-- Update workflow run state
+- Update the workflow run state
 
 ## 1.5.1
 
 ### Fixed
 
-- Running refresh in background
+- Running refresh in the background
 
 ## 1.5.0
 
@@ -869,7 +869,7 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 
-- Allowing job log to be beneath jobs list - configurable in plugin settings
+- Allowing job log to be beneath the jobs list - configurable in plugin settings
 
 ### Fixed
 
@@ -885,7 +885,7 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
-- Refresh jobs + rerun workflow run by @cunla in #40
+- Refresh jobs + rerun the workflow run by @cunla in #40
 - Update cancelled icon by @cunla in #44
 - Add cancel workflow action #43 by @cunla in #46
 - Guess GitHub account per repo when there are multiple GitHub accounts by @cunla in #48
@@ -894,12 +894,12 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
-- New icons for in progress/queued workflows
-- Ability to configure tab name for each repo (Fix #38)
+- New icons for in-progress /queued workflows
+- Ability to configure a tab name for each repo (Fix #38)
 
 ### Fixed
 
-- Exception when workflow is in progress #35
+- Exception when a workflow is in progress #35
 
 ### Changed
 
@@ -925,7 +925,7 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 
-- Allow empty conclusion, support in progress json - fix #30) by @cunla in #32
+- Allow empty conclusion, support in progress JSON - fix #30) by @cunla in #32
 - Multiple instances bug by @cunla in #31
 
 ## 1.0.1
@@ -948,8 +948,8 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
-- Add a link to GitHub accounts settings in case GitHub account is not set #19
-- Add a link from toolbar window to Toolbar Settings #21
+- Add a link to GitHub accounts settings in case the GitHub account is not set #19
+- Add a link from the toolbar window to Toolbar Settings #21
 - Toolbar settings - Resolve #18 by @cunla in #25
 
 ### Fixed

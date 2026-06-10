@@ -5,7 +5,7 @@ GitHub Actions Manager for JetBrains IDEs
 [![Downloads][download-badge]][marketplace]
 [![Rating][rating-badge]][marketplace]
 
-Manage GitHub Actions without leaving your JetBrains IDE — watch workflow runs, read step-by-step logs, dispatch
+Manage GitHub Actions without leaving your JetBrains IDE - watch workflow runs, read step-by-step logs, dispatch
 workflows, approve deployments, and keep your workflow files up to date.
 
 📺 Watch a demo of most features in this [YouTube walkthrough][youtube-video].
@@ -43,7 +43,7 @@ to receive a discount code.
     - Jobs are shown as a tree, grouping matrix and reusable-workflow jobs under their parent for easy scanning.
     - Logs are organized step-by-step for easier debugging.
     - Track live runs as they progress or review past runs at a glance.
-    - Filter runs by branch, actor, event, or status — individually or in combination. Includes a current-branch filter
+    - Filter runs by branch, actor, event, or status - individually or in combination. Includes a current-branch filter
       that updates automatically when you switch branches.
     - New runs appear automatically (refreshes every 30s by default; configurable).
 - **Settings & configuration**
@@ -59,7 +59,7 @@ to receive a discount code.
 - Approve workflow-run deployments that require approval.
 - Manually trigger dispatchable workflows, with full input support
   ([all GitHub input types](https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#onworkflow_dispatchinputs)).
-- Rerun or cancel a workflow run — or even just a single job.
+- Rerun or cancel a workflow run - or even just a single job.
 - Open the workflow file associated with a run.
 - Generate GitHub links to specific file lines from the IDE.
 
@@ -67,14 +67,16 @@ to receive a discount code.
 
 Manage a repository's GitHub Actions configuration from a dedicated settings dialog, without opening the browser:
 
-- **Variables & secrets** — list, add, edit, and delete repository and organization variables; list and delete
-  secrets. Organization-level items are shown when the repository belongs to an organization. (Creating or editing
-  secret values from the IDE is not supported yet.)
-- **Collaborators** — view the repository's collaborators and add or remove them.
-- **Environments** — create and delete deployment environments. For each environment:
+- **Variables & secrets** - list, add, edit, and delete repository and organization variables; list and delete
+  secrets. Organization-level items are shown when the repository belongs to an organization, and you can choose a
+  new organization variable's visibility (all repositories, or private/internal only). (Creating or editing secret
+  values from the IDE is not supported yet.)
+- **Collaborators** - view the repository's collaborators and add or remove them.
+- **Environments** - create and delete deployment environments. For each environment:
     - Edit environment variables (add, update, delete).
     - Review environment secrets and deployment protection rules.
-    - See which branches are allowed to deploy (deployment branch policies).
+    - Manage which branches and tags are allowed to deploy: review the deployment branch policy and add or remove
+      branch/tag name patterns.
 
 ### Workflow file editing
 
