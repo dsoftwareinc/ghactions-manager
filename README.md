@@ -67,12 +67,14 @@ to receive a discount code.
 
 Manage a repository's GitHub Actions configuration from a dedicated settings dialog, without opening the browser:
 
-- **Variables & secrets** — list, add, edit, and delete repository (and organization) variables and secrets.
+- **Variables & secrets** — list, add, edit, and delete repository and organization variables; list and delete
+  secrets. Organization-level items are shown when the repository belongs to an organization. (Creating or editing
+  secret values from the IDE is not supported yet.)
 - **Collaborators** — view the repository's collaborators and add or remove them.
 - **Environments** — create and delete deployment environments. For each environment:
     - Edit environment variables (add, update, delete).
     - Review environment secrets and deployment protection rules.
-    - Manage deployment branch policies that control which branches can deploy.
+    - See which branches are allowed to deploy (deployment branch policies).
 
 ### Workflow file editing
 
