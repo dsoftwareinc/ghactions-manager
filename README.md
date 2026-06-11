@@ -26,13 +26,23 @@ workflows, approve deployments, and keep your workflow files up to date.
 # Features
 
 <!-- Plugin description -->
-This plugin brings GitHub Actions to JetBrains IDEs, so you don't have to jump back and forth between the IDE and the
-browser. It works with GitHub.com and GitHub Enterprise Server and supports workflow dispatch, deployment approval, and
-other common GitHub Actions use-cases.
+**The missing GitHub Actions UI for JetBrains IDEs.** GitHub ships an official Actions extension for VS Code — JetBrains
+users get this plugin instead: watch workflow runs live, read step-by-step logs, dispatch workflows, approve
+deployments, and manage Actions secrets and variables, all without leaving the IDE.
 
-You can support the development of the plugin and unlock additional advanced features by
-[purchasing a license on the JetBrains Marketplace](https://plugins.jetbrains.com/plugin/19347-github-actions-manager).
-You can
+It works with GitHub.com **and GitHub Enterprise Server** — if your GHES instance lives behind a VPN, this is the
+fastest way to follow a run or approve a deployment.
+
+**Why an IDE plugin instead of the browser or `gh` CLI?**
+
+- No tab-juggling: the run triggered by your push is one tool window away, filtered to your current branch.
+- Logs are split per step and rendered in the IDE, instead of one giant scrolling page.
+- A failed run is fixable on the spot — jump to the workflow file, fix, push, watch the rerun.
+
+Viewing runs, jobs, and logs is **free, forever**. Advanced features (dispatch, rerun/cancel, deployment approval,
+artifacts, repository settings) come with a license —
+[start a free 30-day trial on the JetBrains Marketplace](https://plugins.jetbrains.com/plugin/19347-github-actions-manager),
+or
 fill [this form](https://docs.google.com/forms/d/e/1FAIpQLSe7Nmpz8UcjQh493pwMnuKCdM17uOqIdCOhwEjWUc77wzwrHg/viewform?usp=header)
 to receive a discount code.
 
@@ -67,11 +77,11 @@ to receive a discount code.
 
 Manage a repository's GitHub Actions configuration from a dedicated settings dialog without opening the browser:
 
-- **Variables & secrets** – list, add, edit, and delete repository and organization variables and secrets.
-  Secret values are encrypted locally with the repository/organization public key (libsodium sealed box) before
-  upload, and are write-only: they can be replaced but never read back. Organization-level items are shown when the
-  repository belongs to an organization, and you can choose a new organization variable's or secret's visibility
-  (all repositories, or private/internal only).
+- **Variables & secrets** – list, add, edit, and delete repository and organization variables and secrets. Secret values
+  are encrypted locally with the repository/organization public key (libsodium sealed box) before upload, and are
+  write-only: they can be replaced but never read back. Organization-level items are shown when the repository belongs
+  to an organization, and you can choose a new organization variable's or secret's visibility (all repositories, or
+  private/internal only).
 - **Collaborators** – view the repository's collaborators and add or remove them.
 - **Environments** – create and delete deployment environments. For each environment:
     - Edit environment variables (add, update, delete).
