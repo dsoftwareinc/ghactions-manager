@@ -25,6 +25,9 @@ All notable changes to this project will be documented in this file.
 - Manage repository environments from the repository-settings dialog: environments appear as a tree, and selecting one
   shows its deployment protection rules, environment secrets, and (editable) environment variables
 - Refresh button on the repository-settings panels, with a loading indicator shown while data reloads
+- Manage GitHub Actions caches from the repository-settings dialog: a new **Caches** section groups
+  cache entries by key (showing entry count, total size, created and last-accessed times), lets you
+  filter by branch, sort by any column, and delete all caches for a key to reclaim storage
 
 ### 🐛 Bug Fixes
 
@@ -53,7 +56,7 @@ All notable changes to this project will be documented in this file.
 
 ### 🐛 Bug Fixes
 
-- Fix private workflows hasn’t been resolved, jackson error in log #300
+- Fix private workflow hasn’t been resolved, jackson error in log #300
 
 ## 2026.1.2 - 2026-05-25
 
@@ -158,7 +161,7 @@ All notable changes to this project will be documented in this file.
 ### 🚀 Features
 
 - Show starting time for jobs
-- Show steps when job is running (without logs due to GitHub API limitations)
+- Show steps when a selected job is still running (without logs due to GitHub API limitations)
 
 ### 🐛 Bug Fixes
 
@@ -175,7 +178,7 @@ All notable changes to this project will be documented in this file.
 
 ### 🚀 Features
 
-- workflow input with `environment` type shows environments dropdown
+- workflow input with `environment` type shows environments’ dropdown
 
 ### 🐛 Bug Fixes
 
@@ -187,7 +190,7 @@ All notable changes to this project will be documented in this file.
 ### 🚀 Features
 
 - Keyboard Shortcut alt+G/option+G to activate the plugin window
-- When plugin window is activated, alt/option+E to open the dispatch workflow popup
+- When the plugin window is activated, alt/option+E to open the dispatch workflow popup
 
 ### 🐛 Bug Fixes
 
@@ -235,7 +238,7 @@ All notable changes to this project will be documented in this file.
 
 ### 🚀 Features
 
-- Disable the workflows button when the repository has no workflows
+- Disable the workflows’ button when the repository has no workflows
 - Skip workflow parameters popup when the workflow has no parameters
 - Show when logs are gone from the server
 - fix:allow max 999 secs between executions #219
@@ -265,7 +268,7 @@ All notable changes to this project will be documented in this file.
 - ConcurrentModificationException happening on reset #213
 - Access is allowed from Event Dispatch Thread #212
 - Update ToolWindow on updating GitHub accounts
-- Comparing repo-mapping using repo-path to avoid NoSuchElementException #210
+- Comparing repo-mapping using a repo-path to avoid NoSuchElementException #210
 
 ## 2025.1.0 - 2025-04-10
 
@@ -289,7 +292,7 @@ All notable changes to this project will be documented in this file.
 
 ### 🐛 Bug Fixes
 
-- Fix the issue with updating log panel out of EDT #201
+- Fix the issue with updating the log panel out of EDT #201
 - Fix the issue when the workflow is not in `.github/workflows` #200
 
 ## 2024.3.3 - 2024-12-20
@@ -425,13 +428,13 @@ All notable changes to this project will be documented in this file.
 
 ### 🐛 Bug Fixes
 
-- Fix the issue with RepositoryContext background task not canceled properly #171
+- Fix the issue with RepositoryContext background task hasn’t been canceled properly #171
 
 ## 2024.2.3 - 2024-06-30
 
 ### Improvements
 
-- Migrated to view-model for jobs-panel + logs-panel - significant performance improvement.
+- Migrated to a view-model for jobs-panel and logs-panel - significant performance improvement.
 - Improved error handling for GitHub API requests.
 
 ### 🐛 Bug Fixes
@@ -477,18 +480,18 @@ All notable changes to this project will be documented in this file.
 
 ### 🐛 Bug Fixes
 
-- Using concurrent set to prevent concurrent modification exception #154
+- Using a concurrent set to prevent concurrent modification exception #154
 
 ## 2024.1.1 - 2024-05-11
 
 ### 🚀 Features
 
-- Add the ability to download artifacts from jobs panel (Paid feature)
+- Add the ability to download artifacts from the jobs panel (Paid feature)
 
 ### Improvements
 
 - Highlighting action names only in the `uses` field
-- Update the actions cache when GitHub settings change.
+- Update the actions’ cache when GitHub settings change.
 
 ### 🧰 Maintenance
 
@@ -535,7 +538,7 @@ All notable changes to this project will be documented in this file.
 
 ### 🐛 Bug Fixes
 
-- Fix memory leak with log panel
+- Fix memory leak with the log panel
 - Workflow runs list is getting updated with the latest status
 
 ## 1.21.3 - 2024-04-19
@@ -602,7 +605,7 @@ All notable changes to this project will be documented in this file.
 ### 🚀 Features
 
 - Add quick-filter to show runs based on the current branch (updates when the branch is updated) #115
-- Add the ability to position workflow runs list on top of jobs list #116
+- Add the ability to position the workflow runs list on top of jobs list #116
 - Show a link to the step log when the log is too large #118
 
 ### 🧰 Maintenance
@@ -618,7 +621,7 @@ All notable changes to this project will be documented in this file.
 ### 🚀 Features
 
 - Extract all messages to i18n file #114
-- Update info bar on jobs-panel
+- Update info bar on the jobs-panel
 
 ### 🐛 Bug Fixes
 
@@ -698,7 +701,7 @@ All notable changes to this project will be documented in this file.
 
 ### 🐛 Bug Fixes
 
-- Fix refreshing of jobs list.
+- Fix refreshing of jobs’ list.
 - Updated dependencies
 
 ## 1.13.1
@@ -754,7 +757,7 @@ All notable changes to this project will be documented in this file.
 
 ### 🐛 Bug Fixes
 
-- Fix the bug when step does not have logs #83
+- Fix the bug when the step does not have logs #83
 - Support for 2023.2-EAP
 
 ## 1.10.3
@@ -774,13 +777,13 @@ All notable changes to this project will be documented in this file.
 
 ### 🐛 Bug Fixes
 
-- Fix the bug requiring to pick job after logs are loaded.
+- Fix the bug requiring to pick a job after logs are loaded.
 
 ## 1.10.0
 
 ### 🚀 Features
 
-- Add the ability to configure the number of workflow runs on list.
+- Add the ability to configure the number of workflow runs on the list.
 - Add the ability to configure GitHub token instead of using IDE GitHub settings.
 
 ### Changed
@@ -837,7 +840,7 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 
-- Better github REST API error handling
+- Better GitHub REST API error handling
 
 ### Fixed
 
@@ -869,11 +872,11 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 
-- Allowing job log to be beneath the jobs list - configurable in plugin settings
+- Allowing job log to be beneath the jobs’ list – configurable in plugin settings
 
 ### Fixed
 
-- Showing logs of selected job once logs are loaded
+- Showing logs of the selected job once logs are loaded
 
 ## 1.4.0
 
@@ -885,7 +888,7 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
-- Refresh jobs + rerun the workflow run by @cunla in #40
+- Refresh jobs and rerun the workflow run by @cunla in #40
 - Update cancelled icon by @cunla in #44
 - Add cancel workflow action #43 by @cunla in #46
 - Guess GitHub account per repo when there are multiple GitHub accounts by @cunla in #48
@@ -909,7 +912,7 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 
-- Bug serializing status of job
+- Bug serializing status of a job
 - Viewing job logs while it is in progress #34
 
 ### Changed
