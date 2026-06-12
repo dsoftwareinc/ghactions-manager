@@ -25,9 +25,10 @@ All notable changes to this project will be documented in this file.
 - Manage repository environments from the repository-settings dialog: environments appear as a tree, and selecting one
   shows its deployment protection rules, environment secrets, and (editable) environment variables
 - Refresh button on the repository-settings panels, with a loading indicator shown while data reloads
-- Manage GitHub Actions caches from the repository-settings dialog: a new **Caches** section groups
-  cache entries by key (showing entry count, total size, created and last-accessed times), lets you
-  filter by branch, sort by any column, and delete all caches for a key to reclaim storage
+- Manage GitHub Actions caches from the repository-settings dialog: a new **Caches** section shows the
+  repo's total cache usage and storage limit, groups cache entries by key (showing entry count, total
+  size, created and last-accessed times), lets you filter by branch, sort by any column, and delete all
+  caches for a key to reclaim storage
 
 ### 🐛 Bug Fixes
 
@@ -510,6 +511,7 @@ All notable changes to this project will be documented in this file.
 
 - Fix identifying composite action files
 - Fix opening file in the root directory # 142
+
 - Fix the bug with concurrent adding/removing actions to resolve #150
 
 ### 🧰 Maintenance

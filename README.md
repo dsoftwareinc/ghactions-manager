@@ -83,6 +83,8 @@ Manage a repository's GitHub Actions configuration from a dedicated settings dia
   to an organization, and you can choose a new organization variable's or secret's visibility (all repositories, or
   private/internal only).
 - **Collaborators** – view the repository's collaborators and add or remove them.
+- **Actions caches** – browse the repository's GitHub Actions caches (with per-branch filtering, sizes, and
+  total storage usage) and delete stale entries.
 - **Environments** – create and delete deployment environments. For each environment:
     - Edit environment variables (add, update, delete).
     - Review environment secrets and deployment protection rules.
@@ -126,30 +128,67 @@ Or install it directly from the [JetBrains Marketplace][marketplace].
 
 # Screenshots
 
-### View workflow-runs/jobs/logs
+### Workflow runs, jobs, and step-by-step logs
 
-![](docs/screenshot-new-ui-light.png) ![](docs/screenshot-new-ui-dark.png)
-![](docs/screenshot-vertical.jpg)
+<table>
+  <tr>
+    <td width="50%"><img src="docs/screenshot-new-ui-light.png" alt="Runs, jobs, and logs — light theme"/></td>
+    <td width="50%"><img src="docs/screenshot-new-ui-dark.png" alt="Runs, jobs, and logs — dark theme"/></td>
+  </tr>
+</table>
 
-### Dispatch a workflow that has inputs
+The tool window also works as a sidebar — runs, jobs, and logs stacked vertically:
 
-![](docs/workflow-dispatch.jpg)
+<img src="docs/screenshot-vertical.jpg" alt="Vertical tool window layout with runs, jobs, and step-by-step logs" width="400"/>
 
-### See outdated action in workflow files
+### Plugin settings
 
-![](docs/outdated-action-version.jpg)
+Use a custom token, tune the tool-window layout, and assign a GitHub account (or hide the tab) per repository:
 
-### Quickfix to update the action version in workflow files
+<img src="docs/plugin-settings.jpg" alt="Plugin settings — custom API token, layout options, and per-repository GitHub account assignment"/>
 
-![](docs/quickfix-action.jpg)
+### Dispatch a workflow with inputs
 
-### Approve deployment
+All `workflow_dispatch` input types are supported — choice, boolean, number, string:
 
-![](docs/approve-deployment.gif)
+<table>
+  <tr>
+    <td width="50%"><img src="docs/workflow-with-inputs.jpg" alt="A workflow file declaring workflow_dispatch inputs"/></td>
+    <td width="50%"><img src="docs/workflow-dispatch.jpg" alt="The dispatch dialog rendering each input with the right control"/></td>
+  </tr>
+</table>
 
-### Create a link of selected file lines in GitHub
+### Approve deployments
 
-![](docs/ghactions-mgr-link-to-gh.gif)
+<img src="docs/approve-deployment.gif" alt="Approving a workflow-run deployment from the tool window"/>
+
+### Repository settings
+
+Manage Actions secrets, variables, environments, and caches without opening the browser:
+
+<table>
+  <tr>
+    <td width="50%"><img src="docs/RepoSettings-repo-secrets.jpg" alt="Repository secrets — add, replace, or delete; values are write-only"/></td>
+    <td width="50%"><img src="docs/RepoSettings-env-settings.jpg" alt="Environment settings — variables, protection rules, and deployment branch policies"/></td>
+  </tr>
+</table>
+
+<img src="docs/RepoSettings-actions-cache.jpg" alt="GitHub Actions caches — browse by branch, see sizes and storage usage, and delete entries"/>
+
+### Workflow file editing
+
+Outdated actions are highlighted, with a quick-fix to bump the version:
+
+<table>
+  <tr>
+    <td width="50%"><img src="docs/outdated-action-version.jpg" alt="An outdated action version highlighted as a warning"/></td>
+    <td width="50%"><img src="docs/quickfix-action.jpg" alt="Quick-fix updating the action to the latest version"/></td>
+  </tr>
+</table>
+
+### Link to file lines on GitHub
+
+<img src="docs/ghactions-mgr-link-to-gh.gif" alt="Generating a GitHub link to the selected file lines"/>
 
 # Support & contributing
 
