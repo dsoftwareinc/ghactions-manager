@@ -17,7 +17,17 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
-## 2026.1.5 -
+## 2026.1.6
+
+### 🚀 Features
+
+- Add a **Rerun Failed Jobs** action to the workflow-run popup menu, shown for finished runs
+
+### 🧰 Maintenance
+
+- Remove usage of deprecated API `SimpleListCellRenderer.create`
+
+## 2026.1.5 - 2026-06-12
 
 ### 🚀 Features
 
@@ -25,10 +35,9 @@ All notable changes to this project will be documented in this file.
 - Manage repository environments from the repository-settings dialog: environments appear as a tree, and selecting one
   shows its deployment protection rules, environment secrets, and (editable) environment variables
 - Refresh button on the repository-settings panels, with a loading indicator shown while data reloads
-- Manage GitHub Actions caches from the repository-settings dialog: a new **Caches** section shows the
-  repo's total cache usage and storage limit, groups cache entries by key (showing entry count, total
-  size, created and last-accessed times), lets you filter by branch, sort by any column, and delete all
-  caches for a key to reclaim storage
+- Manage GitHub Actions caches from the repository-settings dialog: a new **Caches** section shows the repo's total
+  cache usage and storage limit, groups cache entries by key (showing entry count, total size, created and last-accessed
+  times), lets you filter by branch, sort by any column, and delete all caches for a key to reclaim storage
 
 ### 🐛 Bug Fixes
 
