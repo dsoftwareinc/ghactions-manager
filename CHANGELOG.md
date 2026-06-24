@@ -17,6 +17,13 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
+## 2026.1.7
+
+### 🧰 Maintenance
+
+- Migrate from the deprecated `kotlinx.datetime.Instant`/`Clock` to the stable `kotlin.time` equivalents
+- Replace the deprecated `@RunInEdt` test annotation with a local `RunInEdtInterceptor` JUnit 5 extension
+
 ## 2026.1.6
 
 ### 🚀 Features
