@@ -25,6 +25,8 @@ All notable changes to this project will be documented in this file.
   clicking an annotation with a file path opens that line in the editor. (License required.)
 - Hover over a job in the jobs tree to see a details tooltip: runner name/group, runner labels, attempt,
   branch and commit, and timing.
+- Hover over a workflow run to see a details tooltip: trigger event, attempt, total duration, and (for the
+  selected run) artifact count.
 
 ### 🧰 Maintenance
 
