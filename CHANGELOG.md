@@ -19,6 +19,10 @@ All notable changes to this project will be documented in this file.
 
 ## 2026.1.7
 
+### 🐛 Bug Fixes
+
+- Resolve of local actions/workflows #301
+
 ### 🧰 Maintenance
 
 - Migrate from the deprecated `kotlinx.datetime.Instant`/`Clock` to the stable `kotlin.time` equivalents
