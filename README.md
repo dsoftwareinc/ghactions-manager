@@ -51,6 +51,8 @@ to receive a discount code.
 - **View workflow runs, jobs, and logs**
     - See real-time and historical workflow runs directly in the IDE.
     - Jobs are shown as a tree, grouping matrix and reusable-workflow jobs under their parent for easy scanning.
+    - Hover over a job to see its details tooltip – runner name and group, runner labels, attempt, branch and commit,
+      and timing.
     - Logs are organized step-by-step for easier debugging.
     - Search within a job's log using the IDE's find bar (<kbd>⌘F</kbd> / <kbd>Ctrl+F</kbd>) – logs render in a
       standard editor console.
