@@ -52,6 +52,8 @@ to receive a discount code.
     - See real-time and historical workflow runs directly in the IDE.
     - Jobs are shown as a tree, grouping matrix and reusable-workflow jobs under their parent for easy scanning.
     - Logs are organized step-by-step for easier debugging.
+    - Search within a job's log using the IDE's find bar (<kbd>⌘F</kbd> / <kbd>Ctrl+F</kbd>) – logs render in a
+      standard editor console.
     - Track live runs as they progress or review past runs at a glance.
     - Filter runs by branch, actor, event, or status – individually or in combination. Includes a current-branch filter
       that updates automatically when you switch branches.
@@ -70,6 +72,8 @@ to receive a discount code.
 - Manually trigger dispatchable workflows, with full input support
   ([all GitHub input types](https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#onworkflow_dispatchinputs)).
 - Rerun or cancel a workflow run – or even just a single job.
+- View a job's annotations (failures, warnings, and notices) in a banner above the step log, and click an annotation to
+  jump straight to the offending file and line in the editor.
 - Open the workflow file associated with a run.
 - Generate GitHub links to specific file lines from the IDE.
 
@@ -83,8 +87,8 @@ Manage a repository's GitHub Actions configuration from a dedicated settings dia
   to an organization, and you can choose a new organization variable's or secret's visibility (all repositories, or
   private/internal only).
 - **Collaborators** – view the repository's collaborators and add or remove them.
-- **Actions caches** – browse the repository's GitHub Actions caches (with per-branch filtering, sizes, and
-  total storage usage) and delete stale entries.
+- **Actions caches** – browse the repository's GitHub Actions caches (with per-branch filtering, sizes, and total
+  storage usage) and delete stale entries.
 - **Environments** – create and delete deployment environments. For each environment:
     - Edit environment variables (add, update, delete).
     - Review environment secrets and deployment protection rules.
