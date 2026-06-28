@@ -50,6 +50,8 @@ to receive a discount code.
 
 - **View workflow runs, jobs, and logs**
     - See real-time and historical workflow runs directly in the IDE.
+    - Hover over a workflow run to see a details tooltip – what triggered it, attempt, total duration, and (for the
+      selected run) how many artifacts it produced.
     - Jobs are shown as a tree, grouping matrix and reusable-workflow jobs under their parent for easy scanning.
     - Hover over a job to see its details tooltip – runner name and group, runner labels, attempt, branch and commit,
       and timing.
