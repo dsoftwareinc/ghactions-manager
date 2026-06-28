@@ -17,13 +17,14 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
-
 ## 2026.1.8
 
 ### 🚀 Features
 
-- View a job's GitHub Actions annotations (failures/warnings/notices) in a banner above the step log; clicking an
-  annotation with a file path opens that line in the editor. (License required.)
+- View a job's GitHub Actions annotations (failures/warnings/notices) in a banner above the step log;
+  clicking an annotation with a file path opens that line in the editor. (License required.)
+- Hover over a job in the jobs tree to see a details tooltip: runner name/group, runner labels, attempt,
+  branch and commit, and timing.
 
 ### 🧰 Maintenance
 
