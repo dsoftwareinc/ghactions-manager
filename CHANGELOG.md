@@ -17,6 +17,18 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
+
+## 2026.1.8
+
+### 🚀 Features
+
+- View a job's GitHub Actions annotations (failures/warnings/notices) in a banner above the step log; clicking an
+  annotation with a file path opens that line in the editor. (License required.)
+
+### 🧰 Maintenance
+
+- fix: update publishPlugin task for configuration cache compatibility
+
 ## 2026.1.7
 
 ### 🐛 Bug Fixes
