@@ -17,6 +17,18 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
+### 🚀 Features
+
+- New "Concurrency Groups" section in the repository-settings dialog: lists the repository's workflow
+  concurrency groups, and selecting a group shows the workflow runs and jobs currently holding or
+  waiting for that group's lock.
+- Repository settings: when the caches or concurrency-groups list fails to load (e.g. HTTP 402
+  "payment method required"), GitHub's error message is shown with a Retry link instead of an
+  empty table.
+- New "Runners" section in the repository-settings dialog for organization-owned repos: lists the
+  organization's GitHub-hosted runners (platform, image, machine size, status) and self-hosted
+  runners (OS, online/busy status, labels, agent version).
+
 ### 🐛 Bug Fixes
 
 - The annotations-panel toggle is now remembered per project across IDE restarts.
@@ -24,6 +36,8 @@ All notable changes to this project will be documented in this file.
   every job selection.
 - The workflow-run tooltip now shows a live duration for in-progress runs instead of a value frozen at
   the last refresh.
+- No more error balloon on every repository-settings open when the cache usage or storage-limit
+  endpoints fail (e.g. HTTP 402); the caches header simply omits the usage line.
 
 ### Improvements
 
