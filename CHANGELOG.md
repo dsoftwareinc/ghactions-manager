@@ -17,6 +17,19 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
+### 🐛 Bug Fixes
+
+- The annotations-panel toggle is now remembered per project across IDE restarts.
+- The license invitation in the annotations banner is shown at most once per IDE session instead of on
+  every job selection.
+- The workflow-run tooltip now shows a live duration for in-progress runs instead of a value frozen at
+  the last refresh.
+
+### Improvements
+
+- Faster runs-list rendering: the hover tooltip is built only on hover instead of on every repaint
+  (in-progress rows repaint continuously while their status icon animates).
+
 ## 2026.1.8
 
 ### 🚀 Features
