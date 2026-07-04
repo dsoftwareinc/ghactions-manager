@@ -17,43 +17,45 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
+## 2026.1.9
+
 ### 🚀 Features
 
-- New "Concurrency Groups" section in the repository-settings dialog: lists the repository's workflow
-  concurrency groups, and selecting a group shows the workflow runs and jobs currently holding or
-  waiting for that group's lock.
+- New "Concurrency Groups" section in the repository-settings dialog: lists the repository's workflow concurrency
+  groups, and selecting a group shows the workflow runs and jobs currently holding or waiting for that group's lock.
 - Repository settings: when the caches or concurrency-groups list fails to load (e.g. HTTP 402
-  "payment method required"), GitHub's error message is shown with a Retry link instead of an
-  empty table.
-- New "Runners" section in the repository-settings dialog for organization-owned repos: lists the
-  organization's GitHub-hosted runners (platform, image, machine size, status) and self-hosted
-  runners (OS, online/busy status, labels, agent version).
+  "payment method required"), GitHub's error message is shown with a Retry link instead of an empty table.
+- New "Runners" section in the repository-settings dialog for organization-owned repos: lists the organization's
+  GitHub-hosted runners (platform, image, machine size, status) and self-hosted runners (OS, online/busy status, labels,
+  agent version).
 
 ### 🐛 Bug Fixes
 
 - The annotations-panel toggle is now remembered per project across IDE restarts.
-- The license invitation in the annotations banner is shown at most once per IDE session instead of on
-  every job selection.
-- The workflow-run tooltip now shows a live duration for in-progress runs instead of a value frozen at
-  the last refresh.
-- No more error balloon on every repository-settings open when the cache usage or storage-limit
-  endpoints fail (e.g. HTTP 402); the caches header simply omits the usage line.
+- The license invitation in the annotations banner is shown at most once per IDE session instead of on every job
+  selection.
+- The workflow-run tooltip now shows a live duration for in-progress runs instead of a value frozen at the last refresh.
+- No more error balloon on every repository-settings open when the cache usage or storage-limit endpoints fail (e.g.
+  HTTP 402); the caches header simply omits the usage line.
+- Fixed an `IncorrectOperationException` ("parent ... has already been disposed") when a deferred tool-window content
+  refresh ran after the tool window was disposed, e.g. while closing the project.
+  ([#302](https://github.com/dsoftwareinc/ghactions-manager/issues/302))
 
 ### Improvements
 
-- Faster runs-list rendering: the hover tooltip is built only on hover instead of on every repaint
-  (in-progress rows repaint continuously while their status icon animates).
+- Faster runs-list rendering: the hover tooltip is built only on hover instead of on every repaint (in-progress rows
+  repaint continuously while their status icon animates).
 
 ## 2026.1.8
 
 ### 🚀 Features
 
-- View a job's GitHub Actions annotations (failures/warnings/notices) in a banner above the step log;
-  clicking an annotation with a file path opens that line in the editor. (License required.)
-- Hover over a job in the jobs tree to see a details tooltip: runner name/group, runner labels, attempt,
-  branch and commit, and timing.
-- Hover over a workflow run to see a details tooltip: trigger event, attempt, total duration, and (for the
-  selected run) artifact count.
+- View a job's GitHub Actions annotations (failures/warnings/notices) in a banner above the step log; clicking an
+  annotation with a file path opens that line in the editor. (License required.)
+- Hover over a job in the jobs tree to see a details tooltip: runner name/group, runner labels, attempt, branch and
+  commit, and timing.
+- Hover over a workflow run to see a details tooltip: trigger event, attempt, total duration, and (for the selected run)
+  artifact count.
 
 ### 🧰 Maintenance
 
