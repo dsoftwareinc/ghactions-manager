@@ -40,6 +40,21 @@ All notable changes to this project will be documented in this file.
 - Fixed an `IncorrectOperationException` ("parent ... has already been disposed") when a deferred tool-window content
   refresh ran after the tool window was disposed, e.g. while closing the project.
   ([#302](https://github.com/dsoftwareinc/ghactions-manager/issues/302))
+- Repository tabs are now sorted alphabetically by display name, so the tab strip and the "Show Hidden Tabs" list are
+  navigable in multi-repo projects. ([#304](https://github.com/dsoftwareinc/ghactions-manager/issues/304))
+- The unlicensed annotations banner no longer shows a literal `<hyperlink>` tag; only the word "license" is rendered as
+  the link. ([#303](https://github.com/dsoftwareinc/ghactions-manager/issues/303))
+- The "please upvote this issue" link shown while a job is in progress now actually opens the GitHub discussion in the
+  browser. ([#303](https://github.com/dsoftwareinc/ghactions-manager/issues/303))
+- In-progress step names are shown in readable amber instead of pure yellow, which was illegible on light themes.
+  ([#303](https://github.com/dsoftwareinc/ghactions-manager/issues/303))
+- The "Open in browser" actions use the generic web icon instead of the Chrome logo.
+  ([#303](https://github.com/dsoftwareinc/ghactions-manager/issues/303))
+
+### 🧰 Maintenance
+
+- Subscribe `FileOpenedListener` to the `FileEditorManagerListener.FILE_EDITOR_MANAGER` message-bus topic at project
+  startup instead of the declarative `<projectListeners>` registration deprecated in newer platform builds.
 
 ### Improvements
 
