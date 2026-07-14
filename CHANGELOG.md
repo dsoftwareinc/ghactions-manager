@@ -17,6 +17,22 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
+## 2026.1.11
+
+### 🚀 Features
+
+- Opening a workflow file in the editor now opens the GitHub Actions tool window with the runs list filtered to that
+  workflow. Switching between already-open editor tabs updates the filter when the tool window is visible. The behavior
+  can be turned off in the plugin settings ("Show runs of a workflow file when it is opened?"); it is on by default.
+
+## 2026.1.10
+
+### 🐛 Bug Fixes
+
+- Fixed the plugin failing to load with `UnsupportedClassVersionError` (class file version 69.0) on IDEs running JBR 21,
+  such as Android Studio 2026.1.1. The plugin is now compiled to a Java 21 bytecode target to match the platform
+  baseline. ([#305](https://github.com/dsoftwareinc/ghactions-manager/issues/305))
+
 ## 2026.1.9
 
 ### 🚀 Features
