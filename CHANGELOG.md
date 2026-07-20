@@ -25,6 +25,19 @@ All notable changes to this project will be documented in this file.
   workflow. Switching between already-open editor tabs updates the filter when the tool window is visible. The behavior
   can be turned off in the plugin settings ("Show runs of a workflow file when it is opened?"); it is on by default.
 
+### 🐛 Bug Fixes
+
+- Fixed action navigation from `uses:` in workflow files doing nothing on IntelliJ IDEA Ultimate 2026.2. The platform
+  now bundles its own GitHub Actions support that contributes a competing reference on `uses:` values, which suppressed
+  the plugin's own reference resolution entirely. The plugin's reference provider is now registered at a higher
+  priority.
+
+### 🧰 Maintenance
+
+- The plugin now targets the 2026.2 (262) platform and is compiled to a Java 25 bytecode target to match its JBR 25
+  baseline. IDEs on older platforms continue to receive the 2026.1.x releases.
+- Updated Kotlin to 2.4.10, the IntelliJ Platform Gradle plugin to 2.18.1, and JUnit to 6.1.2.
+
 ## 2026.1.10
 
 ### 🐛 Bug Fixes
