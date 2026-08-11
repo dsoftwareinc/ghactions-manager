@@ -31,6 +31,12 @@ All notable changes to this project will be documented in this file.
   now bundles its own GitHub Actions support that contributes a competing reference on `uses:` values, which suppressed
   the plugin's own reference resolution entirely. The plugin's reference provider is now registered at a higher
   priority.
+- Actions that failed to resolve while you were offline or rate-limited are now retried, instead of staying marked as
+  unknown until the IDE is restarted. Once resolution succeeds, the incorrect "unknown action" markings are replaced
+  without having to edit the file.
+- A `uses:` reference is now resolved by a single request even when the editor and the background refresh ask for it at
+  the same moment, so a valid action is no longer reported as unknown just because two lookups overlapped.
+
 
 ### 🧰 Maintenance
 
