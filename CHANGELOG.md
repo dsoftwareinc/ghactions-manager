@@ -17,14 +17,6 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
-### 🐛 Bug Fixes
-
-- A request to a GitHub or GitHub Enterprise Server host that accepts the connection but never answers now fails with an
-  error in the panel, instead of leaving it on "Loading…" forever with no way to retry. The resource is requested again
-  on the next refresh once the host responds. The time allowed to establish a connection is the IDE's own GitHub
-  connection timeout (Settings | Version Control | GitHub, 5 seconds by default); the whole request is allowed 20
-  seconds. Job logs and artifact downloads are unaffected and keep their larger budget.
-
 ## 2026.1.11
 
 ### 🚀 Features
@@ -46,6 +38,11 @@ All notable changes to this project will be documented in this file.
   the same moment, so a valid action is no longer reported as unknown just because two lookups overlapped.
 - Editing a workflow file no longer leaves an action marked as unknown. A version check that was interrupted by the edit
   used to be recorded as if the action had failed to resolve, which then suppressed further attempts.
+- A request to a GitHub or GitHub Enterprise Server host that accepts the connection but never answers now fails with an
+  error in the panel, instead of leaving it on "Loading…" forever with no way to retry. The resource is requested again
+  on the next refresh once the host responds. The time allowed to establish a connection is the IDE's own GitHub
+  connection timeout (Settings | Version Control | GitHub, 5 seconds by default); the whole request is allowed 20
+  seconds. Job logs and artifact downloads are unaffected and keep their larger budget.
 
 ### Improvements
 
