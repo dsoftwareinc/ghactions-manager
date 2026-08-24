@@ -17,6 +17,13 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
+### 🐛 Bug Fixes
+
+- Times in the runs list, jobs tree and repository-settings tables no longer crash the renderer when the IDE can't build
+  a date format from the OS settings (macOS locales yielding the CLDR-only `B` day-period made
+  `SimpleDateFormat` throw `Illegal pattern character 'B'`, on every repaint). The plugin now falls back to a JDK date
+  format for the rest of the session ([#307](https://github.com/dsoftwareinc/ghactions-manager/issues/307)).
+
 ## 2026.1.11
 
 ### 🚀 Features
