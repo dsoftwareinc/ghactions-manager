@@ -24,6 +24,13 @@ All notable changes to this project will be documented in this file.
   `SimpleDateFormat` throw `Illegal pattern character 'B'`, on every repaint). The plugin now falls back to a JDK date
   format for the rest of the session ([#307](https://github.com/dsoftwareinc/ghactions-manager/issues/307)).
 
+### Improvements
+
+- Concurrency and resource management modernization:
+  - Data provider change listeners in `ViewModel` are now cleanly disposed and detached on selection switch, preventing memory leaks and obsolete background event processing.
+  - Side-load caches in `WorkflowRunListLoader` (`collaborators`, `branches`, `workflowTypes`) now use thread-safe `CopyOnWriteArrayList`, eliminating synchronization locking bottlenecks during filter rendering.
+  - Standardized concurrent tracking collections in `GitHubActionDataService` using `ConcurrentHashMap.newKeySet()` for reliable bulk item removals during action resolution sweeps.
+
 ## 2026.1.11
 
 ### 🚀 Features
