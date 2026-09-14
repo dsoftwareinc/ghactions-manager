@@ -17,6 +17,8 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
+## 2026.1.12
+
 ### 🐛 Bug Fixes
 
 - Times in the runs list, jobs tree and repository-settings tables no longer crash the renderer when the IDE can't build
@@ -27,13 +29,20 @@ All notable changes to this project will be documented in this file.
 ### Improvements
 
 - Resiliency and rate-limit handling:
-  - GitHub API rate limits (HTTP 429 and 403 quota exhaustion) are now detected via `x-ratelimit-reset` and `retry-after` headers; periodic background polling automatically pauses during cooldowns and resumes once the quota resets.
-  - Rate-limited requests are no longer treated as permanent authorization failures and remain retryable once cooldown expires.
-  - The workflow runs list now preserves previously loaded items during transient network drops, timeouts, or rate limits, presenting an offline/cached state indicator rather than clearing the view.
+    - GitHub API rate limits (HTTP 429 and 403 quota exhaustion) are now detected via `x-ratelimit-reset` and
+      `retry-after` headers; periodic background polling automatically pauses during cooldowns and resumes once the
+      quota resets.
+    - Rate-limited requests are no longer treated as permanent authorization failures and remain retryable once cooldown
+      expires.
+    - The workflow runs list now preserves previously loaded items during transient network drops, timeouts, or rate
+      limits, presenting an offline/cached state indicator rather than clearing the view.
 - Concurrency and resource management modernization:
-  - Data provider change listeners in `ViewModel` are now cleanly disposed and detached on selection switch, preventing memory leaks and obsolete background event processing.
-  - Side-load caches in `WorkflowRunListLoader` (`collaborators`, `branches`, `workflowTypes`) now use thread-safe `CopyOnWriteArrayList`, eliminating synchronization locking bottlenecks during filter rendering.
-  - Standardized concurrent tracking collections in `GitHubActionDataService` using `ConcurrentHashMap.newKeySet()` for reliable bulk item removals during action resolution sweeps.
+    - Data provider change listeners in `ViewModel` are now cleanly disposed and detached on selection switch,
+      preventing memory leaks and obsolete background event processing.
+    - Side-load caches in `WorkflowRunListLoader` (`collaborators`, `branches`, `workflowTypes`) now use thread-safe
+      `CopyOnWriteArrayList`, eliminating synchronization locking bottlenecks during filter rendering.
+    - Standardized concurrent tracking collections in `GitHubActionDataService` using `ConcurrentHashMap.newKeySet()`
+      for reliable bulk item removals during action resolution sweeps.
 
 ## 2026.1.11
 
