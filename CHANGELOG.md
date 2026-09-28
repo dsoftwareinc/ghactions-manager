@@ -19,8 +19,17 @@ All notable changes to this project will be documented in this file.
 
 ## 2026.1.14
 
+### 🚀 Features
+
+- Workflow files (`.github/workflows/`) get a toolbar above the editor: **Run Workflow** dispatches it on the
+  current branch (enabled when it has a `workflow_dispatch` trigger), **Show Runs** opens the tool window filtered to
+  its runs, and **Open on GitHub** opens its Actions page. It can be turned off in the plugin settings.
+
 ### 🐛 Bug Fixes
 
+- Removing the `workflow_dispatch` trigger from a workflow file now removes its dispatch action; it used to stay
+  until the IDE restarted.
+- Preparing a workflow dispatch (loading the repository's environments) no longer blocks the UI.
 - A job log or artifact transfer that stops receiving data now fails with a timeout error instead of hanging, and a
   job log that fails part way through shows the log panel's error instead of a truncated log.
 - Resolving the latest versions of actions for a workflow file no longer pauses the refresh of workflow runs when
