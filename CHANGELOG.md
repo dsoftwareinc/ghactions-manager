@@ -17,6 +17,29 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
+## 2026.1.14
+
+### 🐛 Bug Fixes
+
+- A job log or artifact transfer that stops receiving data now fails with a timeout error instead of hanging, and a
+  job log that fails part way through shows the log panel's error instead of a truncated log.
+- Resolving the latest versions of actions for a workflow file no longer pauses the refresh of workflow runs when
+  GitHub's GraphQL rate limit is reached; GitHub meters GraphQL separately from the rest of the API.
+
+### 🧰 Maintenance
+
+- All GitHub requests (job logs, artifact downloads, action-version lookups and avatars included) now go through the
+  plugin's own HTTP client, with its timeouts and IDE proxy handling. The plugin no longer depends on the GitHub
+  plugin's internal request executor, whose change in 2026.3 caused
+  [#310](https://github.com/dsoftwareinc/ghactions-manager/issues/310). The access token is never sent to the storage
+  host that logs and artifacts are served from, or to github.com's public avatar host.
+
+### Improvements
+
+- Downloading an artifact no longer freezes the IDE: it runs in the background with a progress bar and can be
+  cancelled. A failed or cancelled download leaves no partial file, and a failure is reported as a notification
+  instead of an IDE internal error.
+
 ## 2026.1.13
 
 ### 🚀 Features
