@@ -17,6 +17,26 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
+## 2026.1.13
+
+### 🚀 Features
+
+- Pull requests: a "Show in GitHub Actions" action in the GitHub pull-request list and details context menus opens the
+  pull request's repository tab and selects the workflow run of its head commit.
+- feat: add action to show workflow runs for a commit in GitHub Actions
+
+### 🐛 Bug Fixes
+
+- Workflow runs, jobs and other API data now load behind an HTTP proxy. The plugin's API client uses the IDE's proxy
+  settings, including proxy authentication and the server certificates trusted in the IDE (needed behind
+  TLS-inspecting proxies). A response from a proxy instead of GitHub (an empty or HTML page) now shows an error naming
+  the HTTP status instead of a bare `java.lang.NullPointerException`
+  ([#309](https://github.com/dsoftwareinc/ghactions-manager/issues/309)).
+- IntelliJ 2026.3 (263) compatibility: resolving the latest versions of actions in a workflow file and downloading
+  artifacts no longer fail with `java.lang.NoSuchMethodError`
+  ([#310](https://github.com/dsoftwareinc/ghactions-manager/issues/310)), and the plugin parses GitHub API responses
+  with its own bundled Jackson 3, since 2026.3 changed the Jackson versions the platform provides.
+
 ## 2026.1.12
 
 ### 🐛 Bug Fixes
