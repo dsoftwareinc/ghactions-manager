@@ -17,6 +17,14 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
+## 2026.1.15
+
+### 🐛 Bug Fixes
+
+- The workflow runs list keeps refreshing after a temporary failure, such as a timeout, a dropped connection, or a
+  GitHub server error (5xx). A single failed refresh used to stop the automatic updates until the list was reloaded
+  by hand.
+
 ## 2026.1.14
 
 ### 🚀 Features
