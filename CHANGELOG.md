@@ -17,6 +17,13 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
+## 2026.1.16
+
+### 🐛 Bug Fixes
+
+- Job rows in the jobs tree are no longer clipped when the IDE theme uses a fixed tree row height shorter than the
+  row #313
+
 ## 2026.1.15
 
 ### 🐛 Bug Fixes
