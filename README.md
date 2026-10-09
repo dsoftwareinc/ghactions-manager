@@ -110,7 +110,7 @@ Manage a repository's GitHub Actions configuration from a dedicated settings dia
 
 # Requirements
 
-- A JetBrains IDE, build **2025.3** or later (IntelliJ IDEA, PyCharm, WebStorm, GoLand, etc.).
+- A JetBrains IDE, build **2026.2** or later (IntelliJ IDEA, PyCharm, WebStorm, GoLand, etc.).
 - A GitHub account configured in <kbd>Settings/Preferences</kbd> > <kbd>Version Control</kbd> > <kbd>GitHub</kbd>, or a
   custom token set in the plugin settings.
 

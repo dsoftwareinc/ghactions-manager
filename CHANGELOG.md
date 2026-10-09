@@ -23,6 +23,16 @@ All notable changes to this project will be documented in this file.
 
 - Jobs tree: the title of a group row (a matrix or reusable-workflow parent) is no longer pushed down and cut off,
   and rows are now really sized to their content instead of the theme's fixed row height #313
+- Jobs lists are released when their repository tab or the project is closed. Every jobs list that had been shown
+  used to stay subscribed to the **Sort by Status** toggle, and so in memory, until the IDE restarted.
+
+### 🧰 Maintenance
+
+- Internal restructuring, with no change in behavior. The plugin's packages now form a strict layering that a
+  build-time test enforces, and several large classes were split by responsibility: plugin settings, workflow-file
+  analysis, action-version resolution, background polling, job-log parsing, repository-tab lookup, pagination and the
+  repository-settings panels. Action IDs and stored settings are unchanged, so keymaps, toolbar customizations and
+  existing plugin settings carry over.
 
 ## 2026.1.15
 
