@@ -21,8 +21,8 @@ All notable changes to this project will be documented in this file.
 
 ### 🐛 Bug Fixes
 
-- Job rows in the jobs tree are no longer clipped when the IDE theme uses a fixed tree row height shorter than the
-  row #313
+- Jobs tree: the title of a group row (a matrix or reusable-workflow parent) is no longer pushed down and cut off,
+  and rows are now really sized to their content instead of the theme's fixed row height #313
 
 ## 2026.1.15
 
