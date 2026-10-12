@@ -17,6 +17,22 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
+## 2026.1.17
+
+### 🐛 Bug Fixes
+
+- Opening a project no longer reports a "refresh race or VFS inconsistency" error: workflow and action files are read
+  from each repository's `.github` directory instead of looking up every YAML file the IDE knows of #314
+- Tool window and repository-settings UI updates run on `Dispatchers.EDT` instead of `invokeLater` inside coroutines.
+- Closing the tool window stays binary compatible across IDE coroutine runtime versions.
+- Cancellation in the repository-settings collaborators and environments panels is no longer reported as an error.
+- No stack trace is logged when the IDE cancels a repository load.
+
+### 🧰 Maintenance
+
+- Replaced the deprecated IntelliJ Platform Gradle plugin `create()` with `intellijIdea()`.
+- Minor code cleanups.
+
 ## 2026.1.16
 
 ### 🐛 Bug Fixes
