@@ -17,6 +17,14 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
+## 2026.1.18
+
+### 🐛 Bug Fixes
+
+- No more "Access is allowed from Event Dispatch Thread (EDT) only" error when the GitHub accounts are loaded or
+  change while the tool window is open: the tabs are rebuilt on the EDT, and resolving action versions no longer
+  announces a settings change #315
+
 ## 2026.1.17
 
 ### 🐛 Bug Fixes
