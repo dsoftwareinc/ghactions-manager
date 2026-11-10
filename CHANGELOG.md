@@ -17,6 +17,20 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
+## 2026.2.0
+
+**Requires a 2026.3 IDE (build 263) or later.** IDEs on 2026.2 keep getting 2026.1.18 from the Marketplace.
+
+### 🧰 Maintenance
+
+- GitHub account tokens are read without the GitHub plugin's internal API, which 2026.3 closed off. Nothing changes
+  for you: the token stored for the account is used, and the GitHub login dialog appears only when there is none.
+- The plugin declares its dependency on Version Control, which 2026.3 moved out of the platform into a plugin of its
+  own. **Show Workflow Runs for Commit** and the workflow-file scan at project startup use it.
+- The plugin declares the Git plugin it uses directly instead of relying on the GitHub plugin to bring it in.
+- Removed the workarounds that kept the plugin loading on 2026.2.
+- Tests no longer stub the GitHub plugin's token lookup, which they never reached; the new lookup has its own tests.
+
 ## 2026.1.18
 
 ### 🐛 Bug Fixes
