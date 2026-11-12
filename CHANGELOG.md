@@ -15,7 +15,48 @@
 
 All notable changes to this project will be documented in this file.
 
-## Unreleased
+## 2026.2.1
+
+### 🚀 Features
+
+- **Run notifications** for the checked-out branch: a balloon when a run fails, with **Show Failed Step**, and one
+  when all of a push's runs pass. Configurable under **Settings | Tools | GitHub Actions Manager**.
+- **CI status in the status bar** for the checked-out branch's newest commit; a click opens the failed job (license
+  required).
+- **Undefined secrets and variables** (`secrets.X`, `vars.X`) are flagged in workflow files (license required).
+- Action versions in workflow files:
+    - **Pin action to its commit SHA** (<kbd>Alt+Enter</kbd> on a `uses:` line), keeping the version in a comment.
+      Pinned actions are still checked for newer versions.
+    - A reference like `@v4.1.0` is outdated by minor and patch releases; `@v4` only by v5.
+    - **Update all outdated actions** in the file, or in the project with
+      **Tools | Update Outdated GitHub Actions in Project**.
+- **Dispatch Workflow** dialog (license required): choose the branch or tag, starts with the last inputs sent, also
+  shows for workflows without inputs, and checks required and number fields before sending.
+- New run actions: **Rerun with Debug Logging** (whole run or failed jobs), **Cancel All Runs on Branch**,
+  **Delete Workflow Run**, and **Disable / Enable Workflow** (also in the workflow file's toolbar).
+
+### 🐛 Bug Fixes
+
+- Jobs, logs and annotations no longer show an earlier selection's data when you move quickly through runs or jobs.
+- The runs list no longer shows duplicate or stale-filter runs after overlapping refreshes.
+- Automatic refresh and the action-version lookup no longer stop for good after an unexpected failure.
+- **Review Pending Deployments**: <kbd>Esc</kbd> or the close button no longer rejects deployments; **Reject** is its
+  own button, and the dialog no longer freezes the IDE.
+- `uses: docker://image` steps are no longer flagged as unknown actions.
+- A malformed `workflow_dispatch` `options:` no longer reports an error; single-quoted options lose their quotes.
+- **Sync Workflows Panels on File Change** no longer switches itself off at startup.
+- No more repeated error balloons for repositories without push access or without workflows.
+- A failed dispatch is reported once, with GitHub's message; `number` inputs accept decimals.
+- The artifacts menu no longer offers a previously selected run's artifacts.
+- `GET` and `DELETE` requests are sent without a body, which some GitHub Enterprise Server proxies rejected.
+- Oversized step logs are no longer held in memory whole while downloading.
+- The runs list shows progress during long loads, and a load error names the request that failed.
+- Quoted `uses:` references navigate to the action.
+
+### 🧰 Maintenance
+
+- All tool-window updates run on the UI thread.
+- Tool-window tabs no longer pile up selection listeners when repositories, accounts or settings change.
 
 ## 2026.2.0
 
